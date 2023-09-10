@@ -20,26 +20,23 @@ jobs:
             if [[ -z "$RELEASE_REPO" ]]; then
               RELEASE_REPO="PortMaster-GUI"
             fi
-            echo "::set-output name=RELEASE_REPO::$RELEASE_REPO"
+            echo "RELEASE_REPO=$RELEASE_REPO" >> $GITHUB_OUTPUT
 
             RELEASE_ORG="${{ secrets.RELEASE_ORG }}"
             if [[ -z "$RELEASE_ORG" ]]; then
               RELEASE_ORG="PortsMaster"
             fi
-            echo "::set-output name=RELEASE_ORG::$RELEASE_ORG"
+            echo "RELEASE_ORG::$RELEASE_ORG" >> $GITHUB_OUTPUT
 
       - uses: hmarr/debug-action@v2
         name: "debug: ${{github.event_name}}"
      
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
 
       - name: Get release name for artifacts
         id: version
         run: |
-            echo "::set-output name=version::$(cat version)$(date +'_%H%M')"
+            echo "version=$(cat version)$(date +'_%H%M')" >> $GITHUB_OUTPUT
 
       - name: Create PortMaster.zip
         id: create-zip

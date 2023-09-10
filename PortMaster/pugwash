@@ -6,8 +6,8 @@ PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
 PORTMASTER_RELEASE_CHANNELS = {
-    'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
     'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
+    'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
     }
 PORTMASTER_UPDATE_FREQUENCY = (60 * 60 * 1)
 
@@ -16,7 +16,6 @@ import ctypes
 import datetime
 import errno
 import functools
-import gc
 import gettext
 import hashlib
 import json
@@ -1572,7 +1571,7 @@ def portmaster_check_update(pm, config, temp_dir):
         latest_version = harbourmaster.fetch_text(PORTMASTER_RELEASE_CHANNELS[release_channel] + 'version').strip()
         logger.debug(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
 
-        cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
+        cfg_data['update_checked'] = datetime.datetime.now().isoformat()
         if not cfg_file.parent.is_dir():
             cfg_file.parent.mkdir(0o777, parents=True)
 
