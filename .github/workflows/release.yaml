@@ -26,7 +26,7 @@ jobs:
             if [[ -z "$RELEASE_ORG" ]]; then
               RELEASE_ORG="PortsMaster"
             fi
-            echo "RELEASE_ORG::$RELEASE_ORG" >> $GITHUB_OUTPUT
+            echo "RELEASE_ORG=$RELEASE_ORG" >> $GITHUB_OUTPUT
 
       - uses: hmarr/debug-action@v2
         name: "debug: ${{github.event_name}}"
