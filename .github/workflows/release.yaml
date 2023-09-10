@@ -36,12 +36,12 @@ jobs:
       - name: Get release name for artifacts
         id: version
         run: |
-            echo "version=$(cat version)$(date +'_%H%M')" >> $GITHUB_OUTPUT
+            echo "version=$(awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash)$(date +'_%H%M')" >> $GITHUB_OUTPUT
 
       - name: Create PortMaster.zip
         id: create-zip
         run: |
-          ./do_release.sh
+          ./do_release.sh ${{steps.version.outputs.version}}
  
       - name: Create md5 hashes
         id: md5

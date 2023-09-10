@@ -1,7 +1,6 @@
 #!/bin/bash
 
 awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash > PortMaster/version
-
 cp PortMaster/version version
 
 rm -vf PortMaster.zip

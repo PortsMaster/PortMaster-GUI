@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.0'
+PORTMASTER_VERSION = '8.4.1'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -1588,7 +1588,7 @@ def portmaster_check_update(pm, config, temp_dir):
                 new_release_channel=release_channel,
                 portmaster_version=latest_version)
 
-        elif release_channel != PORTMASTER_RELEASE_CHANNEL:
+        elif harbourmaster.version_parse(latest_version) > harbourmaster.version_parse(PORTMASTER_VERSION):
             update_ask = True
             update_reason = _("There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?").format(
                 portmaster_version=latest_version)
