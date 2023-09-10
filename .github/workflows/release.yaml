@@ -1,0 +1,77 @@
+name: release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency: 
+  group: release # only 1 release at a time
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: env - better defaulting of env vars;
+        id: env
+        run: |
+            RELEASE_REPO="${{ secrets.RELEASE_REPO }}"
+            if [[ -z "$RELEASE_REPO" ]]; then
+              RELEASE_REPO="PortMaster-GUI"
+            fi
+            echo "::set-output name=RELEASE_REPO::$RELEASE_REPO"
+
+            RELEASE_ORG="${{ secrets.RELEASE_ORG }}"
+            if [[ -z "$RELEASE_ORG" ]]; then
+              RELEASE_ORG="PortsMaster"
+            fi
+            echo "::set-output name=RELEASE_ORG::$RELEASE_ORG"
+
+      - uses: hmarr/debug-action@v2
+        name: "debug: ${{github.event_name}}"
+     
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Get release name for artifacts
+        id: version
+        run: |
+            echo "::set-output name=version::$(cat version)$(date +'_%H%M')"
+
+      - name: Create PortMaster.zip
+        id: create-zip
+        run: |
+          ./do_release.sh
+ 
+      - name: Create md5 hashes
+        id: md5
+        run: |
+            for file in *.zip; do
+              if [ ! -f "$file" ]; then
+                continue
+              fi
+              echo "file: $file"
+              md5sum "$file" | cut -f1 -d' ' > "$file.md5"
+            done
+ 
+      - name: "Publish release"
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{steps.version.outputs.version}}"
+          allowUpdates: true
+          draft: false
+          prerelease: false
+          replacesArtifacts: false
+          omitNameDuringUpdate: true
+          artifacts: "PortMaster.zip, PortMaster.zip.md5, version"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ steps.env.outputs.RELEASE_REPO}}
+          owner: ${{ steps.env.outputs.RELEASE_ORG}}
+
+      - name: Release Info
+        id: info
+        run: |
+          echo "Published release: ${{steps.version.outputs.version}} to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"

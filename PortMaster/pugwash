@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.3.11b'
+PORTMASTER_VERSION = '8.4.0'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
 PORTMASTER_RELEASE_CHANNELS = {
-    # 'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
-    # 'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
-    'beta': 'https://github.com/kloptops/harbourmaster/releases/latest/download/',
+    'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
+    'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
     }
 PORTMASTER_UPDATE_FREQUENCY = (60 * 60 * 1)
 
@@ -1585,7 +1584,7 @@ def portmaster_check_update(pm, config, temp_dir):
 
         if release_channel != PORTMASTER_RELEASE_CHANNEL:
             update_ask = True
-            update_reason = _("You are switching from {old_release_channel} to {new_release_channel} ({portmaster_version})\n\nDo you want to upgrade?").format(
+            update_reason = _("You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to upgrade?").format(
                 old_release_channel=PORTMASTER_RELEASE_CHANNEL,
                 new_release_channel=release_channel,
                 portmaster_version=latest_version)
@@ -1692,6 +1691,14 @@ def main(argv):
 
         with pm.enable_cancellable(True):
             pm.run()
+
+        if not harbourmaster.HM_TESTING:
+            if pm.hm is not None and pm.hm.platform.ES_NAME is not None:
+                if pm.hm.platform.ports_changed():
+                    refresh_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
+
+                    if not refresh_file.is_file():
+                        refresh_file.touch(0o644)
 
         pm.quit()
 

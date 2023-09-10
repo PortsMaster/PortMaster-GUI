@@ -23,9 +23,15 @@ from .util import *
 
 class PlatformBase():
     MOVE_PM_BASH = False
+    ES_NAME = None
 
     def __init__(self, hm):
         self.hm = hm
+        self.added_ports = set()
+        self.removed_ports = set()
+
+    def ports_changed(self):
+        return (len(self.added_ports) > 0 or len(self.removed_ports) > 0)
 
     def first_run(self):
         """
@@ -39,6 +45,11 @@ class PlatformBase():
         """
         logger.debug(f"{self.__class__.__name__}: Port Install {port_name}")
 
+        if port_name in self.removed_ports:
+            self.removed_ports.remove(port_name)
+        else:
+            self.added_ports.add(port_name)
+
     def runtime_install(self, runtime_name, runtime_files):
         """
         Called on after a port is installed, this can be used to check permissions, possibly augment the bash scripts.
@@ -50,6 +61,11 @@ class PlatformBase():
         Called on after a port is uninstalled, this can be used clean up special files.
         """
         logger.debug(f"{self.__class__.__name__}: Port Uninstall {port_name}")
+
+        if port_name in self.added_ports:
+            self.added_ports.remove(port_name)
+        else:
+            self.removed_ports.add(port_name)
 
     def portmaster_install(self):
         """
@@ -125,10 +141,12 @@ class PlatformGCD_PortMaster:
 
 
 class PlatformUOS(PlatformGCD_PortMaster, PlatformBase):
-    ...
+    ES_NAME = 'emustation'
 
 
 class PlatformJELOS(PlatformBase):
+    ES_NAME = 'emustation'
+
     def first_run(self):
         self.portmaster_install()
 
@@ -165,10 +183,11 @@ class PlatformJELOS(PlatformBase):
 
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
+    ES_NAME = 'emulationstation'
 
 
 class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
-    ...
+    ES_NAME = 'emustation'
 
 
 HM_PLATFORMS = {
