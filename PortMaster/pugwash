@@ -319,7 +319,6 @@ class DirectoryScanner:
         self.callback = None
 
     def _check(self, scan_dir, scan_info):
-        checks = {}
         try:
             result = next(scan_info[1])
             scan_info[0] = result
@@ -387,7 +386,7 @@ class DirectoryScanner:
                 return None
 
         else:
-            self.scans[directory] = temp = [0, self._calculate_total_size(directory)]
+            self.scans[directory] = [0, self._calculate_total_size(directory)]
             if nice_size:
                 return f"~ {harbourmaster.nice_size(self.scans[directory][0])}"
 
@@ -434,7 +433,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             print(f"{index}: {is_game_controller}")
             if is_game_controller == sdl2.SDL_TRUE:
                 pad = sdl2.SDL_GameControllerOpen(index)
-                if pad != None:
+                if pad is not None:
                     logger.debug(f"Opened GameController {index}: {sdl2.SDL_GameControllerName(pad)}")
                     logger.debug(f" {sdl2.SDL_GameControllerMapping(pad)}")
 
@@ -632,11 +631,16 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             self.set_data("system.time_24hr", datetime.datetime.now().strftime("%H:%M"))
             self.set_data("system.time_12hr", datetime.datetime.now().strftime("%I:%M %p"))
 
-            disk_usage = shutil.disk_usage(str(harbourmaster.HM_PORTS_DIR))
+            if harbourmaster.HM_PORTS_DIR.is_dir():
+                disk_usage = shutil.disk_usage(str(harbourmaster.HM_PORTS_DIR))
 
-            self.set_data("system.free_space", harbourmaster.nice_size(disk_usage.free))
-            self.set_data("system.used_space", harbourmaster.nice_size(disk_usage.used))
-            self.set_data("system.total_space", harbourmaster.nice_size(disk_usage.total))
+                self.set_data("system.free_space", harbourmaster.nice_size(disk_usage.free))
+                self.set_data("system.used_space", harbourmaster.nice_size(disk_usage.used))
+                self.set_data("system.total_space", harbourmaster.nice_size(disk_usage.total))
+            else:
+                self.set_data("system.free_space", "000 B")
+                self.set_data("system.used_space", "000 B")
+                self.set_data("system.total_space", "000 B")
 
             battery_file = Path("/sys/class/power_supply/battery/capacity")
             if battery_file.exists():
@@ -809,7 +813,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.set_data("theme_info.name", theme_info['name'])
         self.set_data("theme_info.description", theme_info['description'])
         self.set_data("theme_info.creator", theme_info['creator'])
-        self.set_data("theme_info.status", theme_info['status'])
+        self.set_data("theme_info.status", status_to_lang.get(theme_info['status'], theme_info['status']))
 
     def get_port_size(self, port_name, port_info):
         self.port_size_active_port = port_name
@@ -1315,7 +1319,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             try:
                 while True:
                     if self.events.was_pressed('A'):
-                        temp=selection_list.selected_option()
+                        temp = selection_list.selected_option()
                         logger.debug(temp)
                         fifo_config['done-file'].write_text(str(temp))
                         return
@@ -1389,7 +1393,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
     def fifo_message_box(self, fifo_config, args):
         """
-        message_box 
+        message_box
         """
         mb_config = {
             "want_cancel": False,
@@ -1416,12 +1420,12 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
             if len(args) > 1:
                 if args[i] == '--cancel-text':
-                    mb_config['cancel_text'] = _(args[i+1])
+                    mb_config['cancel_text'] = _(args[i + 1])
                     del args[i]
                     continue
 
                 elif args[i] == '--ok-text':
-                    mb_config['ok_text'] = _(args[i+1])
+                    mb_config['ok_text'] = _(args[i + 1])
                     del args[i]
                     continue
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2023-09-09 11:51\n"
+"PO-Revision-Date: 2023-09-10 09:43\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -20,7 +20,8 @@ msgstr ""
 #: default_theme/theme.json:254
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Filters: {ports_list.filters}{endif}"
-msgstr ""
+msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Jogos disponíveis: {ports_list.filter_ports} / {ports_list.total_ports} \n"
+"Filtros: {ports_list.filters}{endif}"
 
 #: default_theme/theme.json:281
 msgid "Genres: {port_info.genres}\n"

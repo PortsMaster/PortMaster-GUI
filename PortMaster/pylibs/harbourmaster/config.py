@@ -27,7 +27,7 @@ HM_PERFTEST=False
 HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
-if (Path().cwd() / '.git').is_dir():
+if (Path().cwd() / '.git').is_dir() or (Path().cwd() / '..' / '.git').is_dir():
     ## For testing
     HM_DEFAULT_TOOLS_DIR = Path('.').absolute()
     HM_DEFAULT_PORTS_DIR = Path('ports/').absolute()

@@ -222,9 +222,9 @@ def theme_load(gui, theme_file, color_scheme=None):
                 logger.debug(f"  - loading section {section_name}")
                 sections[section_name] = theme_apply(gui, section_data, base_data, elements)
 
-    if harbourmaster.HM_TESTING:
-        with open('debug.json', 'w') as fh:
-            json.dump(sections, fh, indent=4)
+    # if harbourmaster.HM_TESTING:
+    #     with open('debug.json', 'w') as fh:
+    #         json.dump(sections, fh, indent=4)
 
     if 'themes_list' not in sections:
         ## Temporary Hack

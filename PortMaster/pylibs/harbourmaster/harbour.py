@@ -97,6 +97,10 @@ class HarbourMaster():
         self.ports = []
         self.utils = []
 
+        self.ports_dir.mkdir(0o755, parents=True, exist_ok=True)
+        self.themes_dir.mkdir(0o755, parents=True, exist_ok=True)
+        self.libs_dir.mkdir(0o755, parents=True, exist_ok=True)
+
         with self.callback.enable_messages():
             self.callback.message(_("Loading..."))
 

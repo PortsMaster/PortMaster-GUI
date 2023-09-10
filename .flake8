@@ -1,0 +1,26 @@
+#
+#
+[flake8]
+ignore =
+    ## I like double comments.
+    E266,
+
+    ## Long lines.
+    E501,
+
+    ## I like to indent my code like this.
+    E123,
+
+    ## Multiple spaces before an operator makes it more readable
+    E221,
+
+    ## For now i star import
+    F401,
+    F403, F405,
+
+per-file-ignores =
+    PortMaster/pylibs/ports_info.py:E121,E501
+    PortMaster/pylibs/harbourmaster/*:E225
+    PortMaster/pylibs/harbourmaster/hardware.py:E201,E241
+    PortMaster/pugwash:E402
+    PortMaster/harbourmaster:E402
