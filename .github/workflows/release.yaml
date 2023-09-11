@@ -30,13 +30,17 @@ jobs:
 
       - uses: hmarr/debug-action@v2
         name: "debug: ${{github.event_name}}"
-     
+
       - uses: actions/checkout@v2
 
       - name: Get release name for artifacts
         id: version
         run: |
             echo "version=$(awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash)$(date +'_%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Install gettext
+        run: |
+          sudo apt-get install -y gettext
 
       - name: Create PortMaster.zip
         id: create-zip
