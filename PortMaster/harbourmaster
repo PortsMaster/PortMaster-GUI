@@ -13,8 +13,43 @@ from pathlib import Path
 
 ################################################################################
 ## Insert our extra modules.
-PYLIB_PATH = Path(__file__).parent / 'pylibs'
-EXLIB_PATH = Path(__file__).parent / 'exlibs'
+PYLIB_PATH    = Path(__file__).parent / 'pylibs'
+EXLIB_PATH    = Path(__file__).parent / 'exlibs'
+PYLIB_ZIP     = Path(__file__).parent / 'pylibs.zip'
+PYLIB_ZIP_MD5 = Path(__file__).parent / 'pylibs.zip.md5'
+
+if not (Path(__file__).parent / '.git').is_dir() and not (Path(__file__).parent / '..' / '.git').is_dir():
+    if PYLIB_ZIP.is_file():
+        if PYLIB_PATH.is_dir():
+            print("- removing old pylibs.")
+            shutil.rmtree(PYLIB_PATH)
+
+        if EXLIB_PATH.is_dir():
+            print("- removing old exlibs.")
+            shutil.rmtree(EXLIB_PATH)
+
+        print("- extracting new pylibs.")
+        with zipfile.ZipFile(PYLIB_ZIP, 'r') as zf:
+            zf.extractall(Path(__file__).parent)
+
+        md5_check = hashlib.md5()
+        with PYLIB_ZIP.open('rb') as fh:
+            while True:
+                data = fh.read(1024 * 1024)
+                if len(data) == 0:
+                    break
+
+                md5_check.update(data)
+
+        with PYLIB_ZIP_MD5.open('wt') as fh:
+            fh.write(md5_check.hexdigest())
+
+        print("- recorded pylibs.zip.md5")
+
+        del md5_check
+
+        print("- removing pylibs.zip")
+        PYLIB_ZIP.unlink()
 
 ## HACK D:
 __builtins__.PYLIB_PATH = PYLIB_PATH
