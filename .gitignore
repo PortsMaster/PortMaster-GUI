@@ -168,7 +168,7 @@ config/
 # Thumbnails
 ._*
 
-ports_info_cache.*
+
 ports/
 themes/
 *.squashfs
@@ -176,4 +176,5 @@ crowdin.yml
 pugwash.txt
 harbourmaster.txt
 PortMaster.zip
+pylibs.zip
 version

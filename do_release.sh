@@ -8,17 +8,13 @@ awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash > PortMaster/v
 cp PortMaster/version version
 
 rm -vf PortMaster.zip
-rm -fRv PortMaster/themes
-rm -fRv PortMaster/config
-rm -fRv PortMaster/pugwash.txt
-rm -fRv PortMaster/harbourmaster.txt
 
 find . -iname '.DS_Store' -or -iname '._*' -delete -print
 
-for name in $(find . -iname '__pycache__');
-do
-    rm -fRv "$name"
-done
+# for name in $(find . -iname '__pycache__');
+# do
+#     rm -fRv "$name"
+# done
 
 for lang_dir in $POT_DIR/* ; do
     LANG_CODE=$(basename "$lang_dir")
@@ -44,4 +40,22 @@ for lang_dir in $POT_DIR/* ; do
     fi
 done
 
-zip -9r PortMaster.zip PortMaster/
+echo "Creating pylibs.zip"
+cd PortMaster
+
+rm -f pylibs.zip
+zip -9r pylibs.zip exlibs/ pylibs/ -x '*__pycache__*/*' -x '*.DS_Store'
+
+cd ..
+
+echo "Creating PortMaster.zip"
+zip -9r PortMaster.zip PortMaster/ \
+    -x PortMaster/pylibs/\* \
+    -x PortMaster/exlibs/\* \
+    -x PortMaster/config/\* \
+    -x PortMaster/themes/\* \
+    -x PortMaster/libs/\*.squashfs \
+    -x PortMaster/pugwash.txt \
+    -x PortMaster/harbourmaster.txt \
+    -x '*.DS_Store'
+
