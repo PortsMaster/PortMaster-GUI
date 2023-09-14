@@ -1026,6 +1026,18 @@ class ImageManager():
 
             return self.images[filename]
 
+    def load_data_lazy(self, file_name, data):
+        res_filename = self.gui.resources.find(file_name)
+
+        if res_filename is None:
+            return None
+
+        stored_name = data.get("name", file_name)
+        if stored_name in self.images:
+            return None
+
+        return self.load_data(file_name, data)
+
     def load_data(self, file_name, data):
         res_filename = self.gui.resources.find(file_name)
 

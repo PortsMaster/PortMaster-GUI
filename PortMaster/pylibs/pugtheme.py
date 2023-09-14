@@ -17,7 +17,7 @@ from loguru import logger
 _ = gettext.gettext
 
 
-## TODO: make this all a class
+## TODO: make this all a class, and maybe make it less janky, maybe...
 def extract_requirements(text, strict=False):
     if strict:
         default = None
@@ -61,6 +61,22 @@ def theme_merge(target, source):
     return temp
 
 
+def theme_check_images(gui, region_data):
+    for element_name, element_data in region_data.items():
+        for element_key, element_value in element_data.items():
+            if not isinstance(element_value, str):
+                continue
+
+            if element_key in ("image", "pimage"):
+                if "{" in element_value:
+                    # Fuck it, you're on your own buddy. :D
+                    continue
+
+                res = gui.images.load_data_lazy(element_value, {})
+                if res is not None:
+                    logger.debug(f"loaded image {element_value}")
+
+
 def theme_apply(gui, section_data, base_data, elements):
     new_data = {}
     capabilities = harbourmaster.device_info()['capabilities']
@@ -97,6 +113,8 @@ def theme_apply(gui, section_data, base_data, elements):
 
         else:
             new_data[region_name] = theme_merge(base_data, region_data)
+
+    theme_check_images(gui, new_data)
 
     return new_data
 

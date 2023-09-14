@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2023-09-10 09:43\n"
+"PO-Revision-Date: 2023-09-14 09:23\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -27,7 +27,9 @@ msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Jogos disponíveis:
 msgid "Genres: {port_info.genres}\n"
 "{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr ""
+msgstr "Gêneros: {port_info.genres}\n"
+"{if:port_info.install_size}Tamanho instalado: {port_info.install_size}{else}Tamanho do arquivo: {port_info.download_size}{endif}{if:port_info.runtime}\n"
+"Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: default_theme/theme.json:351, Zelda.theme.zip/theme.json:457
 msgid "Free Space: {system.free_space}\n\n"
@@ -36,29 +38,40 @@ msgid "Free Space: {system.free_space}\n\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Instruction: {port_info.instructions}"
-msgstr ""
+msgstr "Espaço livre: {system.free_space}\n\n"
+"Porter: {port_info.porter}\n"
+"Gêneros: {port_info.genres}\n"
+"Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
+"Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
+"Instrução: {port_info.instructions}"
 
 #: default_theme/theme.json:380, ff_VII.theme.zip/theme.json:446
 msgid "Time: {system.time_24hr}\n"
 "CFW: {system.cfw_name} ({system.cfw_version})\n"
 "Device: {system.device_name}\n"
 "Battery: {system.battery_level}"
-msgstr ""
+msgstr "Hora: {system.time_24hr}\n"
+"Sistema: {system.cfw_name} ({system.cfw_version})\n"
+"Aparelho: {system.device_name}\n"
+"Bateria: {system.battery_level}"
 
 #: default_theme/theme.json:388, ff_VII.theme.zip/theme.json:454
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"Espaço: {system.free_space} livre / {system.total_space} total"
 
 #: default_theme/theme.json:411, ff_VII.theme.zip/theme.json:489, Zelda.theme.zip/theme.json:523
 msgid "IP: {system.ip_address}"
-msgstr ""
+msgstr "IP: {system.ip_address}"
 
 #: default_theme/theme.json:465, ff_VII.theme.zip/theme.json:569, Zelda.theme.zip/theme.json:602
 msgid "Creator: {theme_info.creator}\n"
 "Status: {theme_info.status}"
-msgstr ""
+msgstr "Criador: {theme_info.creator}\n"
+"Estado: {theme_info.status}"
 
 #: basic_theme.theme.zip/theme.json:77
 msgid "Title: {port_info.title}\n"
@@ -67,16 +80,22 @@ msgid "Title: {port_info.title}\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
 "Description: {port_info.description}"
-msgstr ""
+msgstr "Título: {port_info.title}\n"
+"Porter: {port_info.porter}\n"
+"Gêneros: {port_info.genres}\n"
+"Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
+"Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"Descrição: {port_info.description}"
 
 #: ff_VII.theme.zip/theme.json:243
 msgid "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr ""
+msgstr "Gêneros: {port_info.genres}    Tamanho do download: {port_info.download_size}{if:port_info.runtime}    Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: ff_VII.theme.zip/theme.json:343
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
 "Filters: {ports_list.filters}{endif}"
-msgstr ""
+msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Jogos disponíveis: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
+"Filtros: {ports_list.filters}{endif}"
 
 #: ff_VII.theme.zip/theme.json:410
 msgid "Free Space: {system.free_space}\n\n"
@@ -86,19 +105,27 @@ msgid "Free Space: {system.free_space}\n\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Instruction: \n"
 "Place file x in folder y then dance until tomorrow"
-msgstr ""
+msgstr "Espaço livre: {system.free_space}\n\n"
+"Porter: {port_info.porter}\n"
+"Gêneros: {port_info.genres}\n"
+"Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
+"Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
+"Instrução: \n"
+"Coloque o arquivo x na pasta y e então dançe até amanhã"
 
 #: Zelda.theme.zip/theme.json:308
 msgid "Filters: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
-msgstr ""
+msgstr "Filtros: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
 
 #: Zelda.theme.zip/theme.json:357
 msgid "Genres: {port_info.genres}\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr ""
+msgstr "Gêneros: {port_info.genres}\n"
+"Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
+"Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: Zelda.theme.zip/theme.json:494
 msgid "Time: {system.time_24hr}      Battery: {system.battery_level}"
-msgstr ""
+msgstr "Hora: {system.time_24hr}      Bateria: {system.battery_level}"
 
