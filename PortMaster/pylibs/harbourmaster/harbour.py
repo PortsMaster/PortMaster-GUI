@@ -1,8 +1,9 @@
 
 # System imports
+import datetime
 import fnmatch
 import functools
-import datetime
+import hashlib
 import json
 import os
 import pathlib
@@ -1077,77 +1078,164 @@ class HarbourMaster():
         return 0
 
     def check_runtime(self, runtime, port_name=None, in_install=False):
-        if isinstance(runtime, str):
-            if '/' in runtime:
-                if not in_install:
-                    self.callback.message_box(_("Port {runtime} contains a bad runtime, game may not run correctly.").format(
-                        runtime=runtime))
+        if not isinstance(runtime, str):
+            return 255
 
-                logger.error(f"Bad runtime {runtime}")
-                return 255
+        if '/' in runtime:
+            if not in_install:
+                self.callback.message_box(_("Port {runtime} contains a bad runtime, game may not run correctly.").format(
+                    runtime=runtime))
 
-            if not self.libs_dir.is_dir():
-                self.libs_dir.mkdir(0o777)
+            logger.error(f"Bad runtime {runtime}")
+            return 255
 
-            runtime_file = (self.libs_dir / runtime)
-            if not runtime_file.is_file():
-                runtime_name = runtime_nicename(runtime)
+        if not self.libs_dir.is_dir():
+            self.libs_dir.mkdir(0o777)
 
-                if self.config['offline']:
-                    cprint(f"Unable to download {runtime} when offline")
-                    self.callback.message_box(_("Unable do download a runtime when in offline mode."))
-                    return 0
+        runtime_file = (self.libs_dir / runtime)
+        runtime_md5 = (self.libs_dir / (runtime + '.md5'))
+        runtime_name = runtime_nicename(runtime)
+        runtime_status = 'Not Present'
+        runtime_md5sum = None
 
-                for source_prefix, source in self.sources.items():
-                    if runtime not in source.utils:
-                        continue
+        status_language = {
+            'Not Installed':    _('Not Installed'),
+            'Update Available': _('Update Available'),
+            'Verified':         _('Verified'),
+            'Unverified':       _('Unverified'),
+            'Broken':           _('Broken'),
+            }
 
-                    # cprint(f"Downloading required runtime <b>{runtime}</b>.")
+        if self.config['offline']:
+            cprint(f"Unable to download {runtime} when offline")
+            self.callback.message_box(_("Unable do download a runtime when in offline mode."))
+            return 0
 
-                    self.callback.message(_("Downloading runtime {runtime}.").format(runtime=runtime_name))
+        if runtime_file.is_file():
+            self.callback.message(_("Verifying runtime {runtime}").format(
+                runtime=runtime_name))
 
-                    download_successfull = False
-                    try:
-                        with self.callback.enable_cancellable(True):
-                            runtime_download = source.download(runtime, temp_dir=self.libs_dir)
-                            download_successfull = True
+            with open(runtime_file, 'rb') as fh:
+                total_size = runtime_file.stat().st_size
+                process_size = 0
 
-                            self.platform.runtime_install(runtime, [runtime_download])
+                md5obj = hashlib.md5()
 
-                        if self.callback.was_cancelled or not download_successfull:
-                            if runtime_file.is_file():
-                                runtime_file.unlink()
+                self.callback.progress(_('Verifying'), process_size, total_size)
 
-                            if not in_install:
-                                self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
+                while True:
+                    data = fh.read(1024 * 1024 * 10)
+                    if len(data) == 0:
+                        break
 
-                            return 255
+                    self.callback.progress(_('Verifying'), process_size, total_size)
+                    process_size += len(data)
+                    md5obj.update(data)
 
-                    except Exception as err:
-                        ## We need to catch any errors and delete the file if it fails,
-                        ## here we are not using the temp file auto deletion.
-                        logger.error(err)
+                self.callback.progress(None, None, None)
 
-                        if not in_install:
-                            self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
+                runtime_md5sum = md5obj.hexdigest()
 
-                        return 255
+            if not runtime_md5.is_file():
+                runtime_md5.write_text(runtime_md5sum)
+                runtime_status = 'Unverified'
 
-                    finally:
-                        if not download_successfull and runtime_file.is_file():
-                            runtime_file.unlink()
+            elif runtime_md5.read_text().strip() == runtime_md5sum:
+                runtime_status = 'Verified'
 
-                    if not in_install:
-                        self.callback.message_box(_("Successfully downloaded {runtime}.").format(runtime=runtime))
+            else:
+                runtime_status = 'Broken'
+        else:
+            runtime_status = 'Not Installed'
 
-                    return 0
+        for source_prefix, source in self.sources.items():
+            if runtime not in source.utils:
+                continue
+
+            if runtime_status in ('Verified', 'Unverified'):
+                runtime_md5url = None
+                if (runtime + '.md5') in getattr(source, '_data', {}):
+                    runtime_md5url = source._data[(runtime + '.md5')]['url']
+
+                elif (runtime + '.md5sum') in getattr(source, '_data', {}):
+                    runtime_md5url = source._data[(runtime + '.md5sum')]['url']
 
                 else:
-                    if not in_install:
-                        self.callback.message_box(_("Unable to find a download for {runtime}.").format(runtime=runtime))
+                    continue
 
-                    logger.error(f"Unable to find suitable source for {runtime}.")
+                md5verify = fetch_text(runtime_md5url).strip().split(' ', 1)[0]
+
+                if md5verify == runtime_md5sum:
+                    runtime_status = 'Verified'
+
+                else:
+                    runtime_status = {
+                        'Verified': 'Update Available',
+                        'Unverified': 'Broken',
+                        }[runtime_status]
+
+            if runtime_status == 'Verified':
+                self.callback.message(_("Verified successfully."))
+                return 0
+
+            elif runtime_status == 'Update Available':
+                self.callback.message(_("Updating {runtime}.").format(
+                        runtime=runtime_name))
+
+            elif runtime_status == 'Broken':
+                self.callback.message(_("Runtime {runtime} is broken, reinstalling.").format(
+                        runtime=runtime_name))
+
+            else:
+                self.callback.message(_("Downloading runtime {runtime}.").format(
+                    runtime=runtime_name))
+
+            download_successfull = False
+            try:
+                with self.callback.enable_cancellable(True):
+                    md5_result = [None]
+
+                    runtime_download = source.download(runtime, temp_dir=self.libs_dir, md5_result=md5_result)
+
+                    (self.libs_dir / (runtime + '.md5')).write_text(md5_result[0])
+                    download_successfull = True
+
+                    self.platform.runtime_install(runtime, [runtime_download])
+
+                if self.callback.was_cancelled or not download_successfull:
+                    if runtime_file.is_file():
+                        runtime_file.unlink()
+
+                    if not in_install:
+                        self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
+
                     return 255
+
+            except Exception as err:
+                ## We need to catch any errors and delete the file if it fails,
+                ## here we are not using the temp file auto deletion.
+                logger.error(err)
+
+                if not in_install:
+                    self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
+
+                return 255
+
+            finally:
+                if not download_successfull and runtime_file.is_file():
+                    runtime_file.unlink()
+
+            if not in_install:
+                self.callback.message_box(_("Successfully downloaded {runtime}.").format(runtime=runtime))
+
+            return 0
+
+        else:
+            if not in_install:
+                self.callback.message_box(_("Unable to find a download for {runtime}.").format(runtime=runtime))
+
+            logger.error(f"Unable to find suitable source for {runtime}.")
+            return 255
 
     def install_port(self, port_name):
         # Special HTTP download code.

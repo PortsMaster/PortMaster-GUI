@@ -172,6 +172,7 @@ config/
 ports/
 themes/
 *.squashfs
+*.squashfs.md5
 crowdin.yml
 pugwash.txt
 harbourmaster.txt

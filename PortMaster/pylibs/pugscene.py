@@ -2,6 +2,7 @@ import functools
 import gettext
 import json
 import os
+import shutil
 
 import sdl2
 import sdl2.ext
@@ -311,6 +312,8 @@ class BlankScene(BaseScene):
 
 
 class MainMenuScene(BaseScene):
+    KONAMI_CODE = ('UP', 'UP', 'DOWN', 'DOWN', 'LEFT', 'RIGHT', 'LEFT', 'RIGHT', 'B', 'A', 'START', 'DONE')
+
     def __init__(self, gui):
         super().__init__(gui)
 
@@ -320,14 +323,38 @@ class MainMenuScene(BaseScene):
         self.tags['option_list'].add_option(('install', []), _("All Ports"))
         self.tags['option_list'].add_option(('install', ['rtr']), _("Ready to Run Ports"))
         self.tags['option_list'].add_option(('uninstall', ['installed']), _("Uninstall Ports"))
+
+        if self.gui.get_config().get('konami', False):
+            self.tags['option_list'].add_option(None, "")
+            self.tags['option_list'].add_option(('port-list', None), _('Port Lists'))
+
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(('options', None), _("Options"))
         self.tags['option_list'].add_option(('exit', None), _("Exit"))
 
         self.set_buttons({'A': _('Enter'), 'B': _('Quit')})
+        self.detecting_konami = 0
 
     def do_update(self, events):
         super().do_update(events)
+
+        if events.was_pressed(self.KONAMI_CODE[self.detecting_konami]):
+            self.detecting_konami += 1
+
+            if self.KONAMI_CODE[self.detecting_konami] == 'DONE':
+                self.gui.hm.cfg_data['konami'] = not self.gui.hm.cfg_data.get('konami', False)
+                self.gui.hm.save_config()
+                self.detecting_konami = 0
+                self.message_box(_('Secret Mode {secret_mode}').format(
+                    secret_mode=(self.gui.hm.cfg_data['konami'] and _('Enabled') or _('Disabled'))))
+
+                return True
+
+            if self.KONAMI_CODE[self.detecting_konami-1] in ('B', 'A', 'START'):
+                return True
+
+        elif events.any_pressed():
+            self.detecting_konami = 0
 
         if events.was_pressed('A'):
             selected_option, selected_parameter = self.tags['option_list'].selected_option()
@@ -336,6 +363,13 @@ class MainMenuScene(BaseScene):
 
             if selected_option in ('install', 'uninstall'):
                 self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter}))
+                return True
+
+            elif selected_option == 'port-list':
+                self.gui.message_box("Soon TM.")
+                return True
+
+                self.gui.push_scene('ports', PortLists(self.gui))
                 return True
 
             elif selected_option == 'options':
@@ -363,6 +397,7 @@ class OptionScene(BaseScene):
 
         self.tags['option_list'].add_option('update-ports', _("Update Ports"))
         self.tags['option_list'].add_option('update-portmaster', _("Update PortMaster"))
+        self.tags['option_list'].add_option('runtime-list', _("Runtime Manager"))
 
         if len(self.gui.hm.get_gcd_modes()) > 0:
             gcd_mode = self.gui.hm.get_gcd_mode()
@@ -387,6 +422,11 @@ class OptionScene(BaseScene):
         schemes = self.gui.themes.get_theme_schemes_list()
         if len(schemes) > 0:
             self.tags['option_list'].add_option('select-scheme', _("Select Color Scheme"))
+
+        if self.gui.hm.cfg_data.get('konami', False):
+            self.tags['option_list'].add_option(None, _("Secret Options"))
+            self.tags['option_list'].add_option('delete-config', _("Delete PortMaster Config"))
+            self.tags['option_list'].add_option('delete-runtimes', _("Delete PortMaster Runtimes"))
 
         # self.tags['option_list'].add_option(None, "")
         # self.tags['option_list'].add_option('back', _("Back"))
@@ -456,6 +496,10 @@ class OptionScene(BaseScene):
 
                 return True
 
+            if selected_option == 'runtime-list':
+                self.gui.push_scene('runtime-theme', RuntimesScene(self.gui))
+                return True
+
             if selected_option == 'keyboard':
                 self.gui.push_scene('osk', OnScreenKeyboard(self.gui))
                 return True
@@ -472,9 +516,149 @@ class OptionScene(BaseScene):
                 self.gui.push_scene('select-language', LanguageScene(self.gui))
                 return True
 
+            ## Secret options
+            if selected_option == 'delete-config':
+                self.gui.events.running = False
+
+                shutil.rmtree(harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config")
+
+                if not harbourmaster.HM_TESTING:
+                    reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
+                    if not reboot_file.is_file():
+                        reboot_file.touch(0o644)
+
+                return True
+
+            if selected_option == 'delete-runtimes':
+                runtimes = list((harbourmaster.HM_TOOLS_DIR / "PortMaster" / "libs").glob("*.squashfs"))
+                if len(runtimes) == 0:
+                    self.gui.message_box("No runtimes found.")
+                    return True
+
+                with self.gui.enable_cancellable(False):
+                    with self.gui.enable_messages():
+                        self.gui.message(_("Deleting Runtimes:"))
+                        self.gui.do_loop()
+
+                        for runtime_file in runtimes:
+                            logger.debug(f"removing {runtime_file}")
+                            self.gui.message(f"- {runtime_file}")
+                            runtime_file.unlink()
+                            self.gui.do_loop()
+
+                self.gui.message_box(f"Removed {len(runtimes)} runtimes.")
+                return True
+
             if selected_option == 'back':
                 self.gui.pop_scene()
                 return True
+
+        elif events.was_pressed('B'):
+            self.button_activate()
+            self.gui.pop_scene()
+            return True
+
+
+class RuntimesScene(BaseScene):
+    def __init__(self, gui):
+        super().__init__(gui)
+
+        self.load_regions("runtime_list", ['runtime_list', ])
+        runtimes = []
+        self.runtimes = {}
+        download_size = {}
+
+        for source_prefix, source in self.gui.hm.sources.items():
+            for runtime in source.utils:
+                if runtime not in runtimes:
+                    runtimes.append(runtime)
+                    download_size[runtime] = source._data[runtime]["size"]
+
+        self.tags['runtime_list'].reset_options()
+        for runtime in sorted(runtimes, key=lambda name: harbourmaster.runtime_nicename(runtime)):
+            self.runtimes[runtime] = {
+                'name': harbourmaster.runtime_nicename(runtime),
+                'installed': None,
+                'file': (self.gui.hm.libs_dir / runtime),
+                'ports': [],
+                'download_size': download_size[runtime],
+                'disk_size': 0,
+                }
+
+            self.runtimes[runtime]['installed'] = self.runtimes[runtime]['file'].is_file()
+            self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
+            if self.runtimes[runtime]['file'].is_file():
+                self.runtimes[runtime]['disk_size'] = self.runtimes[runtime]['file'].stat().st_size
+
+        for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
+            if port_info['attr']['runtime'] in self.runtimes:
+                self.runtimes[port_info['attr']['runtime']]['ports'].append(port_info['attr']['title'])
+
+        self.last_select = self.tags['runtime_list'].selected_option()
+        self.last_verified = None
+        self.update_selection()
+
+    def update_selection(self):
+        runtime_info = self.runtimes[self.last_select]
+
+        self.gui.set_data('runtime_info.name', runtime_info['name'])
+        self.gui.set_data('runtime_info.status', runtime_info['installed'] and _('Installed') or _('Not Installed'))
+        self.gui.set_data('runtime_info.in_use', len(runtime_info['ports']) > 0 and _('Used') or _('Not Used'))
+        self.gui.set_data('runtime_info.ports', harbourmaster.oc_join(runtime_info['ports']))
+        self.gui.set_data('runtime_info.download_size', harbourmaster.nice_size(runtime_info['download_size']))
+
+        if runtime_info['installed']:
+            self.gui.set_data('runtime_info.disk_size', harbourmaster.nice_size(runtime_info['disk_size']))
+
+        else:
+            self.gui.set_data('runtime_info.disk_size', "")
+
+        self.gui.set_data('runtime_info.verified', "To be done.")
+
+        # self.gui.set_runtime_info(self.last_select, theme_info)
+        buttons = {'A': _('Install'), 'B': _('Back')}
+
+        if runtime_info['installed']:
+            buttons['A'] = _('Check')
+            buttons['X'] = _('Uninstall')
+
+        self.set_buttons(buttons)
+
+    def do_update(self, events):
+        super().do_update(events)
+        selected = self.tags['runtime_list'].selected_option()
+
+        if selected != self.last_select:
+            self.last_select = selected
+            self.update_selection()
+
+        if events.was_pressed('A'):
+            self.button_activate()
+            self.gui.do_runtime_check(selected)
+            self.runtimes[selected]['installed'] = self.runtimes[selected]['file'].is_file()
+
+            if self.runtimes[selected]['file'].is_file():
+                self.runtimes[selected]['disk_size'] = self.runtimes[selected]['file'].stat().st_size
+                self.runtimes[selected]['verified'] = "Verified"
+            else:
+                self.runtimes[selected]['disk_size'] = ""
+                self.runtimes[selected]['verified'] = ""
+
+            self.last_select = None
+
+        if events.was_pressed('X'):
+            if self.runtimes[selected]['file'].is_file():
+                self.runtimes[selected]['file'].unlink()
+                self.runtimes[selected]['installed'] = False
+                self.runtimes[selected]['disk_size'] = ""
+                self.runtimes[selected]['verified'] = ""
+
+                self.gui.message_box(_("Deleted runtime {runtime}").format(
+                    runtime=self.runtimes[selected]['name']))
+
+                self.last_select = None
+
+            return True
 
         elif events.was_pressed('B'):
             self.button_activate()
@@ -1295,6 +1479,7 @@ __all__ = (
     'OptionScene',
     'PortInfoScene',
     'PortsListScene',
+    'RuntimesScene',
     'ThemeSchemeScene',
     'ThemesScene',
     )

@@ -275,7 +275,7 @@ def runtime_nicename(runtime):
         return ("Mono {version}").format(version=runtime.split('-', 1)[1].rsplit('-', 1)[0])
 
     if "jdk" in runtime and runtime.startswith("zulu11"):
-        return ("JDK {vesion}").format(version=runtime.split('-')[2][3:])
+        return ("JDK {version}").format(version=runtime.split('-')[2][3:])
 
     return runtime
 
