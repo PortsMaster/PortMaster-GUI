@@ -16,7 +16,7 @@ PortMaster is a convenient script designed to facilitate the downloading and ins
     - *Default Theme*: comes in both light mode and dark modes
     - *Zelda*: LTTP Inspired theme
     - *FF VII*: A beautifully done FF7 theme
-    - *Basic Theme*: A super barebones theme so you can get started designing your own!
+    - *Basic Theme*: A super bare bones theme so you can get started designing your own!
   - Colour Schemes, themes can support multiple colour schemes for darkmode / lightmode / different colour ways.
   - Builtin theme downloader!
 
@@ -67,7 +67,7 @@ For the other CFW it is as simple as:
 
 There are a few bugs, which we are looking to fix.
 
-- ArkOS has volume issues on some devices, so it is disabled by default there for now.
+- ~~ArkOS has volume issues on some devices, so it is disabled by default there for now.~~ **Fixed** (Thanks to @christianhaitian & @RetroGFX)
 - Some resolutions of the themes need some work, but for the most part are good.
 - The options menus need a bit of reworking.
 - ~~JELOS controls are flipped~~ **Fixed**

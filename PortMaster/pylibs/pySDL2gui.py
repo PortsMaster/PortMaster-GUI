@@ -1542,6 +1542,19 @@ class EventManager:
                 # print(f'REPEAT {key} {ticks_now - next_repeat}')
                 self.repeat[key] = ticks_now + self.REPEAT_RATE
 
+    def any_pressed(self):
+        for button in self.buttons:
+            if self.was_pressed(button):
+                return True
+
+        return False
+
+    def any_released(self):
+        for button in self.buttons:
+            if self.was_released(button):
+                return True
+
+        return False
 
     def was_pressed(self, button):
         return self.buttons.get(button, False) and not self.last_buttons.get(button, False)

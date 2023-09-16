@@ -416,8 +416,10 @@ class PortMasterV1(GitHubRawReleaseV1):
 
         return port_info
 
-    def download(self, port_name, temp_dir=None):
-        md5_result = [None]
+    def download(self, port_name, temp_dir=None, md5_result=None):
+        if md5_result is None:
+            md5_result = [None]
+
         zip_file = super().download(port_name, temp_dir, md5_result)
 
         if zip_file is None:
@@ -539,8 +541,10 @@ class GitHubRepoV1(GitHubRawReleaseV1):
         self.hm.callback.message(f"  - Done.")
 
 
-    def download(self, port_name, temp_dir=None):
-        md5_result = [None]
+    def download(self, port_name, temp_dir=None, md5_result=None):
+        if md5_result is None:
+            md5_result = [None]
+
         zip_file = super().download(port_name, temp_dir, md5_result)
 
         if zip_file is None:

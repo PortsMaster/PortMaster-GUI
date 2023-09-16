@@ -250,6 +250,12 @@ def theme_load(gui, theme_file, color_scheme=None):
         sections['themes_list']['themes_list'] = sections['themes_list']['option_list']
         del sections['themes_list']['option_list']
 
+    if 'runtime_list' not in sections:
+        ## Temporary Hack
+        sections['runtime_list'] = copy.deepcopy(sections['option_menu'])
+        sections['runtime_list']['runtime_list'] = sections['runtime_list']['option_list']
+        del sections['runtime_list']['option_list']
+
     return sections
 
 

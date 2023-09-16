@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.4'
+PORTMASTER_VERSION = '8.4.5'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -542,7 +542,11 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         super().__init__(renderer)
 
         cfg_data = self.get_config()
-        default_sound = 'arkos' in capabilities['name'].lower()
+        default_sound = False
+
+        if 'arkos' in capabilities['name'].lower() and 'rk3366' in capabilities['cpu']:
+            default_sound = not Path('/etc/asound.conf').exists()
+
         self.sounds.sound_is_disabled = cfg_data.setdefault('sfx-disabled', default_sound)
         self.sounds.music_is_disabled = cfg_data.setdefault('music-disabled', default_sound)
 
@@ -1244,6 +1248,15 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
                 self.hm.load_ports()
 
+    def do_runtime_check(self, runtime_name):
+        with self.enable_messages():
+            self.message(_("Checking {runtime_name}").format(
+                runtime_name=harbourmaster.runtime_nicename(runtime_name)))
+            self.do_loop(no_delay=True)
+
+            with self.enable_cancellable(True):
+                self.hm.check_runtime(runtime_name)
+
     ## Fifo Control
     def fifo_reg_set_info(self, fifo_config, args):
         if len(args) < 3:
@@ -1603,6 +1616,7 @@ def portmaster_check_update(pm, config, temp_dir):
             json.dump(cfg_data, fh, indent=4)
 
     if update_checked is None or harbourmaster.datetime_compare(update_checked) > PORTMASTER_UPDATE_FREQUENCY:
+        update_checked_was_none = update_checked is None
         latest_version = harbourmaster.fetch_text(PORTMASTER_RELEASE_CHANNELS[release_channel] + 'version').strip()
         logger.debug(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
 
@@ -1620,13 +1634,19 @@ def portmaster_check_update(pm, config, temp_dir):
             update_ask = True
             update_reason = _("You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to upgrade?").format(
                 old_release_channel=PORTMASTER_RELEASE_CHANNEL,
-                new_release_channel=release_channel,
-                portmaster_version=latest_version)
+                new_release_channel=release_channel)
 
         elif harbourmaster.version_parse(latest_version) > harbourmaster.version_parse(PORTMASTER_VERSION):
             update_ask = True
             update_reason = _("There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?").format(
                 portmaster_version=latest_version)
+
+        elif update_checked_was_none and cfg_data.get('konami', False):
+            ## For now we are not translating this.
+            update_ask = True
+            update_reason = ("Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.").format(
+                portmaster_version=latest_version,
+                release_channel=release_channel)
 
         if update_ask:
             if pm.message_box(update_reason, want_cancel=True):

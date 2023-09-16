@@ -16,7 +16,7 @@ PortMaster is the bash script that runs on the device, this is not needed for de
 python3 PortMaster/pugwash
 ```
 
-If you have made changes and want to test it on your device you can use the do_release.sh script, this will delete any files that are not needed on the device and zip it up.
+If you have made changes and want to test it on your device you can use the do_release.sh script, this will zip it up correctly to test it on your device.
 
 ```bash
 ./do_release.sh
