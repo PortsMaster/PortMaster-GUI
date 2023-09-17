@@ -2,7 +2,13 @@ name: release
 
 on:
   push:
-    branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+
+    branches:
+      - main
+
   workflow_dispatch:
 
 concurrency: 
@@ -64,7 +70,7 @@ jobs:
           tag: "${{steps.version.outputs.version}}"
           allowUpdates: true
           draft: true
-          prerelease: true
+          prerelease: false
           replacesArtifacts: false
           omitNameDuringUpdate: true
           artifacts: "PortMaster.zip, PortMaster.zip.md5, version"
@@ -78,8 +84,12 @@ jobs:
           tag: "${{steps.version.outputs.version}}"
           omitBodyDuringUpdate: true
           omitNameDuringUpdate: true
+          allowUpdates: true
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ steps.env.outputs.RELEASE_REPO}}
+          owner: ${{ steps.env.outputs.RELEASE_ORG}}
 
       - name: Release Info
         id: info
