@@ -80,6 +80,9 @@ def fetch_text(url):
     if r is None:
         return None
 
+    # fixes a weird bug
+    r.encoding = 'utf-8'
+
     return r.text
 
 

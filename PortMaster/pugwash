@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.5'
+PORTMASTER_VERSION = '8.4.6'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -219,62 +219,6 @@ gettext.textdomain('messages')
 
 ################################################################################
 ## Code starts here.
-"""
--- General State Machine --
-
-Main:
-  -> Install Menu
-  -> Uninstall Menu -> Port List [Installed filter]
-  -> Options
-  -> Quit
-
-Install Menu:
-  -> All Ports    -> Port List [No filter]
-  -> Ready To Run -> Port List [RTR filter]
-  -> Genres       -> Port List [Genres filters]
-  -> Back
-
-Port List:
-  -> List of Ports
-    -> Inspect
-    -> Back
-
-Options:
-  -> TBD.
-  -> Back
-
-Inspect:
-  -> Install/Re-Install or Uninstall
-  -> Back
-
-Install/Uninstall:
-  -> Message Screen
-  -> Back
-
-
-Current Template Tags:
-
-    port_info.title
-    port_info.description
-    port_info.instructions
-    port_info.genres
-    port_info.porter
-    port_info.ready_to_run
-    port_info.download_size
-    port_info.runtime
-    port_info.runtime_status
-
-    system.time_24hr
-    system.time_12hr
-    system.free_space
-    system.used_space
-    system.cfw_name
-    system.cfw_version
-    system.device_name
-    system.battery_level
-    system.ip_address
-
-"""
 
 __IP_ADDRESS=None
 def get_ip_address():
@@ -435,6 +379,82 @@ class DirectoryScanner:
 
     def clear_all(self):
         # Clear all scans in progress
+        self.scans.clear()
+
+
+class FileVerifier:
+    BLOCK_SIZE = (1024 * 1024 * 1)
+
+    def __init__(self):
+        self.scans = {}
+        self.results = {}
+        self.callback = None
+
+    def _verify(self, file_name, verify_info):
+        try:
+            result = next(verify_info[1])
+            verify_info[0] = result
+            return result, False
+
+        except StopIteration:
+            del self.scans[file_name]
+            self.results[file_name] = verify_info[0]
+            return verify_info[0], True
+
+    def _get_md5sum(self, file_name):
+        md5_obj = hashlib.md5()
+        with open(file_name, 'rb') as fh:
+            while True:
+                data = fh.read(BLOCK_SIZE)
+                if data == b"":
+                    break
+
+                md5_obj.update(data)
+                yield None
+
+        yield md5_obj.hexdigest()
+
+    def iterate(self, max_scans=30):
+        scanned_items = 0
+        scanned = {}
+
+        while scanned_items < max_scans and len(self.scans) > 0:
+            for file_name in list(self.scans.keys()):
+                scanned[file_name] = self._check(file_name, self.scans[file_name])
+
+                scanned_items += 1
+                if scanned_items >= max_scans:
+                    break
+
+        if self.callback:
+            for file_name in scanned:
+                self.callback(file_name, *scanned[file_name])
+
+    def verify_file(self, file_name):
+        # Check if results are available for a directory scan, otherwise start it scanning
+        if file_name in self.results:
+            return self.results[file_name]
+
+        elif file_name not in self.scans:
+            self.scans[file_name] = [0, self._verify(directory)]
+
+        return "Verifying"
+
+    def clear_file(self, file_name):
+        # Clear data about a directory, cancel any scans in progress
+        if file_name in self.scans:
+            self.scans[file_name][1].close()
+            del self.scans[file_name]
+
+        if file_name in self.results:
+            del self.results[file_name]
+
+    def clear_all(self):
+        # Clear all scans in progress
+        for file_name in self.scans:
+            self.clear_file(file_name)
+
+        self.results.clear()
         self.scans.clear()
 
 
@@ -662,6 +682,12 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         if not no_delay:
             sdl2.SDL_Delay(30)
 
+        if self.timers.elapsed('updates_per_second', 1000, run_first=True):
+            print(f"UPS: {self.draw_counter} / {self.update_counter}")
+            self.update_counter = 0
+            self.draw_counter = 0
+            self.updated = True
+
     def do_update(self):
         # Update tags
         if self.timers.elapsed('text_data_update', self.TEXT_DATA_FREQ, run_first=True):
@@ -691,13 +717,10 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             if scene.do_update(self.events):
                 break
 
+        # Update scanning
         if self.timers.elapsed('dir_scan_interval', 500, run_first=True):
             self.dir_scanner.iterate(50)
-            # print(f"SCAN: {self.dir_scanner.check_directory(harbourmaster.HM_PORTS_DIR)}")
 
-        self.update_counter += 1
-
-    def do_draw(self):
         ## Check for any keys changed in our template system.
         if len(self.changed_keys):
             for layer in self.scenes:
@@ -706,25 +729,31 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
             self.changed_keys.clear()
 
+        self.update_counter += 1
+
+    def do_draw(self):
+        if not self.in_screenshot:
+            if not self.updated:
+                return
+
+            if not self.timers.elapsed('maximum_draw', 20, run_first=True):
+                return
+
+            if self.draw_counter > 30:
+                return
+
         # Drawing happens in forwards order
-        if self.updated or self.in_screenshot:
-            self.renderer.clear()
+        self.renderer.clear()
 
-            for scene in self.scenes[-1][1]:
-                scene.do_draw()
+        for scene in self.scenes[-1][1]:
+            scene.do_draw()
 
-            if not self.in_screenshot:
-                self.renderer.present()
-                self.updated = False
-                self.draw_counter += 1
+        if not self.in_screenshot:
+            self.renderer.present()
+            self.updated = False
+            self.draw_counter += 1
 
-            self.clean()
-
-        if self.timers.elapsed('updates_per_second', 1000, run_first=True):
-            print(f"UPS: {self.draw_counter} / {self.update_counter}")
-            self.update_counter = 0
-            self.draw_counter = 0
-            self.updated = True
+        self.clean()
 
     def create_screenshot(self):
         """
@@ -942,7 +971,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
     def callback_update(self):
         self.updated = True
         if self.message_box_scene:
-            self.message_box_scene.tags['message_text'].text = '\n'.join(self.callback_messages[-13:])
+            page_size = max(self.message_box_scene.tags['message_text'].page_size, 12) + 1
+            self.message_box_scene.tags['message_text'].text = '\n'.join(self.callback_messages[-(page_size):])
 
             self.do_loop(no_delay=True)
 
@@ -1248,14 +1278,14 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
                 self.hm.load_ports()
 
-    def do_runtime_check(self, runtime_name):
+    def do_runtime_check(self, runtime_name, in_install=False):
         with self.enable_messages():
             self.message(_("Checking {runtime_name}").format(
                 runtime_name=harbourmaster.runtime_nicename(runtime_name)))
             self.do_loop(no_delay=True)
 
             with self.enable_cancellable(True):
-                self.hm.check_runtime(runtime_name)
+                self.hm.check_runtime(runtime_name, in_install=in_install)
 
     ## Fifo Control
     def fifo_reg_set_info(self, fifo_config, args):
@@ -1642,9 +1672,8 @@ def portmaster_check_update(pm, config, temp_dir):
                 portmaster_version=latest_version)
 
         elif update_checked_was_none and cfg_data.get('konami', False):
-            ## For now we are not translating this.
             update_ask = True
-            update_reason = ("Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.").format(
+            update_reason = _("Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.").format(
                 portmaster_version=latest_version,
                 release_channel=release_channel)
 
@@ -1753,6 +1782,10 @@ def main(argv):
 
                     if not refresh_file.is_file():
                         refresh_file.touch(0o644)
+
+        # if harbourmaster.HM_TESTING:
+        #     for key, value in pm.text_data.items():
+        #         print(f"- {key}: {value}")
 
         pm.quit()
 

@@ -496,31 +496,39 @@ The format is:
 
 ### System tags
 
-- system.time_24hr
-- system.time_12hr
-- system.free_space
-- system.used_space
+- system.battery_level
 - system.cfw_name
 - system.cfw_version
 - system.device_name
-- system.battery_level
+- system.free_space
+- system.harbourmaster_version
 - system.ip_address
+- system.portmaster_version
+- system.time_12hr
+- system.time_24hr
+- system.total_space
+- system.used_space
 
 - system.progress_text
 - system.progress_amount
 
 - system.progress_perc_5
+- system.progress_perc_5_or_spinner
 - system.progress_perc_10
+- system.progress_perc_10_or_spinner
 - system.progress_perc_20
+- system.progress_perc_20_or_spinner
 - system.progress_perc_25
+- system.progress_perc_25_or_spinner
 - system.progress_spinner_5
 - system.progress_spinner_10
 - system.progress_spinner_20
 - system.progress_spinner_25
-- system.progress_perc_5_or_spinner
-- system.progress_perc_10_or_spinner
-- system.progress_perc_20_or_spinner
-- system.progress_perc_25_or_spinner
+
+### Scene
+
+- scene.title
+- scene.tooltip
 
 ### Port info tags
 
@@ -532,6 +540,7 @@ The format is:
 - port_info.porter
 - port_info.ready_to_run
 - port_info.download_size
+- port_info.install_size
 - port_info.runtime
 - port_info.runtime_status
 
@@ -540,6 +549,12 @@ The format is:
 - ports_list.total_ports
 - ports_list.filter_ports
 - ports_list.filters
+
+## Port Lists tags
+
+- port_lists.description
+- port_lists.image
+- port_lists.name
 
 ## Theme info tags
 

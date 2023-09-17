@@ -58,19 +58,28 @@ jobs:
               md5sum "$file" | cut -f1 -d' ' > "$file.md5"
             done
  
-      - name: "Publish release"
+      - name: "Prepare Release"
         uses: ncipollo/release-action@v1
         with:
           tag: "${{steps.version.outputs.version}}"
           allowUpdates: true
-          draft: false
-          prerelease: false
+          draft: true
+          prerelease: true
           replacesArtifacts: false
           omitNameDuringUpdate: true
           artifacts: "PortMaster.zip, PortMaster.zip.md5, version"
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ steps.env.outputs.RELEASE_REPO}}
           owner: ${{ steps.env.outputs.RELEASE_ORG}}
+
+      - name: "Publish Release"
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{steps.version.outputs.version}}"
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          draft: false
+          prerelease: false
 
       - name: Release Info
         id: info
