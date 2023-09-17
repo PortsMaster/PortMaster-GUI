@@ -142,6 +142,8 @@ class BaseScene:
         self.music = None
         self.music_volume = 128
         self.active = False
+        self.scene_title = ""
+        self.scene_tooltip = ""
 
     def scene_deactivate(self):
         self.active = False
@@ -150,6 +152,8 @@ class BaseScene:
         if not self.active:
             self.active = True
             self.gui.sounds.easy_music(self.music, volume=max(0, min(self.music_volume, 128)))
+            self.gui.set_data("scene.title", self.scene_title)
+            self.gui.set_data("scene.tooltip", self.scene_tooltip)
 
     def load_regions(self, section, required_tags):
         rects = self.gui.new_rects()
@@ -316,6 +320,7 @@ class MainMenuScene(BaseScene):
 
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Main Menu")
 
         self.load_regions("main_menu", ['option_list'])
 
@@ -326,7 +331,7 @@ class MainMenuScene(BaseScene):
 
         if self.gui.get_config().get('konami', False):
             self.tags['option_list'].add_option(None, "")
-            self.tags['option_list'].add_option(('port-list', None), _('Port Lists'))
+            self.tags['option_list'].add_option(('port-lists', None), _('Port Lists'))
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(('options', None), _("Options"))
@@ -345,7 +350,7 @@ class MainMenuScene(BaseScene):
                 self.gui.hm.cfg_data['konami'] = not self.gui.hm.cfg_data.get('konami', False)
                 self.gui.hm.save_config()
                 self.detecting_konami = 0
-                self.message_box(_('Secret Mode {secret_mode}').format(
+                self.gui.message_box(_('Secret Mode {secret_mode}').format(
                     secret_mode=(self.gui.hm.cfg_data['konami'] and _('Enabled') or _('Disabled'))))
 
                 return True
@@ -365,11 +370,8 @@ class MainMenuScene(BaseScene):
                 self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter}))
                 return True
 
-            elif selected_option == 'port-list':
-                self.gui.message_box("Soon TM.")
-                return True
-
-                self.gui.push_scene('ports', PortLists(self.gui))
+            elif selected_option == 'port-lists':
+                self.gui.push_scene('port-lists', PortListsListScene(self.gui))
                 return True
 
             elif selected_option == 'options':
@@ -389,6 +391,7 @@ class MainMenuScene(BaseScene):
 class OptionScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Options Menu")
 
         self.load_regions("option_menu", ['option_list'])
 
@@ -562,33 +565,55 @@ class OptionScene(BaseScene):
 class RuntimesScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Runtime Manager")
 
         self.load_regions("runtime_list", ['runtime_list', ])
         runtimes = []
         self.runtimes = {}
         download_size = {}
+        total_size = 0
 
         for source_prefix, source in self.gui.hm.sources.items():
             for runtime in source.utils:
                 if runtime not in runtimes:
                     runtimes.append(runtime)
                     download_size[runtime] = source._data[runtime]["size"]
+                    total_size += 1
+
+        runtimes.sort(key=lambda name: harbourmaster.runtime_nicename(runtime))
+
+        download_size['all'] = total_size
+        runtimes.append('all')
 
         self.tags['runtime_list'].reset_options()
-        for runtime in sorted(runtimes, key=lambda name: harbourmaster.runtime_nicename(runtime)):
-            self.runtimes[runtime] = {
-                'name': harbourmaster.runtime_nicename(runtime),
-                'installed': None,
-                'file': (self.gui.hm.libs_dir / runtime),
-                'ports': [],
-                'download_size': download_size[runtime],
-                'disk_size': 0,
-                }
+        for runtime in runtimes:
+            if runtime == "all":
+                self.runtimes[runtime] = {
+                    'name': _("Download All"),
+                    'installed': None,
+                    'file': None,
+                    'ports': [],
+                    'download_size': download_size[runtime],
+                    'disk_size': 0,
+                    }
 
-            self.runtimes[runtime]['installed'] = self.runtimes[runtime]['file'].is_file()
+                self.tags['runtime_list'].add_option(None, "")
+
+            else:
+                self.runtimes[runtime] = {
+                    'name': harbourmaster.runtime_nicename(runtime),
+                    'installed': None,
+                    'file': (self.gui.hm.libs_dir / runtime),
+                    'ports': [],
+                    'download_size': download_size[runtime],
+                    'disk_size': 0,
+                    }
+
+                self.runtimes[runtime]['installed'] = self.runtimes[runtime]['file'].is_file()
+                if self.runtimes[runtime]['file'].is_file():
+                    self.runtimes[runtime]['disk_size'] = self.runtimes[runtime]['file'].stat().st_size
+
             self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
-            if self.runtimes[runtime]['file'].is_file():
-                self.runtimes[runtime]['disk_size'] = self.runtimes[runtime]['file'].stat().st_size
 
         for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
             if port_info['attr']['runtime'] in self.runtimes:
@@ -634,20 +659,40 @@ class RuntimesScene(BaseScene):
 
         if events.was_pressed('A'):
             self.button_activate()
-            self.gui.do_runtime_check(selected)
-            self.runtimes[selected]['installed'] = self.runtimes[selected]['file'].is_file()
+            if selected == 'all':
+                if self.gui.message_box(_("Are you sure you want to download and verify all runtimes?"), want_cancel=True):
+                    with self.gui.enable_cancellable(False):
+                        with self.gui.enable_messages():
+                            for runtime in self.runtimes:
+                                if runtime == 'all':
+                                    continue
 
-            if self.runtimes[selected]['file'].is_file():
-                self.runtimes[selected]['disk_size'] = self.runtimes[selected]['file'].stat().st_size
-                self.runtimes[selected]['verified'] = "Verified"
+                                self.gui.do_runtime_check(runtime, in_install=True)
+
+                                if self.runtimes[runtime]['file'].is_file():
+                                    self.runtimes[runtime]['disk_size'] = self.runtimes[runtime]['file'].stat().st_size
+                                    self.runtimes[runtime]['verified'] = "Verified"
+                                else:
+                                    self.runtimes[runtime]['disk_size'] = ""
+                                    self.runtimes[runtime]['verified'] = ""
+
             else:
-                self.runtimes[selected]['disk_size'] = ""
-                self.runtimes[selected]['verified'] = ""
+                self.gui.do_runtime_check(selected)
+                self.runtimes[selected]['installed'] = self.runtimes[selected]['file'].is_file()
+
+                if self.runtimes[selected]['file'].is_file():
+                    self.runtimes[selected]['disk_size'] = self.runtimes[selected]['file'].stat().st_size
+                    self.runtimes[selected]['verified'] = "Verified"
+                else:
+                    self.runtimes[selected]['disk_size'] = ""
+                    self.runtimes[selected]['verified'] = ""
 
             self.last_select = None
 
         if events.was_pressed('X'):
-            if self.runtimes[selected]['file'].is_file():
+            if selected != 'all' and self.runtimes[selected]['file'].is_file():
+                self.button_activate()
+
                 self.runtimes[selected]['file'].unlink()
                 self.runtimes[selected]['installed'] = False
                 self.runtimes[selected]['disk_size'] = ""
@@ -669,6 +714,7 @@ class RuntimesScene(BaseScene):
 class ThemesScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Select Theme")
 
         self.load_regions("themes_list", ['themes_list', ])
 
@@ -765,6 +811,7 @@ class ThemesScene(BaseScene):
 class ThemeSchemeScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Select Colour Scheme")
 
         self.load_regions("option_menu", ['option_list', ])
 
@@ -822,6 +869,7 @@ class ThemeSchemeScene(BaseScene):
 class LanguageScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Language Select")
 
         self.load_regions("option_menu", ['option_list', ])
 
@@ -950,26 +998,50 @@ class OnScreenKeyboard(BaseScene):
             self.build_keyboard(keep=True)
 
 
-class PortsListScene(BaseScene):
-    def __init__(self, gui, options):
+class PortListsListScene(BaseScene):
+    def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Port Lists List")
 
-        self.options = options
-        self.options.setdefault('base_filters', [])
-        self.options.setdefault('filters', [])
+        self.load_regions("port_lists_list", ['option_list', ])
 
-        self.load_regions("ports_list", [
-            'ports_list',
-            ])
+        self.port_lists = self.gui.hm.port_lists()
 
-        self.ready = False
-        self.update_ports()
+        self.tags['option_list'].reset_options()
 
-        if self.options['mode'] == 'install':
-            self.set_buttons({'A': _('Show Info'), 'B': _('Back'), 'X': _('Filters')})
-        else:
-            self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
+        for idx, port_list in enumerate(self.port_lists):
+            self.tags['option_list'].add_option(0, port_list['name'])
 
+        self.set_buttons({'A': _('Select'), 'B': _('Back')})
+        self.update_selection()
+
+    def update_selection(self):
+        selected = self.tags['option_list'].selected_option()
+        port_list = self.port_lists[selected]
+        self.gui.set_data('port_lists.name', port_list['name'])
+        self.gui.set_data('port_lists.description', port_list['description'])
+        self.gui.set_data('port_lists.image', port_list['image'])
+        self.last_select = selected
+
+    def do_update(self, events):
+        super().do_update(events)
+        selected = self.tags['option_list'].selected_option()
+
+        if self.last_select != selected:
+            self.update_selection()
+
+        if events.was_pressed('A'):
+            self.button_activate()
+            self.gui.push_scene('port-list', PortListsScene(self.gui, self.port_lists[selected]))
+            return True
+
+        elif events.was_pressed('B'):
+            self.button_activate()
+            self.gui.pop_scene()
+            return True
+
+
+class PortListBaseScene():
     def update_ports(self):
         if self.gui.hm is None:
             self.all_ports = {}
@@ -1078,7 +1150,11 @@ class PortsListScene(BaseScene):
             port_name = self.port_list[self.last_port]
 
             logger.debug(f"{self.options['mode']}: {port_name}")
-            if self.options['mode'] == 'install':
+            if self.options['mode'] == 'port-lists':
+                # self.ready = False
+                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install'))
+
+            elif self.options['mode'] == 'install':
                 self.ready = False
                 self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install'))
 
@@ -1089,9 +1165,68 @@ class PortsListScene(BaseScene):
             return True
 
 
+class PortListsScene(PortListBaseScene, BaseScene):
+    def __init__(self, gui, options):
+        super().__init__(gui)
+        self.scene_title = options['name']
+
+        self.load_regions("port_lists", [
+            'ports_list',
+            ])
+
+        self.options = {
+            'mode': 'port-lists',
+            'filters': [],
+            'base_filters': [],
+            }
+
+        self.options.update(**options)
+
+        self.all_ports = options['ports']
+        self.port_list = list(options['ports'].keys())
+
+        self.gui.set_data('port_lists.name', options['name'])
+        self.gui.set_data('port_lists.description', options['description'])
+        self.gui.set_data('port_lists.image', options['image'])
+        self.gui.set_data('ports_list.total_ports', str(len(self.port_list)))
+        self.gui.set_data('ports_list.filter_ports', str(len(self.port_list)))
+        self.gui.set_data('ports_list.filters', "")
+
+        self.ready = True
+        self.tags['ports_list'].list = [
+            self.all_ports[port_name]['attr']['title']
+            for port_name in self.port_list]
+
+        self.last_port = self.tags['ports_list'].selected
+
+        self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
+
+class PortsListScene(PortListBaseScene, BaseScene):
+    def __init__(self, gui, options):
+        super().__init__(gui)
+        self.scene_title = _("Ports List")
+
+        self.options = options
+        self.options.setdefault('base_filters', [])
+        self.options.setdefault('filters', [])
+
+        self.load_regions("ports_list", [
+            'ports_list',
+            ])
+
+        self.ready = False
+        self.update_ports()
+
+        if self.options['mode'] == 'install':
+            self.set_buttons({'A': _('Show Info'), 'B': _('Back'), 'X': _('Filters')})
+        else:
+            self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
+
+
 class PortInfoScene(BaseScene):
     def __init__(self, gui, port_name, action):
         super().__init__(gui)
+        self.scene_title = _("Port Info")
 
         self.load_regions("port_info", [])
 
@@ -1156,6 +1291,7 @@ class PortInfoScene(BaseScene):
 class FiltersScene(BaseScene):
     def __init__(self, gui, list_scene):
         super().__init__(gui)
+        self.scene_title = _("Filters Scene")
 
         self.load_regions("filter_list", [
             'filter_list',
@@ -1344,6 +1480,7 @@ class MessageWindowScene(BaseScene):
     """
     def __init__(self, gui):
         super().__init__(gui)
+        self.scene_title = _("Messages")
 
         self.load_regions("message_window", [
             'message_text'
@@ -1384,8 +1521,10 @@ class MessageWindowScene(BaseScene):
 
 
 class MessageBoxScene(BaseScene):
-    def __init__(self, gui, message, *, want_cancel=False, ok_text=None, cancel_text=None):
+    def __init__(self, gui, message, *, title_text=None, want_cancel=False, ok_text=None, cancel_text=None):
         super().__init__(gui)
+        if title_text is not None:
+            self.scene_title = _(title_text)
 
         if ok_text is None:
             ok_text = _("Okay")
@@ -1408,6 +1547,8 @@ class MessageBoxScene(BaseScene):
 class DialogSelectionList(BaseScene):
     def __init__(self, gui, options, register):
         super().__init__(gui)
+
+        self.scene_title = options.get('title', "")
 
         self.options = options
         self.register = register

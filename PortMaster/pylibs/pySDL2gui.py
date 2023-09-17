@@ -2186,6 +2186,9 @@ class Region:
 
         elif self._text:
             if text_area.width > 0 and text_area.height > 0:
+                itemsize = self.texts.line_height(self.font, self.fontsize)
+                self.page_size = max(text_area.height // (itemsize), 1)
+
                 if self.textwrap:
                     texture = self.texts.render_text(
                         self._text,
@@ -2212,6 +2215,9 @@ class Region:
                         texture.draw_in(text_area, clip=True)
                     else:
                         texture.draw_in(text_area, fit=True)
+
+            else:
+                self.page_size = 1
 
             # pos = self.scroll_pos % len(self._text)
 
