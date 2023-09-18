@@ -45,10 +45,10 @@ class HarbourMaster():
 
     INFO_CHECK_INTERVAL = (60 * 60 * 1)
 
-    PORT_INFO_URL  = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
-    PORTS_INFO_URL = PORT_INFO_URL + "ports_info.json"
-    PORT_LISTS_URL = PORT_INFO_URL + "port_lists.json"
-    PORTERS_URL    = PORT_INFO_URL + "porters.json"
+    PORT_INFO_URL      = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
+    PORTS_INFO_URL     = PORT_INFO_URL + "ports_info.json"
+    FEATURED_PORTS_URL = PORT_INFO_URL + "port_lists.json" ## Change this soon.
+    PORTERS_URL        = PORT_INFO_URL + "porters.json"
 
     def __init__(self, config, *, tools_dir=None, ports_dir=None, temp_dir=None, callback=None):
         """
@@ -155,14 +155,14 @@ class HarbourMaster():
 
         return self.__PORTERS
 
-    def load_info(self):
+    def load_info(self, force_load=False):
         self.callback.message("- {}".format(_("Loading Info.")))
         info_file = self.cfg_dir / "ports_info.json"
         info_file_md5 = self.cfg_dir / "ports_info.md5"
 
         porters_file = self.cfg_dir / "porters.json"
-        port_lists_file = self.cfg_dir / "port_lists.json"
-        port_lists_dir = self.cfg_dir / "port_lists/"
+        featured_ports_file = self.cfg_dir / "featured_ports.json"
+        featured_ports_dir = self.cfg_dir / "featured_ports/"
 
         if self.config['offline']:
             if not porters_file.is_file():
@@ -173,24 +173,24 @@ class HarbourMaster():
                 with open(info_file, 'w') as fh:
                     fh.write('{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}')
 
-            if not port_lists_file.is_file():
-                with open(port_lists_file, 'w') as fh:
+            if not featured_ports_file.is_file():
+                with open(featured_ports_file, 'w') as fh:
                     fh.write('[]')
 
             return
 
-        if not port_lists_file.is_file() or (
+        if force_load is True or not featured_ports_file.is_file() or (
                 not self.config['no-check'] and (
-                    self.cfg_data.get('ports_list_checked') is None or
-                    datetime_compare(self.cfg_data['ports_list_checked']) >= self.INFO_CHECK_INTERVAL)):
+                    self.cfg_data.get('featured_ports_checked') is None or
+                    datetime_compare(self.cfg_data['featured_ports_checked']) >= self.INFO_CHECK_INTERVAL)):
 
-            self.callback.message("  - {}".format(_("Fetching latest port lists.")))
-            ports_list_data = fetch_text(self.PORT_LISTS_URL)
+            self.callback.message("  - {}".format(_("Fetching latest featured ports.")))
+            ports_list_data = fetch_text(self.FEATURED_PORTS_URL)
 
-            with open(port_lists_file, 'w') as fh:
+            with open(featured_ports_file, 'w') as fh:
                 fh.write(ports_list_data)
 
-            self.cfg_data['ports_list_checked'] = datetime.datetime.now().isoformat()
+            self.cfg_data['featured_ports_checked'] = datetime.datetime.now().isoformat()
 
         if not info_file.is_file():
             self.callback.message("  - {}".format(_("Fetching latest info.")))
@@ -205,7 +205,7 @@ class HarbourMaster():
 
             self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
 
-        elif not self.config['no-check'] and (
+        elif force_load is True or not self.config['no-check'] and (
                 self.cfg_data.get('ports_info_checked') is None or
                 datetime_compare(self.cfg_data['ports_info_checked']) >= self.INFO_CHECK_INTERVAL):
 
@@ -222,7 +222,7 @@ class HarbourMaster():
 
             self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
 
-        if not porters_file.is_file() or (
+        if force_load is True or not porters_file.is_file() or (
                 not self.config['no-check'] and (
                     self.cfg_data.get('porters_checked') is None or
                     datetime_compare(self.cfg_data['porters_checked']) >= self.INFO_CHECK_INTERVAL)):
@@ -795,43 +795,43 @@ class HarbourMaster():
 
         return ports
 
-    def port_lists(self):
-        port_lists_file = self.cfg_dir / "port_lists.json"
-        port_lists_dir = self.cfg_dir / "port_lists/"
+    def featured_ports(self):
+        featured_ports_file = self.cfg_dir / "featured_ports.json"
+        featured_ports_dir = self.cfg_dir / "featured_ports/"
 
-        if not port_lists_dir.is_dir():
-            port_lists_dir.mkdir(0o755)
+        if not featured_ports_dir.is_dir():
+            featured_ports_dir.mkdir(0o755)
 
-        if not port_lists_file.is_file():
+        if not featured_ports_file.is_file():
             return []
 
-        with port_lists_file.open('r') as fh:
-            port_lists = json_safe_load(fh)
+        with featured_ports_file.open('r') as fh:
+            featured_ports = json_safe_load(fh)
 
-        if not isinstance(port_lists, list):
+        if not isinstance(featured_ports, list):
             return []
 
         results = []
-        for idx, port_list in enumerate(port_lists):
+        for idx, port_list in enumerate(featured_ports):
             if not isinstance(port_list, dict):
                 continue
 
             if port_list.get('name', None) in (None, ""):
-                logger.error(f"Bad port_lists[{idx}]: Missing title info")
+                logger.error(f"Bad featured_ports[{idx}]: Missing title info")
                 continue
 
             if port_list.get('ports', None) is None:
-                logger.error(f"Bad port_lists[{idx}]: Missing ports info")
+                logger.error(f"Bad featured_ports[{idx}]: Missing ports info")
                 continue
 
             if not isinstance(port_list.get('ports', None), list):
-                logger.error(f"Bad port_lists[{idx}]: bad ports item")
+                logger.error(f"Bad featured_ports[{idx}]: bad ports item")
                 continue
 
             port_list_image = port_list.get('image', None)
             if port_list_image is not None:
                 port_list_image_url = self.PORT_INFO_URL + port_list_image
-                port_list_image_file = port_lists_dir / port_list_image.rsplit('/', 1)[-1]
+                port_list_image_file = featured_ports_dir / port_list_image.rsplit('/', 1)[-1]
 
                 if not port_list_image_file.is_file():
                     port_list_image_data = fetch_data(port_list_image_url)
@@ -849,7 +849,7 @@ class HarbourMaster():
             for idx2, port_name in enumerate(port_list['ports']):
                 port_info = self.port_info(port_name)
                 if port_info is None:
-                    logger.error(f"Bad port_lists[{idx}]['ports'][{idx}]: unknown port {port_name}")
+                    logger.error(f"Bad featured_ports[{idx}]['ports'][{idx}]: unknown port {port_name}")
                     continue
 
                 port_list_ports[port_info['name']] = port_info

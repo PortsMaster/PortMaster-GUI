@@ -379,7 +379,7 @@ def datetime_compare(time_a, time_b=None):
     elif isinstance(time_b, str):
         time_b = datetime.datetime.fromisoformat(time_b)
 
-    return (time_b - time_a).seconds
+    return (time_b - time_a).total_seconds()
 
 
 def add_list_unique(base_list, value):
