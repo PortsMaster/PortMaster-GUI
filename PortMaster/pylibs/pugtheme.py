@@ -256,13 +256,13 @@ def theme_load(gui, theme_file, color_scheme=None):
         sections['runtime_list']['runtime_list'] = sections['runtime_list']['option_list']
         del sections['runtime_list']['option_list']
 
-    if 'port_lists_list' not in sections:
+    if 'featured_ports_list' not in sections:
         ## Temporary Hack
-        sections['port_lists_list'] = copy.deepcopy(sections['option_menu'])
+        sections['featured_ports_list'] = copy.deepcopy(sections['option_menu'])
 
-    if 'port_lists' not in sections:
+    if 'featured_ports' not in sections:
         ## Temporary Hack
-        sections['port_lists'] = copy.deepcopy(sections['ports_list'])
+        sections['featured_ports'] = copy.deepcopy(sections['ports_list'])
 
     return sections
 

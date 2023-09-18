@@ -550,11 +550,11 @@ The format is:
 - ports_list.filter_ports
 - ports_list.filters
 
-## Port Lists tags
+## Featured Ports tags
 
-- port_lists.description
-- port_lists.image
-- port_lists.name
+- featured_ports.description
+- featured_ports.image
+- featured_ports.name
 
 ## Theme info tags
 

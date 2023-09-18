@@ -1273,6 +1273,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             with self.enable_cancellable(False):
                 self.message(_('Updating all port sources:'))
                 self.do_loop(no_delay=True)
+                self.hm.load_info(force_load=True)
                 for source in self.hm.sources:
                     self.hm.sources[source].update()
 

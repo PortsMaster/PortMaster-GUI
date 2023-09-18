@@ -331,7 +331,7 @@ class MainMenuScene(BaseScene):
 
         if self.gui.get_config().get('konami', False):
             self.tags['option_list'].add_option(None, "")
-            self.tags['option_list'].add_option(('port-lists', None), _('Port Lists'))
+            self.tags['option_list'].add_option(('featured-ports', None), _('Featured Ports'))
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(('options', None), _("Options"))
@@ -370,8 +370,8 @@ class MainMenuScene(BaseScene):
                 self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter}))
                 return True
 
-            elif selected_option == 'port-lists':
-                self.gui.push_scene('port-lists', PortListsListScene(self.gui))
+            elif selected_option == 'featured-ports':
+                self.gui.push_scene('featured-ports', FeaturedPortsListScene(self.gui))
                 return True
 
             elif selected_option == 'options':
@@ -998,18 +998,18 @@ class OnScreenKeyboard(BaseScene):
             self.build_keyboard(keep=True)
 
 
-class PortListsListScene(BaseScene):
+class FeaturedPortsListScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
-        self.scene_title = _("Port Lists List")
+        self.scene_title = _("Featured Ports List")
 
-        self.load_regions("port_lists_list", ['option_list', ])
+        self.load_regions("featured_ports_list", ['option_list', ])
 
-        self.port_lists = self.gui.hm.port_lists()
+        self.featured_ports = self.gui.hm.featured_ports()
 
         self.tags['option_list'].reset_options()
 
-        for idx, port_list in enumerate(self.port_lists):
+        for idx, port_list in enumerate(self.featured_ports):
             self.tags['option_list'].add_option(0, port_list['name'])
 
         self.set_buttons({'A': _('Select'), 'B': _('Back')})
@@ -1017,10 +1017,10 @@ class PortListsListScene(BaseScene):
 
     def update_selection(self):
         selected = self.tags['option_list'].selected_option()
-        port_list = self.port_lists[selected]
-        self.gui.set_data('port_lists.name', port_list['name'])
-        self.gui.set_data('port_lists.description', port_list['description'])
-        self.gui.set_data('port_lists.image', port_list['image'])
+        port_list = self.featured_ports[selected]
+        self.gui.set_data('featured_ports.name', port_list['name'])
+        self.gui.set_data('featured_ports.description', port_list['description'])
+        self.gui.set_data('featured_ports.image', port_list['image'])
         self.last_select = selected
 
     def do_update(self, events):
@@ -1032,7 +1032,7 @@ class PortListsListScene(BaseScene):
 
         if events.was_pressed('A'):
             self.button_activate()
-            self.gui.push_scene('port-list', PortListsScene(self.gui, self.port_lists[selected]))
+            self.gui.push_scene('port-list', FeaturedPortsScene(self.gui, self.featured_ports[selected]))
             return True
 
         elif events.was_pressed('B'):
@@ -1150,7 +1150,7 @@ class PortListBaseScene():
             port_name = self.port_list[self.last_port]
 
             logger.debug(f"{self.options['mode']}: {port_name}")
-            if self.options['mode'] == 'port-lists':
+            if self.options['mode'] == 'featured-ports':
                 # self.ready = False
                 self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install'))
 
@@ -1165,17 +1165,17 @@ class PortListBaseScene():
             return True
 
 
-class PortListsScene(PortListBaseScene, BaseScene):
+class FeaturedPortsScene(PortListBaseScene, BaseScene):
     def __init__(self, gui, options):
         super().__init__(gui)
         self.scene_title = options['name']
 
-        self.load_regions("port_lists", [
+        self.load_regions("featured_ports", [
             'ports_list',
             ])
 
         self.options = {
-            'mode': 'port-lists',
+            'mode': 'featured-ports',
             'filters': [],
             'base_filters': [],
             }
@@ -1185,9 +1185,9 @@ class PortListsScene(PortListBaseScene, BaseScene):
         self.all_ports = options['ports']
         self.port_list = list(options['ports'].keys())
 
-        self.gui.set_data('port_lists.name', options['name'])
-        self.gui.set_data('port_lists.description', options['description'])
-        self.gui.set_data('port_lists.image', options['image'])
+        self.gui.set_data('featured_ports.name', options['name'])
+        self.gui.set_data('featured_ports.description', options['description'])
+        self.gui.set_data('featured_ports.image', options['image'])
         self.gui.set_data('ports_list.total_ports', str(len(self.port_list)))
         self.gui.set_data('ports_list.filter_ports', str(len(self.port_list)))
         self.gui.set_data('ports_list.filters', "")
