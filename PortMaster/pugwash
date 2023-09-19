@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.8'
+PORTMASTER_VERSION = '8.4.9'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -958,7 +958,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         self.text_data[key] = value
         self.changed_keys.add(key)
-        # logger.debug(f"{key}: {value}")
+        logger.debug(f"{key}: {value}")
 
     def format_data(self, input_string, used_keys=None):
         return self.formatter.format_string(input_string, used_keys)

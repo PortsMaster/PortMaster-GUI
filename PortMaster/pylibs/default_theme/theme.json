@@ -150,6 +150,14 @@
             "area[3:2]": [ 0.0, 0.0, 0.4, 1.0 ],
             "area[wide]": [ 0.0, 0.0, 0.4, 1.0 ]
         },
+
+        "left_pane_featured": {
+            "comment": "Left side of the screen.",
+            "area": [ 0.0, 0.0, 0.3, 1.0 ],
+            "area[3:2]": [ 0.0, 0.0, 0.35, 1.0 ],
+            "area[wide]": [ 0.0, 0.0, 0.35, 1.0 ]
+        },
+
         "right_pane": {
             "comment": "Right side of the screen.",
             "area": [ 0.3, 0.0, 1.0, 1.0 ],
@@ -161,6 +169,12 @@
             "parent": "left_pane",
             "area": [ 0.0, 0.0, 1.0, 1.0 ]
         },
+        "port_info_list_area_featured": {
+            "comment": "List area",
+            "parent": "left_pane_featured",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ]
+        },
+
         "port_info_area": {
             "comment": "The area used for the info text/image",
             "parent": "right_pane",
@@ -178,12 +192,28 @@
             "area[hires]": [ 0.0, 0.1, 1.0, 0.5 ],
             "area[4:3]": [ 0.0, 0.1, 1.0, 0.5 ]
         },
+
+        "port_info_image_area_featured": {
+            "comment": "Port image",
+            "parent": "port_info_area",
+            "area": [ 0.0, 0.1, 1.0, 0.4 ],
+            "area[30:17|427:240]": [ 0.0, 0.1, 1.0, 0.75 ],
+            "area[16:9]": [ 0.0, 0.1, 1.0, 0.65 ]
+
+        },
+
         "port_info_text_area": {
             "comment": "Port Info",
             "parent": "port_info_area",
             "area": [ 0.0, 0.4, 1.0, 1.0 ],
             "area[1920x1152, hires]": [ 0.0, 0.5, 1.0, 1.0 ]
         },
+
+        "port_info_title_area_featured": {
+            "comment": "Port Info",
+            "area": [ 0.0, 0.0, 1.0, 0.1 ]
+        },
+
         "background": {
             "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "fill": "background",
@@ -207,12 +237,14 @@
             "button-sound": "click"
         },
         "option_list": {
-            "area": [ 0.1, 0.25, 0.9, 0.9 ],
+            "area": [ 0.0, 0.21, 0.9, 0.9 ],
+            "area[3:2]": [ 0.0, 0.21, 0.9, 0.8 ],
             "border": 8,
             "font-size": 30,
+            "font-size[16:9]": 22,
             "font-color": "list_text",
             "select-color": "list_selected",
-            "text-clip": false,
+            "text-clip": true,
             "thickness": 10,
             "click-sound": "click",
             "click-sound-volume": 64
@@ -363,18 +395,16 @@
     "main_menu": {
         "#element:background": {},
         "#element:option_list": {
-            "align": "center",
+            "align": "midleft",
             "list": [],
             "options": [],
             "pointer": "pointenfedde.png",
-            "pointer-align": [ "midleft", "midright" ],
+            "pointer-align": [ "midright", "midleft" ],
             "pointer-size": [ 51, 26 ],
             "pointer-attach": "text",
-            "pointer-offset": [ 0, 0 ],
-            "pointer-flip-x": false,
-            "pointer-flip-y": false,
-            "pointer-mirror": true,
-            "pointer-mirror-x": true
+            "pointer-offset": [ 0, 2 ],
+            "pointer-flip-x": true,
+            "pointer-flip-y": false
         },
         "#element:button_bar": {},
         "system_time": {
@@ -398,14 +428,36 @@
         "#element:background": {
             "music": null
         },
+        "option_title": {
+            "area": [ 0.01, 0.05, 1.0, 0.10 ],
+            "text": "{scene.title}",
+            "font-size": 20,
+            "font-color": "general_font"
+        },
         "#element:option_list": {
             "list": [],
             "options": [],
             "align": "midleft",
+            "area": [ 0.0, 0.10, 0.5, 0.85 ],
             "text-clip": true,
             "font-size": 25,
             "no-select-color": "list_unselectable",
-            "inactive-select-color": "list_unselectable"
+            "inactive-select-color": "list_unselectable",
+            "pointer": "pointenfedde.png",
+            "pointer-align": [ "midright", "midleft" ],
+            "pointer-size": [ 51, 26 ],
+            "pointer-attach": "text",
+            "pointer-offset": [ 0, 2 ],
+            "pointer-flip-x": true,
+            "pointer-flip-y": false
+        },
+        "option_description": {
+            "text": "{scene.tooltip}",
+            "font-size": 25,
+            "font-color": "general_font",
+            "area": [ 0.5, 0.10, 1.0, 0.85 ],
+            "align": "topleft",
+            "text-wrap": true
         },
         "#element:button_bar": {},
         "ip": {
@@ -449,6 +501,7 @@
             "scroll-speed": 30,
             "scroll-delay-start": 500,
             "scroll-delay-end": 500
+
         },
         "theme_general_info": {
             "parent": "port_info_text_area",
@@ -499,6 +552,51 @@
             "image": "{theme_info.image}"
         },
         "#element:button_bar": {}
+    },
+    "runtime_list": {
+        "#element:background": {
+            "music": null
+        },
+        "option_title": {
+            "area": [ 0.01, 0.05, 1.0, 0.10 ],
+            "text": "{scene.title}",
+            "font-size": 20,
+            "font-color": "general_font"
+        },
+        "#element:option_list:runtime_list": {
+            "list": [],
+            "options": [],
+            "align": "midleft",
+            "area": [ 0.0, 0.10, 0.5, 0.85 ],
+            "text-clip": true,
+            "font-size": 25,
+            "no-select-color": "list_unselectable",
+            "inactive-select-color": "list_unselectable",
+            "pointer": "pointenfedde.png",
+            "pointer-align": [ "midright", "midleft" ],
+            "pointer-size": [ 51, 26 ],
+            "pointer-attach": "text",
+            "pointer-offset": [ 0, 2 ],
+            "pointer-flip-x": true,
+            "pointer-flip-y": false
+        },
+        "option_description": {
+            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nVerified: {runtime_info.verified}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
+            "font-size": 25,
+            "font-color": "general_font",
+            "area": [ 0.5, 0.10, 1.0, 0.85 ],
+            "align": "topleft",
+            "text-wrap": true
+        },
+        "#element:button_bar": {},
+        "ip": {
+            "text": "IP: {system.ip_address}",
+            "font-size": 11,
+            "font-size[427:240]": 16,
+            "font-color": "general_font",
+            "area": [ 0.02, 0.05, 0.95, 0.95 ],
+            "align": "bottomleft"
+        }
     },
     "on_screen_keyboard": {
         "#element:background": {},
@@ -576,6 +674,144 @@
         },
 
         "#element:button_bar": {}
+    },
+
+    "featured_ports_list": {
+        "#element:background": {},
+
+        "option_title": {
+            "area": [ 0.01, 0.05, 1.0, 0.10 ],
+            "text": "{scene.title}",
+            "font-size": 20,
+            "font-color": "general_font"
+        },
+
+        "port_info": {
+            "area": [ 0.0, 0.1, 1.0, 0.3 ],
+            "image": "{featured_ports.image}"
+        },
+
+        "option_list": {
+            "list": [],
+            "align": "center",
+            "area": [ 0.0, 0.40, 1.0, 0.85 ],
+            "text-clip": true,
+            "font-size": 25,
+            "font-color": "list_text",
+            "select-color": "list_selected",
+            "pointer": "pointenfedde.png",
+            "pointer-align": [ "midright", "midleft" ],
+            "pointer-size": [ 51, 26 ],
+            "pointer-attach": "text",
+            "pointer-offset": [ 0, 2 ],
+            "pointer-flip-x": true,
+            "pointer-flip-y": false
+        },
+
+        "featured_port_description": {
+            "text": "{featured_ports.description}",
+            "font-size": 25,
+            "font-color": "general_font",
+            "area": [ 0.5, 0.10, 1.0, 0.85 ],
+            "align": "topleft",
+            "text-wrap": true
+        },
+
+        "#element:button_bar": {}
+
+    },
+    "featured_ports": {
+        "#element:background": {},
+
+        "ports_list": {
+            "parent": "port_info_list_area_featured",
+            "area": [ 0.0, 0.3, 0.95, 0.6 ],
+            "area[3:2]": [ 0.0, 0.15, 0.95, 0.5 ],
+            "border-x": 16,
+            "border-y": 25,
+            "align": "midleft",
+            "font-size": 17,
+            "font-size[427:240]": 22,
+            "font-size[16:9]": 19,
+            "font-size[1920x1152]": 22,
+            "alt-fill": "secondary-selection-fill",
+            "select-fill": "selection-fill",
+            "font-color": "list_text",
+            "select-color": "list_selected",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 500,
+            "scroll-delay-end": 500
+        },
+
+        "port_desc": {
+            "parent": "port_info_text_area",
+            "area": [ 5, 115, -5, -45 ],
+            "area[4:3]": [ 5, 168, -5, -50 ],
+            "area[3:2]": [ 5, 115, -5, -25 ],
+            "area[16:9]": [ 5, 215, -5, -100 ],
+            "area[1920x1152]": [ 0.05, 0.3, 0.8, 0.7 ],
+            "area[427:240]": [ 5, 195, -5, -50 ],
+            "area[30:17]": [ 5, 195, -5, -65 ],
+            "font-size": 17,
+            "font-size[1920x1152]": 13,
+            "font-size[16:9]": 13,
+            "font-color": "general_font",
+            "text-wrap": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "text": "{port_info.description}"
+        },
+
+        "port_title": {
+            "parent": "port_info_title_area_featured",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "text": "{featured_ports.name}",
+            "font-size": 22,
+            "font-color": "list_selected",
+            "align": "center"
+        },
+
+        "featured_image": {
+            "area": [ 0.0, 0.2, 0.3, 0.35 ],
+            "image": "{featured_ports.image}",
+            "area[3:2|wide]": [ 0.0, 0.1, 0.3, 0.21 ]
+        },
+
+        "port_image": {
+            "parent": "port_info_image_area_featured",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "image": "{port_info.image}"
+        },
+
+        "featured_port_description": {
+            "text": "{featured_ports.description}",
+            "font-size": 16,
+            "font-color": "general_font",
+            "area": [ 0.0, 0.10, 0.3, 0.85 ],
+            "align": "topleft",
+            "text-wrap": true
+        },
+
+        "port_general_info": {
+            "parent": "left_pane_featured",
+            "area": [ 0.0, 0.6, 0.95, 0.8 ],
+            "border-x": 16,
+            "font-size": 16,
+            "font-size[1920x1152]": 11,
+            "font-size[16:9]": 11,
+            "font-color": "general_font",
+            "text-wrap": true,
+            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
+        },
+
+
+        "#element:button_bar": {}
+
     },
 
     "message_box": {

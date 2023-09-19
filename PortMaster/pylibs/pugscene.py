@@ -155,6 +155,10 @@ class BaseScene:
             self.gui.set_data("scene.title", self.scene_title)
             self.gui.set_data("scene.tooltip", self.scene_tooltip)
 
+    def set_tooltip(self, text):
+        self.scene_tooltip = text
+        self.gui.set_data("scene.tooltip", text)
+
     def load_regions(self, section, required_tags):
         rects = self.gui.new_rects()
         temp_required_tags = list(required_tags)
@@ -325,20 +329,37 @@ class MainMenuScene(BaseScene):
         self.load_regions("main_menu", ['option_list'])
 
         self.tags['option_list'].reset_options()
-        self.tags['option_list'].add_option(('install', []), _("All Ports"))
-        self.tags['option_list'].add_option(('install', ['rtr']), _("Ready to Run Ports"))
-        self.tags['option_list'].add_option(('uninstall', ['installed']), _("Uninstall Ports"))
-
+        self.tags['option_list'].add_option(
+            ('install', []),
+            _("All Ports"),
+            description=_("List all ports available on PortMaster."))
+        self.tags['option_list'].add_option(
+            ('install', ['rtr']),
+            _("Ready to Run Ports"),
+            description=_("List all ports that are ready to play!"))
         if self.gui.get_config().get('konami', False):
-            self.tags['option_list'].add_option(None, "")
-            self.tags['option_list'].add_option(('featured-ports', None), _('Featured Ports'))
+            self.tags['option_list'].add_option(
+                ('featured-ports', None),
+                _('Featured Ports'),
+                description=_("Hand curated lists of ports"))
+        self.tags['option_list'].add_option(
+            ('uninstall', ['installed']),
+            _("Uninstall Ports"),
+            description=_("Remove unwanted ports"))
 
         self.tags['option_list'].add_option(None, "")
-        self.tags['option_list'].add_option(('options', None), _("Options"))
-        self.tags['option_list'].add_option(('exit', None), _("Exit"))
+        self.tags['option_list'].add_option(
+            ('options', None),
+            _("Options"),
+            description=_("PortMaster Options"))
+        self.tags['option_list'].add_option(
+            ('exit', None),
+            _("Exit"),
+            description=_("Quit PortMaster"))
 
         self.set_buttons({'A': _('Enter'), 'B': _('Quit')})
         self.detecting_konami = 0
+        self.last_selected = None
 
     def do_update(self, events):
         super().do_update(events)
@@ -360,6 +381,10 @@ class MainMenuScene(BaseScene):
 
         elif events.any_pressed():
             self.detecting_konami = 0
+
+        if self.last_selected != self.tags['option_list'].selected_option():
+            self.set_tooltip(self.tags['option_list'].selected_description())
+            self.last_selected = self.tags['option_list'].selected_option()
 
         if events.was_pressed('A'):
             selected_option, selected_parameter = self.tags['option_list'].selected_option()
@@ -398,46 +423,78 @@ class OptionScene(BaseScene):
         self.tags['option_list'].reset_options()
         self.tags['option_list'].add_option(None, _("System"))
 
-        self.tags['option_list'].add_option('update-ports', _("Update Ports"))
-        self.tags['option_list'].add_option('update-portmaster', _("Update PortMaster"))
-        self.tags['option_list'].add_option('runtime-list', _("Runtime Manager"))
+        self.tags['option_list'].add_option(
+            'update-ports',
+            _("Update Ports"),
+            description=_("Update all ports and associated information"))
+        self.tags['option_list'].add_option(
+            'update-portmaster',
+            _("Update PortMaster"),
+            description=_("Force check for a new PortMaster version."))
+        self.tags['option_list'].add_option(
+            'runtime-list',
+            _("Runtime Manager"),
+            description=_("Download/Check/Delete Port runtimes."))
 
         if len(self.gui.hm.get_gcd_modes()) > 0:
             gcd_mode = self.gui.hm.get_gcd_mode()
             self.tags['option_list'].add_option(
                 'toggle-gcd',
-                _("Controller Mode: {controller_mode}").format(controller_mode=gcd_mode))
+                _("Controller Mode: {controller_mode}").format(controller_mode=gcd_mode),
+                description=_("Toggle between various controller layouts."))
 
         self.tags['option_list'].add_option(None, _("Audio"))
 
         self.tags['option_list'].add_option(
             'toggle-music',
-            _("Music: ") + (self.gui.sounds.music_is_disabled and _("Disabled") or _("Enabled")))
+            _("Music: ") + (self.gui.sounds.music_is_disabled and _("Disabled") or _("Enabled")),
+            description=_("Enable or Disable background music in PortMaster."))
         self.tags['option_list'].add_option(
             'toggle-sfx',
-            _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")))
+            _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")),
+            description=_("Enable or Disable soundfx in PortMaster."))
 
         self.tags['option_list'].add_option(None, _("Interface"))
 
-        self.tags['option_list'].add_option('select-language', _("Choose Language"))
-        self.tags['option_list'].add_option('select-theme', _("Select Theme"))
+        self.tags['option_list'].add_option(
+            'select-language',
+            _("Choose Language"),
+            description=_("Select the language PortMaster uses."))
+        self.tags['option_list'].add_option(
+            'select-theme',
+            _("Select Theme"),
+            description=_("Select a theme for PortMaster."))
 
         schemes = self.gui.themes.get_theme_schemes_list()
         if len(schemes) > 0:
-            self.tags['option_list'].add_option('select-scheme', _("Select Color Scheme"))
+            self.tags['option_list'].add_option(
+                'select-scheme',
+                _("Select Color Scheme"),
+            description=_("Select a colour scheme for PortMaster"))
 
         if self.gui.hm.cfg_data.get('konami', False):
             self.tags['option_list'].add_option(None, _("Secret Options"))
-            self.tags['option_list'].add_option('delete-config', _("Delete PortMaster Config"))
-            self.tags['option_list'].add_option('delete-runtimes', _("Delete PortMaster Runtimes"))
+            self.tags['option_list'].add_option(
+                'delete-config',
+                _("Delete PortMaster Config"),
+                description=_("This can break stuff, don't touch unless you know what you are doing."))
+            self.tags['option_list'].add_option(
+                'delete-runtimes',
+                _("Delete PortMaster Runtimes"),
+                description=_("This can break stuff, don't touch unless you know what you are doing."))
 
         # self.tags['option_list'].add_option(None, "")
         # self.tags['option_list'].add_option('back', _("Back"))
         self.tags['option_list'].list_select(0)
         self.set_buttons({'A': _('Enter'), 'B': _('Back')})
+        self.last_selected = None
 
     def do_update(self, events):
         super().do_update(events)
+
+        if self.last_selected != self.tags['option_list'].selected_option():
+            self.set_tooltip(self.tags['option_list'].selected_description())
+            self.last_selected = self.tags['option_list'].selected_option()
 
         if events.was_pressed('A'):
             selected_option = self.tags['option_list'].selected_option()
@@ -1001,7 +1058,7 @@ class OnScreenKeyboard(BaseScene):
 class FeaturedPortsListScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
-        self.scene_title = _("Featured Ports List")
+        self.scene_title = _("Featured Ports")
 
         self.load_regions("featured_ports_list", ['option_list', ])
 
@@ -1020,7 +1077,7 @@ class FeaturedPortsListScene(BaseScene):
         port_list = self.featured_ports[selected]
         self.gui.set_data('featured_ports.name', port_list['name'])
         self.gui.set_data('featured_ports.description', port_list['description'])
-        self.gui.set_data('featured_ports.image', port_list['image'])
+        self.gui.set_data('featured_ports.image', str(port_list['image']))
         self.last_select = selected
 
     def do_update(self, events):
@@ -1187,7 +1244,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
 
         self.gui.set_data('featured_ports.name', options['name'])
         self.gui.set_data('featured_ports.description', options['description'])
-        self.gui.set_data('featured_ports.image', options['image'])
+        self.gui.set_data('featured_ports.image', str(options['image']))
         self.gui.set_data('ports_list.total_ports', str(len(self.port_list)))
         self.gui.set_data('ports_list.filter_ports', str(len(self.port_list)))
         self.gui.set_data('ports_list.filters', "")
@@ -1197,7 +1254,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
             self.all_ports[port_name]['attr']['title']
             for port_name in self.port_list]
 
-        self.last_port = self.tags['ports_list'].selected
+        self.last_port = self.tags['ports_list'].selected + 1
 
         self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
 
@@ -1413,7 +1470,7 @@ class FiltersScene(BaseScene):
 
         first_add = True
 
-        for hm_genre in self.gui.hm.porters_list():
+        for hm_genre in sorted(self.gui.hm.porters_list(), key=lambda name: name.lower()):
             if hm_genre in self.locked_genres:
                 continue
 
