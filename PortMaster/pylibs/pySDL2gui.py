@@ -2371,17 +2371,22 @@ class Region:
     def reset_options(self):
         self.list = []
         self.options = []
+        self.descriptions = []
         self._list_selected = []
         self.gui.updated = True
 
-    def add_option(self, option, text, index=0):
+    def add_option(self, option, text, index=0, description=None):
         if self.list is None:
             self.list = []
             self.options = []
+            self.descriptions = []
             self._list_selected = []
 
         if self.options is None:
             self.options = []
+
+        if self.options is None:
+            self.descriptions = []
 
         if self._list_selected is None:
             self._list_selected = []
@@ -2389,10 +2394,14 @@ class Region:
         while len(self.options) < len(self.list):
             self.options.append(None)
 
+        while len(self.descriptions) < len(self.list):
+            self.descriptions.append("")
+
         while len(self._list_selected) < len(self.list):
             self._list_selected.append(0)
 
         self.gui.updated = True
+        self.descriptions.append(description)
         self.options.append(option)
         self.list.append(text)
         self._list_selected.append(index)
@@ -2406,7 +2415,24 @@ class Region:
         if len(self.options) == 0:
             return None
 
+        if self.selected >= len(self.options):
+            return None
+
         return self.options[self.selected]
+
+    def selected_description(self):
+        if self.descriptions is None:
+            return ""
+        if self.list is None:
+            return ""
+
+        if len(self.descriptions) == 0:
+            return ""
+
+        if self.selected >= len(self.descriptions):
+            return ""
+
+        return self.descriptions[self.selected]
 
     def list_selected(self):
         return self.selected
