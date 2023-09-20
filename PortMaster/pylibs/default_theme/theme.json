@@ -449,13 +449,17 @@
             "pointer-attach": "text",
             "pointer-offset": [ 0, 2 ],
             "pointer-flip-x": true,
-            "pointer-flip-y": false
+            "pointer-flip-y": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
         },
         "option_description": {
             "text": "{scene.tooltip}",
             "font-size": 25,
             "font-color": "general_font",
-            "area": [ 0.5, 0.10, 1.0, 0.85 ],
+            "area": [ 0.5, 0.4, 1.0, 0.85 ],
             "align": "topleft",
             "text-wrap": true
         },
@@ -567,9 +571,9 @@
             "list": [],
             "options": [],
             "align": "midleft",
-            "area": [ 0.0, 0.10, 0.5, 0.85 ],
+            "area": [ 0.0, 0.2, 0.5, 0.85 ],
             "text-clip": true,
-            "font-size": 25,
+            "font-size": 22,
             "no-select-color": "list_unselectable",
             "inactive-select-color": "list_unselectable",
             "pointer": "pointenfedde.png",
@@ -584,7 +588,7 @@
             "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nVerified: {runtime_info.verified}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
             "font-size": 25,
             "font-color": "general_font",
-            "area": [ 0.5, 0.10, 1.0, 0.85 ],
+            "area": [ 0.5, 0.3, 1.0, 0.85 ],
             "align": "topleft",
             "text-wrap": true
         },
@@ -681,6 +685,7 @@
 
         "option_title": {
             "area": [ 0.01, 0.05, 1.0, 0.10 ],
+            "align": "center",
             "text": "{scene.title}",
             "font-size": 20,
             "font-color": "general_font"
@@ -711,9 +716,9 @@
         "featured_port_description": {
             "text": "{featured_ports.description}",
             "font-size": 25,
+            "align": "center",
             "font-color": "general_font",
-            "area": [ 0.5, 0.10, 1.0, 0.85 ],
-            "align": "topleft",
+            "area": [ 0.1, 0.6, 0.9, 0.9 ],
             "text-wrap": true
         },
 

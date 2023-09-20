@@ -329,6 +329,11 @@ class MainMenuScene(BaseScene):
         self.load_regions("main_menu", ['option_list'])
 
         self.tags['option_list'].reset_options()
+        if self.gui.get_config().get('konami', False):
+            self.tags['option_list'].add_option(
+                ('featured-ports', None),
+                _('Featured Ports'),
+                description=_("Hand curated lists of ports"))
         self.tags['option_list'].add_option(
             ('install', []),
             _("All Ports"),
@@ -337,11 +342,6 @@ class MainMenuScene(BaseScene):
             ('install', ['rtr']),
             _("Ready to Run Ports"),
             description=_("List all ports that are ready to play!"))
-        if self.gui.get_config().get('konami', False):
-            self.tags['option_list'].add_option(
-                ('featured-ports', None),
-                _('Featured Ports'),
-                description=_("Hand curated lists of ports"))
         self.tags['option_list'].add_option(
             ('uninstall', ['installed']),
             _("Uninstall Ports"),
@@ -1067,7 +1067,7 @@ class FeaturedPortsListScene(BaseScene):
         self.tags['option_list'].reset_options()
 
         for idx, port_list in enumerate(self.featured_ports):
-            self.tags['option_list'].add_option(0, port_list['name'])
+            self.tags['option_list'].add_option(idx, port_list['name'])
 
         self.set_buttons({'A': _('Select'), 'B': _('Back')})
         self.update_selection()

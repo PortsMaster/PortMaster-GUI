@@ -47,7 +47,7 @@ class HarbourMaster():
 
     PORT_INFO_URL      = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
     PORTS_INFO_URL     = PORT_INFO_URL + "ports_info.json"
-    FEATURED_PORTS_URL = PORT_INFO_URL + "port_lists.json" ## Change this soon.
+    FEATURED_PORTS_URL = PORT_INFO_URL + "featured_ports.json" ## Change this soon.
     PORTERS_URL        = PORT_INFO_URL + "porters.json"
 
     def __init__(self, config, *, tools_dir=None, ports_dir=None, temp_dir=None, callback=None):
@@ -829,7 +829,7 @@ class HarbourMaster():
                 continue
 
             port_list_image = port_list.get('image', None)
-            if port_list_image is not None:
+            if port_list_image is not None and port_list_image != "":
                 port_list_image_url = self.PORT_INFO_URL + port_list_image
                 port_list_image_file = featured_ports_dir / port_list_image.rsplit('/', 1)[-1]
 
