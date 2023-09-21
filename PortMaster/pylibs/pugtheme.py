@@ -529,10 +529,12 @@ class ThemeEngine:
     def get_themes_list(self, download_themes=None):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
 
+        ## Build up our list of themes.
         themes = {
             "default_theme": self.get_theme_info("default_theme"),
             }
 
+        ## Load local ones
         for theme_file in (cfg_dir / "themes").glob("*/theme.json"):
             theme_name = theme_file.parent.name
             theme_info = self.get_theme_info(theme_name)
@@ -540,6 +542,7 @@ class ThemeEngine:
             themes[theme_name] = theme_info
 
         if download_themes is not None:
+            ## And download ones
             for theme_name, theme_info in download_themes.items():
                 if theme_name in themes:
                     old_info = themes[theme_name]
@@ -557,8 +560,14 @@ class ThemeEngine:
                     themes[theme_name]['status'] = "Not Installed"
 
         # print(themes)
+        ## Finally sort the themes by name, but keep the default_theme at the top always.
+        new_themes = {}
+        for theme_name in sorted(themes, key=lambda theme_name: (
+                    theme_name != 'default_theme',
+                    themes[theme_name]['name'].lower())):
+            new_themes[theme_name] = themes[theme_name]
 
-        return themes
+        return new_themes
 
     def get_theme_schemes_list(self, theme_name=None):
         if theme_name is None:

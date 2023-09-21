@@ -1601,7 +1601,7 @@ class SoundManager():
                 print(f"- {i}: {sdl2.SDL_GetAudioDeviceName(i, 0)}")
 
             if sdl2.sdlmixer.Mix_OpenAudio(44100, sdl2.sdlmixer.MIX_DEFAULT_FORMAT, 2, 1024):
-                print(f'Cannot open mixed audio: {sdlmixer.Mix_GetError()}')
+                print(f'Cannot open mixed audio: {sdl2.sdlmixer.Mix_GetError()}')
                 self.init_failed = True
                 return
 
