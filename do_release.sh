@@ -55,6 +55,7 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/config/\* \
     -x PortMaster/themes/\* \
     -x PortMaster/libs/\*.squashfs \
+    -x PortMaster/libs/\*.squashfs.md5 \
     -x PortMaster/pugwash.txt \
     -x PortMaster/harbourmaster.txt \
     -x '*.DS_Store'
