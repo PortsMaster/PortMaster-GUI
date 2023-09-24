@@ -12,8 +12,9 @@ for POT_FILE in "${POT_FILES[@]}"; do
         xgettext -v -o "${POT_DIR}/${POT_FILE}.pot" -L Python PortMaster/pugwash PortMaster/pylibs/harbourmaster/*.py PortMaster/pylibs/pug*.py
 
     elif [[ "$POT_FILE" == "themes" ]]; then
-        wget -O "${POT_DIR}/${POT_FILE}.pot" "https://github.com/PortsMaster/PortMaster-Themes/releases/latest/download/themes.pot"
-
+        echo "Extracting strings ${POT_FILE}"
+        python3 theme_msgfmt.py
+        # wget -O "${POT_DIR}/${POT_FILE}.pot" "https://github.com/PortsMaster/PortMaster-Themes/releases/latest/download/themes.pot"
     fi
 done
 
