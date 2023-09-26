@@ -57,7 +57,7 @@ HW_INFO = {
     'pc':      {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
 
     # Default
-    'default': {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': []},
+    'default': {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
     }
 
 
