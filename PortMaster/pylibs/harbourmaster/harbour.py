@@ -144,14 +144,20 @@ class HarbourMaster():
     def ports_info(self):
         if self.__PORTS_INFO is None:
             with open(self.cfg_dir / "ports_info.json", 'r') as fh:
-                self.__PORTS_INFO = json.load(fh)
+                self.__PORTS_INFO = json_safe_load(fh)
+
+            if self.__PORTS_INFO is None:
+               self.__PORTS_INFO = {"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}
 
         return self.__PORTS_INFO
 
     def porters(self):
         if self.__PORTERS is None:
             with open(self.cfg_dir / "porters.json", 'r') as fh:
-                self.__PORTERS = json.load(fh)
+                self.__PORTERS = json_safe_load(fh)
+
+            if self.__PORTERS is None:
+               self.__PORTERS = {}
 
         return self.__PORTERS
 
