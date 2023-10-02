@@ -691,7 +691,7 @@ class HarbourMaster():
                     with ports_files[port_name].open('wt') as fh:
                         json.dump(port_info, fh, indent=4)
                 else:
-                    logger.debug(f"Unable to dump {str(ports_files[port_name])}: {port_info}")
+                    logger.warning(f"Unable to dump {str(ports_files[port_name])}: {port_info}")
 
     def port_info_attrs(self, port_info):
         runtime_fix = {
@@ -963,7 +963,7 @@ class HarbourMaster():
         """
         Installs a theme file.
         """
-        logger.debug(f"Installing theme: {download_file.name}")
+        logger.info(f"Installing theme: {download_file.name}")
 
         if not self.themes_dir.is_dir():
             self.themes_dir.mkdir(0o755)
@@ -998,7 +998,7 @@ class HarbourMaster():
         """
         Installs a new version of PortMaster
         """
-        logger.debug("Installing PortMaster.zip")
+        logger.info("Installing PortMaster.zip")
         # if HM_TESTING:
         #     logger.error("Unable to install PortMaster.zip in testing environment.")
         #     return 255
@@ -1055,6 +1055,7 @@ class HarbourMaster():
 
         port_nice_name = download_info.get('attr', {}).get('title', download_info['name'])
         port_info = {}
+        logger.info(f"Installing {port_nice_name}")
 
         try:
             extra_info = {}
@@ -1146,7 +1147,7 @@ class HarbourMaster():
                     self.callback.message(_("Installation failed, removing files..."))
 
                     for undo_file in undo_data[::-1]:
-                        logger.debug(f"Removing {undo_file.relative_to(self.ports_dir)}")
+                        logger.info(f"Removing {undo_file.relative_to(self.ports_dir)}")
                         self.callback.message(f"- {str(undo_file.relative_to(self.ports_dir))}")
 
                         if undo_file.is_file():
@@ -1209,6 +1210,7 @@ class HarbourMaster():
             'Unverified':       _('Unverified'),
             'Broken':           _('Broken'),
             }
+        logger.info(f"Installing {runtime_name}")
 
         if self.config['offline']:
             cprint(f"Unable to download {runtime} when offline")

@@ -98,7 +98,7 @@ def theme_apply(gui, section_data, base_data, elements):
                 continue
 
             if element_name not in elements:
-                logger.debug(f"Error: Unknown element {element_name}")
+                logger.warning(f"Error: Unknown element {element_name}")
                 continue
 
             new_data[region_name] = theme_merge(base_data, theme_merge(elements[element_name], region_data))
@@ -120,7 +120,7 @@ def theme_apply(gui, section_data, base_data, elements):
 
 
 def theme_load(gui, theme_file, color_scheme=None):
-    logger.debug(f"Loading theme {theme_file}")
+    logger.info(f"Loading theme {theme_file}")
 
     with open(theme_file, 'r') as fh:
         theme_data = json.load(fh)
@@ -375,7 +375,7 @@ class ThemeDownloader(harbourmaster.source.GitHubRawReleaseV1):
             logger.debug(f"images_md5={images_md5}, self.images_md5={self._images_md5}")
             images_zip = harbourmaster.download(self.hm.temp_dir / "images.zip", images_url_zip, images_md5, callback=self.hm.callback)
             if images_zip is None:
-                logger.debug(f"Unable to download {images_url_zip}")
+                logger.warning(f"Unable to download {images_url_zip}")
                 return
 
             images_to_delete = [

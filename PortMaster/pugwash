@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.13'
+PORTMASTER_VERSION = '8.4.14'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -9,7 +9,9 @@ PORTMASTER_RELEASE_CHANNELS = {
     'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
     'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
     }
+
 PORTMASTER_UPDATE_FREQUENCY = (60 * 60 * 1)
+__builtins__.PORTMASTER_DEBUG = False  ## This adds a lot of extra info
 
 import contextlib
 import ctypes
@@ -474,10 +476,10 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         version = sdl2.SDL_version()
         sdl2.SDL_GetVersion(version)
 
-        logger.debug(f"SDL DLL: {sdl2.dll.get_dll_file()},  {nice_version(version)}")
-        logger.debug(f"TTF DLL: {sdl2.sdlttf.get_dll_file()}, {nice_version(sdl2.sdlttf.TTF_Linked_Version()[0])}")
-        logger.debug(f"IMG DLL: {sdl2.sdlimage.get_dll_file()}, {nice_version(sdl2.sdlimage.IMG_Linked_Version()[0])}")
-        logger.debug(f"MIX DLL: {sdl2.sdlmixer.get_dll_file()}, {nice_version(sdl2.sdlmixer.Mix_Linked_Version()[0])}")
+        logger.info(f"SDL DLL: {sdl2.dll.get_dll_file()},  {nice_version(version)}")
+        logger.info(f"TTF DLL: {sdl2.sdlttf.get_dll_file()}, {nice_version(sdl2.sdlttf.TTF_Linked_Version()[0])}")
+        logger.info(f"IMG DLL: {sdl2.sdlimage.get_dll_file()}, {nice_version(sdl2.sdlimage.IMG_Linked_Version()[0])}")
+        logger.info(f"MIX DLL: {sdl2.sdlmixer.get_dll_file()}, {nice_version(sdl2.sdlmixer.Mix_Linked_Version()[0])}")
 
         # Load controller.
         count = sdl2.SDL_NumJoysticks()
@@ -487,8 +489,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             if is_game_controller == sdl2.SDL_TRUE:
                 pad = sdl2.SDL_GameControllerOpen(index)
                 if pad is not None:
-                    logger.debug(f"Opened GameController {index}: {sdl2.SDL_GameControllerName(pad)}")
-                    logger.debug(f" {sdl2.SDL_GameControllerMapping(pad)}")
+                    logger.info(f"Opened GameController {index}: {sdl2.SDL_GameControllerName(pad)}")
+                    logger.info(f" {sdl2.SDL_GameControllerMapping(pad)}")
 
         # Define window dimensions
         self.display_width = 640
@@ -520,6 +522,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 # 'rg503'
                 # 'rg351v'
                 # 'rg353v'
+                'rgb30'
                 # 'ogs'
                 # 'ogu'
                 # 'x55'
@@ -534,7 +537,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         if capabilities['device'] == 'default':
             device = harbourmaster.find_device_by_resolution((self.display_width, self.display_height))
-            logger.debug(f"FOUND: {device}")
+            logger.info(f"FOUND: {device}")
             if device != 'default':
                 capabilities = harbourmaster.device_info(device)
 
@@ -543,7 +546,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         capabilities['capabilities'].append(CURRENT_LANG)
 
-        logger.debug(capabilities)
+        logger.info(capabilities)
 
         # Create the window
         if harbourmaster.HM_TESTING:
@@ -683,7 +686,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             sdl2.SDL_Delay(30)
 
         if self.timers.elapsed('updates_per_second', 1000, run_first=True):
-            print(f"UPS: {self.draw_counter} / {self.update_counter}")
+            if PORTMASTER_DEBUG:
+                print(f"UPS: {self.draw_counter} / {self.update_counter}")
             self.update_counter = 0
             self.draw_counter = 0
             self.updated = True
@@ -857,7 +861,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         else:
             self.set_data("port_info.install_size", "")
 
-        print(f"INFO: {port_info}")
+        # print(f"INFO: {port_info}")
 
     def set_theme_info(self, theme_name, theme_info):
         ## TODO: make this better :D
@@ -958,7 +962,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         self.text_data[key] = value
         self.changed_keys.add(key)
-        logger.debug(f"{key}: {value}")
+        # logger.debug(f"{key}: {value}")
 
     def format_data(self, input_string, used_keys=None):
         return self.formatter.format_string(input_string, used_keys)
@@ -1383,7 +1387,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 del args[i]
 
             else:
-                logger.debug(f"unknown option {args[i]}")
+                logger.warning(f"unknown option {args[i]}")
                 del args[i]
 
         ## This fixes a bug :D
@@ -1506,7 +1510,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                     del args[i]
                     continue
 
-            logger.debug(f"unknown option {args[i]}")
+            logger.warning(f"unknown option {args[i]}")
             del args[i]
 
         if len(args) == 0:
@@ -1611,7 +1615,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                     self.fifo_commands[args[0].lower()](self, fifo_config, args[1:])
 
                 else:
-                    logger.debug(f"fifo: unknown command {args[0]}")
+                    logger.warning(f"fifo: unknown command {args[0]}")
                     done_file.write_text("DONE")
 
                 self.do_loop(no_delay=True)
@@ -1649,7 +1653,7 @@ def portmaster_check_update(pm, config, temp_dir):
     if update_checked is None or harbourmaster.datetime_compare(update_checked) > PORTMASTER_UPDATE_FREQUENCY:
         update_checked_was_none = update_checked is None
         latest_version = harbourmaster.fetch_text(PORTMASTER_RELEASE_CHANNELS[release_channel] + 'version').strip()
-        logger.debug(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
+        logger.info(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
 
         cfg_data['update_checked'] = datetime.datetime.now().isoformat()
         if not cfg_file.parent.is_dir():
@@ -1698,6 +1702,7 @@ def portmaster_check_update(pm, config, temp_dir):
 @logger.catch
 def main(argv):
     global LOG_FILE_HANDLE
+    global LOG_FILE
 
     with make_temp_directory() as temp_dir:
         argv = argv[:]
@@ -1739,6 +1744,14 @@ def main(argv):
         elif config['debug']:
             logger.remove(0)  # For the default handler, it's actually '0'.
             logger.add(sys.stderr, level="DEBUG")
+
+        elif not PORTMASTER_DEBUG:
+            logger.remove(0)  # For the default handler, it's actually '0'.
+            logger.add(sys.stderr, level="SUCCESS")
+
+            ## Once we reach here we can just reduce it to INFO level.
+            logger.remove(LOG_FILE_HANDLE)
+            LOG_FILE_HANDLE = logger.add(LOG_FILE, level="INFO", backtrace=True, diagnose=True)
 
         if config['no-log']:
             logger.remove(LOG_FILE_HANDLE)

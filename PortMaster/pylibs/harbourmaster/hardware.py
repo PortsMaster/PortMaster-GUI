@@ -47,6 +47,7 @@ HW_INFO = {
     'rgb10max':  {'resolution': ( 854, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
     'rgb10s':    {'resolution': ( 480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
     'rgb20s':    {'resolution': ( 640, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
+    'rgb30':     {'resolution': ( 720, 720), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
     'rk2023':    {'resolution': ( 640, 480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
     'rk2020':    {'resolution': ( 480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
 
@@ -65,6 +66,7 @@ CFW_INFO = {
     ## From PortMaster.sh from JELOS, all devices except x55 and rg10max3 have opengl
     ('jelos', 'x55'): {'capabilities': []},
     ('jelos', 'rgb10max3'): {'capabilities': []},
+    ('jelos', 'rgb30'): {'capabilities': []},
     ('jelos', HW_ANY): {'capabilities': ['opengl']},
     }
 
@@ -94,12 +96,13 @@ def nice_device_to_device(raw_device):
 
     pattern_to_device = (
         ('Hardkernel ODROID-GO-Ultra', 'ogu'),
-        ('ODROID-GO Advance*', 'oga'),
-        ('ODROID-GO Super*', 'ogs'),
+        ('ODROID-GO Advance*',   'oga'),
+        ('ODROID-GO Super*',     'ogs'),
 
         ('Powkiddy RGB10 MAX 3', 'rgb10max3'),
-        ('Powkiddy RK2023',  'rk2023'),
-        ('Powkiddy x55',     'x55'),
+        ('Powkiddy RGB30',       'rgb30'),
+        ('Powkiddy RK2023',      'rk2023'),
+        ('Powkiddy x55',         'x55'),
 
         ('Anbernic RG351MP*', 'rg351mp'),
         ('Anbernic RG351V*',  'rg351v'),
@@ -286,7 +289,8 @@ def device_info(override_device=None, override_resolution=None):
         if "hires" not in info['capabilities']:
             info['capabilities'].append("hires")
 
-        info['capabilities'].append("wide")
+        if info['resolution'][0] > info['resolution'][1]:
+            info['capabilities'].append("wide")
 
     logger.debug(f"DEVICE INFO: {info}")
     __root_info = info

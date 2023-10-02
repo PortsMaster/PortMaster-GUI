@@ -139,7 +139,7 @@ class ResourceManager:
         else:
             raise GUIValueError(f"Invalid {path!r}")
 
-        print(path)
+        # print(path)
         if not path.is_dir():
             return
 

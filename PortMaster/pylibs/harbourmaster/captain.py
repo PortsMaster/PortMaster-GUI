@@ -103,8 +103,8 @@ def check_port(port_name, zip_file, extra_info=None):
     port_info['name'] = name_cleaner(port_name)
     port_info['items'] = items
 
-    if port_info_data != port_info:
-        logger.warning(f"port.json is different from what is expected:\n{json.dumps(port_info, indent=4)}")
+    # if port_info_data != port_info:
+    #     logger.warning(f"port.json is different from what is expected:\n{json.dumps(port_info, indent=4)}")
 
     if extra_info is not None:
         extra_info['port_info_file'] = port_info_file
