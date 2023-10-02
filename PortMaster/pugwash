@@ -520,6 +520,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 # 'rg503'
                 # 'rg351v'
                 # 'rg353v'
+                'rgb30'
                 # 'ogs'
                 # 'ogu'
                 # 'x55'
