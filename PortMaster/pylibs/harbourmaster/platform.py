@@ -74,7 +74,7 @@ class PlatformBase():
         logger.debug(f"{self.__class__.__name__}: PortMaster Install")
 
     def set_gcd_mode(self, mode=None):
-        logger.debug(f"{self.__class__.__name__}: Set GCD Mode {mode}")
+        logger.info(f"{self.__class__.__name__}: Set GCD Mode {mode}")
 
     def get_gcd_modes(self):
         return tuple()
@@ -95,7 +95,7 @@ class PlatformGCD_PortMaster:
             'xbox': self.hm.tools_dir / "PortMaster" / ".Backup" / "donottouch_x.txt",
             }
 
-        logger.debug(f"{self.__class__.__name__}: Set GCD Mode: {gcd_mode}")
+        logger.info(f"{self.__class__.__name__}: Set GCD Mode: {gcd_mode}")
 
         if gcd_mode:
             if gcd_mode not in mode_files:
@@ -167,7 +167,7 @@ class PlatformJELOS(PlatformBase):
         PM_DIR = HM_TOOLS_DIR / "PortMaster"
 
         if hash_file(BROKEN_MAPPER) == BROKEN_MAPPER_MD5:
-            logger.debug("Replacing broken mapper.txt if it is still there.")
+            logger.info("Replacing broken mapper.txt if it is still there.")
             FIXED_MAPPER = PM_DIR / ".Backup" / "mapper.txt"
             shutil.copy(FIXED_MAPPER, BROKEN_MAPPER)
 

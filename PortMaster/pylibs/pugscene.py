@@ -501,7 +501,7 @@ class OptionScene(BaseScene):
 
             self.button_activate()
 
-            print(f"Selected {selected_option}")
+            # print(f"Selected {selected_option}")
 
             if selected_option == 'update-ports':
                 self.gui.do_update_ports()
@@ -601,7 +601,7 @@ class OptionScene(BaseScene):
                         self.gui.do_loop()
 
                         for runtime_file in runtimes:
-                            logger.debug(f"removing {runtime_file}")
+                            logger.info(f"removing {runtime_file}")
                             self.gui.message(f"- {runtime_file}")
                             runtime_file.unlink()
                             self.gui.do_loop()
@@ -898,7 +898,7 @@ class ThemeSchemeScene(BaseScene):
 
             self.button_activate()
 
-            print(f"Selected {selected_option} -> {selected_parameter}")
+            # print(f"Selected {selected_option} -> {selected_parameter}")
 
             if selected_option == 'back':
                 self.gui.pop_scene()
