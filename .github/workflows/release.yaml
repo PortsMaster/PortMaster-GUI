@@ -73,10 +73,10 @@ jobs:
           prerelease: false
           replacesArtifacts: false
           omitNameDuringUpdate: true
-          artifacts: "PortMaster.zip, PortMaster.zip.md5, version"
+          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, Install*PortMaster.sh"
           token: ${{ secrets.GITHUB_TOKEN }}
-          repo: ${{ steps.env.outputs.RELEASE_REPO}}
-          owner: ${{ steps.env.outputs.RELEASE_ORG}}
+          repo: ${{ steps.env.outputs.RELEASE_REPO }}
+          owner: ${{ steps.env.outputs.RELEASE_ORG }}
 
       - name: "Publish Release"
         uses: ncipollo/release-action@v1

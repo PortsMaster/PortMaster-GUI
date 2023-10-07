@@ -67,6 +67,6 @@ cd "/$directory/ports"
 $ESUDO rm -vf Install*PortMaster.sh > $CUR_TTY
 
 echo "Finished installing PortMaster" > $CUR_TTY
-sleep 3
+sleep 2
 
 $ESUDO systemctl restart $ES_NAME
