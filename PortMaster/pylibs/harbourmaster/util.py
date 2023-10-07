@@ -51,7 +51,7 @@ def json_safe_load(*args):
 
 
 def fetch(url):
-    r = requests.get(url)
+    r = requests.get(url, timeout=10)
     if r.status_code != 200:
         logger.error(f"Failed to download {url!r}: {r.status_code}")
         return None
@@ -173,19 +173,29 @@ def load_pm_signature(file_name):
     if not file_name.is_file():
         return None
 
-    if file_name.suffix.casefold() not in ('.sh', ):
+    if file_name.suffix.lower() not in ('.sh', ):
         return None
 
-    for line in file_name.read_text().split('\n'):
-        if not line.strip().startswith('#'):
-            continue
+    try:
+        for line in file_name.read_text().split('\n'):
+            if not line.strip().startswith('#'):
+                continue
 
-        if 'PORTMASTER:' not in line:
-            continue
+            if 'PORTMASTER:' not in line:
+                continue
 
-        return [
-            item.strip()
-            for item in line.split(':', 1)[1].strip().split(',', 1)]
+            return [
+                item.strip()
+                for item in line.split(':', 1)[1].strip().split(',', 1)]
+
+    except UnicodeDecodeError as err:
+        logger.error(f"Error loading {file_name}: {err}")
+        return None
+
+    except Exception as err:
+        # Bad but we will live.
+        logger.error(f"Error loading {file_name}: {err}")
+        return None
 
     return None
 
@@ -201,7 +211,7 @@ def add_pm_signature(file_name, info):
     if not file_name.is_file():
         return
 
-    if file_name.suffix.casefold() not in ('.sh', ):
+    if file_name.suffix.lower() not in ('.sh', ):
         return
 
     # See if it has some info already.
@@ -292,53 +302,65 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
     if md5_result is None:
         md5_result = [None]
 
-    r = requests.get(file_url, stream=True)
+    try:
+        r = requests.get(file_url, stream=True, timeout=(10, 5))
 
-    if r.status_code != 200:
+        if r.status_code != 200:
+            if callback is not None:
+                callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
+
+            logger.error(f"Unable to download file: {file_url!r} [{r.status_code}]")
+            return None
+
+        total_length = r.headers.get('content-length')
+        if total_length is None:
+            total_length = None
+            total_length_mb = "???? MB"
+        else:
+            total_length = int(total_length)
+            total_length_mb = nice_size(total_length)
+
+        md5 = hashlib.md5()
+
         if callback is not None:
-            callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
+            callback.message(_("Downloading {file_url} - ({total_length_mb})").format(file_url=file_url, total_length_mb=total_length_mb))
+        else:
+            cprint(f"Downloading <b>{file_url!r}</b> - <b>{total_length_mb}</b>")
 
-        logger.error(f"Unable to download file: {file_url!r} [{r.status_code}]")
-        return None
+        length = 0
+        with file_name.open('wb') as fh:
+            for data in r.iter_content(chunk_size=104096, decode_unicode=False):
+                md5.update(data)
+                fh.write(data)
+                length += len(data)
 
-    total_length = r.headers.get('content-length')
-    if total_length is None:
-        total_length = None
-        total_length_mb = "???? MB"
-    else:
-        total_length = int(total_length)
-        total_length_mb = nice_size(total_length)
+                if callback is not None:
+                    callback.progress(_("Downloading file."), length, total_length, 'data')
+                else:
+                    if total_length is None:
+                        sys.stdout.write(f"\r[{'?' * 40}] - {nice_size(length)} / {total_length_mb} ")
+                    else:
+                        amount = int(length / total_length * 40)
+                        sys.stdout.write(f"\r[{'|' * amount}{' ' * (40 - amount)}] - {nice_size(length)} / {total_length_mb} ")
 
-    md5 = hashlib.md5()
+                    sys.stdout.flush()
 
-    if callback is not None:
-        callback.message(_("Downloading {file_url} - ({total_length_mb})").format(file_url=file_url, total_length_mb=total_length_mb))
-    else:
-        cprint(f"Downloading <b>{file_url!r}</b> - <b>{total_length_mb}</b>")
-
-    length = 0
-    with file_name.open('wb') as fh:
-        for data in r.iter_content(chunk_size=104096, decode_unicode=False):
-            md5.update(data)
-            fh.write(data)
-            length += len(data)
+            if callback is None:
+                cprint("\n")
 
             if callback is not None:
                 callback.progress(_("Downloading file."), length, total_length, 'data')
-            else:
-                if total_length is None:
-                    sys.stdout.write(f"\r[{'?' * 40}] - {nice_size(length)} / {total_length_mb} ")
-                else:
-                    amount = int(length / total_length * 40)
-                    sys.stdout.write(f"\r[{'|' * amount}{' ' * (40 - amount)}] - {nice_size(length)} / {total_length_mb} ")
 
-                sys.stdout.flush()
+    except requests.RequestException as err:
+        if file_name.is_file():
+            file_name.unlink()
 
-        if callback is None:
-            cprint("\n")
+        logger.error(f"Requests error: {err}")
 
         if callback is not None:
-            callback.progress(_("Downloading file."), length, total_length, 'data')
+            callback.message_box(_("Download failed: {err}").format(err=str(err)))
+
+        return None
 
     md5_file = md5.hexdigest()
     if md5_source is not None:

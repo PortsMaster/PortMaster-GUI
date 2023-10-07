@@ -179,3 +179,9 @@ harbourmaster.txt
 PortMaster.zip
 pylibs.zip
 version
+
+# PortMaster Installer scripts.
+makeself*/
+makeself-*.run
+runtimes.zip
+Install*PortMaster.sh

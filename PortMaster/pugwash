@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.14'
+PORTMASTER_VERSION = '8.4.15'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -27,6 +27,7 @@ import re
 import shutil
 import sys
 import textwrap
+import time
 import zipfile
 
 from pathlib import Path
@@ -223,10 +224,10 @@ gettext.textdomain('messages')
 ## Code starts here.
 
 __IP_ADDRESS=None
-def get_ip_address():
+def get_ip_address(force_update=False):
     global __IP_ADDRESS
 
-    if __IP_ADDRESS is not None:
+    if not force_update and __IP_ADDRESS is not None:
         return __IP_ADDRESS
 
     import socket
@@ -239,7 +240,7 @@ def get_ip_address():
         __IP_ADDRESS = s.getsockname()[0]
 
     except Exception:
-        __IP_ADDRESS = _("Unknown IP")
+        __IP_ADDRESS = None
 
     finally:
         s.close()
@@ -522,7 +523,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 # 'rg503'
                 # 'rg351v'
                 # 'rg353v'
-                'rgb30'
+                # 'rgb30'
                 # 'ogs'
                 # 'ogu'
                 # 'x55'
@@ -614,7 +615,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.set_data('system.cfw_name', device_info['name'])
         self.set_data('system.cfw_version', device_info['version'])
         self.set_data('system.device_name', device_info['device'])
-        self.set_data('system.ip_address', get_ip_address())
+        self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
         self.set_data('system.progress_text', "")
         self.set_data('system.progress_amount', "")
         self.set_data('system.progress_perc_5', "0")
@@ -1703,6 +1704,11 @@ def portmaster_check_update(pm, config, temp_dir):
 def main(argv):
     global LOG_FILE_HANDLE
     global LOG_FILE
+
+    if not get_ip_address():
+        print(_("No network connection available."))
+        time.sleep(5)
+        return 255
 
     with make_temp_directory() as temp_dir:
         argv = argv[:]

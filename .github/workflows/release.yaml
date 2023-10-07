@@ -51,7 +51,7 @@ jobs:
       - name: Create PortMaster.zip
         id: create-zip
         run: |
-          ./do_release.sh ${{steps.version.outputs.version}}
+          ./do_release.sh release
  
       - name: Create md5 hashes
         id: md5
