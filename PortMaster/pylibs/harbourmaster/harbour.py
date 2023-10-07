@@ -478,6 +478,8 @@ class HarbourMaster():
                     'portmaster.sh',
                     'thememaster',
                     'thememaster.sh',
+                    'install portmaster.sh',
+                    'install full portmaster.sh',
                     'videos',
                     ):
                 continue
