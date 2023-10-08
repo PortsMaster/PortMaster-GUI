@@ -270,6 +270,11 @@ class HarbourMaster():
             if fail:
                 continue
 
+            if self.cfg_data['konami'] and source_data['api'] == 'PortMasterV1':
+                source_data['api'] = 'PortMasterV2'
+                source_data['last_checked'] = None
+                source_data['data'] = {}
+
             source = HM_SOURCE_APIS[source_data['api']](self, source_file, source_data)
 
             self.sources[source_data['prefix']] = source
