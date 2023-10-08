@@ -508,6 +508,30 @@ def timeit(func):
     return timeit_wrapper
 
 
+def port_sort_alphabetical(port_info):
+    port_info.get('attr', {}).get('title', port_info['name']).casefold()
+
+
+def port_sort_date_added(port_info):
+    return port_info.get('source', {}).get('date_added', '1970-01-01')
+
+
+def port_sort_date_updated(port_info):
+    return port_info.get('source', {}).get('date_updated', '1970-01-01')
+
+
+PORT_SORT_FUNCS = {
+    'alphabetical': port_sort_alphabetical,
+    'recently_added':   port_sort_date_added,
+    'recently_updated': port_sort_date_updated,
+    }
+
+
+for sort_by in HM_SORT_ORDER:
+    if sort_by not in PORT_SORT_FUNCS:
+        raise RuntimeError(f'{sort_by} missing.')
+
+
 @contextlib.contextmanager
 def make_temp_directory():
     temp_dir = tempfile.mkdtemp()
@@ -625,4 +649,5 @@ __all__ = (
     'runtime_nicename',
     'timeit',
     'version_parse',
+    'PORT_SORT_FUNCS',
     )

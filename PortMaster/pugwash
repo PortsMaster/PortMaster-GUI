@@ -91,7 +91,6 @@ import sdl2.ext
 import pySDL2gui
 import pugtheme
 
-from utility import cprint, do_cprint_output
 from loguru import logger
 from pugtheme import theme_load, ThemeEngine, ThemeDownloader
 from pugscene import *

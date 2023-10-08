@@ -1105,12 +1105,23 @@ class PortListBaseScene():
             self.port_list = []
             self.last_port = 0
             self.tags['ports_list'].selected = 0
+            self.tags['ports_list'].list = [
+                _('NO PORTS')]
+
+            self.gui.set_port_info(None, {})
+
+            self.gui.set_data("port_info.title", _("** NO PORTS FOUND **"))
+
+            self.gui.set_data("port_info.description", _("Download ports first."))
+            self.ready = True
             return
 
         if not self.ready:
             self.gui.set_data('ports_list.total_ports', str(len(self.gui.hm.list_ports(filters=(self.options['base_filters'])))))
 
-        self.all_ports = self.gui.hm.list_ports(filters=(self.options['base_filters'] + self.options['filters']))
+        self.all_ports = self.gui.hm.list_ports(
+            filters=(self.options['base_filters'] + self.options['filters']),
+            sort_by=self.options['sort_by'])
         self.port_list = list(self.all_ports.keys())
 
         self.gui.set_data('ports_list.filters', ', '.join(sorted(self.options['filters'])))
@@ -1184,11 +1195,12 @@ class PortListBaseScene():
             port_info = self.all_ports[port_name]
 
             self.gui.set_port_info(port_name, port_info)
+            # print(json.dumps(port_info, indent=4))
 
             # if 'port_image' in self.tags:
             #     self.tags['port_image'].image = self.gui.get_port_image(port_name)
 
-        if self.options['mode'] == 'install' and events.was_pressed('X'):
+        if self.options['mode'] in ('install', 'uninstall') and events.was_pressed('X'):
             self.button_activate()
 
             if len(self.port_list) > 0 or len(self.options['filters']) > 0:
@@ -1266,6 +1278,7 @@ class PortsListScene(PortListBaseScene, BaseScene):
         self.options = options
         self.options.setdefault('base_filters', [])
         self.options.setdefault('filters', [])
+        self.options.setdefault('sort_by', 'alphabetical')
 
         self.load_regions("ports_list", [
             'ports_list',
@@ -1357,6 +1370,7 @@ class FiltersScene(BaseScene):
         self.list_scene = list_scene
         self.locked_genres = list(list_scene.options['base_filters'])
         self.selected_genres = list(list_scene.options['filters'])
+        self.sort_by = list_scene.options.get('sort_by', "alphabetical")
         self.selected_port = list_scene.selected_port()
 
         if len(list_scene.all_ports) > 0:
@@ -1375,6 +1389,12 @@ class FiltersScene(BaseScene):
             return
 
         filter_translation = {
+            # Sorting.
+            "alphabetical":     _("Alphabetical"),
+            "recently_added":   _("Recently Added"),
+            "recently_updated": _("Recently Updated"),
+
+            # Genres.
             "action":           _("Action"),
             "adventure":        _("Adventure"),
             "arcade":           _("Arcade"),
@@ -1391,10 +1411,12 @@ class FiltersScene(BaseScene):
             "visual novel":     _("Visual Novel"),
             "other":            _("Other"),
 
+            # Attrs.
             "rtr":              _("Ready to Run"),
             "not installed":    _("Not Installed"),
-            "update available": _("Update Available"), # To be added
+            "update available": _("Update Available"),
 
+            # Runtimes.
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "godot":            _("{runtime_name} Runtime").format(runtime_name="Godot/FRT"),
             }
@@ -1417,83 +1439,114 @@ class FiltersScene(BaseScene):
 
         self.tags['filter_list'].reset_options()
 
-        for hm_genre in sorted(harbourmaster.HM_GENRES, key=lambda genre: (sort_order.get(genre, 0), filter_translation.get(genre, genre))):
-            if hm_genre in self.locked_genres:
-                continue
+        DISPLAY_ORDER = [
+            'sort',
+            'attr',
+            'genres',
+            'porters',
+            ]
 
-            if hm_genre in genres:
-                ports = total_ports
-                text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
-            else:
-                ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
-                text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
+        for display_order in DISPLAY_ORDER:
+            first_add = True
 
-            if ports == 0:
-                continue
+            if display_order == 'sort':
+                for hm_sort_order in harbourmaster.HM_SORT_ORDER:
+                    if hm_sort_order == self.sort_by:
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, "    "]
+                    else:
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, "    "]
 
-            if first_add:
-                self.tags['filter_list'].add_option(None, _("Genres:"))
-                first_add = False
-                add_blank = True
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
 
-            self.tags['filter_list'].add_option(hm_genre, text)
+                        self.tags['filter_list'].add_option(None, _("Sort:"))
+                        first_add = False
+                        add_blank = True
 
-            if selected_option == hm_genre:
-                selected_offset = len(self.tags['filter_list'].options) - 1
+                    self.tags['filter_list'].add_option(hm_sort_order, text)
 
-        first_add = True
+                    if selected_option == hm_sort_order:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
 
-        for hm_genre in ['rtr', 'mono', 'not installed']:   # 'godot', 'updates available'
-            if hm_genre in self.locked_genres:
-                continue
+            elif display_order == 'genres':
+                for hm_genre in sorted(harbourmaster.HM_GENRES, key=lambda genre: (sort_order.get(genre, 0), filter_translation.get(genre, genre))):
+                    if hm_genre in self.locked_genres:
+                        continue
 
-            if hm_genre in genres:
-                ports = total_ports
-                text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
-            else:
-                ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
-                text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    if hm_genre in genres:
+                        ports = total_ports
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
+                    else:
+                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
 
-            if ports == 0:
-                continue
+                    if ports == 0:
+                        continue
 
-            if first_add:
-                if add_blank:
-                    self.tags['filter_list'].add_option(None, "")
-                self.tags['filter_list'].add_option(None, _("Attributes:"))
-                first_add = False
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
+                        self.tags['filter_list'].add_option(None, _("Genres:"))
+                        first_add = False
+                        add_blank = True
 
-            self.tags['filter_list'].add_option(hm_genre, text)
+                    self.tags['filter_list'].add_option(hm_genre, text)
 
-            if selected_option == hm_genre:
-                selected_offset = len(self.tags['filter_list'].options) - 1
+                    if selected_option == hm_genre:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
 
-        first_add = True
+            elif display_order == 'attr':
+                for hm_genre in ['rtr', 'mono', 'godot', 'updates', 'update available']:
+                    if hm_genre in self.locked_genres:
+                        continue
 
-        for hm_genre in sorted(self.gui.hm.porters_list(), key=lambda name: name.lower()):
-            if hm_genre in self.locked_genres:
-                continue
+                    if hm_genre in genres:
+                        ports = total_ports
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    else:
+                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
 
-            if hm_genre in genres:
-                ports = total_ports
-                text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
-            else:
-                ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
-                text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    if ports == 0:
+                        continue
 
-            if ports == 0:
-                continue
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
+                        self.tags['filter_list'].add_option(None, _("Attributes:"))
+                        first_add = False
 
-            if first_add:
-                if add_blank:
-                    self.tags['filter_list'].add_option(None, "")
-                self.tags['filter_list'].add_option(None, _("Porters:"))
-                first_add = False
+                    self.tags['filter_list'].add_option(hm_genre, text)
 
-            self.tags['filter_list'].add_option(hm_genre, text)
+                    if selected_option == hm_genre:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
 
-            if selected_option == hm_genre:
-                selected_offset = len(self.tags['filter_list'].options) - 1
+            elif display_order == 'porters':
+                for hm_genre in sorted(self.gui.hm.porters_list(), key=lambda name: name.lower()):
+                    if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre in genres:
+                        ports = total_ports
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    else:
+                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+
+                    if ports == 0:
+                        continue
+
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
+                        self.tags['filter_list'].add_option(None, _("Porters:"))
+                        first_add = False
+
+                    self.tags['filter_list'].add_option(hm_genre, text)
+
+                    if selected_option == hm_genre:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
 
         self.tags['filter_list'].list_select(selected_offset, direction=1)
 
@@ -1511,8 +1564,21 @@ class FiltersScene(BaseScene):
             if selected_filter is None:
                 return True
 
+            if selected_filter in harbourmaster.HM_SORT_ORDER:
+                if self.sort_by == selected_filter:
+                    return True
+
+                self.sort_by = selected_filter
+                self.list_scene.options['sort_by'] = selected_filter
+                self.list_scene.update_ports()
+                self.list_scene.tags['ports_list'].list_select(0)
+                self.update_filters()
+                self.button_activate()
+                return True
+
             if selected_filter in self.selected_genres:
                 self.selected_genres.remove(selected_filter)
+
             else:
                 self.selected_genres.append(selected_filter)
 
@@ -1520,6 +1586,7 @@ class FiltersScene(BaseScene):
             self.list_scene.options['filters'] = self.selected_genres
             self.list_scene.update_ports()
             self.list_scene.try_to_select(self.selected_port, self.selected_port_title)
+            self.button_activate()
             return True
 
         if events.was_pressed('B') or events.was_pressed('X'):

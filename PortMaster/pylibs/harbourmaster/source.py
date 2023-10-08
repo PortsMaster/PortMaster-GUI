@@ -140,7 +140,7 @@ class GitHubRawReleaseV1(BaseSource):
     def update(self):
         # cprint(f"<b>{self._config['name']}</b>: updating")
         if self.hm.callback is not None:
-            self.hm.callback.message("  - {}".format(_("Updating")))
+            self.hm.callback.message(" - {}".format(_("Updating")))
 
         # Scrap the rest
         self._clear()
@@ -151,7 +151,7 @@ class GitHubRawReleaseV1(BaseSource):
 
         if self._did_update:
             # cprint(f"- <b>{self._config['name']}</b>: up to date already.")
-            self.hm.callback.message("  - {}".format(_("Up to date already")))
+            self.hm.callback.message(" - {}".format(_("Up to date already")))
             return
 
         # cprint(f"- <b>{self._config['name']}</b>: Fetching latest ports")
@@ -184,17 +184,6 @@ class GitHubRawReleaseV1(BaseSource):
         self._config['data']['ports'] = self.ports
         self._config['data']['utils'] = self.utils
         self._config['data']['data']  = self._data
-
-        ## HACK! :D
-        # If the github action hasnt been run yet, the md5 files wont have been generated
-        # so we just make them and assume they will eventually be available.
-        for item_name in (self.ports + self.utils):
-            item_md5 = item_name + '.md5'
-            if item_md5 not in self._data:
-                self._data[item_md5] = self._data[item_name].copy()
-                self._data[item_md5]['name'] += '.md5'
-                self._data[item_md5]['size'] = 33
-                self._data[item_md5]['url'] += '.md5'
 
         self._config['last_checked'] = datetime.datetime.now().isoformat()
 
@@ -445,6 +434,136 @@ class PortMasterV1(GitHubRawReleaseV1):
         return zip_info
 
 
+class PortMasterV2(GitHubRawReleaseV1):
+    VERSION = 4
+
+    def _load(self):
+        self._info = self._config.setdefault('data', {}).setdefault('info', {})
+
+    def _clear(self):
+        self._info = {}
+
+    def _update(self):
+        # cprint(f"- <b>{self._config['name']}</b>: Fetching info")
+        self.hm.callback.message("  - {}".format(_("Fetching info")))
+
+        portsjson_url = self._data['ports.json']['url']
+        data = fetch_json(portsjson_url)
+
+        for port_name in data['ports']:
+            port_info = data['ports'][port_name]
+
+            if 'md5' in port_info:
+                port_info['source'] = {
+                    "source": "PortMaster",
+                    "date_added": port_info['date_added'],
+                    "date_updated": port_info['date_updated'],
+                    "url": port_info['download_url'],
+                    "size": port_info['download_size'],
+                    "md5": port_info['md5'],
+                    }
+
+                del port_info['date_added']
+                del port_info['date_updated']
+                del port_info['download_url']
+                del port_info['download_size']
+                del port_info['md5']
+
+            self._info[self.clean_name(port_name)] = port_info
+            self.ports.append(self.clean_name(port_name))
+            self._data[self.clean_name(port_name)]['md5'] = port_info['source']['md5']
+
+        for util_name in data['utils']:
+            self._data[self.clean_name(util_name)]['md5'] = data['utils'][util_name]['md5']
+
+        self._config['data']['info']  = self._info
+
+        ## Download latest images.zip if needed.
+        ## Uncomment after images has been added to PortMaster.
+        if 'images.zip' not in self._data:
+            return
+
+        images_url_md5 = self._data['images.zip.md5']['url']
+        images_url_zip = self._data['images.zip']['url']
+
+        if 'md5' in self._data['images.zip']:
+            images_md5 = self._data['images.zip']['md5']
+
+        else:
+            images_md5 = fetch_text(images_url_md5).strip().split(' ', 1)[0]
+
+        if self._images_md5 is None or images_md5 != self._images_md5:
+            logger.debug(f"images_md5={images_md5}, self.images_md5={self._images_md5}")
+            images_zip = download(self.hm.temp_dir / "images.zip", images_url_zip, images_md5, callback=self.hm.callback)
+            if images_zip is None:
+                logger.debug(f"Unable to download {images_url_zip}")
+                return
+
+            images_to_delete = [
+                file_name
+                for file_name in self._images_dir.iterdir()
+                if file_name.suffix in ('.png', '.jpg')]
+
+            with zipfile.ZipFile(images_zip, 'r') as zf:
+                for zip_name in zf.namelist():
+                    if zip_name.casefold().rsplit('.')[-1] not in ('jpg', 'png'):
+                        continue
+
+                    file_name = self._images_dir / self.clean_name(zip_name.rsplit('/', 1)[-1])
+                    if file_name not in images_to_delete:
+                        logger.debug(f"adding {file_name}")
+
+                    with open(file_name, 'wb') as fh:
+                        fh.write(zf.read(zip_name))
+
+                    if file_name in images_to_delete:
+                        images_to_delete.remove(file_name)
+
+            for image_to_delete in images_to_delete:
+                logger.debug(f"removing {image_to_delete}")
+                image_to_delete.unlink()
+
+            self._images_md5_file.write_text(images_md5)
+            self._images_md5 = images_md5
+
+    def download(self, port_name, temp_dir=None, md5_result=None):
+        if md5_result is None:
+            md5_result = [None]
+
+        if port_name not in self._data:
+            logger.error(f"Unable to find port {port_name}")
+            self.hm.callback.message_box(_("Unable to find {port_name}.").format(port_name=port_name))
+            return None
+
+        if temp_dir is None:
+            temp_dir = self.hm.temp_dir
+
+        md5_result[0] = self._data[port_name]['md5']
+        zip_file = download(temp_dir / port_name, self._data[port_name]['url'], self._data[port_name]['md5'], callback=self.hm.callback)
+
+        if zip_file is None:
+            return None
+
+        if port_name in self.utils:
+            ## Utils
+            return zip_file
+
+        zip_info = port_info_load({})
+
+        zip_info['name'] = port_name
+        zip_info['status'] = {
+            'source': self._config['name'],
+            'md5':    md5_result[0],
+            'status': 'downloaded',
+            }
+        zip_info['zip_file'] = zip_file
+
+        port_info = self.port_info(port_name)
+        port_info_merge(zip_info, port_info)
+
+        return zip_info
+
+
 class GitHubRepoV1(GitHubRawReleaseV1):
     VERSION = 2
 
@@ -633,6 +752,7 @@ def raw_download(save_path, file_url, callback=None):
 HM_SOURCE_APIS = {
     'GitHubRawReleaseV1': GitHubRawReleaseV1,
     'PortMasterV1': PortMasterV1,
+    'PortMasterV2': PortMasterV2,
     'GitHubRepoV1': GitHubRepoV1,
     }
 
