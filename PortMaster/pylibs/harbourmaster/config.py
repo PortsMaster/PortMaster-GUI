@@ -126,14 +126,22 @@ HM_GENRES = [
     ]
 
 
+HM_SORT_ORDER = [
+    "alphabetical",
+    "recently_added",
+    "recently_updated",
+    ]
+
+
 __all__ = (
-    'HM_UPDATE_FREQUENCY',
-    'HM_TOOLS_DIR',
-    'HM_PORTS_DIR',
-    'HM_DEFAULT_TOOLS_DIR',
     'HM_DEFAULT_PORTS_DIR',
+    'HM_DEFAULT_TOOLS_DIR',
     'HM_GENRES',
+    'HM_PERFTEST',
+    'HM_PORTS_DIR',
+    'HM_SORT_ORDER',
     'HM_SOURCE_DEFAULTS',
     'HM_TESTING',
-    'HM_PERFTEST',
+    'HM_TOOLS_DIR',
+    'HM_UPDATE_FREQUENCY',
     )

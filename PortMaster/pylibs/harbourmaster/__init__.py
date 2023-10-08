@@ -6,6 +6,7 @@ from .config import (
     HM_DEFAULT_TOOLS_DIR,
     HM_GENRES,
     HM_PORTS_DIR,
+    HM_SORT_ORDER,
     HM_SOURCE_DEFAULTS,
     HM_TESTING,
     HM_TOOLS_DIR,
@@ -40,6 +41,7 @@ from .util import (
     runtime_nicename,
     timeit,
     version_parse,
+    PORT_SORT_FUNCS,
     )
 
 from .info import (

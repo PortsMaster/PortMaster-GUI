@@ -47,7 +47,7 @@ class HarbourMaster():
 
     PORT_INFO_URL      = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
     PORTS_INFO_URL     = PORT_INFO_URL + "ports_info.json"
-    FEATURED_PORTS_URL = PORT_INFO_URL + "featured_ports.json" ## Change this soon.
+    FEATURED_PORTS_URL = PORT_INFO_URL + "featured_ports.json"
     PORTERS_URL        = PORT_INFO_URL + "porters.json"
 
     def __init__(self, config, *, tools_dir=None, ports_dir=None, temp_dir=None, callback=None):
@@ -269,6 +269,11 @@ class HarbourMaster():
 
             if fail:
                 continue
+
+            if source_data['api'] == 'PortMasterV1':
+                source_data['api'] = 'PortMasterV2'
+                source_data['last_checked'] = None
+                source_data['data'] = {}
 
             source = HM_SOURCE_APIS[source_data['api']](self, source_file, source_data)
 
@@ -726,6 +731,12 @@ class HarbourMaster():
             add_list_unique(attrs, 'installed')
             add_list_unique(attrs, 'broken')
 
+        if 'source' in port_info and 'status' in port_info:
+            source_md5 = port_info['source'].get('md5', None)
+            status_md5 = port_info['status'].get('md5', None)
+            if source_md5 is not None and status_md5 is None and source_md5 != status_md5:
+                add_list_unique(attrs, 'update available')
+
         return attrs
 
     def match_filters(self, port_filters, port_info):
@@ -748,8 +759,14 @@ class HarbourMaster():
 
         return match_requirements(capabilities, requirements)
 
-    def list_ports(self, filters=[]):
+    def list_ports(self, filters=[], sort_by='alphabetical', reverse=False):
         ## Filters can be genre, runtime
+        if sort_by not in HM_SORT_ORDER:
+            sort_by = HM_SORT_ORDER[0]
+
+        sort_by_reverse_order = ('recently_added', 'recently_updated')
+        if sort_by in sort_by_reverse_order:
+            reverse = not reverse
 
         tmp_ports = {}
         not_installed = 'not installed' in filters
@@ -762,19 +779,25 @@ class HarbourMaster():
                 if port_name.casefold() in tmp_ports:
                     continue
 
-                if not self.match_filters(filters, port_info):
+                new_port_info = port_info_load(port_info)
+                port_info_merge(new_port_info, self.port_info(port_name))
+
+                if not self.match_filters(filters, new_port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = port_info
+                tmp_ports[port_name.casefold()] = new_port_info
 
             for port_name, port_info in self.broken_ports.items():
                 if port_name.casefold() in tmp_ports:
                     continue
 
-                if not self.match_filters(filters, port_info):
+                new_port_info = port_info_load(port_info)
+                port_info_merge(new_port_info, self.port_info(port_name))
+
+                if not self.match_filters(filters, new_port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = port_info
+                tmp_ports[port_name.casefold()] = new_port_info
 
         for source_prefix, source in self.sources.items():
             for port_name in source.ports:
@@ -788,17 +811,28 @@ class HarbourMaster():
 
                 port_info = source.port_info(port_name)
 
-                if not self.match_filters(filters, port_info):
+                new_port_info = port_info_load(port_info)
+
+                if port_name in self.installed_ports:
+                    port_info_merge(new_port_info, self.installed_ports[port_name])
+
+                elif port_name in self.broken_ports:
+                    port_info_merge(new_port_info, self.broken_ports[port_name])
+
+                if not self.match_filters(filters, new_port_info):
                     continue
 
                 if not self.match_requirements(port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = port_info
+                tmp_ports[port_name.casefold()] = new_port_info
 
         ports = {
             port_name: port_info
-            for port_name, port_info in sorted(tmp_ports.items(), key=lambda x: x[1].get('attr', {}).get('title', x[0]).casefold())
+            for port_name, port_info in sorted(
+                tmp_ports.items(),
+                key=lambda x: (PORT_SORT_FUNCS[sort_by](x[1]), x[0].casefold()),
+                reverse=reverse)
             }
 
         return ports

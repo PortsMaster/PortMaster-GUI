@@ -19,9 +19,8 @@ PORT_INFO_ROOT_ATTRS = {
     'items': None,
     'items_opt': None,
     'attr': {},
-    'status': None,
-    'files': None,
     }
+
 
 PORT_INFO_ATTR_ATTRS = {
     'title': "",
@@ -36,7 +35,13 @@ PORT_INFO_ATTR_ATTRS = {
     }
 
 
-@timeit
+PORT_INFO_OPTIONAL_ROOT_ATTRS = [
+    'status',
+    'files',
+    'source',
+    ]
+
+
 def port_info_load(raw_info, source_name=None, do_default=False):
     if isinstance(raw_info, pathlib.PurePath):
         source_name = str(raw_info)
@@ -95,7 +100,7 @@ def port_info_load(raw_info, source_name=None, do_default=False):
         else:
             return None
 
-    if info.get('version', None) == 1 or 'source' in info:
+    if info.get('version', None) == 1:
         # Update older json version to the newer one.
         info = info.copy()
         info['name'] = info['source'].rsplit('/', 1)[-1]
@@ -136,6 +141,10 @@ def port_info_load(raw_info, source_name=None, do_default=False):
             attr_default = attr_default.copy()
 
         port_info['attr'][attr] = info.get('attr', {}).get(attr, attr_default)
+
+    for attr in PORT_INFO_OPTIONAL_ROOT_ATTRS:
+        if attr in info:
+            port_info[attr] = info[attr]
 
     if isinstance(port_info['items'], list):
         i = 0
@@ -213,7 +222,7 @@ def port_info_merge(port_info, other):
 
     for attr, attr_default in PORT_INFO_ROOT_ATTRS.items():
         if attr == 'attr':
-            break
+            continue
 
         value_a = port_info[attr]
         value_b = other_info[attr]
@@ -225,6 +234,25 @@ def port_info_merge(port_info, other):
         if value_b in (True, False) and value_a in (True, False, None):
             port_info[attr] = value_b
             continue
+
+        if isinstance(value_b, str) and value_a in ("", None):
+            port_info[attr] = value_b
+            continue
+
+        if isinstance(value_b, list) and value_a in ([], None):
+            port_info[attr] = value_b[:]
+            continue
+
+        if isinstance(value_b, dict) and value_a in ({}, None):
+            port_info[attr] = value_b.copy()
+            continue
+
+    for attr in PORT_INFO_OPTIONAL_ROOT_ATTRS:
+        if attr not in other_info:
+            continue
+
+        value_a = port_info.get(attr)
+        value_b = other_info[attr]
 
         if isinstance(value_b, str) and value_a in ("", None):
             port_info[attr] = value_b
