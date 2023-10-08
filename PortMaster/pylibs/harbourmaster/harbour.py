@@ -270,7 +270,7 @@ class HarbourMaster():
             if fail:
                 continue
 
-            if self.cfg_data['konami'] and source_data['api'] == 'PortMasterV1':
+            if self.cfg_data.get('konami', False) and source_data['api'] == 'PortMasterV1':
                 source_data['api'] = 'PortMasterV2'
                 source_data['last_checked'] = None
                 source_data['data'] = {}
