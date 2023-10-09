@@ -311,15 +311,26 @@ class DirectoryScanner:
     def _get_directory_size(self, path):
         total_size = 0
 
-        for entry in os.scandir(path):
-            if entry.name.startswith('.'):
-                continue
+        stack = [path]
 
-            elif entry.is_file():
+        while len(stack) > 0:
+            path = stack.pop(0)
+
+            if path.is_file():
                 total_size += entry.stat().st_size
 
-            elif entry.is_dir():
-                yield from self._get_directory_size(entry.path)
+            elif path.is_dir():
+                for entry in os.scandir(path):
+                    if entry.name.startswith('.'):
+                        continue
+
+                    elif entry.is_file():
+                        total_size += entry.stat().st_size
+
+                    elif entry.is_dir():
+                        stack.append(Path(entry.path))
+
+                yield total_size
 
         yield total_size
 
@@ -818,7 +829,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         return image
 
-    def set_port_info(self, port_name, port_info):
+    def set_port_info(self, port_name, port_info, want_install_size=False):
         ## TODO: make this better :D
         if port_name is None:
             self.set_data("port_info.image", "NO_IMAGE")
@@ -856,7 +867,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             self.set_data("port_info.runtime_status", _("N/A"))
 
         self.set_data("port_info.download_size", harbourmaster.nice_size(self.hm.port_download_size(port_name)))
-        if 'files' in port_info and port_info['files'] is not None:
+        if want_install_size and 'files' in port_info and port_info['files'] is not None:
             self.get_port_size(port_name, port_info)
         else:
             self.set_data("port_info.install_size", "")
