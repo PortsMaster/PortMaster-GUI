@@ -1194,7 +1194,7 @@ class PortListBaseScene():
             port_name = self.port_list[self.last_port]
             port_info = self.all_ports[port_name]
 
-            self.gui.set_port_info(port_name, port_info)
+            self.gui.set_port_info(port_name, port_info, self.options['mode'] != 'install')
             # print(json.dumps(port_info, indent=4))
 
             # if 'port_image' in self.tags:
