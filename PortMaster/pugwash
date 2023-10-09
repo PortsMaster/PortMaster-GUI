@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.17'
+PORTMASTER_VERSION = '8.4.18'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -309,11 +309,10 @@ class DirectoryScanner:
             return scan_info[0], True
 
     def _get_directory_size(self, path):
-        total_size = 0
-
         stack = [path]
 
         while len(stack) > 0:
+            total_size = 0
             path = stack.pop(0)
 
             if path.is_file():
@@ -321,7 +320,7 @@ class DirectoryScanner:
 
             elif path.is_dir():
                 for entry in os.scandir(path):
-                    if entry.name.startswith('.'):
+                    if entry.name in ('.', '..'):
                         continue
 
                     elif entry.is_file():
@@ -330,9 +329,7 @@ class DirectoryScanner:
                     elif entry.is_dir():
                         stack.append(Path(entry.path))
 
-                yield total_size
-
-        yield total_size
+            yield total_size
 
     def _calculate_total_size(self, path):
         total_size = 0

@@ -51,7 +51,7 @@ def json_safe_load(*args):
 
 
 def fetch(url):
-    r = requests.get(url, timeout=10)
+    r = requests.get(url, timeout=20)
     if r.status_code != 200:
         logger.error(f"Failed to download {url!r}: {r.status_code}")
         return None
@@ -303,7 +303,7 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
         md5_result = [None]
 
     try:
-        r = requests.get(file_url, stream=True, timeout=(10, 5))
+        r = requests.get(file_url, stream=True, timeout=(30, 10))
 
         if r.status_code != 200:
             if callback is not None:
