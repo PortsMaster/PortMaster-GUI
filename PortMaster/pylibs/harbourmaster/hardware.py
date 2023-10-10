@@ -5,6 +5,7 @@ import datetime
 import fnmatch
 import json
 import math
+import os
 import pathlib
 import platform
 import re
@@ -237,6 +238,22 @@ def _merge_info(info, new_info):
     return info
 
 
+def mem_limits():
+    if 'SC_PAGE_SIZE' not in os.sysconf_names:
+        memory = 2
+    elif 'SC_PHYS_PAGES' not in os.sysconf_names:
+        memory = 2
+    else:
+        memory = math.ceil((os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')) / (1024**3))
+
+    results = []
+    while memory > 0:
+        results.append(f"{memory}gb")
+        memory -= 1
+
+    return results
+
+
 def find_device_by_resolution(resolution):
     for device, information in HW_INFO.items():
         if resolution == information['resolution']:
@@ -291,6 +308,8 @@ def device_info(override_device=None, override_resolution=None):
 
         if info['resolution'][0] > info['resolution'][1]:
             info['capabilities'].append("wide")
+
+    info['capabilities'].extend(mem_limits())
 
     logger.debug(f"DEVICE INFO: {info}")
     __root_info = info
