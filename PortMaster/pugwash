@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.19'
+PORTMASTER_VERSION = '8.4.20'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -609,6 +609,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.callback_messages = []
         self.callback_progress = None
         self.callback_amount = 0
+        self.message_box_disable = False
         self.message_box_depth = 0
         self.message_box_scene = None
         self.was_cancelled = False
@@ -1062,6 +1063,12 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         if cancel_text is None:
             cancel_text = _("Cancel")
 
+        if self.message_box_disable:
+            if want_cancel:
+                return False
+
+            return True
+
         ## This fixes a bug :D
         self.events.handle_events()
 
@@ -1138,6 +1145,20 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         finally:
             self.messages_end(internal=True)
+
+    @contextlib.contextmanager
+    def disable_messagebox(self):
+        """
+        Disables displaying the messagebox, should be used in conjunction with enable_cancellable(False)
+        """
+        old_message_state = self.message_box_disable
+        try:
+            self.message_box_disable = True
+
+            yield
+
+        finally:
+            self.message_box_disable = old_message_state
 
     ## Scene code.
     def scene_list(self):
@@ -1544,6 +1565,22 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 result = self.hm.check_runtime(args[0])
                 fifo_config['done-file'].write_text(result and "FAIL" or "OKAY")
 
+    def fifo_install(self, fifo_config, args):
+        if self.hm is None:
+            logger.debug("port install requested with no harbourmaster.")
+            fifo_config['done-file'].write_text("FAIL")
+            return
+
+        if len(args) == 0:
+            fifo_config['done-file'].write_text("FAIL")
+            return
+
+        with self.enable_messages():
+            with self.enable_cancellable(False):
+                with self.disable_messagebox():
+                    result = self.hm.install_port(args[0])
+                    fifo_config['done-file'].write_text(result and "FAIL" or "OKAY")
+
     fifo_commands = {
         'register_set_info': fifo_reg_set_info,
         'register_clear_info': fifo_reg_clear_info,
@@ -1561,6 +1598,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         'message_box': fifo_message_box,
         'check_runtime': fifo_check_runtime,
+        'install': fifo_install,
         }
 
     def do_fifo_control(self, config, argv):

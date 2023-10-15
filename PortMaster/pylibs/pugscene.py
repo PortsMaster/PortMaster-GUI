@@ -1441,6 +1441,7 @@ class FiltersScene(BaseScene):
 
         DISPLAY_ORDER = [
             'sort',
+            'clear-filters',
             'attr',
             'genres',
             'porters',
@@ -1468,6 +1469,14 @@ class FiltersScene(BaseScene):
 
                     if selected_option == hm_sort_order:
                         selected_offset = len(self.tags['filter_list'].options) - 1
+
+            elif display_order == 'clear-filters':
+                if len(self.selected_genres) > 0:
+                    if add_blank:
+                        self.tags['filter_list'].add_option(None, "")
+
+                    add_blank = True
+                    self.tags['filter_list'].add_option('clear-filters', ["     ", _("Clear Filters"), "    "])
 
             elif display_order == 'genres':
                 for hm_genre in sorted(harbourmaster.HM_GENRES, key=lambda genre: (sort_order.get(genre, 0), filter_translation.get(genre, genre))):
@@ -1576,7 +1585,10 @@ class FiltersScene(BaseScene):
                 self.button_activate()
                 return True
 
-            if selected_filter in self.selected_genres:
+            if selected_filter == 'clear-filters':
+                self.selected_genres.clear()
+
+            elif selected_filter in self.selected_genres:
                 self.selected_genres.remove(selected_filter)
 
             else:

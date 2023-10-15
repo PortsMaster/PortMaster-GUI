@@ -29,6 +29,87 @@ echo "Starting PortMaster." > $CUR_TTY
 
 $ESUDO chmod -R +x .
 
+if [[ -e "/storage/.config/.OS_ARCH" ]] || [ "${OS_NAME}" == "JELOS" ] || [ "${OS_NAME}" == "UnofficialOS" ]; then
+  toolsfolderloc="/storage/roms/ports"
+else
+  isitthera=$($GREP "title=" "/usr/share/plymouth/themes/text.plymouth")
+  if [[ $isitthera == *"TheRA"* ]]; then
+    if [ -d "/opt/tools/PortMaster/" ]; then
+      toolsfolderloc="/opt/tools"
+    else
+      toolsfolderloc="/roms/ports"
+    fi
+  else
+    if [ -d "/opt/system/Tools/PortMaster/" ]; then
+      toolsfolderloc="/opt/system/Tools"
+    else
+      toolsfolderloc="/roms/ports"
+    fi
+  fi
+fi
+
+## Autoinstallation Code
+# This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
+AUTOINSTALL=$(find "${toolsfolderloc}/PortMaster/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
+if [ -n "$AUTOINSTALL" ]; then
+  source "PortMasterDialog.txt"
+
+  GW=$(PortMasterIPCheck)
+  PortMasterDialogInit "no-check"
+
+  PortMasterDialog "messages_begin"
+
+  PortMasterDialog "message" "Auto-installation"
+
+  # Install the latest runtimes.zip
+  if [ -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" ]; then
+    $ESUDO unzip -o "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" -d "${toolsfolderloc}/PortMaster/libs"
+    $ESUDO rm -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip"
+    PortMasterDialog "message" "- SUCCESS: runtimes.zip"
+  fi
+
+  for file_name in "${toolsfolderloc}/PortMaster/autoinstall"/*.squashfs
+  do
+    $ESUDO mv -f "$file_name" "${toolsfolderloc}/PortMaster/libs"
+    PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
+  done
+
+  for file_name in "${toolsfolderloc}/PortMaster/autoinstall"/*.zip
+  do
+    if [[ "$(basename $file_name)" == "PortMaster.zip" ]]; then
+      continue
+    fi
+
+    if [[ $(PortMasterDialogResult "install" "$file_name") == "OKAY" ]]; then
+      $ESUDO rm -f "$file_name"
+      PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
+    else
+      PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
+    fi
+  done
+
+  if [ -f "${toolsfolderloc}/PortMaster/autoinstall/PortMaster.zip" ]; then
+    file_name="${toolsfolderloc}/PortMaster/autoinstall/PortMaster.zip"
+
+    if [[ $(PortMasterDialogResult "install" "$file_name") == "OKAY" ]]; then
+      $ESUDO rm -f "$file_name"
+      PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
+    else
+      PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
+    fi
+  fi
+
+  PortMasterDialog "messages_end"
+  if [ -z "$GW" ]; then
+    PortMasterDialogMessageBox "Finished running autoinstall.\n\nNo internet connection present so exiting."
+    PortMasterDialogExit
+    exit 0
+  else
+    PortMasterDialogMessageBox "Finished running autoinstall."
+    PortMasterDialogExit
+  fi
+fi
+
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
