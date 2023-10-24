@@ -63,6 +63,7 @@ if [ -n "$AUTOINSTALL" ]; then
 
   # Install the latest runtimes.zip
   if [ -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" ]; then
+    PortMasterDialog "message" "- Installing runtimes.zip, this could take a minute or two."
     $ESUDO unzip -o "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" -d "${toolsfolderloc}/PortMaster/libs"
     $ESUDO rm -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip"
     PortMasterDialog "message" "- SUCCESS: runtimes.zip"

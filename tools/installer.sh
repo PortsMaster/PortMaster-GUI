@@ -50,9 +50,9 @@ printf "\033c" > $CUR_TTY
 
 cd "$controlfolder"
 rm -f "$LOG_FILE"
-echo "Installing PortMaster to $controlfolder" | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+echo "Installing PortMaster to $controlfolder" | $ESUDO tee -a "$LOG_FILE" | tee -a $CUR_TTY
 
-$ESUDO rm -fRv "PortMaster" "PortMaster.sh" | tee -a "$LOG_FILE" > $CUR_TTY
+$ESUDO rm -fRv "PortMaster" "PortMaster.sh" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 
 if [[ "${OS_NAME}" == "JELOS" ]]; then
   ## Taken from this: https://github.com/brooksytech/JELOS/blob/main/packages/apps/portmaster/scripts/start_portmaster.sh
@@ -65,21 +65,21 @@ if [[ "${OS_NAME}" == "JELOS" ]]; then
   cd /storage/.config/PortMaster
 
   # Grab the latest PortMaster.sh script
-  cp -v /usr/config/PortMaster/PortMaster.sh PortMaster.sh | tee -a "$LOG_FILE"
-  cp -v /usr/config/PortMaster/control.txt control.txt | tee -a "$LOG_FILE"
+  cp -v /usr/config/PortMaster/PortMaster.sh PortMaster.sh | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
+  cp -v /usr/config/PortMaster/control.txt control.txt | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 
   # Use our gamecontrollerdb.txt
   rm gamecontrollerdb.txt
-  ln -svf /usr/config/SDL-GameControllerDB/gamecontrollerdb.txt gamecontrollerdb.txt | tee -a "$LOG_FILE"
+  ln -svf /usr/config/SDL-GameControllerDB/gamecontrollerdb.txt gamecontrollerdb.txt | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 
   # Use our gptokeyb
   rm gptokeyb
-  ln -svf /usr/bin/gptokeyb gptokeyb | tee -a "$LOG_FILE"
-  cp -v /usr/config/PortMaster/portmaster.gptk portmaster.gptk | tee -a "$LOG_FILE"
+  ln -svf /usr/bin/gptokeyb gptokeyb | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
+  cp -v /usr/config/PortMaster/portmaster.gptk portmaster.gptk | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 
   # These are our changes
   ## Create our own Start PortMaster.sh and Uninstall PortMaster which restores the default JELOS portmaster stuff.
-  echo "Creating new Start PortMaster.sh" | tee -a "$LOG_FILE"
+  echo "Creating new Start PortMaster.sh" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
   cat << __END_FILE__ > /storage/.config/modules/Start\ PortMaster.sh
 #!/bin/bash
 
@@ -91,7 +91,7 @@ source /etc/profile
 /roms/ports/PortMaster/PortMaster.sh
 __END_FILE__
 
-  echo "Creating new Restore JELOS PortMaster.sh" | tee -a "$LOG_FILE"
+  echo "Creating new Restore JELOS PortMaster.sh" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
   cat << __END_FILE__ > /storage/.config/modules/Restore\ JELOS\ PortMaster.sh
 #!/bin/bash
 
@@ -110,21 +110,21 @@ __END_FILE__
   cd "$controlfolder"
 fi
 
-$ESUDO unzip -o "$TEMP_DIR/PortMaster.zip" | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+$ESUDO unzip -o "$TEMP_DIR/PortMaster.zip" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 if [ ! -z "$RELOCATE_PM" ]; then
-  $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+  $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 fi
 
 if [ -f "$TEMP_DIR/runtimes.zip" ]; then
   cd PortMaster/libs/
-  $ESUDO unzip "$TEMP_DIR/runtimes.zip" | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+  $ESUDO unzip "$TEMP_DIR/runtimes.zip" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 fi
 
 cd "/$directory/ports"
 
-$ESUDO rm -vf Install*PortMaster.sh | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+$ESUDO rm -vf Install*PortMaster.sh | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 
-echo "Finished installing PortMaster" | tee -a "$LOG_FILE" | tee -a $CUR_TTY
+echo "Finished installing PortMaster" | $ESUDO tee -a "$LOG_FILE"| tee -a $CUR_TTY
 sleep 2
 
 $ESUDO systemctl restart $ES_NAME

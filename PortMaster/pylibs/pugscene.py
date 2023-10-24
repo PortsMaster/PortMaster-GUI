@@ -344,8 +344,8 @@ class MainMenuScene(BaseScene):
             description=_("List all ports that are ready to play!"))
         self.tags['option_list'].add_option(
             ('uninstall', ['installed']),
-            _("Uninstall Ports"),
-            description=_("Remove unwanted ports"))
+            _("Manage Ports"),
+            description=_("Update / Uninstall Ports"))
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(
@@ -702,7 +702,7 @@ class RuntimesScene(BaseScene):
 
         if runtime_info['installed']:
             buttons['A'] = _('Check')
-            buttons['X'] = _('Uninstall')
+            buttons['Y'] = _('Uninstall')
 
         self.set_buttons(buttons)
 
@@ -746,7 +746,7 @@ class RuntimesScene(BaseScene):
 
             self.last_select = None
 
-        if events.was_pressed('X'):
+        if events.was_pressed('Y'):
             if selected != 'all' and self.runtimes[selected]['file'].is_file():
                 self.button_activate()
 
@@ -1307,26 +1307,19 @@ class PortInfoScene(BaseScene):
 
         if self.action == 'install':
             self.set_buttons({'A': _('Install'), 'B': _('Back')})
+
         else:
-            self.set_buttons({'A': _('Uninstall'), 'B': _('Back')})
+            self.set_buttons({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
 
     def update_port(self):
         if self.gui.hm is None:
             return
 
-        if self.action == 'install':
-            self.port_info = self.gui.hm.port_info(self.port_name)
+        self.port_info = self.gui.hm.port_info(self.port_name, installed=(self.action != 'install'))
 
-        elif self.port_name in self.gui.hm.installed_ports:
-            self.port_info = self.gui.hm.installed_ports[self.port_name]
+        self.port_attrs = self.gui.hm.port_info_attrs(self.port_info)
 
-        elif self.port_name in self.gui.hm.broken_ports:
-            self.port_info = self.gui.hm.broken_ports[self.port_name]
-
-        else:
-            raise RuntimeError(f"HRMMMMmmmmm {self.port_name}")
-
-        logger.debug(f"{self.action}: {self.port_name} -> {self.port_info}")
+        logger.debug(f"{self.action}: {self.port_name} -> {self.port_attrs} -> {self.port_info}")
 
         # if 'port_image' in self.tags:
         #     self.tags['port_image'].image = self.gui.get_port_image(self.port_name)
@@ -1345,10 +1338,10 @@ class PortInfoScene(BaseScene):
             if self.action == 'install':
                 self.gui.do_install(self.port_name)
 
-            elif self.action == 'uninstall':
-                self.gui.do_uninstall(self.port_name)
-
             return True
+
+        if events.was_pressed('Y'):
+            self.gui.do_uninstall(self.port_name)
 
         if events.was_pressed('B'):
             self.button_activate()
@@ -1415,6 +1408,7 @@ class FiltersScene(BaseScene):
             "rtr":              _("Ready to Run"),
             "not installed":    _("Not Installed"),
             "update available": _("Update Available"),
+            "broken":           _("Broken Ports"),
 
             # Runtimes.
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
@@ -1506,8 +1500,11 @@ class FiltersScene(BaseScene):
                         selected_offset = len(self.tags['filter_list'].options) - 1
 
             elif display_order == 'attr':
-                for hm_genre in ['rtr', 'mono', 'godot', 'updates', 'update available']:
+                for hm_genre in ['rtr', 'mono', 'godot', 'not installed', 'update available', 'broken']:
                     if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre == 'broken' and self.list_scene.options['mode'] == 'install':
                         continue
 
                     if hm_genre in genres:

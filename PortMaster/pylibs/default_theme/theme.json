@@ -301,7 +301,8 @@
         "port_general_info": {
             "parent": "port_info_text_area",
             "area": [ 5, 5, -5, -5 ],
-            "area[4:3]": [ 5, 60, -5, -5 ],
+            "area[4:3]": [ 5, 90, -5, -5 ],
+            "area[1:1]": [ 5,88, -5, -5 ],
             "area[16:9]": [ 5, 80, -5, -5 ],
             "area[427:240]": [ 5, 80, -5, -5 ],
             "area[30:17]": [ 5, 80, -5, -5 ],
@@ -317,6 +318,7 @@
             "parent": "port_info_text_area",
             "area": [ 5, 65, -5, -45 ],
             "area[4:3]": [ 5, 118, -5, -50 ],
+            "area[1:1]": [ 5, 145, -5, -50 ],
             "area[3:2]": [ 5, 65, -5, -25 ],
             "area[16:9]": [ 5, 165, -5, -100 ],
             "area[1920x1152]": [ 0.05, 0.2, 0.8, 0.7 ],
@@ -429,7 +431,7 @@
             "music": null
         },
         "option_title": {
-            "area": [ 0.01, 0.05, 1.0, 0.10 ],
+            "area": [ 0.01, 0.05, 1.0, 0.14 ],
             "text": "{scene.title}",
             "font-size": 20,
             "font-color": "general_font"
@@ -439,6 +441,7 @@
             "options": [],
             "align": "midleft",
             "area": [ 0.0, 0.10, 0.5, 0.85 ],
+            "area[16:9]": [ 0.0, 0.15, 0.5, 0.85 ],
             "text-clip": true,
             "font-size": 25,
             "no-select-color": "list_unselectable",
@@ -475,16 +478,11 @@
     },
     "themes_list": {
         "#element:background": {},
+
         "port_info": {
             "parent": "port_info_area",
             "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels",
-            "thickness": 10,
-            "border": 8,
-            "text": "",
-            "font-size": 24,
-            "font-color": "general_font",
-            "text-wrap": true
+            "fill": "panels"
         },
         "themes_list": {
             "parent": "port_info_list_area",
@@ -511,6 +509,7 @@
             "parent": "port_info_text_area",
             "area": [ 5, 5, -5, -5 ],
             "area[4:3]": [ 5, 60, -5, -5 ],
+            "area[1:1]": [ 5, 88, -5, -5 ],
             "area[16:9]": [ 5, 80, -5, -5 ],
             "area[427:240]": [ 5, 80, -5, -5 ],
             "area[30:17]": [ 5, 80, -5, -5 ],
@@ -526,6 +525,7 @@
             "parent": "port_info_text_area",
             "area": [ 5, 65, -5, -45 ],
             "area[4:3]": [ 5, 118, -5, -50 ],
+            "area[1:1]": [ 5, 145, -5, -5 ],
             "area[3:2]": [ 5, 65, -5, -25 ],
             "area[16:9]": [ 5, 165, -5, -100 ],
             "area[1920x1152]": [ 0.05, 0.2, 0.8, 0.7 ],
@@ -727,6 +727,13 @@
     },
     "featured_ports": {
         "#element:background": {},
+
+        "port_info": {
+            "parent": "port_info_area",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "fill": "panels"
+        },
+
 
         "ports_list": {
             "parent": "port_info_list_area_featured",

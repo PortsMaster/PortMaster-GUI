@@ -187,6 +187,7 @@ class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
 
 
 class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
+    MOVE_PM_BASH = True
     ES_NAME = 'emustation'
 
 
