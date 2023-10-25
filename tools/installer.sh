@@ -85,7 +85,7 @@ if [[ "${OS_NAME}" == "JELOS" ]]; then
 #!/bin/bash
 
 # SPDX-License-Identifier: MIT
-# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster
+# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster)
 
 source /etc/profile
 
@@ -97,7 +97,7 @@ __END_FILE__
 #!/bin/bash
 
 # SPDX-License-Identifier: MIT
-# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster
+# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster)
 
 source /etc/profile
 

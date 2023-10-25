@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 if [ -d "/opt/system/Tools/PortMaster/" ]; then
   controlfolder="/opt/system/Tools/PortMaster"
@@ -17,7 +20,6 @@ get_controls
 
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
 CUR_TTY=/dev/tty0
-
 
 cd "$controlfolder"
 

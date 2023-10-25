@@ -106,13 +106,13 @@ if [[ "$1" == "release" ]]; then
     cp ../tools/installer.sh .
     cd ..
 
-    makeself-2.5.0/makeself.sh pm_release "Install PortMaster.sh" "PortMaster Installer" ./installer.sh
+    makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install PortMaster.sh" "PortMaster Installer" ./installer.sh
 
     cd pm_release
     cp ../runtimes.zip .
     cd ..
 
-    makeself-2.5.0/makeself.sh pm_release "Install Full PortMaster.sh" "PortMaster Full Installer" ./installer.sh
+    makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install Full PortMaster.sh" "PortMaster Full Installer" ./installer.sh
 
     rm -fRv pm_release
 fi

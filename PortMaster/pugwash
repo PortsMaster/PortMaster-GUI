@@ -943,8 +943,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
     def delete_port_size(self, port_name):
         # Delete info about a port
-        if port_name not in self.port_size_files:
-            for port_file, port_info in port_self.port_size_files[port_name]:
+        if port_name in self.port_size_files:
+            for port_file, port_info in self.port_size_files[port_name]:
                 if port_name in self.port_size_file_lookup[port_file]:
                     self.port_size_file_lookup[port_file].remove(port_name)
 
