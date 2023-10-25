@@ -382,6 +382,10 @@ class HarbourMaster():
                 'status': 'Unknown',
                 }
 
+        if port_info.get('source', None) is not None:
+            changed = True
+            del port_info['source']
+
         port_info['changed'] = changed
 
         return port_info
@@ -692,6 +696,10 @@ class HarbourMaster():
             changed = port_info['changed']
             del port_info['changed']
 
+            if 'source' in port_info:
+                del port_info['source']
+                changed = True
+
             if changed:
                 if ports_files[port_name].parent.is_dir():
                     logger.debug(f"Dumping {str(ports_files[port_name])}: {port_info}")
@@ -734,7 +742,7 @@ class HarbourMaster():
         if 'source' in port_info and 'status' in port_info:
             source_md5 = port_info['source'].get('md5', None)
             status_md5 = port_info['status'].get('md5', None)
-            if source_md5 is not None and status_md5 is None and source_md5 != status_md5:
+            if status_md5 is not None and source_md5 != status_md5:
                 add_list_unique(attrs, 'update available')
 
         return attrs
@@ -774,58 +782,48 @@ class HarbourMaster():
             filters = list(filters)
             filters.remove('not installed')
 
-        if 'installed' in filters:
-            for port_name, port_info in self.installed_ports.items():
-                if port_name.casefold() in tmp_ports:
+        if not not_installed and 'installed' in filters:
+            for port_name in self.installed_ports:
+                if name_cleaner(port_name) in tmp_ports:
                     continue
 
-                new_port_info = port_info_load(port_info)
-                port_info_merge(new_port_info, self.port_info(port_name))
+                new_port_info = self.port_info(port_name, installed=True)
 
                 if not self.match_filters(filters, new_port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = new_port_info
+                tmp_ports[name_cleaner(port_name)] = new_port_info
 
             for port_name, port_info in self.broken_ports.items():
-                if port_name.casefold() in tmp_ports:
+                if name_cleaner(port_name) in tmp_ports:
                     continue
 
-                new_port_info = port_info_load(port_info)
-                port_info_merge(new_port_info, self.port_info(port_name))
+                new_port_info = self.port_info(port_name, installed=True)
 
                 if not self.match_filters(filters, new_port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = new_port_info
+                tmp_ports[name_cleaner(port_name)] = new_port_info
 
         for source_prefix, source in self.sources.items():
             for port_name in source.ports:
                 if not_installed and (
-                        port_name.casefold() in self.installed_ports.keys() or
-                        port_name.casefold() in self.broken_ports.keys()):
+                        name_cleaner(port_name) in self.installed_ports.keys() or
+                        name_cleaner(port_name) in self.broken_ports.keys()):
                     continue
 
-                if port_name.casefold() in tmp_ports:
+                if name_cleaner(port_name) in tmp_ports:
                     continue
 
-                port_info = source.port_info(port_name)
-
-                new_port_info = port_info_load(port_info)
-
-                if port_name in self.installed_ports:
-                    port_info_merge(new_port_info, self.installed_ports[port_name])
-
-                elif port_name in self.broken_ports:
-                    port_info_merge(new_port_info, self.broken_ports[port_name])
+                new_port_info = self.port_info(port_name, installed=False)
 
                 if not self.match_filters(filters, new_port_info):
                     continue
 
-                if not self.match_requirements(port_info):
+                if not self.match_requirements(new_port_info):
                     continue
 
-                tmp_ports[port_name.casefold()] = new_port_info
+                tmp_ports[name_cleaner(port_name)] = new_port_info
 
         ports = {
             port_name: port_info
@@ -933,18 +931,34 @@ class HarbourMaster():
         return list(self.porters().keys())
 
     def port_info(self, port_name, installed=False):
+        result = None
+
         if installed:
             if port_name in self.installed_ports:
-                return self.installed_ports[name_cleaner(port_name)]
+                result = port_info_load(self.installed_ports[name_cleaner(port_name)])
 
-            if port_name in self.broken_ports:
-                return self.broken_ports[name_cleaner(port_name)]
+            elif port_name in self.broken_ports:
+                result = port_info_load(self.broken_ports[name_cleaner(port_name)])
 
         for source_prefix, source in self.sources.items():
             if source.clean_name(port_name) in source.ports:
-                return source.port_info(port_name)
+                if result is not None:
+                    port_info_merge(result, source.port_info(port_name))
 
-        return None
+                else:
+                    result = port_info_load(source.port_info(port_name))
+
+        if result is None:
+            return None
+
+        if not installed:
+            if port_name in self.installed_ports:
+                 port_info_merge(result, self.installed_ports[name_cleaner(port_name)])
+
+            elif port_name in self.broken_ports:
+                 port_info_merge(result, self.broken_ports[name_cleaner(port_name)])
+
+        return result
 
     def port_download_size(self, port_name, check_runtime=True):
         for source_prefix, source in self.sources.items():
@@ -1137,6 +1151,10 @@ class HarbourMaster():
             port_info['name'] = name_cleaner(download_info['zip_file'].name)
             port_info['status'] = download_info['status'].copy()
             port_info['status']['status'] = 'Installed'
+
+            # This doesnt need to be stored.
+            if 'source' in port_info:
+                del port_info['source']
 
             port_info['files'] = {
                 'port.json': str(port_info_file.relative_to(self.ports_dir)),

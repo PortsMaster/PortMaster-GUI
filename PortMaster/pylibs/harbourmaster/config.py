@@ -85,22 +85,11 @@ HM_SOURCE_DEFAULTS = {
     "020_portmaster.source.json": textwrap.dedent("""
     {
         "prefix": "pm",
-        "api": "PortMasterV1",
+        "api": "PortMasterV2",
         "name": "PortMaster",
         "url": "https://api.github.com/repos/PortsMaster/PortMaster-Releases/releases/latest",
         "last_checked": null,
-        "version": 1,
-        "data": {}
-    }
-    """),
-    "021_runtimes.source.json": textwrap.dedent("""
-    {
-        "prefix": "pr",
-        "api": "GitHubRawReleaseV1",
-        "name": "PortMaster Runtime",
-        "url": "https://api.github.com/repos/PortsMaster/PortMaster-Runtime/releases/latest",
-        "last_checked": null,
-        "version": 1,
+        "version": 4,
         "data": {}
     }
     """),

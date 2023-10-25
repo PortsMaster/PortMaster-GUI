@@ -344,8 +344,8 @@ class MainMenuScene(BaseScene):
             description=_("List all ports that are ready to play!"))
         self.tags['option_list'].add_option(
             ('uninstall', ['installed']),
-            _("Uninstall Ports"),
-            description=_("Remove unwanted ports"))
+            _("Manage Ports"),
+            description=_("Update / Uninstall Ports"))
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(
@@ -702,7 +702,7 @@ class RuntimesScene(BaseScene):
 
         if runtime_info['installed']:
             buttons['A'] = _('Check')
-            buttons['X'] = _('Uninstall')
+            buttons['Y'] = _('Uninstall')
 
         self.set_buttons(buttons)
 
@@ -746,7 +746,7 @@ class RuntimesScene(BaseScene):
 
             self.last_select = None
 
-        if events.was_pressed('X'):
+        if events.was_pressed('Y'):
             if selected != 'all' and self.runtimes[selected]['file'].is_file():
                 self.button_activate()
 
@@ -1247,6 +1247,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
             'mode': 'featured-ports',
             'filters': [],
             'base_filters': [],
+            'skip_genres': [],
             }
 
         self.options.update(**options)
@@ -1279,6 +1280,10 @@ class PortsListScene(PortListBaseScene, BaseScene):
         self.options.setdefault('base_filters', [])
         self.options.setdefault('filters', [])
         self.options.setdefault('sort_by', 'alphabetical')
+        self.options.setdefault('skip_genres', [])
+
+        if self.options['mode'] == 'install':
+            self.options['skip_genres'].append('broken')
 
         self.load_regions("ports_list", [
             'ports_list',
@@ -1305,28 +1310,21 @@ class PortInfoScene(BaseScene):
         self.ready = False
         self.update_port()
 
-        if self.action == 'install':
-            self.set_buttons({'A': _('Install'), 'B': _('Back')})
+        if 'installed' in self.port_attrs:
+            self.set_buttons({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
+
         else:
-            self.set_buttons({'A': _('Uninstall'), 'B': _('Back')})
+            self.set_buttons({'A': _('Install'), 'B': _('Back')})
 
     def update_port(self):
         if self.gui.hm is None:
             return
 
-        if self.action == 'install':
-            self.port_info = self.gui.hm.port_info(self.port_name)
+        self.port_info = self.gui.hm.port_info(self.port_name, installed=(self.action != 'install'))
 
-        elif self.port_name in self.gui.hm.installed_ports:
-            self.port_info = self.gui.hm.installed_ports[self.port_name]
+        self.port_attrs = self.gui.hm.port_info_attrs(self.port_info)
 
-        elif self.port_name in self.gui.hm.broken_ports:
-            self.port_info = self.gui.hm.broken_ports[self.port_name]
-
-        else:
-            raise RuntimeError(f"HRMMMMmmmmm {self.port_name}")
-
-        logger.debug(f"{self.action}: {self.port_name} -> {self.port_info}")
+        logger.debug(f"{self.action}: {self.port_name} -> {self.port_attrs} -> {self.port_info}")
 
         # if 'port_image' in self.tags:
         #     self.tags['port_image'].image = self.gui.get_port_image(self.port_name)
@@ -1342,13 +1340,18 @@ class PortInfoScene(BaseScene):
             self.button_activate()
             self.gui.pop_scene()
 
-            if self.action == 'install':
-                self.gui.do_install(self.port_name)
-
-            elif self.action == 'uninstall':
-                self.gui.do_uninstall(self.port_name)
+            # if self.action == 'install':
+            self.gui.do_install(self.port_name)
 
             return True
+
+        if events.was_pressed('Y'):
+            if 'installed' in self.port_attrs:
+                if self.gui.message_box(_("Are you sure you want to uninstall {port_name}?").format(
+                        port_name=self.port_info['attr']['title']), want_cancel=True):
+
+                    self.gui.do_uninstall(self.port_name)
+                    self.gui.pop_scene()
 
         if events.was_pressed('B'):
             self.button_activate()
@@ -1415,6 +1418,7 @@ class FiltersScene(BaseScene):
             "rtr":              _("Ready to Run"),
             "not installed":    _("Not Installed"),
             "update available": _("Update Available"),
+            "broken":           _("Broken Ports"),
 
             # Runtimes.
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
@@ -1483,6 +1487,9 @@ class FiltersScene(BaseScene):
                     if hm_genre in self.locked_genres:
                         continue
 
+                    if hm_genre in self.list_scene.options['skip_genres']:
+                        continue
+
                     if hm_genre in genres:
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
@@ -1496,6 +1503,7 @@ class FiltersScene(BaseScene):
                     if first_add:
                         if add_blank:
                             self.tags['filter_list'].add_option(None, "")
+
                         self.tags['filter_list'].add_option(None, _("Genres:"))
                         first_add = False
                         add_blank = True
@@ -1506,8 +1514,11 @@ class FiltersScene(BaseScene):
                         selected_offset = len(self.tags['filter_list'].options) - 1
 
             elif display_order == 'attr':
-                for hm_genre in ['rtr', 'mono', 'godot', 'updates', 'update available']:
+                for hm_genre in ['rtr', 'mono', 'godot', 'not installed', 'update available', 'broken']:
                     if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre in self.list_scene.options['skip_genres']:
                         continue
 
                     if hm_genre in genres:
@@ -1534,6 +1545,9 @@ class FiltersScene(BaseScene):
             elif display_order == 'porters':
                 for hm_genre in sorted(self.gui.hm.porters_list(), key=lambda name: name.lower()):
                     if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre in self.list_scene.options['skip_genres']:
                         continue
 
                     if hm_genre in genres:

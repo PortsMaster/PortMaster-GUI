@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 if [ -d "/opt/system/Tools/PortMaster/" ]; then
   controlfolder="/opt/system/Tools/PortMaster"
@@ -17,7 +20,6 @@ get_controls
 
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
 CUR_TTY=/dev/tty0
-
 
 cd "$controlfolder"
 
@@ -63,6 +65,7 @@ if [ -n "$AUTOINSTALL" ]; then
 
   # Install the latest runtimes.zip
   if [ -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" ]; then
+    PortMasterDialog "message" "- Installing runtimes.zip, this could take a minute or two."
     $ESUDO unzip -o "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip" -d "${toolsfolderloc}/PortMaster/libs"
     $ESUDO rm -f "${toolsfolderloc}/PortMaster/autoinstall/runtimes.zip"
     PortMasterDialog "message" "- SUCCESS: runtimes.zip"
