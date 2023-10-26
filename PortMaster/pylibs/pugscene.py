@@ -564,7 +564,7 @@ class OptionScene(BaseScene):
                 self.gui.push_scene('runtime-manager', RuntimesScene(self.gui))
                 return True
 
-            if selected_option == 'source-manager' and self.:
+            if selected_option == 'source-manager':
                 self.gui.push_scene('source-manager', SourceScene(self.gui))
                 return True
 
