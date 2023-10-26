@@ -54,6 +54,7 @@ class HarbourMaster():
         """
         config = load_config()
         """
+        self.__PORT_INFO_CACHE = {}
 
         if tools_dir is None:
             tools_dir = HM_TOOLS_DIR
@@ -409,6 +410,7 @@ class HarbourMaster():
         file_renames = {}
 
         ports_info = self.ports_info()
+        self.__PORT_INFO_CACHE.clear()
 
         self.callback.message("  - {}".format(_("Loading Ports.")))
 
@@ -933,6 +935,10 @@ class HarbourMaster():
     def port_info(self, port_name, installed=False):
         result = None
 
+        port_key = (name_cleaner(port_name), installed)
+        if port_key in self.__PORT_INFO_CACHE:
+            return self.__PORT_INFO_CACHE[port_key]
+
         if installed:
             if port_name in self.installed_ports:
                 result = port_info_load(self.installed_ports[name_cleaner(port_name)])
@@ -949,6 +955,7 @@ class HarbourMaster():
                     result = port_info_load(source.port_info(port_name))
 
         if result is None:
+            self.__PORT_INFO_CACHE[port_key] = result
             return None
 
         if not installed:
@@ -958,6 +965,7 @@ class HarbourMaster():
             elif port_name in self.broken_ports:
                  port_info_merge(result, self.broken_ports[name_cleaner(port_name)])
 
+        self.__PORT_INFO_CACHE[port_key] = result
         return result
 
     def port_download_size(self, port_name, check_runtime=True):

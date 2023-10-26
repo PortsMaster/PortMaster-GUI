@@ -431,8 +431,12 @@ class OptionScene(BaseScene):
             'update-portmaster',
             _("Update PortMaster"),
             description=_("Force check for a new PortMaster version."))
+        # self.tags['option_list'].add_option(
+        #     'source-manager',
+        #     _("Source Manager"),
+        #     description=_("Manage port sources."))
         self.tags['option_list'].add_option(
-            'runtime-list',
+            'runtime-manager',
             _("Runtime Manager"),
             description=_("Download/Check/Delete Port runtimes."))
 
@@ -556,8 +560,12 @@ class OptionScene(BaseScene):
 
                 return True
 
-            if selected_option == 'runtime-list':
-                self.gui.push_scene('runtime-theme', RuntimesScene(self.gui))
+            if selected_option == 'runtime-manager':
+                self.gui.push_scene('runtime-manager', RuntimesScene(self.gui))
+                return True
+
+            if selected_option == 'source-manager' and self.:
+                self.gui.push_scene('source-manager', SourceScene(self.gui))
                 return True
 
             if selected_option == 'keyboard':
@@ -619,12 +627,23 @@ class OptionScene(BaseScene):
             return True
 
 
+class SourceScene(BaseScene):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.scene_title = _("Source Manager")
+
+        self.load_regions("option_list", ['option_list', ])
+
+
 class RuntimesScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
         self.scene_title = _("Runtime Manager")
 
         self.load_regions("runtime_list", ['runtime_list', ])
+        self.update_runtimes()
+
+    def update_runtimes(self):
         runtimes = []
         self.runtimes = {}
         download_size = {}
@@ -635,7 +654,7 @@ class RuntimesScene(BaseScene):
                 if runtime not in runtimes:
                     runtimes.append(runtime)
                     download_size[runtime] = source._data[runtime]["size"]
-                    total_size += 1
+                    total_size += download_size[runtime]
 
         runtimes.sort(key=lambda name: harbourmaster.runtime_nicename(runtime))
 
@@ -643,6 +662,8 @@ class RuntimesScene(BaseScene):
         runtimes.append('all')
 
         self.tags['runtime_list'].reset_options()
+        all_installed = True
+
         for runtime in runtimes:
             if runtime == "all":
                 self.runtimes[runtime] = {
@@ -667,10 +688,16 @@ class RuntimesScene(BaseScene):
                     }
 
                 self.runtimes[runtime]['installed'] = self.runtimes[runtime]['file'].is_file()
+
                 if self.runtimes[runtime]['file'].is_file():
                     self.runtimes[runtime]['disk_size'] = self.runtimes[runtime]['file'].stat().st_size
 
+                else:
+                    all_installed = False
+
             self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
+
+        self.runtimes['all']['installed'] = all_installed
 
         for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
             if port_info['attr']['runtime'] in self.runtimes:
@@ -695,14 +722,15 @@ class RuntimesScene(BaseScene):
         else:
             self.gui.set_data('runtime_info.disk_size', "")
 
-        self.gui.set_data('runtime_info.verified', "To be done.")
+        # self.gui.set_data('runtime_info.verified', "To be done.")
 
         # self.gui.set_runtime_info(self.last_select, theme_info)
-        buttons = {'A': _('Install'), 'B': _('Back')}
 
         if runtime_info['installed']:
-            buttons['A'] = _('Check')
-            buttons['Y'] = _('Uninstall')
+            buttons = {'A': _('Check'), 'Y': _('Uninstall'), 'B': _('Back')}
+
+        else:
+            buttons = {'A': _('Install'), 'B': _('Back')}
 
         self.set_buttons(buttons)
 
@@ -733,6 +761,8 @@ class RuntimesScene(BaseScene):
                                     self.runtimes[runtime]['disk_size'] = ""
                                     self.runtimes[runtime]['verified'] = ""
 
+                                self.update_runtimes()
+
             else:
                 self.gui.do_runtime_check(selected)
                 self.runtimes[selected]['installed'] = self.runtimes[selected]['file'].is_file()
@@ -743,6 +773,8 @@ class RuntimesScene(BaseScene):
                 else:
                     self.runtimes[selected]['disk_size'] = ""
                     self.runtimes[selected]['verified'] = ""
+
+                self.update_runtimes()
 
             self.last_select = None
 
@@ -759,6 +791,7 @@ class RuntimesScene(BaseScene):
                     runtime=self.runtimes[selected]['name']))
 
                 self.last_select = None
+                self.update_runtimes()
 
             return True
 
