@@ -586,7 +586,7 @@
             "pointer-flip-y": false
         },
         "option_description": {
-            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nVerified: {runtime_info.verified}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
+            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
             "font-size": 25,
             "font-color": "general_font",
             "area": [ 0.5, 0.3, 1.0, 0.85 ],
