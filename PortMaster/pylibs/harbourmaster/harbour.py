@@ -35,7 +35,7 @@ class HarbourMaster():
     __PORTS_INFO = None
     __PORTERS = None
 
-    CONFIG_VERSION = 1
+    CONFIG_VERSION = 2
     DEFAULT_CONFIG = {
         'version': CONFIG_VERSION,
         'first-run': True,
@@ -49,6 +49,7 @@ class HarbourMaster():
     PORTS_INFO_URL     = PORT_INFO_URL + "ports_info.json"
     FEATURED_PORTS_URL = PORT_INFO_URL + "featured_ports.json"
     PORTERS_URL        = PORT_INFO_URL + "porters.json"
+    SOURCES_URL        = PORT_INFO_URL + "sources.json"
 
     def __init__(self, config, *, tools_dir=None, ports_dir=None, temp_dir=None, callback=None):
         """
@@ -130,6 +131,10 @@ class HarbourMaster():
             if 'theme' not in self.cfg_data:
                 self.cfg_data['theme'] = 'default_theme'
 
+            if self.cfg_data.get('version', 1) != self.CONFIG_VERSION:
+                self.update_config()
+                self.cfg_data['version'] = self.CONFIG_VERSION
+
             self.load_info()
 
             self.load_sources()
@@ -137,6 +142,35 @@ class HarbourMaster():
             self.load_ports()
 
             self.save_config()
+
+    def update_config(self):
+        version = self.cfg_data.get('version', 1)
+        if version:
+            # Upgrade from version 1 to 2
+            logger.debug(f"Upgrading PortMaster/config/config.json: 1 -> 2")
+
+            for image_dir in self.cfg_dir.glob("images_*"):
+                if not image_dir.is_dir():
+                    continue
+
+                logger.debug(f"rmtree {image_dir}")
+                shutil.rmtree(str(image_dir))
+
+            for source_file in self.cfg_dir.glob("*portmaster*.source.json"):
+                if not source_file.is_file():
+                    continue
+
+                logger.debug(f"unlink {source_file}")
+                source_file.unlink()
+
+            for source_name in HM_SOURCE_DEFAULTS:
+                with (self.cfg_dir / source_name).open('w') as fh:
+                    fh.write(HM_SOURCE_DEFAULTS[source_name])
+
+                logger.debug(f"creating {source_name}")
+
+            version = 2
+
 
     def save_config(self):
         with open(self.cfg_file, 'w') as fh:

@@ -1804,6 +1804,7 @@ __all__ = (
     'PortInfoScene',
     'PortsListScene',
     'RuntimesScene',
+    'SourceScene',
     'ThemeSchemeScene',
     'ThemesScene',
     )

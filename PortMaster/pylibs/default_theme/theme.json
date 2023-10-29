@@ -197,6 +197,7 @@
             "comment": "Port image",
             "parent": "port_info_area",
             "area": [ 0.0, 0.1, 1.0, 0.4 ],
+            "area[4:3]": [ 0.0, 0.1, 1.0, 0.7 ],
             "area[30:17|427:240]": [ 0.0, 0.1, 1.0, 0.75 ],
             "area[16:9]": [ 0.0, 0.1, 1.0, 0.65 ]
 
@@ -301,7 +302,7 @@
         "port_general_info": {
             "parent": "port_info_text_area",
             "area": [ 5, 5, -5, -5 ],
-            "area[4:3]": [ 5, 90, -5, -5 ],
+            "area[4:3]": [ 5, 70, -5, -5 ],
             "area[1:1]": [ 5,88, -5, -5 ],
             "area[16:9]": [ 5, 80, -5, -5 ],
             "area[427:240]": [ 5, 80, -5, -5 ],
@@ -317,7 +318,7 @@
         "port_desc": {
             "parent": "port_info_text_area",
             "area": [ 5, 65, -5, -45 ],
-            "area[4:3]": [ 5, 118, -5, -50 ],
+            "area[4:3]": [ 5, 130, -5, -50 ],
             "area[1:1]": [ 5, 145, -5, -50 ],
             "area[3:2]": [ 5, 65, -5, -25 ],
             "area[16:9]": [ 5, 165, -5, -100 ],
@@ -585,7 +586,7 @@
             "pointer-flip-y": false
         },
         "option_description": {
-            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
+            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nVerified: {runtime_info.verified}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
             "font-size": 25,
             "font-color": "general_font",
             "area": [ 0.5, 0.3, 1.0, 0.85 ],
@@ -800,18 +801,9 @@
             "image": "{port_info.image}"
         },
 
-        "featured_port_description": {
-            "text": "{featured_ports.description}",
-            "font-size": 16,
-            "font-color": "general_font",
-            "area": [ 0.0, 0.10, 0.3, 0.85 ],
-            "align": "topleft",
-            "text-wrap": true
-        },
-
         "port_general_info": {
             "parent": "left_pane_featured",
-            "area": [ 0.0, 0.6, 0.95, 0.8 ],
+            "area": [ 0.0, 0.70, 0.95, 0.85 ],
             "border-x": 16,
             "font-size": 16,
             "font-size[1920x1152]": 11,
@@ -819,6 +811,19 @@
             "font-color": "general_font",
             "text-wrap": true,
             "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
+        },
+
+        "featured_port_description": {
+            "text": "{featured_ports.description}",
+            "font-size": 16,
+            "font-color": "general_font",
+            "area": [ 0.0, 0.05, 0.3, 0.19 ],
+            "align": "topleft",
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "text-wrap": true
         },
 
 
