@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.4.23'
+PORTMASTER_VERSION = '8.4.24'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -947,7 +947,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
     def delete_port_size(self, port_name):
         # Delete info about a port
         if port_name in self.port_size_files:
-            for port_file, port_info in self.port_size_files[port_name]:
+            for port_file, port_info in self.port_size_files[port_name].items():
                 if port_name in self.port_size_file_lookup[port_file]:
                     self.port_size_file_lookup[port_file].remove(port_name)
 

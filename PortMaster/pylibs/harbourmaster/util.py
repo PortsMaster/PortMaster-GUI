@@ -505,11 +505,12 @@ def timeit(func):
         total_time = end_time - start_time
         logger.debug(f'TIME: {func.__name__}({args}, {kwargs}): Took {total_time:.4f} seconds')
         return result
+
     return timeit_wrapper
 
 
 def port_sort_alphabetical(port_info):
-    port_info.get('attr', {}).get('title', port_info['name']).casefold()
+    return port_info.get('attr', {}).get('title', port_info['name']).casefold()
 
 
 def port_sort_date_added(port_info):

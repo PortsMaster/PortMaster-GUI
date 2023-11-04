@@ -768,6 +768,10 @@ class HarbourMaster():
         if rtr:
             add_list_unique(attrs, 'rtr')
 
+        exp = port_info.get('attr', {}).get('exp', False)
+        if exp:
+            add_list_unique(attrs, 'exp')
+
         if port_info['name'].casefold() in self.installed_ports:
             add_list_unique(attrs, 'installed')
 

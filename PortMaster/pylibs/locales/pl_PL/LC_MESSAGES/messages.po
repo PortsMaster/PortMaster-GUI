@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-29 17:14+0800\n"
-"PO-Revision-Date: 2023-10-29 09:15\n"
+"POT-Creation-Date: 2023-10-30 18:11+0800\n"
+"PO-Revision-Date: 2023-11-01 09:02\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -546,8 +546,8 @@ msgid "Runtime Manager"
 msgstr "Menadżer Runtime"
 
 #: PortMaster/pylibs/pugscene.py:441
-msgid "Download/Check/Delete Port runtimes."
-msgstr "Pobierz/Sprawdź/Usuń runtime portów."
+msgid "Manage port runtimes."
+msgstr "Zarządzaj runtime porta."
 
 #: PortMaster/pylibs/pugscene.py:447 PortMaster/pylibs/pugscene.py:559
 #, python-brace-format
