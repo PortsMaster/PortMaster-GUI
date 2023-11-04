@@ -438,7 +438,7 @@ class OptionScene(BaseScene):
         self.tags['option_list'].add_option(
             'runtime-manager',
             _("Runtime Manager"),
-            description=_("Download/Check/Delete Port runtimes."))
+            description=_("Manage port runtimes."))
 
         if len(self.gui.hm.get_gcd_modes()) > 0:
             gcd_mode = self.gui.hm.get_gcd_mode()

@@ -30,6 +30,7 @@ PORT_INFO_ATTR_ATTRS = {
     'porter': [],
     'image': {},
     'rtr': False,
+    'exp': False,
     'runtime': None,
     'reqs': [],
     }
