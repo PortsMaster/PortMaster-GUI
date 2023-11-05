@@ -49,3 +49,7 @@ We've also launched a dedicated PortMaster Discord community. It has become a bu
 # Under the Hood Improvements
 
 We've made significant enhancements under the hood. Say goodbye to the manual editing of ports.md; it has been replaced by the more advanced ports.json format. This format provides a wealth of information for each port and is now generated automatically by the ports themselves. We've even developed a tool that automates the creation of the port.json file for your convenience.
+
+# How to get it?
+
+On ArkOS/AmberELEC/uOS you just need to run PortMaster and it will update to the latest version, on JELOS you will need to follow the instructions from https://portmaster.games/installation.html
