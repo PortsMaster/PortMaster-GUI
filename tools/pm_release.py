@@ -110,7 +110,6 @@ def main(argv):
 
     print(pugwash_data["version"])
     print(pugwash_data["channel"])
-    print(len(pugwash_data["all_data"]))
 
     pugwash_data["all_data"][pugwash_data["version_line"]] = \
         f"PORTMASTER_VERSION = '{version_str(pugwash_data['version'])}'"

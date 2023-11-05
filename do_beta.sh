@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./do_i18n.sh
+# ./do_i18n.sh
 
 python3 tools/pm_release.py beta "$@"
 

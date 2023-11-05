@@ -1965,7 +1965,8 @@ class Region:
         self.scrollable = self._verify_bool('scrollable', False, True)
 
         self.autoscroll = self._verify_option('autoscroll', (None, 'slide', 'marquee'), None)
-        self.scroll_speed = self._verify_int('scroll-speed', 30, True)
+        self.scroll_speed = self._verify_int('scroll-speed', 30, optional=True)
+        self.scroll_amount = self._verify_int('scroll-amount', 1, optional=True, minimum=0, maximum=10)
         self.scroll_direction = self._verify_option(
             'scroll-direction',
             ('vertical', 'horizontal'),
@@ -2585,13 +2586,13 @@ class Region:
 
             if self.scroll_state == self.SCROLL_FORWADS:
                 if scroll_dt >= self.scroll_speed:
-                    self.scroll_pos += 1
+                    self.scroll_pos += self.scroll_amount
                     self.scroll_last_update = current_time
                     # updated = True
 
             elif self.scroll_state == self.SCROLL_BACKWARDS:
                 if scroll_dt >= self.scroll_speed:
-                    self.scroll_pos -= 1
+                    self.scroll_pos -= self.scroll_amount
                     self.scroll_last_update = current_time
                     # updated = True
 
