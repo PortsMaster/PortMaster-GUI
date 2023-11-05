@@ -41,6 +41,7 @@ class HarbourMaster():
         'first-run': True,
         'ports_info_checked': None,
         'porters_checked': None,
+        'show_experimental': False,
         }
 
     INFO_CHECK_INTERVAL = (60 * 60 * 1)
@@ -130,6 +131,8 @@ class HarbourMaster():
 
             if 'theme' not in self.cfg_data:
                 self.cfg_data['theme'] = 'default_theme'
+
+            self.cfg_data.setdefault('show_experimental', False)
 
             if self.cfg_data.get('version', 1) != self.CONFIG_VERSION:
                 self.update_config()
@@ -789,6 +792,9 @@ class HarbourMaster():
 
     def match_filters(self, port_filters, port_info):
         port_attrs = self.port_info_attrs(port_info)
+
+        if not self.cfg_data['show_experimental'] and 'exp' in port_attrs:
+            return False
 
         for port_filter in port_filters:
             if port_filter.casefold() not in port_attrs:
