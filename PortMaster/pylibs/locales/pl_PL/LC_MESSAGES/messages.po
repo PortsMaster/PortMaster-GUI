@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-05 13:33+0800\n"
-"PO-Revision-Date: 2023-11-05 05:33\n"
+"PO-Revision-Date: 2023-11-05 08:05\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -144,7 +144,8 @@ msgstr "Sprawdzanie {runtime_name}"
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
-msgstr ""
+msgstr "Przechodzisz z {old_release_channel} na wersję {new_release_channel}.\n\n"
+"Czy chcesz kontynuować?"
 
 #: PortMaster/pugwash:1730
 #, python-brace-format

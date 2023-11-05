@@ -104,8 +104,10 @@ def port_info_load(raw_info, source_name=None, do_default=False):
     if info.get('version', None) == 1:
         # Update older json version to the newer one.
         info = info.copy()
-        info['name'] = info['source'].rsplit('/', 1)[-1]
-        del info['source']
+        if 'source' in info and isinstance(info['source'], str):
+            info['name'] = info['source'].rsplit('/', 1)[-1]
+            del info['source']
+
         info['version'] = 2
 
         if info.get('md5', None) is not None:
@@ -116,9 +118,9 @@ def port_info_load(raw_info, source_name=None, do_default=False):
                 }
             del info['md5']
 
-        # WHOOPS! :O
-        if info.get('attr', {}).get('runtime', None) == "blank":
-            info['attr']['runtime'] = None
+    # WHOOPS! :O
+    if info.get('attr', {}).get('runtime', None) == "blank":
+        info['attr']['runtime'] = None
 
     if isinstance(info.get('attr', {}).get('porter'), str):
         info['attr']['porter'] = [info['attr']['porter']]
