@@ -85,6 +85,7 @@ def load_info(main_file):
 
 def main(argv):
     pugwash_data = load_info("PortMaster/pugwash")
+    version_change = 0
 
     for command in argv[1:]:
         if command == 'stable':
@@ -97,16 +98,22 @@ def main(argv):
             pugwash_data["version"][0] += 1
             pugwash_data["version"][1] = 0
             pugwash_data["version"][2] = 0
+            version_change += 1
 
         elif command == "minor":
             pugwash_data["version"][1] += 1
             pugwash_data["version"][2] = 0
+            version_change += 1
 
         elif command == "patch":
             pugwash_data["version"][2] += 1
+            version_change += 1
 
         else:
             print(f"Unknown command: {command}")
+
+    if version_change == 0:
+        pugwash_data["version"][2] += 1
 
     print(pugwash_data["version"])
     print(pugwash_data["channel"])
