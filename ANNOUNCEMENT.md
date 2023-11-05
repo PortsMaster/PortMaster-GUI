@@ -1,28 +1,39 @@
 # Introducing the All-New PortMaster: Your Ultimate Handheld Linux Port Manager
 
-We are thrilled to announce the launch of the new PortMaster, a complete overhaul of our port management program designed to provide you with an exceptional experience when installing, updating, and uninstalling Ports on your handheld Linux devices. The original PortMaster was built around the limited bash command 'console,' but now, we're introducing a game-changing solution with a multitude of new features and improvements that we think you'll love!
+We are thrilled to announce the launch of the new PortMaster, a complete overhaul of our port management program designed to provide you with an exceptional experience when installing, updating, and uninstalling Ports on your handheld Linux devices. The original PortMaster was built around the limited bash command 'dialog,' but now, we're introducing a game-changing solution with a multitude of new features and improvements that we think you'll love!
 
-# What's New in PortMaster?
+We are thrilled to unveil the all-new PortMaster, a game-changing program designed to streamline the management of Ports on your handheld Linux devices. Our revamped PortMaster is set to redefine your experience with its innovative features and improvements. Say goodbye to the limitations of the old version built upon a text-based user interface.
 
-## Beautiful Custom GUI
-Gone are the days of working with a command line interface. PortMaster boasts a fully custom GUI using Python SDL2 bindings, making navigation and control a breeze.
+# New Features: Unleash the Power of PortMaster
+
+With the new and improved PortMaster, you can expect a world of enhancements and cutting-edge capabilities at your fingertips. Here's a glimpse of what's in store:
+
+## Custom GUI with Python SDL2 Bindings
+
+PortMaster now boasts a completely custom graphical user interface built using Python SDL2 bindings, providing an intuitive and user-friendly experience.
 
 ## Compact and Lightweight
+
 PortMaster is incredibly efficient, with a download size of just 8MB. Say goodbye to bulky software that eats up your device's storage.
 
 ## Port Previews
+
 Discover Ports like never before with our new port preview feature. Get a sneak peek of what's in store, making it easier to choose the perfect Ports for your device.
 
 ## Cancellable Downloads
+
 Ever accidentally started a massive download? No worries! PortMaster allows you to cancel downloads, so you can avoid wasting time and data on unwanted files.
 
 ## Enhanced Port Management
+
 Filter Ports by genre, runtime, update availability, and installation status, and sort them by name, recent additions, or recent updates for a more organized experience.
 
 ## Localization Support
+
 PortMaster is available in multiple languages, including English, Italian, French, German, and Polish. We welcome contributions from translators to make it even more accessible to users around the world. [Contributions can be made through our Crowdin](https://crowdin.com/project/portmaster).
 
 ## Runtime Manager
+
 Manage runtimes seamlessly within PortMaster. You can install, update, verify, and uninstall runtimes directly through the program.
 
 # Introducing PortMaster Themes
@@ -36,7 +47,7 @@ PortMaster now supports customizable themes. With multiple color schemes for dar
 
 # New PortMaster Installer
 
-We've simplified the installation process with a self-contained PortMaster installer, which is itself a basic port. This installer will self-extract and place all the necessary files in the right locations to ensure a hassle-free installation on any known CFW. Installing PortMaster is now a straightforward two-step process, and it also includes fixes for JELOS and its version of PortMaster.
+We have simplified the installation process with a self-contained PortMaster installer, which is itself a basic port. This installer will self-extract and place all the necessary files in the right locations to ensure a hassle-free installation on any known Custom Firmware (CFW). Installing PortMaster is now a straightforward two-step process, and it also includes fixes for JELOS and its version of PortMaster.
 
 # Brand New Website and Wiki
 
@@ -52,4 +63,4 @@ We've made significant enhancements under the hood. Say goodbye to the manual ed
 
 # How to get it?
 
-On ArkOS/AmberELEC/uOS you just need to run PortMaster and it will update to the latest version, on JELOS you will need to follow the instructions from https://portmaster.games/installation.html
+For **ArkOS**, **AmberELEC**, and **uOS**, simply run PortMaster on your device if it's already installed, and it will automatically update to the latest version. Otherwise you will need to follow the instructions from https://portmaster.games/installation.html
