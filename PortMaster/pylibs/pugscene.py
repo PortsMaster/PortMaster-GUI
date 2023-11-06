@@ -1332,24 +1332,29 @@ class PortsListScene(PortListBaseScene, BaseScene):
 
 
 class PortInfoPopup(BaseScene):
-    def __init__(self, gui):
+    def __init__(self, gui, parent):
         super().__init__(gui)
         self.scene_title = _("Port Info Popup")
-
+        self.parent_info_scene = parent
         self.load_regions("port_info_popup", [])
+
+        if 'installed' in self.parent_info_scene.port_attrs:
+            self.set_buttons({'DOWN': _('Hide Information'), 'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
+        else:
+            self.set_buttons({'DOWN': _('Hide Information'), 'A': _('Install'), 'B': _('Back')})
+
 
     def do_update(self, events):
         super().do_update(events)
 
-        if events.was_pressed('UP'):
+        if events.was_pressed('DOWN'):
             self.gui.pop_scene()
             return True
 
-        if events.was_pressed('DOWN'):
+        if events.was_pressed('UP'):
             return True
 
         return False
-
 
 class PortInfoScene(BaseScene):
     def __init__(self, gui, port_name, action):
@@ -1362,12 +1367,17 @@ class PortInfoScene(BaseScene):
         self.action = action
         self.ready = False
         self.update_port()
+        buttons = {}
+
+        if 'port_info_popup' in self.gui.theme_data:
+            buttons['UP'] = _('Show Information')
 
         if 'installed' in self.port_attrs:
-            self.set_buttons({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
-
+            buttons.update({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
         else:
-            self.set_buttons({'A': _('Install'), 'B': _('Back')})
+            buttons.update({'A': _('Install'), 'B': _('Back')})
+
+        self.set_buttons(buttons)
 
     def update_port(self):
         if self.gui.hm is None:
@@ -1411,9 +1421,9 @@ class PortInfoScene(BaseScene):
             self.gui.pop_scene()
             return True
 
-        if events.was_pressed('DOWN'):
+        if events.was_pressed('UP'):
             if 'port_info_popup' in self.gui.theme_data:
-                self.gui.push_scene('port_info', PortInfoPopup(self.gui))
+                self.gui.push_scene('port_info', PortInfoPopup(self.gui, self))
 
             return True
 
