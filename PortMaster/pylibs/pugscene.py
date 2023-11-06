@@ -1331,6 +1331,26 @@ class PortsListScene(PortListBaseScene, BaseScene):
             self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
 
 
+class PortInfoPopup(BaseScene):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.scene_title = _("Port Info Popup")
+
+        self.load_regions("port_info_popup", [])
+
+    def do_update(self, events):
+        super().do_update(events)
+
+        if events.was_pressed('UP'):
+            self.gui.pop_scene()
+            return True
+
+        if events.was_pressed('DOWN'):
+            return True
+
+        return False
+
+
 class PortInfoScene(BaseScene):
     def __init__(self, gui, port_name, action):
         super().__init__(gui)
@@ -1384,14 +1404,20 @@ class PortInfoScene(BaseScene):
                         port_name=self.port_info['attr']['title']), want_cancel=True):
 
                     self.gui.do_uninstall(self.port_name)
-                    self.gui.pop_scene()
+                    self.gui.pop_scene('port_info')
 
         if events.was_pressed('B'):
             self.button_activate()
             self.gui.pop_scene()
             return True
 
-        return True
+        if events.was_pressed('DOWN'):
+            if 'port_info_popup' in self.gui.theme_data:
+                self.gui.push_scene('port_info', PortInfoPopup(self.gui))
+
+            return True
+
+        return False
 
 
 class FiltersScene(BaseScene):
