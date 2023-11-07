@@ -104,7 +104,7 @@ class GUIThemeError(GUIRuntimeError):
 
 
 class GUI:
-    def __init__(self, renderer):
+    def __init__(self, renderer, formatter=None):
         self.renderer = renderer
 
         self.resources = ResourceManager(self)
@@ -115,6 +115,7 @@ class GUI:
         self.override = {}
         self.pallet = {}
         self.default_rects = NamedRects([0, 0, *self.renderer.logical_size])
+        self.formatter = formatter
 
     def new_rects(self):
         return self.default_rects.copy()
@@ -1986,6 +1987,9 @@ class Region:
         if self.list is not None:
             self._list_selected = [0] * len(self.list)
 
+        self.list_header = self._verify_text('list-header', optional=True)
+        self.list_header_add_blank = self._verify_bool('list-header-add-blank', False, optional=True)
+
         if self._text and self.list:
             raise GUIThemeError('Cannot define text and a list')
 
@@ -2376,6 +2380,18 @@ class Region:
         self.options = []
         self.descriptions = []
         self._list_selected = []
+
+        if self.list_header not in ("", None):
+            if self.selected == 0:
+                self.selected += 1
+
+            self.add_option(None, self.list_header)
+
+            if self.list_header_add_blank:
+                self.add_option(None, "")
+                if self.selected == 1:
+                    self.selected += 1
+
         self.gui.updated = True
 
     def add_option(self, option, text, index=0, description=None):

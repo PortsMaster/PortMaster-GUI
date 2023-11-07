@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.5.3'
+PORTMASTER_VERSION = '8.5.4'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -573,7 +573,11 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, b"2")
 
-        super().__init__(renderer)
+        self.text_data = {}
+        self.changed_keys = set()
+        formatter = StringFormatter(self.text_data)
+
+        super().__init__(renderer, formatter)
 
         cfg_data = self.get_config()
         default_sound = False
@@ -589,10 +593,6 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.themes = ThemeEngine(self, force_theme=force_theme)
         self.dir_scanner = DirectoryScanner()
         self.dir_scanner.callback = self.dir_scanner_callback
-
-        self.text_data = {}
-        self.changed_keys = set()
-        self.formatter = StringFormatter(self.text_data)
 
         self.theme_data = self.themes.gui_init()
         self.resources.add_path(PYLIB_PATH / 'resources')
