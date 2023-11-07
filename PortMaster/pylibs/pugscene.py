@@ -307,8 +307,17 @@ class BaseScene:
     def button_activate(self):
         if 'button_bar' not in self.tags:
             return
-
+        
         self.gui.sounds.play(self.tags['button_bar'].button_sound, volume=self.tags['button_bar'].button_sound_volume)
+
+    def button_back(self):
+        if 'button_bar' not in self.tags:
+            return
+        
+        if self.tags['button_bar'].button_sound_alt is None:
+            self.button_activate()
+        else:        
+            self.gui.sounds.play(self.tags['button_bar'].button_sound_alt, volume=self.tags['button_bar'].button_sound_alt_volume)
 
 
 class BlankScene(BaseScene):
@@ -408,7 +417,7 @@ class MainMenuScene(BaseScene):
                 return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.do_cancel()
             return True
 
@@ -622,7 +631,7 @@ class OptionScene(BaseScene):
                 return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -796,7 +805,7 @@ class RuntimesScene(BaseScene):
             return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -893,7 +902,7 @@ class ThemesScene(BaseScene):
             return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -951,7 +960,7 @@ class ThemeSchemeScene(BaseScene):
                     return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -1010,7 +1019,7 @@ class LanguageScene(BaseScene):
                     return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -1126,7 +1135,7 @@ class FeaturedPortsListScene(BaseScene):
             return True
 
         elif events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -1242,7 +1251,7 @@ class PortListBaseScene():
             return True
 
         if events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -1348,6 +1357,7 @@ class PortInfoPopup(BaseScene):
         super().do_update(events)
 
         if events.was_pressed('DOWN'):
+            self.button_back()
             self.gui.pop_scene()
             return True
 
@@ -1417,13 +1427,15 @@ class PortInfoScene(BaseScene):
                     self.gui.pop_scene('port_info')
 
         if events.was_pressed('B'):
-            self.button_activate()
+            self.button_back()
             self.gui.pop_scene()
             return True
 
         if events.was_pressed('UP'):
             if 'port_info_popup' in self.gui.theme_data:
-                self.gui.push_scene('port_info', PortInfoPopup(self.gui, self))
+                scene = PortInfoPopup(self.gui, self)
+                scene.button_activate()
+                self.gui.push_scene('port_info', scene)
 
             return True
 
@@ -1685,6 +1697,7 @@ class FiltersScene(BaseScene):
             return True
 
         if events.was_pressed('B') or events.was_pressed('X'):
+            self.button_back()
             self.gui.pop_scene()
             return True
 

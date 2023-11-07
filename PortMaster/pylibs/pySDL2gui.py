@@ -1961,6 +1961,8 @@ class Region:
         self.click_sound_volume = self._verify_int('click-sound-volume', 128, optional=True, minimum=0, maximum=128)
         self.button_sound = self._verify_text('button-sound', optional=True)
         self.button_sound_volume = self._verify_int('button-sound-volume', 128, optional=True, minimum=0, maximum=128)
+        self.button_sound_alt = self._verify_text('button-sound-alt', optional=True)
+        self.button_sound_alt_volume = self._verify_int('button-sound-alt-volume', 128, optional=True, minimum=0, maximum=128)
 
         self.scrollable = self._verify_bool('scrollable', False, True)
 
@@ -2641,25 +2643,25 @@ class Region:
             if self.gui.events.was_pressed('L1'):
                 self.list_select(self.selected - self.page_size, direction=-1, allow_wrap=False)
 
-                self.gui.sounds.play(self.click_sound)
+                self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)
                 changed = True
 
             elif self.gui.events.was_pressed('R1'):
                 self.list_select(self.selected + self.page_size, direction=1, allow_wrap=False)
 
-                self.gui.sounds.play(self.click_sound)
+                self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)
                 changed = True
 
             elif self.gui.events.was_pressed('UP'):
                 self.list_select(self.selected - 1, direction=-1, allow_wrap=True)
 
-                self.gui.sounds.play(self.click_sound)
+                self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)
                 changed = True
 
             elif self.gui.events.was_pressed('DOWN'):
                 self.list_select(self.selected + 1, direction=1, allow_wrap=True)
 
-                self.gui.sounds.play(self.click_sound)
+                self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)
                 changed = True
 
             elif self.gui.events.was_pressed('LEFT'):
