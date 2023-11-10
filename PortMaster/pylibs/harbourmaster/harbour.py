@@ -52,7 +52,7 @@ class HarbourMaster():
     PORTERS_URL        = PORT_INFO_URL + "porters.json"
     SOURCES_URL        = PORT_INFO_URL + "sources.json"
 
-    def __init__(self, config, *, tools_dir=None, ports_dir=None, temp_dir=None, callback=None):
+    def __init__(self, config, *, tools_dir=None, ports_dir=None, scripts_dir=None, temp_dir=None, callback=None):
         """
         config = load_config()
         """
@@ -63,6 +63,9 @@ class HarbourMaster():
 
         if ports_dir is None:
             ports_dir = HM_PORTS_DIR
+
+        if scripts_dir is None:
+            scripts_dir = HM_SCRIPTS_DIR
 
         if isinstance(tools_dir, str):
             tools_dir = Path(tools_dir)
@@ -83,6 +86,7 @@ class HarbourMaster():
         self.libs_dir   = tools_dir / "PortMaster" / "libs"
         self.themes_dir = tools_dir / "PortMaster" / "themes"
         self.ports_dir  = ports_dir
+        self.scripts_dir  = scripts_dir
         self.cfg_file   = self.cfg_dir / "config.json"
 
         self.sources = {}
@@ -105,6 +109,7 @@ class HarbourMaster():
         self.utils = []
 
         self.ports_dir.mkdir(0o755, parents=True, exist_ok=True)
+        self.scripts_dir.mkdir(0o755, parents=True, exist_ok=True)
         self.themes_dir.mkdir(0o755, parents=True, exist_ok=True)
         self.libs_dir.mkdir(0o755, parents=True, exist_ok=True)
 
@@ -428,6 +433,43 @@ class HarbourMaster():
 
         return port_info
 
+    def _iter_ports_dir(self):
+        if self.ports_dir != self.scripts_dir:
+            yield from self.scripts_dir.iterdir()
+
+        yield from self.ports_dir.iterdir()
+
+    def _ports_dir_exists(self, file_name):
+        if (self.scripts_dir / file_name).exists():
+            return True
+
+        return (self.ports_dir / file_name).exists()
+
+    def _ports_dir_is_file(self, file_name):
+        if (self.scripts_dir / file_name).is_file():
+            return True
+
+        return (self.ports_dir / file_name).is_file()
+
+    def _ports_dir_is_dir(self, file_name):
+        if (self.scripts_dir / file_name).is_dir():
+            return True
+
+        return (self.ports_dir / file_name).is_dir()
+
+    def _ports_dir_relative_to(self, path):
+        try:
+            return path.relative_to(self.scripts_dir)
+
+        except ValueError:
+            return path.relative_to(self.ports_dir)
+
+    def _ports_dir_file(self, file_name, is_script=False):
+        if is_script:
+            return (self.scripts_dir / file_name)
+
+        return (self.ports_dir / file_name)
+
     @timeit
     def load_ports(self):
         """
@@ -480,7 +522,7 @@ class HarbourMaster():
             # The files attribute keeps track of file renames.
             if port_info.get('files', None) is None:
                 port_info['files'] = {
-                    'port.json': str(port_file.relative_to(self.ports_dir)),
+                    'port.json': str(self._ports_dir_relative_to(self.ports_dir)),
                     }
                 port_info['changed'] = True
 
@@ -496,7 +538,7 @@ class HarbourMaster():
             for item in port_info['items']:
                 add_dict_list_unique(all_items, item, port_info['name'])
 
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
                         port_info['changed'] = True
@@ -505,7 +547,7 @@ class HarbourMaster():
             for item in get_dict_list(port_info, 'items_opt'):
                 add_dict_list_unique(all_items, item, port_info['name'])
 
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
                         port_info['changed'] = True
@@ -514,7 +556,7 @@ class HarbourMaster():
             ports_files[port_info['name']] = port_file
 
         ## Phase 2: Check all files
-        for file_item in self.ports_dir.iterdir():
+        for file_item in self._iter_ports_dir():
             ## Skip these
             if file_item.name.casefold() in (
                     'gamelist.xml',
@@ -594,10 +636,10 @@ class HarbourMaster():
 
             unknown_files.append(file_name)
 
-        # from pprint import pprint
-        # pprint(all_items)
-        # pprint(file_renames)
-        # pprint(unknown_files)
+        from pprint import pprint
+        pprint(all_items)
+        pprint(file_renames)
+        pprint(unknown_files)
 
         ## Create new ports.
         new_ports = []
@@ -635,7 +677,7 @@ class HarbourMaster():
 
             port_info = port_info_load(port_info_raw)
 
-            port_file = self.ports_dir / port_info_raw['file']
+            port_file = self._ports_dir_file(port_info_raw['file'])
 
             ## Load extra info
             for source in self.sources.values():
@@ -655,7 +697,9 @@ class HarbourMaster():
                 port_info['attr']['porter'] = ['Unknown']
 
             if isinstance(port_info['attr']['porter'], str):
-                port_info['attr']['porter'] = ports_info['portsmd_fix'].get(port_info['attr']['porter'].lower(), port_info['attr']['porter'])
+                port_info['attr']['porter'] = ports_info['portsmd_fix'].get(
+                    port_info['attr']['porter'].lower(),
+                    port_info['attr']['porter'])
 
             if port_info.get('status', None) is None:
                 port_info['status'] = {}
@@ -672,28 +716,28 @@ class HarbourMaster():
 
             # Add all the root dirs/scripts in the port
             for item in port_info['items']:
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
                         port_info['changed'] = True
 
                 if item in file_renames:
                     item_rename = file_renames[item]
-                    if (self.ports_dir / item_rename).exists():
+                    if self._ports_dir_exists(item_rename):
                         if item_rename not in get_dict_list(port_info['files'], item):
                             add_dict_list_unique(port_info['files'], item, item_rename)
                             port_info['changed'] = True
 
             # And any optional ones.
             for item in get_dict_list(port_info, 'items_opt'):
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
                         port_info['changed'] = True
 
                 if item in file_renames:
                     item_rename = file_renames[item]
-                    if (self.ports_dir / item_rename).exists():
+                    if self._ports_dir_exists(item_rename):
                         if item_rename not in get_dict_list(port_info['files'], item):
                             add_dict_list_unique(port_info['files'], item, item_rename)
                             port_info['changed'] = True
@@ -711,7 +755,7 @@ class HarbourMaster():
                 file_names = get_dict_list(port_info['files'], port_file)
 
                 for file_name in list(file_names):
-                    if not (self.ports_dir / file_name).exists():
+                    if not self._ports_dir_exists(file_name):
                         remove_dict_list(port_info['files'], port_file, file_name)
                         port_info['changed'] = True
 
@@ -1184,7 +1228,12 @@ class HarbourMaster():
                     self.callback.progress(_("Installing"), file_number+1, total_files, '%')
                     self.callback.message(f"- {file_info.filename}")
 
-                    dest_file = path=self.ports_dir / file_info.filename
+                    is_script = (
+                        file_info.filename.endswith('.sh') and
+                        file_info.filename.count('/') == 0)
+
+                    dest_file = path = self._ports_dir_file(file_info.filename, is_script)
+                    dest_dir = (is_script and self.scripts_dir or self.ports_dir)
 
                     if not file_info.filename.endswith('/'):
                         if not dest_file.parent.is_dir():
@@ -1194,7 +1243,7 @@ class HarbourMaster():
                         add_list_unique(undo_data, dest_file)
 
                     # cprint(f"- <b>{file_info.filename!r}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
-                    zf.extract(file_info, path=self.ports_dir)
+                    zf.extract(file_info, path=dest_dir)
 
             # print(f"Port Info: {port_info}")
             # print(f"Download Info: {download_info}")
@@ -1211,12 +1260,12 @@ class HarbourMaster():
                 del port_info['source']
 
             port_info['files'] = {
-                'port.json': str(port_info_file.relative_to(self.ports_dir)),
+                'port.json': str(self._ports_dir_relative_to(port_info_file)),
                 }
 
             # Add all the root dirs/scripts in the port
             for item in port_info['items']:
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
 
@@ -1225,7 +1274,7 @@ class HarbourMaster():
 
             # And any optional ones.
             for item in get_dict_list(port_info, 'items_opt'):
-                if (self.ports_dir / item).exists():
+                if self._ports_dir_exists(item):
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
 
@@ -1614,9 +1663,6 @@ class HarbourMaster():
 
         ports_dir = self.ports_dir
 
-        if not ports_dir.is_absolute():
-            ports_dir = ports_dir.resolve()
-
         uninstall_items = [
             item
             for item in all_port_items
@@ -1627,6 +1673,18 @@ class HarbourMaster():
 
         for item in uninstall_items:
             item_path = self.ports_dir / item
+
+            if item_path.exists():
+                cprint(f"- removing {item}")
+                self.callback.message(f"- {item}")
+
+                if item_path.is_dir():
+                    shutil.rmtree(item_path)
+
+                elif item_path.is_file():
+                    item_path.unlink()
+
+            item_path = self.scripts_dir / item
 
             if item_path.exists():
                 cprint(f"- removing {item}")
