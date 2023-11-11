@@ -688,12 +688,12 @@
             "area": [ 0.01, 0.05, 1.0, 0.10 ],
             "align": "center",
             "text": "{scene.title}",
-            "font-size": 20,
-            "font-color": "general_font"
+            "font-size": 25,
+            "font-color": "list_selected"
         },
 
         "port_info": {
-            "area": [ 0.0, 0.1, 1.0, 0.3 ],
+            "area": [ 0.0, 0.15, 1.0, 0.33 ],
             "image": "{featured_ports.image}"
         },
 
@@ -782,7 +782,7 @@
 
         "port_title": {
             "parent": "port_info_title_area_featured",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "area": [ 0.3, 0.0, 1.0, 1.0 ],
             "text": "{featured_ports.name}",
             "font-size": 22,
             "font-color": "list_selected",
@@ -790,7 +790,7 @@
         },
 
         "featured_image": {
-            "area": [ 0.0, 0.2, 0.3, 0.35 ],
+            "area": [ 0.0, 0.2, 0.29, 0.35 ],
             "image": "{featured_ports.image}",
             "area[3:2|wide]": [ 0.0, 0.1, 0.3, 0.21 ]
         },

@@ -34,7 +34,7 @@ $ESUDO chmod -R +x .
 if [[ -e "/storage/.config/.OS_ARCH" ]] || [ "${OS_NAME}" == "JELOS" ] || [ "${OS_NAME}" == "UnofficialOS" ]; then
   toolsfolderloc="/storage/roms/ports"
 else
-  isitthera=$($GREP "title=" "/usr/share/plymouth/themes/text.plymouth")
+  isitthera=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
   if [[ $isitthera == *"TheRA"* ]]; then
     if [ -d "/opt/tools/PortMaster/" ]; then
       toolsfolderloc="/opt/tools"
