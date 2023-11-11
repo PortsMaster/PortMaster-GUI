@@ -1501,6 +1501,12 @@ class FiltersScene(BaseScene):
             "update available": _("Update Available"),
             "broken":           _("Broken Ports"),
 
+            # Availability.
+            "full":             _("Free game, all files included."),
+            "demo":             _("Demo files included."),
+            "free":             _("Free external assets needed."),
+            "paid":             _("Paid external assets needed."),
+
             # Runtimes.
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "godot":            _("{runtime_name} Runtime").format(runtime_name="Godot/FRT"),
@@ -1528,6 +1534,7 @@ class FiltersScene(BaseScene):
             'sort',
             'clear-filters',
             'attr',
+            # 'status',
             'genres',
             'porters',
             ]
@@ -1616,6 +1623,35 @@ class FiltersScene(BaseScene):
                         if add_blank:
                             self.tags['filter_list'].add_option(None, "")
                         self.tags['filter_list'].add_option(None, _("Attributes:"))
+                        first_add = False
+
+                    self.tags['filter_list'].add_option(hm_genre, text)
+
+                    if selected_option == hm_genre:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
+
+            elif display_order == 'status':
+                for hm_genre in ['full', 'demo', 'free', 'paid']:
+                    if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre in self.list_scene.options['skip_genres']:
+                        continue
+
+                    if hm_genre in genres:
+                        ports = total_ports
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    else:
+                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+
+                    if ports == 0:
+                        continue
+
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
+                        self.tags['filter_list'].add_option(None, _("Availability:"))
                         first_add = False
 
                     self.tags['filter_list'].add_option(hm_genre, text)

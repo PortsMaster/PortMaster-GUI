@@ -170,6 +170,7 @@ config/
 
 
 ports/
+ports_scripts/
 themes/
 *.squashfs
 *.squashfs.md5

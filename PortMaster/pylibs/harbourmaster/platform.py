@@ -23,6 +23,7 @@ from .util import *
 
 class PlatformBase():
     MOVE_PM_BASH = False
+    MOVE_PM_BASH_DIR = None
     ES_NAME = None
 
     def __init__(self, hm):
@@ -173,7 +174,7 @@ class PlatformJELOS(PlatformBase):
 
         ## Copy the files as per usual.
         shutil.copy(JELOS_PM_DIR / "control.txt", PM_DIR / "control.txt")
-        shutil.copy(JELOS_PM_DIR / "gptokeyb", PM_DIR / "gptokeyb")
+        # shutil.copy(JELOS_PM_DIR / "gptokeyb", PM_DIR / "gptokeyb")
         shutil.copy(JELOS_PM_DIR / "gamecontrollerdb.txt", PM_DIR / "gamecontrollerdb.txt")
         shutil.copy(JELOS_PM_DIR / "mapper.txt", PM_DIR / "mapper.txt")
 
@@ -191,10 +192,17 @@ class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
     ES_NAME = 'emustation'
 
 
+class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
+    MOVE_PM_BASH = True
+    MOVE_PM_BASH_DIR = Path("/emuelec/scripts/")
+    ES_NAME = 'emustation'
+
+
 HM_PLATFORMS = {
     'jelos': PlatformJELOS,
     'arkos': PlatformArkOS,
     'amberelec': PlatformAmberELEC,
+    'emuelec': PlatformEmuELEC,
     'unofficialos': PlatformUOS,
     'default': PlatformBase,
     # 'default': PlatformAmberELEC,

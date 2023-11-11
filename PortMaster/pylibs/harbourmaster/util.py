@@ -554,6 +554,10 @@ def match_requirements(capabilities, requirements):
     for requirement in requirements:
         match_not = True
 
+        ## Fixes empty requirement bug
+        if requirement == "":
+            continue
+
         if requirement.startswith('!'):
             match_not = False
             requirement = requirement[1:]
