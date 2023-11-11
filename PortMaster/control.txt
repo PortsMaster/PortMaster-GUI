@@ -69,6 +69,7 @@ fi
 SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
 [ -z "${SDLDBFILE}" ] && SDLDBFILE="${controlfolder}/gamecontrollerdb.txt"
 SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="${controlfolder}/gamecontrollerdb.txt"
 
 get_controls() {
 
@@ -142,7 +143,10 @@ fi
     echo "" > /tmp/gamecontrollerdb.txt
   fi
 
-  $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  if [ -f "${HOME}/.config/emulationstation/es_input.cfg" ]; then
+    $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  fi
+
   SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"

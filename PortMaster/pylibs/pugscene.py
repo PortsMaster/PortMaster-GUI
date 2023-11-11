@@ -433,21 +433,25 @@ class OptionScene(BaseScene):
         self.tags['option_list'].add_option(None, _("System"))
 
         self.tags['option_list'].add_option(
+            'runtime-manager',
+            _("Runtime Manager"),
+            description=_("Manage port runtimes."))
+
+        self.tags['option_list'].add_option(
             'update-ports',
             _("Update Ports"),
             description=_("Update all ports and associated information"))
+
         self.tags['option_list'].add_option(
             'update-portmaster',
             _("Update PortMaster"),
             description=_("Force check for a new PortMaster version."))
-        # self.tags['option_list'].add_option(
-        #     'source-manager',
-        #     _("Source Manager"),
-        #     description=_("Manage port sources."))
+
         self.tags['option_list'].add_option(
-            'runtime-manager',
-            _("Runtime Manager"),
-            description=_("Manage port runtimes."))
+            'release-channel',
+            _("Release Channel: {channel}").format(
+                channel=self.gui.hm.cfg_data.get('release_channel', "stable")),
+            description=_("Change release channel of PortMaster, either beta or stable."))
 
         if len(self.gui.hm.get_gcd_modes()) > 0:
             gcd_mode = self.gui.hm.get_gcd_mode()
@@ -479,7 +483,7 @@ class OptionScene(BaseScene):
             description=_("Select a theme for PortMaster."))
 
         schemes = self.gui.themes.get_theme_schemes_list()
-        if len(schemes) > 0:
+        if len(schemes) > 1:
             self.tags['option_list'].add_option(
                 'select-scheme',
                 _("Select Color Scheme"),
@@ -529,6 +533,33 @@ class OptionScene(BaseScene):
                     reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
                     if not reboot_file.is_file():
                         reboot_file.touch(0o644)
+
+                return True
+
+            if selected_option == 'release-channel':
+                channel_change = {
+                    "stable": "beta",
+                    "beta": "stable",
+                    }
+                current_channel = self.gui.hm.cfg_data.get('release_channel', "stable")
+                new_channel = channel_change[current_channel]
+
+                if self.gui.message_box(
+                        _("Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\nPortMaster will upgrade or downgrade accordingly.").format(
+                            current_channel=current_channel,
+                            new_channel=new_channel,
+                            ),
+                        want_cancel=True):
+
+                    self.gui.hm.cfg_data['release_channel'] = new_channel
+                    self.gui.hm.cfg_data['update_checked'] = None
+                    self.gui.hm.save_config()
+                    self.gui.events.running = False
+
+                    if not harbourmaster.HM_TESTING:
+                        reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
+                        if not reboot_file.is_file():
+                            reboot_file.touch(0o644)
 
                 return True
 
