@@ -817,6 +817,11 @@ class HarbourMaster():
         if rtr:
             add_list_unique(attrs, 'rtr')
 
+        if rtr:
+            add_list_unique(attrs, ('full', 'demo')[ord(port_info['name'][0]) % 2])
+        else:
+            add_list_unique(attrs, ('free', 'paid')[ord(port_info['name'][0]) % 2])
+
         exp = port_info.get('attr', {}).get('exp', False)
         if exp:
             add_list_unique(attrs, 'exp')
@@ -1175,8 +1180,12 @@ class HarbourMaster():
                     zf.extract(file_info, path=self.tools_dir)
 
                     if move_bash and dest_file.name.lower().endswith('.sh'):
-                        self.callback.message(f"- moving {dest_file} to {self.cfg_dir / dest_file.name}")
-                        os.replace(dest_file, self.tools_dir / dest_file.name)
+                        move_bash_dir = self.platform.MOVE_PM_BASH_DIR
+                        if move_bash_dir is None or not move_bash_dir.is_dir():
+                            move_bash_dir = self.cfg_dir
+
+                        self.callback.message(f"- moving {dest_file} to {move_bash_dir / dest_file.name}")
+                        os.replace(dest_file, move_bash_dir / dest_file.name)
 
             self.set_gcd_mode(gcd_mode)
 

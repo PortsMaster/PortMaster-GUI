@@ -23,6 +23,7 @@ from .util import *
 
 class PlatformBase():
     MOVE_PM_BASH = False
+    MOVE_PM_BASH_DIR = None
     ES_NAME = None
 
     def __init__(self, hm):
@@ -193,6 +194,7 @@ class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
 
 class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
+    MOVE_PM_BASH_DIR = Path("/emuelec/scripts/")
     ES_NAME = 'emustation'
 
 

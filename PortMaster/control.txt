@@ -133,10 +133,19 @@ else
       DEVICE="${1}"
       param_device="${2}"
 fi
+  export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 
-    CONTROLS=`grep "${SDLDBUSERFILE}" -e "${DEVICE}"`
-    [ -z "${CONTROLS}" ] && CONTROLS=`grep "${SDLDBFILE}" -e "${DEVICE}"`
-    sdl_controllerconfig="${CONTROLS}"
+  # Spit the controller of the device our heuristics found (if it did).
+  if [[ ! -z ${DEVICE} ]]; then
+    grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
+  else
+    echo "" > /tmp/gamecontrollerdb.txt
+  fi
+
+  $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
 
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
