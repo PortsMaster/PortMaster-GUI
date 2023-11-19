@@ -1216,7 +1216,7 @@ class FontTTF(sdl2.ext.FontTTF):
 
         return self._get_line_size("", style_key)[1]
 
-    def quick_render(self, text, size, width=None, align='left'):
+    def quick_render(self, text, size, width=None, align='left', line_h=None):
         """Renders a string of text to a new surface.
 
         Uses render_text to render text to a new surface.
@@ -1230,7 +1230,7 @@ class FontTTF(sdl2.ext.FontTTF):
         if text == "":
             text = " "
 
-        return self.render_text(text, style_key, width=width, align=align)
+        return self.render_text(text, style_key, width=width, align=align, line_h=line_h)
 
 
 class TextManager:
@@ -1268,7 +1268,7 @@ class TextManager:
 
         return font.line_height(size)
 
-    def render_text(self, text, font_name, size, *, width=None, align="left"):
+    def render_text(self, text, font_name, size, *, width=None, align="left", line_h=None):
         if font_name not in self.fonts:
             font_file = self.gui.resources.find(font_name)
             if font_file is None:
@@ -1281,9 +1281,9 @@ class TextManager:
         if text == "":
             text = " "
 
-        key = f"{font.family_name}:{size!r}:{width}:{align}:{text}"
+        key = f"{font.family_name}:{size!r}:{width}:{align}:{line_h}:{text}"
         if key not in self._textures:
-            surface = font.quick_render(text, size, width=width, align=align)
+            surface = font.quick_render(text, size, width=width, align=align, line_h=line_h)
             texture = self._textures[key] = Texture(
                 self.gui,
                 sdl2.ext.Texture(self.renderer, surface))
@@ -1943,6 +1943,7 @@ class Region:
         self.textclip = self._verify_bool('text-clip', True, optional=True)
         self.textwrap = self._verify_bool('text-wrap', False, optional=True)
         self.linespace = self._verify_int('line-space', 0, optional=True)
+        self.lineheight = self._verify_float('line-height', 1.0, optional=True)
         self.align = self._verify_option('align', Rect.POINTS, 'topleft')
 
         self.imagelist = 0 ## TODO
@@ -2193,19 +2194,26 @@ class Region:
 
         elif self._text:
             if text_area.width > 0 and text_area.height > 0:
-                itemsize = self.texts.line_height(self.font, self.fontsize)
+                itemsize = self.texts.line_height(self.font, self.fontsize) * self.lineheight
                 self.page_size = max(text_area.height // (itemsize), 1)
 
                 if self.textwrap:
                     texture = self.texts.render_text(
                         self._text,
-                        self.font, self.fontsize,
-                        width=text_area.width, align=align_to_textalign[self.align])
+                        self.font,
+                        self.fontsize,
+                        width=text_area.width,
+                        align=align_to_textalign[self.align],
+                        line_h=int(itemsize))
 
                 else:
                     texture = self.texts.render_text(
                         self._text,
-                        self.font, self.fontsize, align=align_to_textalign[self.align])
+                        self.font,
+                        self.fontsize,
+                        align=align_to_textalign[self.align],
+                        line_h=int(itemsize),
+                        )
 
                 # x, y = getattr(text_area, self.align, text_area.topleft)
                 x, y, self.scroll_max = autoscroll_text(
