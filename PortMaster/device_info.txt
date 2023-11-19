@@ -4,6 +4,7 @@
 #
 # - DISPLAY_WIDTH
 # - DISPLAY_HEIGHT
+# - DISPLAY_ORIENTATION
 # - CFW_NAME
 # - CFW_VERSION
 # - DEVICE_RAM
@@ -87,6 +88,7 @@ fi
 
 ANALOG_STICKS=2
 DEVICE_CPU="Unknown"
+DISPLAY_ORIENTATION=0
 
 ## FIXES
 # Here is where we can add custome rules to fill out extra info on the device.
