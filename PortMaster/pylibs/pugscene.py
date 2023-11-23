@@ -338,11 +338,10 @@ class MainMenuScene(BaseScene):
         self.load_regions("main_menu", ['option_list'])
 
         self.tags['option_list'].reset_options()
-        if self.gui.get_config().get('konami', False):
-            self.tags['option_list'].add_option(
-                ('featured-ports', None),
-                _('Featured Ports'),
-                description=_("Hand curated lists of ports"))
+        self.tags['option_list'].add_option(
+            ('featured-ports', None),
+            _('Featured Ports'),
+            description=_("Hand curated lists of ports"))
         self.tags['option_list'].add_option(
             ('install', []),
             _("All Ports"),
@@ -418,8 +417,12 @@ class MainMenuScene(BaseScene):
 
         elif events.was_pressed('B'):
             self.button_back()
-            self.gui.do_cancel()
-            return True
+            if self.gui.message_box(
+                    _("Are you sure you want to exit PortMaster?"),
+                    want_cancel=True):
+
+                self.gui.do_cancel()
+                return True
 
 
 class OptionScene(BaseScene):
@@ -1135,7 +1138,7 @@ class FeaturedPortsListScene(BaseScene):
 
         self.load_regions("featured_ports_list", ['option_list', ])
 
-        self.featured_ports = self.gui.hm.featured_ports()
+        self.featured_ports = self.gui.hm.featured_ports(pre_load=True)
 
         self.tags['option_list'].reset_options()
 

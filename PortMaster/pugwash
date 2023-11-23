@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.5.7'
+PORTMASTER_VERSION = '8.5.8'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -988,7 +988,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.updated = True
         if self.message_box_scene:
             page_size = max(self.message_box_scene.tags['message_text'].page_size, 12) + 1
-            self.message_box_scene.tags['message_text'].text = '\n'.join(self.callback_messages[-(page_size):])
+            self.message_box_scene.tags['message_text'].text = '\n'.join(self.callback_messages[-int(page_size):])
 
             self.do_loop(no_delay=True)
 

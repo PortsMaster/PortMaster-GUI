@@ -239,6 +239,8 @@ class HarbourMaster():
             with open(featured_ports_file, 'w') as fh:
                 fh.write(ports_list_data)
 
+            self.featured_ports()
+
             self.cfg_data['featured_ports_checked'] = datetime.datetime.now().isoformat()
 
         if not info_file.is_file():
@@ -932,7 +934,7 @@ class HarbourMaster():
 
         return ports
 
-    def featured_ports(self):
+    def featured_ports(self, pre_load=False):
         featured_ports_file = self.cfg_dir / "featured_ports.json"
         featured_ports_dir = self.cfg_dir / "featured_ports/"
 
@@ -954,15 +956,18 @@ class HarbourMaster():
                 continue
 
             if port_list.get('name', None) in (None, ""):
-                logger.error(f"Bad featured_ports[{idx}]: Missing title info")
+                if pre_load:
+                    logger.error(f"Bad featured_ports[{idx}]: Missing title info")
                 continue
 
             if port_list.get('ports', None) is None:
-                logger.error(f"Bad featured_ports[{idx}]: Missing ports info")
+                if pre_load:
+                    logger.error(f"Bad featured_ports[{idx}]: Missing ports info")
                 continue
 
             if not isinstance(port_list.get('ports', None), list):
-                logger.error(f"Bad featured_ports[{idx}]: bad ports item")
+                if pre_load:
+                    logger.error(f"Bad featured_ports[{idx}]: bad ports item")
                 continue
 
             port_list_image = port_list.get('image', None)
@@ -971,12 +976,9 @@ class HarbourMaster():
                 port_list_image_file = featured_ports_dir / port_list_image.rsplit('/', 1)[-1]
 
                 if not port_list_image_file.is_file():
-                    port_list_image_data = fetch_data(port_list_image_url)
-                    if port_list_image_data is not None:
-                        with port_list_image_file.open('wb') as fh:
-                            fh.write(port_list_image_data)
+                    download_info = download(port_list_image_file, port_list_image_url, callback=self.callback, no_check=True)
 
-                    else:
+                    if download_info is None:
                         port_list_image = None
 
             if port_list_image is None:
@@ -986,7 +988,8 @@ class HarbourMaster():
             for idx2, port_name in enumerate(port_list['ports']):
                 port_info = self.port_info(port_name)
                 if port_info is None:
-                    logger.error(f"Bad featured_ports[{idx}]['ports'][{idx}]: unknown port {port_name}")
+                    if pre_load:
+                        logger.error(f"Bad featured_ports[{idx}]['ports'][{idx}]: unknown port {port_name}")
                     continue
 
                 port_list_ports[port_info['name']] = port_info
