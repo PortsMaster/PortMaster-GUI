@@ -1,0 +1,178 @@
+#!/bin/bash
+
+## New Device Info
+#
+# - DISPLAY_WIDTH
+# - DISPLAY_HEIGHT
+# - DISPLAY_ORIENTATION
+# - CFW_NAME
+# - CFW_VERSION
+# - DEVICE_RAM
+# - DEVICE_NAME
+# - ANALOG_STICKS
+# - DEVICE_CPU
+# usage `source <path_to>/device_info.txt`
+
+DEVICE_INFO_VERSION="0.1.1"
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# get current resolution
+IFS='x' read -r DISPLAY_WIDTH DISPLAY_HEIGHT < <($SCRIPT_DIR/sdl_resolution 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+
+unset SCRIPT_DIR
+
+# Check if the values are not empty, otherwise, set default resolution
+if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
+    DISPLAY_WIDTH=640
+    DISPLAY_HEIGHT=480
+fi
+
+CFW_NAME="Unknown"
+CFW_VERSION="Unknown"
+
+if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
+    CFW_INFO=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
+    CFW_FFS=$(grep -a "title=" "/usr/share/plymouth/themes/text.plymouth" | cut -d'=' -f 2- | tr -cd 'a-zA-Z' | tr '[:upper:]' '[:lower:]')
+
+    if [[ $CFW_FFS == *"thera"* ]]; then
+        CFW_NAME="TheRA"
+        CFW_VERSION="Unknown"
+
+    elif [[ $CFW_FFS == *"retrooz"* ]]; then
+        CFW_NAME="RetroOZ"
+        CFW_VERSION="Unknown"
+
+    elif [[ $CFW_FFS == *"arkos"* ]]; then
+        CFW_NAME=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}\))/\1/p' | cut -d' ' -f 1)
+        CFW_VERSION=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}\))/\2/p' | cut -d' ' -f 1)
+
+        if [[ $CFW_FFS == *"wummle"* ]]; then
+            CFW_NAME="${CFW_NAME} wuMMLe"
+        fi
+    fi
+
+    unset CFW_INFO
+    unset CFW_FFS
+else
+
+    # AmberELEC / EmuELEC
+    CFW_NAME=$(grep -a '^NAME=".*"' /etc/os-release | cut -d'"' -f 2)
+    CFW_VERSION=$(grep -a '^VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
+
+    if [ -z "$CFW_NAME" ]; then
+        # uOS / JELOS
+        CFW_NAME=$(grep -a '^OS_NAME=".*"' /etc/os-release | cut -d'"' -f 2)
+        CFW_VERSION=$(grep -a '^OS_VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
+    fi
+fi
+
+DEVICE_RAM=$(free -t | grep 'Total:' | awk '{printf("%.0f", ($2 / 1024 / 1024))}')
+
+# Get DEVICE_NAME
+if [[ "$CFW_NAME" == "EmuELEC" ]]; then
+    DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
+elif [ -f "~/.config/.DEVICE" ]; then
+    DEVICE_NAME=$(cat "~/.config/.DEVICE")
+elif [ -f "~/.config/.OS_ARCH" ]; then
+    DEVICE_NAME=$(cat "~/.config/.OS_ARCH")
+elif [ -f "/sys/firmware/devicetree/base/model" ]; then
+    DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
+
+    if [[ "${DEVICE_NAME}" == "" ]]; then
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+    fi
+else
+    DEVICE_NAME="Unknown"
+fi
+
+ANALOG_STICKS=2
+DEVICE_CPU="Unknown"
+DISPLAY_ORIENTATION=0
+
+## FIXES
+# Here is where we can add custome rules to fill out extra info on the device.
+case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
+    # by cpu
+    "rk3399")
+        DEVICE_NAME="RG552"
+        DEVICE_CPU="RK3399"
+        ;;
+
+    "rk3566")
+        DEVICE_CPU="RK3566"
+        if [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "960x544" ]]; then
+            # Nice
+            DEVICE_NAME="RG503"
+        elif [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "1280x720" ]]; then
+            # and
+            DEVICE_NAME="x55"
+        elif [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "720x720" ]]; then
+            # easy
+            DEVICE_NAME="RGB30"
+        else
+            # fuck it, close enough
+            if [[ "$DEVICE_RAM" == "2" ]]; then
+                DEVICE_NAME="RG353M"
+            else
+                DEVICE_NAME="RG353VS"
+            fi
+        fi
+        ;;
+
+    "rk3326")
+        DEVICE_CPU="RK3326"
+        if [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "854x480" ]]; then
+            # Could be this, i guess...
+            DEVICE_NAME="ODROID-GO Super"
+
+        elif [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "640x480" ]]; then
+            # or could be this...
+            DEVICE_NAME="RG351MP"
+
+        else
+            # fuck it, close enough
+            DEVICE_NAME="RG351P"
+        fi
+        ;;
+
+    # by actual device
+    "rg353v"|"rg353p"|"rg353vs"|"rg353ps"|"rg353m")
+        DEVICE_CPU="RK3566"
+        ;;
+
+    "rg351mp"|"rg351p")
+        DEVICE_CPU="RK3326"
+        ;;
+
+    "x55")
+        DEVICE_CPU="RK3566"
+        ;;
+
+    "rg351v")
+        ANALOG_STICKS=1
+        DEVICE_CPU="RK3326"
+        ;;
+
+    "rg552")
+        DEVICE_CPU="RK3399"
+        ;;
+
+    "gameforce")
+        DEVICE_CPU="RK3326"
+        ;;
+
+    "amlogic-ng")
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2> /dev/null | cut -d' ' -f 2)
+        DEVICE_CPU="S922X"
+        ;;
+
+    "super")
+        DEVICE_NAME="ODROID-GO Super"
+        DEVICE_CPU="RK3326"
+        ;;
+
+    "odroid-go super")
+        DEVICE_CPU="RK3326"
+        ;;
+esac

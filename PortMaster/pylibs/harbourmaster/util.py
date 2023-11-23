@@ -293,7 +293,7 @@ def runtime_nicename(runtime):
     return runtime
 
 
-def download(file_name, file_url, md5_source=None, md5_result=None, callback=None):
+def download(file_name, file_url, md5_source=None, md5_result=None, callback=None, no_check=False):
     """
     Download a file from file_url into file_name, checks the md5sum of the file against md5_source if given.
 
@@ -363,26 +363,27 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
         return None
 
     md5_file = md5.hexdigest()
-    if md5_source is not None:
-        if md5_file != md5_source:
-            file_name.unlink()
-            logger.error(f"File doesn't match the md5 file: {md5_file} != {md5_source}")
+    if not no_check:
+        if md5_source is not None:
+            if md5_file != md5_source:
+                file_name.unlink()
+                logger.error(f"File doesn't match the md5 file: {md5_file} != {md5_source}")
 
-            if callback is not None:
-                callback.message_box(_("Download validation failed."))
+                if callback is not None:
+                    callback.message_box(_("Download validation failed."))
 
-            return None
-        else:
-
-            if callback is not None:
-                callback.message(_("Passed file validation."))
+                return None
             else:
-                cprint(f"<b,g,>Passed md5 check.</b,g,>")
-    else:
-        if callback is not None:
-            callback.message(_("Unable to validate download."))
 
-        logger.warning(f"No md5 to check against: {md5_file}")
+                if callback is not None:
+                    callback.message(_("Passed file validation."))
+                else:
+                    cprint(f"<b,g,>Passed md5 check.</b,g,>")
+        else:
+            if callback is not None:
+                callback.message(_("Unable to validate download."))
+
+            logger.warning(f"No md5 to check against: {md5_file}")
 
     if callback is not None:
         callback.progress(None, None, None)

@@ -31,9 +31,9 @@ HW_INFO = {
     'rg503':   {'resolution': ( 960,  544), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
     'rg351mp': {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
     'rg351p':  {'resolution': ( 480,  320), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rg353v':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3366', 'capabilities': []},
-    'rg353p':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3366', 'capabilities': []},
-    'rg353m':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3366', 'capabilities': []},
+    'rg353v':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': []},
+    'rg353p':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': []},
+    'rg353m':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': []},
     'rg351v':  {'resolution': ( 640,  480), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
 
     # Hardkernel Devices
