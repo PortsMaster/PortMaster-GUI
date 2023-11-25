@@ -224,6 +224,19 @@ class BaseScene:
 
         self.regions.sort(key=lambda x: (x.z_index, x.z_position))
 
+        if "buttons" in self.config:
+            if "A" in self.config["buttons"]:
+                del self.config["buttons"]["A"]
+
+            if "B" in self.config["buttons"]:
+                del self.config["buttons"]["B"]
+
+            if "X" in self.config["buttons"]:
+                del self.config["buttons"]["X"]
+
+            if "Y" in self.config["buttons"]:
+                del self.config["buttons"]["Y"]
+
     def update_data(self, keys):
         regions = set()
 
@@ -326,6 +339,9 @@ class BaseScene:
             self.gui.sounds.play(self.tags['button_bar'].button_sound_alt, volume=self.tags['button_bar'].button_sound_alt_volume)
 
     def config_buttons(self, events):
+        if "buttons" not in self.config:
+            return
+
         for button, action in self.config.get("buttons", {}).items():
             if events.was_pressed(button):
                 yield action
