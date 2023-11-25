@@ -134,6 +134,7 @@ class BaseScene:
     def __init__(self, gui):
         self.gui = gui
         self.tags = {}
+        self.config = {}
         self.regions = []
         self.text_regions = {}
         self.bar_regions = {}
@@ -164,6 +165,10 @@ class BaseScene:
         temp_required_tags = list(required_tags)
 
         for number, (region_name, region_data) in enumerate(self.gui.theme_data[section].items()):
+            if region_name == "#config":
+                self.config = region_data
+                continue
+
             if "music" in region_data:
                 self.music = region_data["music"]
                 self.music_volume = region_data.get("music-volume", 128)
@@ -218,6 +223,19 @@ class BaseScene:
             raise RuntimeError("Error missing section tag in theme")
 
         self.regions.sort(key=lambda x: (x.z_index, x.z_position))
+
+        if "buttons" in self.config:
+            if "A" in self.config["buttons"]:
+                del self.config["buttons"]["A"]
+
+            if "B" in self.config["buttons"]:
+                del self.config["buttons"]["B"]
+
+            if "X" in self.config["buttons"]:
+                del self.config["buttons"]["X"]
+
+            if "Y" in self.config["buttons"]:
+                del self.config["buttons"]["Y"]
 
     def update_data(self, keys):
         regions = set()
@@ -307,17 +325,26 @@ class BaseScene:
     def button_activate(self):
         if 'button_bar' not in self.tags:
             return
-        
+
         self.gui.sounds.play(self.tags['button_bar'].button_sound, volume=self.tags['button_bar'].button_sound_volume)
 
     def button_back(self):
         if 'button_bar' not in self.tags:
             return
-        
+
         if self.tags['button_bar'].button_sound_alt is None:
             self.button_activate()
-        else:        
+
+        else:
             self.gui.sounds.play(self.tags['button_bar'].button_sound_alt, volume=self.tags['button_bar'].button_sound_alt_volume)
+
+    def config_buttons(self, events):
+        if "buttons" not in self.config:
+            return
+
+        for button, action in self.config.get("buttons", {}).items():
+            if events.was_pressed(button):
+                yield action
 
 
 class BlankScene(BaseScene):
@@ -1227,6 +1254,7 @@ class PortListBaseScene():
         if self.tags['ports_list'].selected >= len(self.port_list):
             if len(self.port_list) == 0:
                 self.tags['ports_list'].selected = 0
+
             else:
                 self.tags['ports_list'].selected = len(self.port_list) - 1
 
@@ -1256,6 +1284,32 @@ class PortListBaseScene():
 
         self.last_port = self.tags['ports_list'].selected
         return self.port_list[self.last_port]
+
+    def select_next_port(self):
+        if len(self.port_list) == 0:
+            return
+
+        self.last_port = self.tags['ports_list'].selected = (self.last_port + 1) % len(self.port_list)
+
+        port_name = self.port_list[self.last_port]
+        port_info = self.all_ports[port_name]
+
+        self.gui.set_port_info(port_name, port_info, self.options['mode'] != 'install')
+
+        return port_name
+
+    def select_prev_port(self):
+        if len(self.port_list) == 0:
+            return
+
+        self.last_port = self.tags['ports_list'].selected = (self.last_port - 1) % len(self.port_list)
+
+        port_name = self.port_list[self.last_port]
+        port_info = self.all_ports[port_name]
+
+        self.gui.set_port_info(port_name, port_info, self.options['mode'] != 'install')
+
+        return port_name
 
     def do_update(self, events):
         super().do_update(events)
@@ -1297,15 +1351,15 @@ class PortListBaseScene():
             logger.debug(f"{self.options['mode']}: {port_name}")
             if self.options['mode'] == 'featured-ports':
                 # self.ready = False
-                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install'))
+                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install', self))
 
             elif self.options['mode'] == 'install':
                 self.ready = False
-                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install'))
+                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'install', self))
 
             elif self.options['mode'] == 'uninstall':
                 self.ready = False
-                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'uninstall'))
+                self.gui.push_scene('port_info', PortInfoScene(self.gui, port_name, 'uninstall', self))
 
             return True
 
@@ -1380,48 +1434,61 @@ class PortInfoPopup(BaseScene):
         self.scene_title = _("Port Info Popup")
         self.parent_info_scene = parent
         self.load_regions("port_info_popup", [])
+        self.update_selection()
+
+    def update_selection(self):
+        buttons = {}
+
+        if 'buttons' in self.config:
+            for button, action in self.config['buttons'].items():
+                if action == 'pop_scene':
+                    buttons[button] = _('Hide Info')
+
+        else:
+            buttons['DOWN'] = _('Hide Info')
+
+            self.config['buttons'] = {
+                'DOWN': 'pop_scene',
+                }
 
         if 'installed' in self.parent_info_scene.port_attrs:
-            self.set_buttons({'DOWN': _('Hide Information'), 'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
-        else:
-            self.set_buttons({'DOWN': _('Hide Information'), 'A': _('Install'), 'B': _('Back')})
+            buttons.update({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
 
+        else:
+            buttons.update({'A': _('Install'), 'B': _('Back')})
+
+        self.port_name = self.gui.get_data("port_info.name")
+        self.set_buttons(buttons)
 
     def do_update(self, events):
         super().do_update(events)
 
-        if events.was_pressed('DOWN'):
-            self.button_back()
-            self.gui.pop_scene()
-            return True
+        if self.port_name != self.gui.get_data("port_info.name"):
+            self.update_selection()
 
-        if events.was_pressed('UP'):
-            return True
+        for action in self.config_buttons(events):
+            if action == "pop_scene":
+                self.parent_info_scene.popup_shown = False
+                self.button_back()
+                self.gui.pop_scene()
+                return True
 
         return False
 
+
 class PortInfoScene(BaseScene):
-    def __init__(self, gui, port_name, action):
+    def __init__(self, gui, port_name, action, port_list_scene):
         super().__init__(gui)
         self.scene_title = _("Port Info")
 
         self.load_regions("port_info", [])
 
         self.port_name = port_name
+        self.port_list_scene = port_list_scene
+        self.popup_shown = False
         self.action = action
         self.ready = False
         self.update_port()
-        buttons = {}
-
-        if 'port_info_popup' in self.gui.theme_data:
-            buttons['UP'] = _('Show Information')
-
-        if 'installed' in self.port_attrs:
-            buttons.update({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
-        else:
-            buttons.update({'A': _('Install'), 'B': _('Back')})
-
-        self.set_buttons(buttons)
 
     def update_port(self):
         if self.gui.hm is None:
@@ -1437,6 +1504,37 @@ class PortInfoScene(BaseScene):
         #     self.tags['port_image'].image = self.gui.get_port_image(self.port_name)
 
         self.gui.set_port_info(self.port_name, self.port_info)
+
+        buttons = {}
+
+        if 'buttons' in self.config:
+            for button, action in self.config['buttons'].items():
+                if action == 'port_info_popup' and 'port_info_popup' in self.gui.theme_data:
+                    buttons[button] = _('Show Info')
+
+        else:
+
+            if 'port_info_popup' in self.gui.theme_data:
+                buttons['UP'] = _('Show Info')
+
+                self.config['buttons'] = {
+                    'UP': 'port_info_popup',
+                    'LEFT': 'prev_port',
+                    'RIGHT': 'next_port',
+                    }
+
+            else:
+                self.config['buttons'] = {
+                    'UP': 'prev_port',
+                    'DOWN': 'next_port',
+                    }
+
+        if 'installed' in self.port_attrs:
+            buttons.update({'A': _('Reinstall'), 'Y': _('Uninstall'), 'B': _('Back')})
+        else:
+            buttons.update({'A': _('Install'), 'B': _('Back')})
+
+        self.set_buttons(buttons)
 
         self.ready = True
 
@@ -1465,13 +1563,32 @@ class PortInfoScene(BaseScene):
             self.gui.pop_scene()
             return True
 
-        if events.was_pressed('UP'):
-            if 'port_info_popup' in self.gui.theme_data:
-                scene = PortInfoPopup(self.gui, self)
-                scene.button_activate()
-                self.gui.push_scene('port_info', scene)
+        for action in self.config_buttons(events):
+            if action == "port_info_popup":
+                if 'port_info_popup' in self.gui.theme_data:
+                    if self.popup_shown:
+                        return True
 
-            return True
+                    scene = PortInfoPopup(self.gui, self)
+                    scene.button_activate()
+                    self.popup_shown = True
+                    self.gui.push_scene('port_info', scene)
+                    return True
+
+            if action == "prev_port":
+                self.port_name = self.port_list_scene.select_prev_port()
+                self.update_port()
+                self.button_activate()
+                return True
+
+            if action == "next_port":
+                self.port_name = self.port_list_scene.select_next_port()
+                self.update_port()
+                self.button_activate()
+                return True
+
+            else:
+                logger.debug(f"Unknown #config.button action: {action}")
 
         return False
 

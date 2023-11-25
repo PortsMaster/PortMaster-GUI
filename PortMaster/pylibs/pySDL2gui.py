@@ -1597,12 +1597,13 @@ class SoundManager():
             #     return
 
             total_audio_devices = sdl2.SDL_GetNumAudioDevices(0)
-            print(f"Audio Devices: {total_audio_devices}")
+            # print(f"Audio Devices: {total_audio_devices}")
             for i in range(total_audio_devices):
-                print(f"- {i}: {sdl2.SDL_GetAudioDeviceName(i, 0)}")
+                # print(f"- {i}: {sdl2.SDL_GetAudioDeviceName(i, 0)}")
+                pass
 
             if sdl2.sdlmixer.Mix_OpenAudio(44100, sdl2.sdlmixer.MIX_DEFAULT_FORMAT, 2, 1024):
-                print(f'Cannot open mixed audio: {sdl2.sdlmixer.Mix_GetError()}')
+                # print(f'Cannot open mixed audio: {sdl2.sdlmixer.Mix_GetError()}')
                 self.init_failed = True
                 return
 
@@ -1624,7 +1625,7 @@ class SoundManager():
         res_filename = self.gui.resources.find(filename)
 
         if res_filename is None:
-            print(f"SOUND: unable to find {filename}")
+            # print(f"SOUND: unable to find {filename}")
             return None
 
         sample = sdl2.sdlmixer.Mix_LoadWAV(
@@ -1672,7 +1673,7 @@ class SoundManager():
         res_filename = self.gui.resources.find(filename)
 
         if res_filename is None:
-            print(f"MUSIC: unable to find {filename}")
+            # print(f"MUSIC: unable to find {filename}")
             return None
 
         sdl2.sdlmixer.Mix_VolumeMusic(int(max(0, min(volume, 128))))
@@ -1745,7 +1746,7 @@ class SoundManager():
 
         sample = self.sounds.get(name)
         if not sample:
-            print(f"PLAY: unable to find {name}")
+            # print(f"PLAY: unable to find {name}")
             return
 
         channel = sdl2.sdlmixer.Mix_PlayChannel(-1, sample, 0)
@@ -1759,16 +1760,16 @@ class SoundManager():
             return
 
         for i, s in enumerate(self.sounds.values()):
-            print(f"self.sounds[{i}]: {s}")
+            # print(f"self.sounds[{i}]: {s}")
             sdl2.sdlmixer.Mix_FreeChunk(s)
 
         if self.song:
-            print(f"self.song: {self.song}")
+            # print(f"self.song: {self.song}")
             sdl2.sdlmixer.Mix_FreeMusic(self.song)
 
         sdl2.sdlmixer.Mix_CloseAudio()
         # sdl2.sdlmixer.Mix_Quit()
-        print('SoundManager closed')
+        # print('SoundManager closed')
 
 
 '''
