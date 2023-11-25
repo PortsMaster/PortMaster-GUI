@@ -833,6 +833,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
     def set_port_info(self, port_name, port_info, want_install_size=False):
         ## TODO: make this better :D
         if port_name is None:
+            self.set_data("port_info.name", "NOTHING")
             self.set_data("port_info.image", "NO_IMAGE")
             self.set_data("port_info.title", _("** NO PORT **"))
             self.set_data("port_info.description", "")
@@ -846,6 +847,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             # self.set_data("port_info.image", "no-image")
             return
 
+        self.set_data("port_info.name", port_name)
         self.set_data("port_info.image", str(self.get_port_image(port_name)))
         self.set_data("port_info.title", port_info['attr']['title'])
         self.set_data("port_info.description", port_info['attr']['desc'])
@@ -975,6 +977,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.text_data[key] = value
         self.changed_keys.add(key)
         # logger.debug(f"{key}: {value}")
+
+    def get_data(self, key):
+        return self.text_data.get(key, None)
 
     def format_data(self, input_string, used_keys=None):
         return self.formatter.format_string(input_string, used_keys)

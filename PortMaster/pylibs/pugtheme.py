@@ -86,6 +86,10 @@ def theme_apply(gui, section_data, base_data, elements):
             base_data = theme_merge(base_data, region_data)
             continue
 
+        elif region_name == "#config":
+            new_data[region_name] = theme_merge({}, region_data)
+            continue
+
         elif region_name.startswith("#element:"):
             element_name = region_name.split(':', 1)[1]
             if ':' in element_name:

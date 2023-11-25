@@ -638,10 +638,10 @@ class HarbourMaster():
 
             unknown_files.append(file_name)
 
-        from pprint import pprint
-        pprint(all_items)
-        pprint(file_renames)
-        pprint(unknown_files)
+        # from pprint import pprint
+        # pprint(all_items)
+        # pprint(file_renames)
+        # pprint(unknown_files)
 
         ## Create new ports.
         new_ports = []
