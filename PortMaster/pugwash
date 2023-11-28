@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.5.9'
+PORTMASTER_VERSION = '8.5.10'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -1763,10 +1763,10 @@ def main(argv):
     global LOG_FILE_HANDLE
     global LOG_FILE
 
-    if not get_ip_address():
-        print(_("No network connection available."))
-        time.sleep(5)
-        return 255
+    # if not get_ip_address():
+    #     print(_("No network connection available."))
+    #     time.sleep(5)
+    #     return 255
 
     with make_temp_directory() as temp_dir:
         argv = argv[:]
