@@ -59,7 +59,7 @@ class GitHubRawReleaseV1(BaseSource):
         elif datetime_compare(self._config['last_checked']) > HM_UPDATE_FREQUENCY:
             self._wants_update = _("Auto Update.")
 
-        if not self.hm.config['no-check']:
+        if not self.hm.config['no-check'] and not self.hm.config['offline']:
             self.auto_update()
         else:
             self.load()

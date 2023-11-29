@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.5.10'
+PORTMASTER_VERSION = '8.5.11'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
@@ -1587,6 +1587,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             with self.enable_cancellable(False):
                 with self.disable_messagebox():
                     result = self.hm.install_port(args[0])
+                    logger.debug(f"result: {result}")
                     fifo_config['done-file'].write_text(result and "FAIL" or "OKAY")
 
     fifo_commands = {
@@ -1763,11 +1764,6 @@ def main(argv):
     global LOG_FILE_HANDLE
     global LOG_FILE
 
-    # if not get_ip_address():
-    #     print(_("No network connection available."))
-    #     time.sleep(5)
-    #     return 255
-
     with make_temp_directory() as temp_dir:
         argv = argv[:]
 
@@ -1826,6 +1822,10 @@ def main(argv):
 
         elif config['force-colour']:
             utility.do_color(True)
+
+        if not get_ip_address():
+            config['offline'] = True
+            logger.warning("No internet connection found, running in offline mode.")
 
         if len(argv) > 1 and argv[1] == "fifo_control":
             pm = PortMasterGUI(first_scene=BlankScene, force_theme="default_theme")
