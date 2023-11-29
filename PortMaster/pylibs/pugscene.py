@@ -1176,6 +1176,9 @@ class FeaturedPortsListScene(BaseScene):
         self.update_selection()
 
     def update_selection(self):
+        if len(self.featured_ports) == 0:
+            return
+
         selected = self.tags['option_list'].selected_option()
         port_list = self.featured_ports[selected]
         self.gui.set_data('featured_ports.name', port_list['name'])
@@ -1185,6 +1188,11 @@ class FeaturedPortsListScene(BaseScene):
 
     def do_update(self, events):
         super().do_update(events)
+        if len(self.featured_ports) == 0:
+            self.gui.message_box(_("No featured ports found, internet connection is required."))
+            self.gui.pop_scene()
+            return True
+
         selected = self.tags['option_list'].selected_option()
 
         if self.last_select != selected:
