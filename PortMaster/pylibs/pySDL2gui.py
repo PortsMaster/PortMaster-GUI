@@ -2217,14 +2217,14 @@ class Region:
                         )
 
                 # x, y = getattr(text_area, self.align, text_area.topleft)
-                x, y, self.scroll_max = autoscroll_text(
+                x, y, self.scroll_max, alignment = autoscroll_text(
                     texture.size,
                     text_area,
                     self.align,
                     self.scroll_pos,
                     self.scroll_direction == 'vertical')
 
-                setattr(texture.size, self.align, (x, y))
+                setattr(texture.size, alignment, (x, y))
 
                 with texture.with_color_mod(self.font_color):
                     if self.textclip:
@@ -2252,6 +2252,8 @@ class Region:
                 itemsize = self.itemsize
             else:
                 itemsize = self.texts.line_height(self.font, self.fontsize)
+
+            itemsize = int(itemsize * self.lineheight)
 
             self.page_size = max(area.height // (itemsize + self.item_spacer), 1)
             self.selected = self.selected % len(self.list)
@@ -2301,14 +2303,14 @@ class Region:
                         t,
                         self.font, self.fontsize, align=align_to_textalign[self.align])
 
-                    x, y, self.scroll_max = autoscroll_text(
+                    x, y, self.scroll_max, alignment = autoscroll_text(
                         texture.size,
                         irect,
                         self.align,
                         self.scroll_pos,
                         self.scroll_direction == 'vertical')
 
-                    setattr(texture.size, self.align, (x, y))
+                    setattr(texture.size, alignment, (x, y))
 
                     with texture.with_color_mod(self.select_color):
                         if self.textclip:
@@ -2595,7 +2597,7 @@ class Region:
             scroll_change = False
             scroll_pos = self.scroll_pos
             scroll_dt = (current_time - self.scroll_last_update)
-            # print(f"{self.autoscroll} -> {self.scroll_state} -> {scroll_dt} -> {self.scroll_pos} / {self.scroll_max}")
+            print(f"{self.autoscroll} -> {self.scroll_state} -> {scroll_dt} -> {self.scroll_pos} / {self.scroll_max}")
 
             if self.scroll_state == self.SCROLL_FORWADS:
                 if self.scroll_pos >= self.scroll_max:
@@ -3240,6 +3242,10 @@ def autoscroll_text(text_rect, area_rect, alignment, scroll_amount, is_vertical=
         max_scroll = max(0, text_rect.height - area_rect.height)
         scroll_amount = min(scroll_amount, max_scroll)
 
+        if max_scroll > 0 and alignment == 'center':
+            # TEKKENHAX
+            return autoscroll_text(text_rect, area_rect, 'topcenter', scroll_amount, is_vertical)
+
         if 'top' in alignment:
             y -= scroll_amount
 
@@ -3250,13 +3256,17 @@ def autoscroll_text(text_rect, area_rect, alignment, scroll_amount, is_vertical=
         max_scroll = max(0, text_rect.width - area_rect.width)
         scroll_amount = min(scroll_amount, max_scroll)
 
+        if max_scroll > 0 and alignment == 'center':
+            # TEKKENHAX
+            return autoscroll_text(text_rect, area_rect, 'midleft', scroll_amount, is_vertical)
+
         if 'left' in alignment:
             x -= scroll_amount
 
         elif 'right' in alignment:
             x += scroll_amount
 
-    return x, y, max_scroll
+    return x, y, max_scroll, alignment
 
 
 @functools.lru_cache(512)
