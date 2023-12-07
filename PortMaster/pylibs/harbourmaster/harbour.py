@@ -1104,7 +1104,7 @@ class HarbourMaster():
         path_fs = get_path_fs(path_check)
         logger.debug(f"path_fs={path_fs}")
 
-        if path_fs not in ('ext4', 'ext3'):
+        if path_fs not in ('ext4', 'ext3', 'overlay'):
             return
 
         try:
