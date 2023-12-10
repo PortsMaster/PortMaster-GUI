@@ -72,6 +72,8 @@ DEVICE_RAM=$(free -t | grep 'Total:' | awk '{printf("%.0f", ($2 / 1024 / 1024))}
 # Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
     DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
+elif [ -f "~/.config/.CUSTOM_DEVICE" ]; then
+    DEVICE_NAME=$(cat "~/.config/.CUSTOM_DEVICE")
 elif [ -f "~/.config/.DEVICE" ]; then
     DEVICE_NAME=$(cat "~/.config/.DEVICE")
 elif [ -f "~/.config/.OS_ARCH" ]; then
