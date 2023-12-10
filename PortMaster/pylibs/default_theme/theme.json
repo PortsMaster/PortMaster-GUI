@@ -139,7 +139,7 @@
         "font[zh_CN|zh_TW|zh_HK|ko_KR|ja_JP]": "NotoSansTC-Regular.ttf",
         "font-scale[30:17]": 1.0,
         "font-scale[1920x1152]": 2.0,
-        "font-scale[16:9]": 2.0,
+        "font-scale[16:9]": 1.4,
         "font-scale[3:2]": 0.85,
         "font-scale[427:240]": 0.9
     },
@@ -197,9 +197,9 @@
             "comment": "Port image",
             "parent": "port_info_area",
             "area": [ 0.0, 0.1, 1.0, 0.4 ],
-            "area[4:3]": [ 0.0, 0.1, 1.0, 0.7 ],
+            "area[4:3|1:1]": [ 0.0, 0.1, 1.0, 0.7 ],
             "area[30:17|427:240]": [ 0.0, 0.1, 1.0, 0.75 ],
-            "area[16:9]": [ 0.0, 0.1, 1.0, 0.65 ]
+            "area[16:9|5:3]": [ 0.0, 0.1, 1.0, 0.65 ]
 
         },
 
@@ -763,11 +763,12 @@
             "parent": "port_info_text_area",
             "area": [ 5, 115, -5, -45 ],
             "area[4:3]": [ 5, 168, -5, -50 ],
-            "area[3:2]": [ 5, 115, -5, -25 ],
+            "area[3:2]": [ 5, 45, -5, -25 ],
             "area[16:9]": [ 5, 215, -5, -100 ],
             "area[1920x1152]": [ 0.05, 0.3, 0.8, 0.7 ],
             "area[427:240]": [ 5, 195, -5, -50 ],
             "area[30:17]": [ 5, 195, -5, -65 ],
+            "area[1:1]": [ 5, 195, -5, -65 ],
             "font-size": 17,
             "font-size[1920x1152]": 13,
             "font-size[16:9]": 13,
@@ -783,6 +784,7 @@
         "port_title": {
             "parent": "port_info_title_area_featured",
             "area": [ 0.3, 0.0, 1.0, 1.0 ],
+            "area[3:2|wide]": [ 0.4, 0.0, 1.0, 1.0 ],
             "text": "{featured_ports.name}",
             "font-size": 22,
             "font-color": "list_selected",
@@ -792,7 +794,8 @@
         "featured_image": {
             "area": [ 0.0, 0.2, 0.29, 0.35 ],
             "image": "{featured_ports.image}",
-            "area[3:2|wide]": [ 0.0, 0.1, 0.3, 0.21 ]
+            "area[wide]": [ 0.0, 0.1, 0.3, 0.21 ],
+            "area[3:2]": [ 0.03, 0.1, 0.3, 0.21 ]
         },
 
         "port_image": {
@@ -818,6 +821,8 @@
             "font-size": 16,
             "font-color": "general_font",
             "area": [ 0.0, 0.05, 0.3, 0.19 ],
+            "area[wide]": [ 0.0, 0.02, 0.3, 0.095 ],
+            "area[3:2]": [ 0.02, 0.45, 0.3, 0.68 ],
             "align": "topleft",
             "autoscroll": "marquee",
             "scroll-speed": 60,

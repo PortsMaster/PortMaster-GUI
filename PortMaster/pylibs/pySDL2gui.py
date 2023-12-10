@@ -1578,6 +1578,7 @@ class SoundManager():
 
         self.sound_is_disabled = False
         self._music_is_disabled = False
+        self.music_position = {}
 
         self.init()
 
@@ -1647,6 +1648,9 @@ class SoundManager():
             sdl2.sdlmixer.Mix_VolumeMusic(int(max(0, min(volume, 128))))
             return
 
+        if self.song is not None:
+            self.music_position[self.filename] = sdl2.sdlmixer.Mix_GetMusicPosition(self.song)
+
         if filename is None:
             self.stop()
             return
@@ -1685,6 +1689,10 @@ class SoundManager():
             # raise GUIRuntimeError(f'Cannot open audio file: {sdl2.Mix_GetError()}')
 
         sdl2.sdlmixer.Mix_PlayMusic(music, loops)
+        if filename in self.music_position:
+            sdl2.sdlmixer.Mix_SetMusicPosition(self.music_position[filename])
+            del self.music_position[filename]
+
         if self.song:
             sdl2.sdlmixer.Mix_FreeMusic(self.song)
 
