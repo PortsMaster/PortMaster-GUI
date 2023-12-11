@@ -1649,7 +1649,11 @@ class SoundManager():
             return
 
         if self.song is not None:
-            self.music_position[self.filename] = sdl2.sdlmixer.Mix_GetMusicPosition(self.song)
+            try:
+                self.music_position[self.filename] = sdl2.sdlmixer.Mix_GetMusicPosition(self.song)
+            except RuntimeError as err:
+                # No music resumption for you
+                pass
 
         if filename is None:
             self.stop()
