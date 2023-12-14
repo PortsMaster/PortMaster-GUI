@@ -2609,7 +2609,7 @@ class Region:
             scroll_change = False
             scroll_pos = self.scroll_pos
             scroll_dt = (current_time - self.scroll_last_update)
-            print(f"{self.autoscroll} -> {self.scroll_state} -> {scroll_dt} -> {self.scroll_pos} / {self.scroll_max}")
+            # print(f"{self.autoscroll} -> {self.scroll_state} -> {scroll_dt} -> {self.scroll_pos} / {self.scroll_max}")
 
             if self.scroll_state == self.SCROLL_FORWADS:
                 if self.scroll_pos >= self.scroll_max:
