@@ -460,6 +460,36 @@ class OptionScene(BaseScene):
         self.load_regions("option_menu", ['option_list'])
 
         self.tags['option_list'].reset_options()
+
+        self.tags['option_list'].add_option(None, _("Interface"))
+
+        self.tags['option_list'].add_option(
+            'select-language',
+            _("Choose Language"),
+            description=_("Select the language PortMaster uses."))
+        self.tags['option_list'].add_option(
+            'select-theme',
+            _("Select Theme"),
+            description=_("Select a theme for PortMaster."))
+
+        schemes = self.gui.themes.get_theme_schemes_list()
+        if len(schemes) > 1:
+            self.tags['option_list'].add_option(
+                'select-scheme',
+                _("Select Color Scheme"),
+            description=_("Select a colour scheme for PortMaster"))
+
+        self.tags['option_list'].add_option(None, _("Audio"))
+
+        self.tags['option_list'].add_option(
+            'toggle-music',
+            _("Music: ") + (self.gui.sounds.music_is_disabled and _("Disabled") or _("Enabled")),
+            description=_("Enable or Disable background music in PortMaster."))
+        self.tags['option_list'].add_option(
+            'toggle-sfx',
+            _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")),
+            description=_("Enable or Disable soundfx in PortMaster."))
+
         self.tags['option_list'].add_option(None, _("System"))
 
         self.tags['option_list'].add_option(
@@ -489,35 +519,6 @@ class OptionScene(BaseScene):
                 'toggle-gcd',
                 _("Controller Mode: {controller_mode}").format(controller_mode=gcd_mode),
                 description=_("Toggle between various controller layouts."))
-
-        self.tags['option_list'].add_option(None, _("Audio"))
-
-        self.tags['option_list'].add_option(
-            'toggle-music',
-            _("Music: ") + (self.gui.sounds.music_is_disabled and _("Disabled") or _("Enabled")),
-            description=_("Enable or Disable background music in PortMaster."))
-        self.tags['option_list'].add_option(
-            'toggle-sfx',
-            _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")),
-            description=_("Enable or Disable soundfx in PortMaster."))
-
-        self.tags['option_list'].add_option(None, _("Interface"))
-
-        self.tags['option_list'].add_option(
-            'select-language',
-            _("Choose Language"),
-            description=_("Select the language PortMaster uses."))
-        self.tags['option_list'].add_option(
-            'select-theme',
-            _("Select Theme"),
-            description=_("Select a theme for PortMaster."))
-
-        schemes = self.gui.themes.get_theme_schemes_list()
-        if len(schemes) > 1:
-            self.tags['option_list'].add_option(
-                'select-scheme',
-                _("Select Color Scheme"),
-            description=_("Select a colour scheme for PortMaster"))
 
         if self.gui.hm.cfg_data.get('konami', False):
             self.tags['option_list'].add_option(None, _("Secret Options"))
