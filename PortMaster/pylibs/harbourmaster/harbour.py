@@ -1300,6 +1300,9 @@ class HarbourMaster():
             with open(port_info_file, 'w') as fh:
                 json.dump(port_info, fh, indent=4)
 
+            # Remove the zip file if it is in the self.temp_dir
+            if str(download_info['zip_file']).startswith(str(self.temp_dir)):
+                download_info['zip_file'].unlink()
 
             is_successs = True
 
