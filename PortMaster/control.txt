@@ -40,7 +40,7 @@ if [ $? != 0 ]; then
   ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 else
-  ESUDO="sudo --preserve-env=SDL_GAMECONTROLLERCONFIG_FILE,DEVICE,param_device,HOTKEY,ANALOGSTICKS"
+  ESUDO="sudo --preserve-env=SDL_GAMECONTROLLERCONFIG_FILE,DEVICE,param_device,HOTKEY,ANALOGSTICKS,SDL_KMSDRM_ORIENTATION,SDL_KMSDRM_ROTATION"
   ESUDOKILL="-sudokill" # for ArkOS, RetroOZ, and TheRA use "-sudokill"
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 fi
