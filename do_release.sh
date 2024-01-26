@@ -44,7 +44,7 @@ echo "Creating pylibs.zip"
 cd PortMaster
 
 rm -f pylibs.zip
-zip -9r pylibs.zip exlibs/ pylibs/ -x '*__pycache__*/*' -x '*.DS_Store'
+zip -9r pylibs.zip exlibs/ pylibs/ -x \*__pycache__\*/\* -x \*.DS_Store -x ._\* -x \*NotoSans\*.ttf
 
 cd ..
 

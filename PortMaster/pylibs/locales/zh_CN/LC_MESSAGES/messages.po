@@ -1,0 +1,947 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: portmaster\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-26 12:00+0800\n"
+"PO-Revision-Date: 2024-01-26 04:01\n"
+"Last-Translator: \n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: portmaster\n"
+"X-Crowdin-Project-ID: 610497\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: messages.pot\n"
+"X-Crowdin-File-ID: 1\n"
+
+#: PortMaster/pugwash:121
+msgid "German"
+msgstr "德语"
+
+#: PortMaster/pugwash:122
+msgid "Danish"
+msgstr "丹麦语"
+
+#: PortMaster/pugwash:123
+msgid "English"
+msgstr "英语"
+
+#: PortMaster/pugwash:124
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: PortMaster/pugwash:125
+msgid "Finnish"
+msgstr "芬兰语"
+
+#: PortMaster/pugwash:126
+msgid "French"
+msgstr "法语"
+
+#: PortMaster/pugwash:127
+msgid "Italian"
+msgstr "意大利语"
+
+#: PortMaster/pugwash:128
+msgid "Japanese"
+msgstr "日语"
+
+#: PortMaster/pugwash:129
+msgid "Dutch"
+msgstr "荷兰语"
+
+#: PortMaster/pugwash:130
+msgid "Polish"
+msgstr "波兰语"
+
+#: PortMaster/pugwash:131
+msgid "Portuguese (Portugal)"
+msgstr "葡萄牙语(葡萄牙)"
+
+#: PortMaster/pugwash:132
+msgid "Portuguese (Brazil)"
+msgstr "葡萄牙语 (巴西)"
+
+#: PortMaster/pugwash:133
+msgid "Chinese Simplified"
+msgstr "简体中文"
+
+#: PortMaster/pugwash:629
+msgid "Unknown IP"
+msgstr "未知IP地址"
+
+#: PortMaster/pugwash:729 PortMaster/pugwash:870
+msgid "N/A"
+msgstr "不适用"
+
+#: PortMaster/pugwash:838
+msgid "** NO PORT **"
+msgstr "** 无PORT **"
+
+#: PortMaster/pugwash:857 PortMaster/pylibs/pugscene.py:1659
+msgid "Ready to Run"
+msgstr "可以运行"
+
+#: PortMaster/pugwash:857
+msgid "Requires Files"
+msgstr "所需的文件"
+
+#: PortMaster/pugwash:864 PortMaster/pugwash:891
+#: PortMaster/pylibs/pugscene.py:785
+msgid "Installed"
+msgstr "已安装"
+
+#: PortMaster/pugwash:866
+msgid "Missing"
+msgstr "缺失"
+
+#: PortMaster/pugwash:892 PortMaster/pylibs/harbourmaster/harbour.py:1380
+#: PortMaster/pylibs/pugscene.py:1661
+msgid "Update Available"
+msgstr "有可用更新"
+
+#: PortMaster/pugwash:893 PortMaster/pylibs/harbourmaster/harbour.py:1379
+#: PortMaster/pylibs/pugscene.py:785 PortMaster/pylibs/pugscene.py:1660
+msgid "Not Installed"
+msgstr "未安装"
+
+#: PortMaster/pugwash:1069 PortMaster/pugwash:1389
+#: PortMaster/pylibs/pugscene.py:1958 PortMaster/pylibs/pugscene.py:2006
+#: PortMaster/pylibs/pugscene.py:2008
+msgid "Okay"
+msgstr "确定"
+
+#: PortMaster/pugwash:1072 PortMaster/pugwash:1390
+#: PortMaster/pylibs/pugscene.py:1113 PortMaster/pylibs/pugscene.py:1121
+#: PortMaster/pylibs/pugscene.py:1927 PortMaster/pylibs/pugscene.py:1961
+#: PortMaster/pylibs/pugscene.py:2006
+msgid "Cancel"
+msgstr "取消"
+
+#: PortMaster/pugwash:1295
+#, python-brace-format
+msgid "Installing {port_name}"
+msgstr "正在安装 {port_name}"
+
+#: PortMaster/pugwash:1304
+#, python-brace-format
+msgid "Uninstalling {port_name}"
+msgstr "正在卸载 {port_name}"
+
+#: PortMaster/pugwash:1315
+msgid "Updating all port sources:"
+msgstr "正在更新所有端口源："
+
+#: PortMaster/pugwash:1325
+#, python-brace-format
+msgid "Checking {runtime_name}"
+msgstr "正在检查 {runtime_name}"
+
+#: PortMaster/pugwash:1730
+#, python-brace-format
+msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
+"Do you want to downgrade?"
+msgstr "你正在从 {old_release_channel} 切换到 {new_release_channel} 版本。"
+
+#: PortMaster/pugwash:1736
+#, python-brace-format
+msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
+"Do you want to upgrade?"
+msgstr "PortMaster有新版本 ({portmaster_version}) 可用"
+
+#: PortMaster/pugwash:1741
+#, python-brace-format
+msgid "Do you want to reinstall PortMaster?\n\n"
+"This will reinstall from the {release_channel} channel to {portmaster_version}."
+msgstr "你想要重装PortMaster吗?\n\n"
+"这会安装来自 {release_channel} 的 {portmaster_version} 版本。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:117
+msgid "Loading..."
+msgstr "加载中…"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:208
+msgid "Loading Info."
+msgstr "正在载入信息..."
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:236
+msgid "Fetching latest featured ports."
+msgstr "正在获取最新功能的端口。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:247
+#: PortMaster/pylibs/harbourmaster/harbour.py:265
+msgid "Fetching latest info."
+msgstr "正在获取最新信息。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:281
+msgid "Fetching latest porters."
+msgstr "正在获取最新的端口。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:293
+msgid "Loading Sources."
+msgstr "正在加载资源。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:496
+msgid "Loading Ports."
+msgstr "正在加载端口。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1132
+#, python-brace-format
+msgid "Installing Theme {download_name}."
+msgstr "正在安装 {download_name} 主题。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1139
+#: PortMaster/pylibs/harbourmaster/harbour.py:1177
+#: PortMaster/pylibs/harbourmaster/harbour.py:1240
+msgid "Installing"
+msgstr "正在安装"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1149
+msgid "Theme {download_name!r} installed successfully."
+msgstr "主题 {download_name!r} 安装成功。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1168
+#: PortMaster/pylibs/harbourmaster/harbour.py:1231
+#, python-brace-format
+msgid "Installing {download_name}."
+msgstr "正在安装 {download_name}."
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1197
+#: PortMaster/pylibs/harbourmaster/harbour.py:1353
+msgid "Port {download_name!r} installed successfully."
+msgstr "已成功安装了端口 {download_name!r} 。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1319
+msgid "Installation failed, removing files..."
+msgstr "安装失败，正在移除文件..."
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1331
+#, python-brace-format
+msgid "Port {download_name} installed failed."
+msgstr "端口 {download_name} 安装失败。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1343
+msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
+msgstr "端口 {download_name!r} 和 {runtime_name!r} 安装成功。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1348
+msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
+"Either reinstall to try again, or check the wiki for help."
+msgstr "端口 {download_name!r} 安装成功，但 {runtime_name!r} 运行时安装失败！\n\n"
+"请尝试重新安装，或者查阅wiki以获得帮助。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1363
+#, python-brace-format
+msgid "Port {runtime} contains a bad runtime, game may not run correctly."
+msgstr "端口 {runtime} 包含了一个不适用的运行时，游戏可能无法正常运行。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1381
+msgid "Verified"
+msgstr "已验证"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1382
+msgid "Unverified"
+msgstr "未验证"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1383
+msgid "Broken"
+msgstr "损坏"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1389
+msgid "Unable do download a runtime when in offline mode."
+msgstr "在离线模式下无法下载运行时。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1393
+#, python-brace-format
+msgid "Verifying runtime {runtime}"
+msgstr "正在检查运行时 {runtime}"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1402
+#: PortMaster/pylibs/harbourmaster/harbour.py:1409
+msgid "Verifying"
+msgstr "正在验证"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1457
+#, python-brace-format
+msgid "Verified {runtime} successfully."
+msgstr "{runtime} 验证通过。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1460
+#, python-brace-format
+msgid "Verified {runtime}."
+msgstr "已验证 {runtime}。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1466
+#, python-brace-format
+msgid "Updating {runtime}."
+msgstr "正在更新{runtime}..."
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1470
+#, python-brace-format
+msgid "Runtime {runtime} is broken, reinstalling."
+msgstr "运行时{runtime} 损坏，正在重装。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1474
+#, python-brace-format
+msgid "Downloading runtime {runtime}."
+msgstr "正在下载运行时{runtime}"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1494
+#: PortMaster/pylibs/harbourmaster/harbour.py:1504
+#, python-brace-format
+msgid "Unable to download {runtime}, game may not run correctly."
+msgstr "无法下载 {runtime}，游戏可能无法正常运行。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1513
+#, python-brace-format
+msgid "Successfully downloaded {runtime}."
+msgstr "成功下载 {runtime}。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1519
+#, python-brace-format
+msgid "Unable to find a download for {runtime}."
+msgstr "无法找到 {runtime} 的下载链接。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1529
+#: PortMaster/pylibs/harbourmaster/harbour.py:1608
+msgid "Unable do download a port when in offline mode."
+msgstr "在离线模式下无法下载运行时。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1626
+#, python-brace-format
+msgid "Unable to find a source for {port_name}"
+msgstr "无法找到{port_name} 的下载资源。"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1640
+#, python-brace-format
+msgid "Unknown port {port_name}"
+msgstr "未知端口 {port_name}"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1673
+#, python-brace-format
+msgid "Removing {port_name}"
+msgstr "正在移除{port_name}"
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1714
+#, python-brace-format
+msgid "Successfully uninstalled {port_name}"
+msgstr "成功卸载 {port_name}"
+
+#: PortMaster/pylibs/harbourmaster/source.py:52
+msgid "Cache out of date."
+msgstr "缓存过期。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:57
+msgid "First check."
+msgstr "首次检查"
+
+#: PortMaster/pylibs/harbourmaster/source.py:60
+msgid "Auto Update."
+msgstr "自动更新"
+
+#: PortMaster/pylibs/harbourmaster/source.py:143
+msgid "Updating"
+msgstr "正在更新"
+
+#: PortMaster/pylibs/harbourmaster/source.py:154
+msgid "Up to date already"
+msgstr "已经更新"
+
+#: PortMaster/pylibs/harbourmaster/source.py:159
+msgid "Fetching latest info"
+msgstr "正在获取最新信息。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:193
+msgid "Done."
+msgstr "完成。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:201
+#: PortMaster/pylibs/harbourmaster/source.py:535
+#, python-brace-format
+msgid "Unable to find {port_name}."
+msgstr "无法找到 {port_name}。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:212
+#, python-brace-format
+msgid "Unable to find verification info for {port_name}."
+msgstr "无法找到{port_name} 的验证信息。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:219
+#, python-brace-format
+msgid "Unable to download verification info for {port_name}."
+msgstr "无法下载 {port_name} 的验证信息。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:229
+msgid "Success!"
+msgstr "成功！"
+
+#: PortMaster/pylibs/harbourmaster/source.py:284
+#: PortMaster/pylibs/harbourmaster/source.py:448
+#: PortMaster/pylibs/pugtheme.py:364
+msgid "Fetching info"
+msgstr "正在获取信息"
+
+#: PortMaster/pylibs/harbourmaster/source.py:596
+#, python-brace-format
+msgid "{source_name}: Fetching latest ports"
+msgstr "{source_name}：正在获取最新的端口"
+
+#: PortMaster/pylibs/harbourmaster/source.py:635
+msgid "Fetching info."
+msgstr "正在获取信息。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:709
+msgid "Unable to download verification file."
+msgstr "无法下载验证信息。"
+
+#: PortMaster/pylibs/harbourmaster/source.py:722
+msgid "Unable to download non zip files."
+msgstr "无法下载非zip文件。"
+
+#: PortMaster/pylibs/harbourmaster/util.py:310
+#, python-brace-format
+msgid "Unable to download file. [{status_code}]"
+msgstr "无法下载文件。错误代码 [{status_code}]"
+
+#: PortMaster/pylibs/harbourmaster/util.py:326
+#, python-brace-format
+msgid "Downloading {file_url} - ({total_length_mb})"
+msgstr "正在从 {file_url} 下载 ({total_length_mb})"
+
+#: PortMaster/pylibs/harbourmaster/util.py:338
+#: PortMaster/pylibs/harbourmaster/util.py:352
+msgid "Downloading file."
+msgstr "下载文件中..."
+
+#: PortMaster/pylibs/harbourmaster/util.py:361
+#, python-brace-format
+msgid "Download failed: {err}"
+msgstr "下载失败，{err}"
+
+#: PortMaster/pylibs/harbourmaster/util.py:373
+msgid "Download validation failed."
+msgstr "下载验证失败。"
+
+#: PortMaster/pylibs/harbourmaster/util.py:379
+msgid "Passed file validation."
+msgstr "已通过文件验证。"
+
+#: PortMaster/pylibs/harbourmaster/util.py:384
+msgid "Unable to validate download."
+msgstr "无法验证下载。"
+
+#: PortMaster/pylibs/pugscene.py:363
+msgid "Main Menu"
+msgstr "主菜单"
+
+#: PortMaster/pylibs/pugscene.py:370 PortMaster/pylibs/pugscene.py:1165
+msgid "Featured Ports"
+msgstr "精选端口"
+
+#: PortMaster/pylibs/pugscene.py:371
+msgid "Hand curated lists of ports"
+msgstr "管理端口列表"
+
+#: PortMaster/pylibs/pugscene.py:374
+msgid "All Ports"
+msgstr "所有端口"
+
+#: PortMaster/pylibs/pugscene.py:375
+msgid "List all ports available on PortMaster."
+msgstr "列出 PortMaster现所有可用的端口。"
+
+#: PortMaster/pylibs/pugscene.py:378
+msgid "Ready to Run Ports"
+msgstr "准备运行端口"
+
+#: PortMaster/pylibs/pugscene.py:379
+msgid "List all ports that are ready to play!"
+msgstr "列出所有可以运行的端口！"
+
+#: PortMaster/pylibs/pugscene.py:382
+msgid "Manage Ports"
+msgstr "管理端口"
+
+#: PortMaster/pylibs/pugscene.py:383
+msgid "Update / Uninstall Ports"
+msgstr "更新 / 卸载端口"
+
+#: PortMaster/pylibs/pugscene.py:388
+msgid "Options"
+msgstr "设置"
+
+#: PortMaster/pylibs/pugscene.py:389
+msgid "PortMaster Options"
+msgstr "Portmaster 选项"
+
+#: PortMaster/pylibs/pugscene.py:392
+msgid "Exit"
+msgstr "退出"
+
+#: PortMaster/pylibs/pugscene.py:393
+msgid "Quit PortMaster"
+msgstr "退出 Portmaster"
+
+#: PortMaster/pylibs/pugscene.py:395 PortMaster/pylibs/pugscene.py:537
+#: PortMaster/pylibs/pugscene.py:1113 PortMaster/pylibs/pugscene.py:1121
+msgid "Enter"
+msgstr "进入"
+
+#: PortMaster/pylibs/pugscene.py:395
+msgid "Quit"
+msgstr "退出"
+
+#: PortMaster/pylibs/pugscene.py:409
+#, python-brace-format
+msgid "Secret Mode {secret_mode}"
+msgstr "隐私模式 {secret_mode}"
+
+#: PortMaster/pylibs/pugscene.py:410 PortMaster/pylibs/pugscene.py:486
+#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:603
+#: PortMaster/pylibs/pugscene.py:612
+msgid "Enabled"
+msgstr "已启用"
+
+#: PortMaster/pylibs/pugscene.py:410 PortMaster/pylibs/pugscene.py:486
+#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:603
+#: PortMaster/pylibs/pugscene.py:612
+msgid "Disabled"
+msgstr "已禁用"
+
+#: PortMaster/pylibs/pugscene.py:448
+msgid "Are you sure you want to exit PortMaster?"
+msgstr "你确定要退出PortMaster吗？"
+
+#: PortMaster/pylibs/pugscene.py:458
+msgid "Options Menu"
+msgstr "选项菜单"
+
+#: PortMaster/pylibs/pugscene.py:464
+msgid "Interface"
+msgstr "用户界面"
+
+#: PortMaster/pylibs/pugscene.py:468
+msgid "Choose Language"
+msgstr "选择语言"
+
+#: PortMaster/pylibs/pugscene.py:469
+msgid "Select the language PortMaster uses."
+msgstr "选择 PortMaster 语言。"
+
+#: PortMaster/pylibs/pugscene.py:472 PortMaster/pylibs/pugscene.py:878
+msgid "Select Theme"
+msgstr "选择主题"
+
+#: PortMaster/pylibs/pugscene.py:473
+msgid "Select a theme for PortMaster."
+msgstr "为 PortMaster选择一个主题。"
+
+#: PortMaster/pylibs/pugscene.py:479
+msgid "Select Color Scheme"
+msgstr "选择配色方案"
+
+#: PortMaster/pylibs/pugscene.py:480
+msgid "Select a colour scheme for PortMaster"
+msgstr "为 PortMaster 选择一个颜色方案"
+
+#: PortMaster/pylibs/pugscene.py:482
+msgid "Audio"
+msgstr "音频："
+
+#: PortMaster/pylibs/pugscene.py:486 PortMaster/pylibs/pugscene.py:603
+msgid "Music: "
+msgstr "音乐： "
+
+#: PortMaster/pylibs/pugscene.py:487
+msgid "Enable or Disable background music in PortMaster."
+msgstr "在 PortMaster中启用或禁用背景音乐"
+
+#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:612
+msgid "Sound FX: "
+msgstr "音效： "
+
+#: PortMaster/pylibs/pugscene.py:491
+msgid "Enable or Disable soundfx in PortMaster."
+msgstr "在 PortMaster中启用或禁用背景音乐"
+
+#: PortMaster/pylibs/pugscene.py:493
+msgid "System"
+msgstr "系统"
+
+#: PortMaster/pylibs/pugscene.py:497 PortMaster/pylibs/pugscene.py:712
+msgid "Runtime Manager"
+msgstr "运行时管理器"
+
+#: PortMaster/pylibs/pugscene.py:498
+msgid "Manage port runtimes."
+msgstr "管理端口的运行时。"
+
+#: PortMaster/pylibs/pugscene.py:502
+msgid "Update Ports"
+msgstr "更新端口"
+
+#: PortMaster/pylibs/pugscene.py:503
+msgid "Update all ports and associated information"
+msgstr "更新所有端口和相关信息"
+
+#: PortMaster/pylibs/pugscene.py:507
+msgid "Update PortMaster"
+msgstr "更新PortMaster"
+
+#: PortMaster/pylibs/pugscene.py:508
+msgid "Force check for a new PortMaster version."
+msgstr "强制检查新的 PortMaster 版本。"
+
+#: PortMaster/pylibs/pugscene.py:512
+#, python-brace-format
+msgid "Release Channel: {channel}"
+msgstr "发行通道： {channel}"
+
+#: PortMaster/pylibs/pugscene.py:514
+msgid "Change release channel of PortMaster, either beta or stable."
+msgstr "更改PortMaster的发行频道，不论是beta还是stable。"
+
+#: PortMaster/pylibs/pugscene.py:520 PortMaster/pylibs/pugscene.py:630
+#, python-brace-format
+msgid "Controller Mode: {controller_mode}"
+msgstr "控制器模式： {controller_mode}"
+
+#: PortMaster/pylibs/pugscene.py:521
+msgid "Toggle between various controller layouts."
+msgstr "切换不同控制器布局。"
+
+#: PortMaster/pylibs/pugscene.py:524
+msgid "Secret Options"
+msgstr "隐私选项"
+
+#: PortMaster/pylibs/pugscene.py:527
+msgid "Delete PortMaster Config"
+msgstr "删除 PortMaster 配置"
+
+#: PortMaster/pylibs/pugscene.py:528 PortMaster/pylibs/pugscene.py:532
+msgid "This can break stuff, don't touch unless you know what you are doing."
+msgstr "除非你知道你在做什么，否则可能会弄砸配置，不要乱动。"
+
+#: PortMaster/pylibs/pugscene.py:531
+msgid "Delete PortMaster Runtimes"
+msgstr "删除 PortMaster 配置"
+
+#: PortMaster/pylibs/pugscene.py:537 PortMaster/pylibs/pugscene.py:801
+#: PortMaster/pylibs/pugscene.py:804 PortMaster/pylibs/pugscene.py:912
+#: PortMaster/pylibs/pugscene.py:994 PortMaster/pylibs/pugscene.py:995
+#: PortMaster/pylibs/pugscene.py:1048 PortMaster/pylibs/pugscene.py:1049
+#: PortMaster/pylibs/pugscene.py:1176 PortMaster/pylibs/pugscene.py:1411
+#: PortMaster/pylibs/pugscene.py:1435 PortMaster/pylibs/pugscene.py:1437
+#: PortMaster/pylibs/pugscene.py:1464 PortMaster/pylibs/pugscene.py:1467
+#: PortMaster/pylibs/pugscene.py:1542 PortMaster/pylibs/pugscene.py:1544
+msgid "Back"
+msgstr "返回"
+
+#: PortMaster/pylibs/pugscene.py:579
+#, python-brace-format
+msgid "Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\n"
+"PortMaster will upgrade or downgrade accordingly."
+msgstr "你确定要把发行渠道从 {current_channel} 改为 {new_channel}？\n\n"
+"依据该设置，PortMaster可能会升级或者降级。"
+
+#: PortMaster/pylibs/pugscene.py:679
+msgid "Deleting Runtimes:"
+msgstr "删除运行时："
+
+#: PortMaster/pylibs/pugscene.py:704
+msgid "Source Manager"
+msgstr "源管理器"
+
+#: PortMaster/pylibs/pugscene.py:741
+msgid "Download All"
+msgstr "下载全部"
+
+#: PortMaster/pylibs/pugscene.py:786
+msgid "Used"
+msgstr "已用"
+
+#: PortMaster/pylibs/pugscene.py:786
+msgid "Not Used"
+msgstr "未使用"
+
+#: PortMaster/pylibs/pugscene.py:801
+msgid "Check"
+msgstr "检查"
+
+#: PortMaster/pylibs/pugscene.py:801 PortMaster/pylibs/pugscene.py:1464
+#: PortMaster/pylibs/pugscene.py:1542
+msgid "Uninstall"
+msgstr "卸载"
+
+#: PortMaster/pylibs/pugscene.py:804 PortMaster/pylibs/pugscene.py:1467
+#: PortMaster/pylibs/pugscene.py:1544
+msgid "Install"
+msgstr "安装"
+
+#: PortMaster/pylibs/pugscene.py:819
+msgid "Are you sure you want to download and verify all runtimes?"
+msgstr "您确定要下载并验证所有运行时？"
+
+#: PortMaster/pylibs/pugscene.py:861
+#, python-brace-format
+msgid "Deleted runtime {runtime}"
+msgstr "删除运行时 {runtime}"
+
+#: PortMaster/pylibs/pugscene.py:896
+#, python-brace-format
+msgid "{theme_name} (Selected)"
+msgstr "{theme_name} （已选）"
+
+#: PortMaster/pylibs/pugscene.py:910 PortMaster/pylibs/pugscene.py:995
+#: PortMaster/pylibs/pugscene.py:1049 PortMaster/pylibs/pugscene.py:1113
+#: PortMaster/pylibs/pugscene.py:1121 PortMaster/pylibs/pugscene.py:1176
+msgid "Select"
+msgstr "选择"
+
+#: PortMaster/pylibs/pugscene.py:915
+msgid "Download"
+msgstr "下载"
+
+#: PortMaster/pylibs/pugscene.py:934
+msgid "Do you want to change theme?\n\n"
+"You will have to restart for it to take affect."
+msgstr "你要更换主题吗？\n\n"
+"可能需要重启程序以适用更改。"
+
+#: PortMaster/pylibs/pugscene.py:975
+msgid "Select Colour Scheme"
+msgstr "选择配色方案"
+
+#: PortMaster/pylibs/pugscene.py:989
+#, python-brace-format
+msgid "{item_name} (Selected)"
+msgstr "{item_name}  （已选）"
+
+#: PortMaster/pylibs/pugscene.py:1012
+msgid "Do you want to change the themes color scheme?\n\n"
+"You will have to restart for it to take affect."
+msgstr "您想要更改主题颜色方案吗？\n\n"
+"需要重新启动才能适用。"
+
+#: PortMaster/pylibs/pugscene.py:1033
+msgid "Language Select"
+msgstr "选择语言"
+
+#: PortMaster/pylibs/pugscene.py:1043
+#, python-brace-format
+msgid "{lang_name} (Selected)"
+msgstr "{lang_name} （已选）"
+
+#: PortMaster/pylibs/pugscene.py:1066
+msgid "Do you want to change language?\n\n"
+"You will have to restart for it to take affect."
+msgstr "您想要更改语言吗？\n\n"
+"需要重新启动才能适用。"
+
+#: PortMaster/pylibs/pugscene.py:1113 PortMaster/pylibs/pugscene.py:1121
+msgid "Delete"
+msgstr "删除"
+
+#: PortMaster/pylibs/pugscene.py:1113
+msgid "Upper Case"
+msgstr "大写"
+
+#: PortMaster/pylibs/pugscene.py:1113 PortMaster/pylibs/pugscene.py:1121
+msgid "Space"
+msgstr "空格"
+
+#: PortMaster/pylibs/pugscene.py:1121
+msgid "Lower Case"
+msgstr "小写"
+
+#: PortMaster/pylibs/pugscene.py:1193
+msgid "No featured ports found, internet connection is required."
+msgstr "未找到精选端口，需要网络连接。"
+
+#: PortMaster/pylibs/pugscene.py:1221 PortMaster/pylibs/pugscene.py:1244
+msgid "NO PORTS"
+msgstr "无PORT"
+
+#: PortMaster/pylibs/pugscene.py:1225 PortMaster/pylibs/pugscene.py:1251
+msgid "** NO PORTS FOUND **"
+msgstr "** 没有发现PORTS**"
+
+#: PortMaster/pylibs/pugscene.py:1227 PortMaster/pylibs/pugscene.py:1254
+msgid "Download ports first."
+msgstr "首先下载端口。"
+
+#: PortMaster/pylibs/pugscene.py:1256
+msgid "Try removing some filters."
+msgstr "试试看去除一些筛选器。"
+
+#: PortMaster/pylibs/pugscene.py:1411 PortMaster/pylibs/pugscene.py:1435
+#: PortMaster/pylibs/pugscene.py:1437 PortMaster/pylibs/pugscene.py:1522
+#: PortMaster/pylibs/pugscene.py:1527
+msgid "Show Info"
+msgstr "显示详情"
+
+#: PortMaster/pylibs/pugscene.py:1416
+msgid "Ports List"
+msgstr "端口列表"
+
+#: PortMaster/pylibs/pugscene.py:1435
+msgid "Filters"
+msgstr "筛选器"
+
+#: PortMaster/pylibs/pugscene.py:1443
+msgid "Port Info Popup"
+msgstr "端口信息弹出"
+
+#: PortMaster/pylibs/pugscene.py:1454 PortMaster/pylibs/pugscene.py:1457
+msgid "Hide Info"
+msgstr "隐藏信息"
+
+#: PortMaster/pylibs/pugscene.py:1464 PortMaster/pylibs/pugscene.py:1542
+msgid "Reinstall"
+msgstr "重新安装"
+
+#: PortMaster/pylibs/pugscene.py:1491
+msgid "Port Info"
+msgstr "端口信息"
+
+#: PortMaster/pylibs/pugscene.py:1564
+#, python-brace-format
+msgid "Are you sure you want to uninstall {port_name}?"
+msgstr "您确定要卸载 {port_name}？"
+
+#: PortMaster/pylibs/pugscene.py:1608
+msgid "Filters Scene"
+msgstr "筛选场景"
+
+#: PortMaster/pylibs/pugscene.py:1637
+msgid "Alphabetical"
+msgstr "按字母顺序"
+
+#: PortMaster/pylibs/pugscene.py:1638
+msgid "Recently Added"
+msgstr "最近添加"
+
+#: PortMaster/pylibs/pugscene.py:1639
+msgid "Recently Updated"
+msgstr "最近更新"
+
+#: PortMaster/pylibs/pugscene.py:1642
+msgid "Action"
+msgstr "操作"
+
+#: PortMaster/pylibs/pugscene.py:1643
+msgid "Adventure"
+msgstr "冒险"
+
+#: PortMaster/pylibs/pugscene.py:1644
+msgid "Arcade"
+msgstr "街机"
+
+#: PortMaster/pylibs/pugscene.py:1645
+msgid "Casino/Card"
+msgstr "赌博/卡牌"
+
+#: PortMaster/pylibs/pugscene.py:1646
+msgid "First Person Shooter"
+msgstr "FPS"
+
+#: PortMaster/pylibs/pugscene.py:1647
+msgid "Platformer"
+msgstr "平台"
+
+#: PortMaster/pylibs/pugscene.py:1648
+msgid "Puzzle"
+msgstr "解谜"
+
+#: PortMaster/pylibs/pugscene.py:1649
+msgid "Racing"
+msgstr "竞速"
+
+#: PortMaster/pylibs/pugscene.py:1650
+msgid "Rhythm"
+msgstr "节奏"
+
+#: PortMaster/pylibs/pugscene.py:1651
+msgid "Role Playing Game"
+msgstr "RPG"
+
+#: PortMaster/pylibs/pugscene.py:1652
+msgid "Simulation"
+msgstr "模拟"
+
+#: PortMaster/pylibs/pugscene.py:1653
+msgid "Sports"
+msgstr "运动"
+
+#: PortMaster/pylibs/pugscene.py:1654
+msgid "Strategy"
+msgstr "策略"
+
+#: PortMaster/pylibs/pugscene.py:1655
+msgid "Visual Novel"
+msgstr "视觉小说"
+
+#: PortMaster/pylibs/pugscene.py:1656
+msgid "Other"
+msgstr "其他"
+
+#: PortMaster/pylibs/pugscene.py:1662
+msgid "Broken Ports"
+msgstr "损坏的端口"
+
+#: PortMaster/pylibs/pugscene.py:1665
+msgid "Free game, all files included."
+msgstr "免费游戏，包含所有文件。"
+
+#: PortMaster/pylibs/pugscene.py:1666
+msgid "Demo files included."
+msgstr "包含Demo。"
+
+#: PortMaster/pylibs/pugscene.py:1667
+msgid "Free external assets needed."
+msgstr "需要可免费下载的外部资源。"
+
+#: PortMaster/pylibs/pugscene.py:1668
+msgid "Paid external assets needed."
+msgstr "需要付费下载的外部资源。"
+
+#: PortMaster/pylibs/pugscene.py:1671 PortMaster/pylibs/pugscene.py:1672
+#, python-brace-format
+msgid "{runtime_name} Runtime"
+msgstr "运行时 {runtime_name}"
+
+#: PortMaster/pylibs/pugscene.py:1716
+msgid "Sort:"
+msgstr "排序："
+
+#: PortMaster/pylibs/pugscene.py:1731
+msgid "Clear Filters"
+msgstr "重置筛选"
+
+#: PortMaster/pylibs/pugscene.py:1755
+msgid "Genres:"
+msgstr "类型："
+
+#: PortMaster/pylibs/pugscene.py:1785
+msgid "Attributes:"
+msgstr "属性"
+
+#: PortMaster/pylibs/pugscene.py:1814
+msgid "Availability:"
+msgstr "可用性："
+
+#: PortMaster/pylibs/pugscene.py:1843
+msgid "Porters:"
+msgstr "端口："
+
+#: PortMaster/pylibs/pugscene.py:1911
+msgid "Messages"
+msgstr "消息"
+
+#: PortMaster/pylibs/pugscene.py:1946
+msgid "Are you sure you want to cancel?"
+msgstr "要取消吗？"
+
