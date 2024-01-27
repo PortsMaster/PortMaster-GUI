@@ -315,8 +315,16 @@ class HarbourMaster():
             if fail:
                 continue
 
+            # V1 to V2
             if source_data['api'] == 'PortMasterV1':
                 source_data['api'] = 'PortMasterV2'
+                source_data['last_checked'] = None
+                source_data['data'] = {}
+
+            # V2 to V3
+            if source_data['api'] == 'PortMasterV2' and source_data['name'] == 'PortMaster':
+                source_data['api'] = 'PortMasterV3'
+                source_data['url'] = "https://github.com/PortsMaster/PortMaster-New/releases/latest/download/ports.json"
                 source_data['last_checked'] = None
                 source_data['data'] = {}
 
@@ -1432,16 +1440,23 @@ class HarbourMaster():
 
             if runtime_status in ('Verified', 'Unverified'):
                 runtime_md5url = None
-                if (runtime + '.md5') in getattr(source, '_data', {}):
+                if runtime in getattr(source, '_data', {}) and 'md5' in source._data[runtime]:
+                    md5verify = source._data[runtime]['md5']
+                    runtime_md5url = None
+
+                elif (runtime + '.md5') in getattr(source, '_data', {}):
+                    md5verify = None
                     runtime_md5url = source._data[(runtime + '.md5')]['url']
 
                 elif (runtime + '.md5sum') in getattr(source, '_data', {}):
+                    md5verify = None
                     runtime_md5url = source._data[(runtime + '.md5sum')]['url']
 
                 else:
                     continue
 
-                md5verify = fetch_text(runtime_md5url).strip().split(' ', 1)[0]
+                if md5verify is None:
+                    md5verify = fetch_text(runtime_md5url).strip().split(' ', 1)[0]
 
                 if md5verify == runtime_md5sum:
                     runtime_status = 'Verified'

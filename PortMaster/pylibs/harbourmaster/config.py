@@ -112,11 +112,11 @@ HM_SOURCE_DEFAULTS = {
     "020_portmaster.source.json": textwrap.dedent("""
     {
         "prefix": "pm",
-        "api": "PortMasterV2",
+        "api": "PortMasterV3",
         "name": "PortMaster",
-        "url": "https://api.github.com/repos/PortsMaster/PortMaster-Releases/releases/latest",
+        "url": "https://github.com/PortsMaster/PortMaster-New/releases/latest/download/ports.json",
         "last_checked": null,
-        "version": 4,
+        "version": 1,
         "data": {}
     }
     """),

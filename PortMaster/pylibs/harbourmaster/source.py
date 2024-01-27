@@ -25,13 +25,6 @@ class BaseSource():
     VERSION = 0
 
     def __init__(self, hm, file_name, config):
-        pass
-
-
-class GitHubRawReleaseV1(BaseSource):
-    VERSION = 4
-
-    def __init__(self, hm, file_name, config):
         self.hm = hm
         self._file_name = file_name
         self._config = config
@@ -81,6 +74,21 @@ class GitHubRawReleaseV1(BaseSource):
             self.load()
 
     def load(self):
+        raise NotImplementedError()
+
+    def save(self):
+        raise NotImplementedError()
+
+    def update(self):
+        raise NotImplementedError()
+
+    def clean_name(self, text):
+        return name_cleaner(text)
+
+class GitHubRawReleaseV1(BaseSource):
+    VERSION = 4
+
+    def load(self):
         self._data = self._config.setdefault('data', {}).setdefault('data', {})
         self.ports = self._config.setdefault('data', {}).setdefault('ports', [])
         self.utils = self._config.setdefault('data', {}).setdefault('utils', [])
@@ -90,9 +98,6 @@ class GitHubRawReleaseV1(BaseSource):
     def save(self):
         with self._file_name.open('w') as fh:
             json.dump(self._config, fh, indent=4)
-
-    def clean_name(self, text):
-        return name_cleaner(text)
 
     def _load_images(self):
         self.images = {}
@@ -483,13 +488,13 @@ class PortMasterV2(GitHubRawReleaseV1):
         if 'images.zip' not in self._data:
             return
 
-        images_url_md5 = self._data['images.zip.md5']['url']
         images_url_zip = self._data['images.zip']['url']
 
         if 'md5' in self._data['images.zip']:
             images_md5 = self._data['images.zip']['md5']
 
         else:
+            images_url_md5 = self._data['images.zip.md5']['url']
             images_md5 = fetch_text(images_url_md5).strip().split(' ', 1)[0]
 
         if self._images_md5 is None or images_md5 != self._images_md5:
@@ -688,6 +693,247 @@ class GitHubRepoV1(GitHubRawReleaseV1):
 
         return zip_info
 
+## The plan is to deprecate the above.
+class PortMasterV3(BaseSource):
+    VERSION = 2
+
+    def load(self):
+        self._data = self._config.setdefault('data', {}).setdefault('data', {})
+        self.ports = self._config.setdefault('data', {}).setdefault('ports', [])
+        self.utils = self._config.setdefault('data', {}).setdefault('utils', [])
+        self._info = self._config.setdefault('data', {}).setdefault('info', {})
+        self._load_images()
+
+    def save(self):
+        with self._file_name.open('w') as fh:
+            json.dump(self._config, fh, indent=4)
+
+    def _load_images(self):
+        self.images = {}
+        all_ports = set(self.ports)
+        seen_ports = set()
+
+        for file_name in self._images_dir.iterdir():
+            if file_name.suffix.casefold() not in ('.jpg', '.png'):
+                continue
+
+            if file_name.name.count('.') < 2:
+                continue
+
+            port_name, image_type, image_suffix = file_name.name.casefold().rsplit('.', 2)
+            port_name = self.clean_name(port_name + '.zip')
+
+            if port_name not in all_ports:
+                logger.warning(f"Port image {port_name} - {image_type} for unknown port.")
+            elif image_type == 'screenshot':
+                seen_ports.add(port_name)
+
+            self.images.setdefault(self.clean_name(port_name), {})[image_type] = file_name.name
+
+        for port_name in (all_ports - seen_ports):
+            logger.warning(f"Port image {port_name}: missing.")
+
+    def _update(self):
+        # cprint(f"- <b>{self._config['name']}</b>: Fetching info")
+        self.hm.callback.message("  - {}".format(_("Fetching info")))
+
+        ## Download latest images.zip if needed.
+        ## Uncomment after images has been added to PortMaster.
+        if 'images.zip' not in self._data:
+            return
+
+        images_url_zip = self._data['images.zip']['url']
+
+        if 'md5' in self._data['images.zip']:
+            images_md5 = self._data['images.zip']['md5']
+
+        else:
+            images_url_md5 = self._data['images.zip.md5']['url']
+            images_md5 = fetch_text(images_url_md5).strip().split(' ', 1)[0]
+
+        if self._images_md5 is None or images_md5 != self._images_md5:
+            logger.debug(f"images_md5={images_md5}, self.images_md5={self._images_md5}")
+            images_zip = download(self.hm.temp_dir / "images.zip", images_url_zip, images_md5, callback=self.hm.callback)
+            if images_zip is None:
+                logger.debug(f"Unable to download {images_url_zip}")
+                return
+
+            images_to_delete = [
+                file_name
+                for file_name in self._images_dir.iterdir()
+                if file_name.suffix in ('.png', '.jpg')]
+
+            with zipfile.ZipFile(images_zip, 'r') as zf:
+                for zip_name in zf.namelist():
+                    if zip_name.casefold().rsplit('.')[-1] not in ('jpg', 'png'):
+                        continue
+
+                    file_name = self._images_dir / self.clean_name(zip_name.rsplit('/', 1)[-1])
+                    if file_name not in images_to_delete:
+                        logger.debug(f"adding {file_name}")
+
+                    with open(file_name, 'wb') as fh:
+                        fh.write(zf.read(zip_name))
+
+                    if file_name in images_to_delete:
+                        images_to_delete.remove(file_name)
+
+            for image_to_delete in images_to_delete:
+                logger.debug(f"removing {image_to_delete}")
+                image_to_delete.unlink()
+
+            self._images_md5_file.write_text(images_md5)
+            self._images_md5 = images_md5
+
+    def _load(self):
+        ...
+
+    def _clear(self):
+        ...
+
+    def update(self):
+        # cprint(f"<b>{self._config['name']}</b>: updating")
+        if self.hm.callback is not None:
+            self.hm.callback.message(" - {}".format(_("Updating")))
+
+        # Scrap the rest
+        self._data = {}
+        self._info = {}
+        self.ports = []
+        self.utils = []
+        self.images = {}
+
+        if self._did_update:
+            # cprint(f"- <b>{self._config['name']}</b>: up to date already.")
+            self.hm.callback.message(" - {}".format(_("Up to date already")))
+            return
+
+        # cprint(f"- <b>{self._config['name']}</b>: Fetching latest ports")
+        if self.hm.callback is not None:
+            self.hm.callback.message("  - {}".format(_("Fetching latest info")))
+
+        data = fetch_json(self._config['url'])
+        if data is None:
+            return
+
+        ## Load data from the assets.
+        for key, asset in data['ports'].items():
+            result = {
+                'name': asset['name'],
+                'size': asset['source']['size'],
+                'md5': asset['source']['md5'],
+                'url': asset['source']['url'],
+                }
+
+            self.ports.append(self.clean_name(key))
+            self._info[self.clean_name(key)] = asset
+            self._data[self.clean_name(key)] = result
+
+        for key, asset in data['utils'].items():
+            result = {
+                'name': asset['name'],
+                'size': asset['size'],
+                'md5': asset['md5'],
+                'url': asset['url'],
+                }
+
+            self._data[self.clean_name(key)] = result
+            if key.lower() in ('images.zip', 'portmaster.zip'):
+                continue
+
+            self.utils.append(self.clean_name(key))
+
+        self._update()
+
+        self._load_images()
+
+        self._config['version'] = self.VERSION
+
+        self._config['data']['ports'] = self.ports
+        self._config['data']['utils'] = self.utils
+        self._config['data']['data']  = self._data
+        self._config['data']['info']  = self._info
+
+        self._config['last_checked'] = datetime.datetime.now().isoformat()
+
+        self.save()
+        self._did_update = True
+        # cprint(f"- <b>{self._config['name']}:</b> Done.")
+        self.hm.callback.message("  - {}".format(_("Done.")))
+
+    def download(self, port_name, temp_dir=None, md5_result=None):
+        if md5_result is None:
+            md5_result = [None]
+
+        if port_name not in self._data:
+            logger.error(f"Unable to find port {port_name}")
+            self.hm.callback.message_box(_("Unable to find {port_name}.").format(port_name=port_name))
+            return None
+
+        if temp_dir is None:
+            temp_dir = self.hm.temp_dir
+
+        md5_result[0] = self._data[port_name]['md5']
+        zip_file = download(temp_dir / port_name, self._data[port_name]['url'], self._data[port_name]['md5'], callback=self.hm.callback)
+
+        if zip_file is None:
+            return None
+
+        if port_name in self.utils:
+            ## Utils
+            return zip_file
+
+        zip_info = port_info_load({})
+
+        zip_info['name'] = port_name
+        zip_info['status'] = {
+            'source': self._config['name'],
+            'md5':    md5_result[0],
+            'status': 'downloaded',
+            }
+        zip_info['zip_file'] = zip_file
+
+        port_info = self.port_info(port_name)
+        port_info_merge(zip_info, port_info)
+
+        return zip_info
+
+    def port_info(self, port_name):
+        port_name = self.clean_name(port_name)
+
+        if port_name not in getattr(self, '_info', {}):
+            return {}
+
+        return self._info[port_name]
+
+    def port_download_size(self, port_name, check_runtime=True):
+        port_name = self.clean_name(port_name)
+
+        if port_name not in getattr(self, '_data', {}):
+            return 0
+
+        size = self._data[port_name]['size']
+
+        if check_runtime and port_name in getattr(self, '_info', {}):
+            port_info = self._info[port_name]
+
+            if port_info['attr'].get('runtime', None) is not None:
+                runtime = port_info['attr']['runtime']
+
+                runtime_file = (self.hm.libs_dir / runtime)
+                if not runtime_file.exists():
+                    size += self.hm.port_download_size(runtime)
+
+        return size
+
+    def port_download_url(self, port_name):
+        port_name = self.clean_name(port_name)
+
+        if port_name not in getattr(self, '_data', {}):
+            return None
+
+        return self._data[port_name]['url']
+
 
 ################################################################################
 ## Raw Downloader
@@ -753,6 +999,7 @@ HM_SOURCE_APIS = {
     'GitHubRawReleaseV1': GitHubRawReleaseV1,
     'PortMasterV1': PortMasterV1,
     'PortMasterV2': PortMasterV2,
+    'PortMasterV3': PortMasterV3,
     'GitHubRepoV1': GitHubRepoV1,
     }
 
