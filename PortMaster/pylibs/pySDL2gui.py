@@ -201,12 +201,14 @@ class Rect:
     POINTS = (
         'topleft',
         'midtop',
+        'topcenter',
         'topright',
         'midleft',
         'center',
         'midright',
         'bottomleft',
         'midbottom',
+        'bottomcenter',
         'bottomright',
         )
 
@@ -463,6 +465,14 @@ class Rect:
         self.y = y
 
     @property
+    def topcenter(self):
+        return self.midtop
+
+    @midtop.setter
+    def topcenter(self, v):
+        self.midtop = v
+
+    @property
     def topright(self):
         return self.x + self.width, self.y
 
@@ -523,6 +533,14 @@ class Rect:
         x, y = v
         self.x = x - (self.width // 2)
         self.y = y - self.height
+
+    @property
+    def bottomcenter(self):
+        return self.midbottom
+
+    @midbottom.setter
+    def bottomcenter(self, v):
+        self.midbottom = v
 
     @property
     def bottomright(self):
@@ -2182,9 +2200,16 @@ class Region:
             'topright': 'right',
             'midright': 'right',
             'bottomright': 'right',
+            'midtop': 'center',
+            'midbottom': 'center',
             }
 
         align_opposite = {
+            'midtop': 'midbottom',
+            'midbottom': 'midtop',
+            'bottomcenter': 'topcenter',
+            'topcenter': 'bottomcenter',
+            'bottomcenter': 'topcenter',
             'center': 'center',
             'topleft': 'bottomright',
             'midleft': 'midright',
