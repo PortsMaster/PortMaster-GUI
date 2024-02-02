@@ -1,0 +1,11 @@
+#!/bin/bash
+
+## Modular - JELOS
+# 
+# A modular file that is sourced for specific script lines required by ports running on JELOS.
+#
+# usage `source <path_to>/mod_jelos.txt`
+
+
+export SPA_PLUGIN_DIR="/usr/lib32/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/usr/lib32/pipewire-0.3/"
