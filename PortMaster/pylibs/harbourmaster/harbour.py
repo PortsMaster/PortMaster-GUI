@@ -328,6 +328,13 @@ class HarbourMaster():
                 source_data['last_checked'] = None
                 source_data['data'] = {}
 
+            # V2 to V3
+            if source_data['api'] == 'PortMasterV2' and source_data['name'] == 'PortMaster Multiverse':
+                source_data['api'] = 'PortMasterV3'
+                source_data['url'] = "https://github.com/PortsMaster-MV/PortMaster-MV-New/releases/latest/download/ports.json"
+                source_data['last_checked'] = None
+                source_data['data'] = {}
+
             source = HM_SOURCE_APIS[source_data['api']](self, source_file, source_data)
 
             self.sources[source_data['prefix']] = source
