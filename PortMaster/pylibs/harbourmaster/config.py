@@ -123,9 +123,9 @@ HM_SOURCE_DEFAULTS = {
     "021_portmaster.multiverse.source.json": textwrap.dedent("""
     {
         "prefix": "pmmv",
-        "api": "PortMasterV2",
+        "api": "PortMasterV3",
         "name": "PortMaster Multiverse",
-        "url": "https://api.github.com/repos/PortsMaster-MV/PortMaster-Multiverse/releases/latest",
+        "url": "https://github.com/PortsMaster-MV/PortMaster-MV-New/releases/latest/download/ports.json",
         "last_checked": null,
         "version": 4,
         "data": {}
