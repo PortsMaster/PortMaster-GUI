@@ -876,7 +876,7 @@ class HarbourMaster():
 
         requirements = port_info.get('attr', {}).get('reqs', [])
 
-        if self.cfg_data['show_all']:
+        if self.cfg_data.get('show_all', False):
             requirements = []
 
         return match_requirements(capabilities, requirements)
