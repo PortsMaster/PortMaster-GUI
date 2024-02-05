@@ -523,6 +523,14 @@ class OptionScene(BaseScene):
         if self.gui.hm.cfg_data.get('konami', False):
             self.tags['option_list'].add_option(None, _("Secret Options"))
             self.tags['option_list'].add_option(
+                'toggle-all',
+                _("All Ports: ") + (self.gui.hm.cfg_data.get('show_all', False) and _("Enabled") or _("Disabled")),
+                description=_("Show all ports, ignoring requirements."))
+            self.tags['option_list'].add_option(
+                'toggle-experimental',
+                _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")),
+                description=_("Show or hide experimental ports."))
+            self.tags['option_list'].add_option(
                 'delete-config',
                 _("Delete PortMaster Config"),
                 description=_("This can break stuff, don't touch unless you know what you are doing."))
@@ -564,6 +572,26 @@ class OptionScene(BaseScene):
                     reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
                     if not reboot_file.is_file():
                         reboot_file.touch(0o644)
+
+                return True
+
+            if selected_option == 'toggle-all':
+                self.gui.hm.cfg_data['show_all'] = not self.gui.hm.cfg_data.get('show_all', False)
+                self.gui.hm.save_config()
+
+                item = self.tags['option_list'].list_selected()
+                self.tags['option_list'].list[item] = (
+                    _("All Ports: ") + (self.gui.hm.cfg_data.get('show_all', False) and _("Enabled") or _("Disabled")))
+
+                return True
+
+            if selected_option == 'toggle-experimental':
+                self.gui.hm.cfg_data['show_experimental'] = not self.gui.hm.cfg_data.get('show_experimental', False)
+                self.gui.hm.save_config()
+
+                item = self.tags['option_list'].list_selected()
+                self.tags['option_list'].list[item] = (
+                    _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")))
 
                 return True
 

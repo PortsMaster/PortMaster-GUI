@@ -834,11 +834,6 @@ class HarbourMaster():
         if rtr:
             add_list_unique(attrs, 'rtr')
 
-        if rtr:
-            add_list_unique(attrs, ('full', 'demo')[ord(port_info['name'][0]) % 2])
-        else:
-            add_list_unique(attrs, ('free', 'paid')[ord(port_info['name'][0]) % 2])
-
         exp = port_info.get('attr', {}).get('exp', False)
         if exp:
             add_list_unique(attrs, 'exp')
@@ -855,6 +850,8 @@ class HarbourMaster():
             status_md5 = port_info['status'].get('md5', None)
             if status_md5 is not None and source_md5 != status_md5:
                 add_list_unique(attrs, 'update available')
+
+        # print(f"{port_info['name']}: {exp!r} {attrs}")
 
         return attrs
 
@@ -878,6 +875,9 @@ class HarbourMaster():
         capabilities = self.device['capabilities']
 
         requirements = port_info.get('attr', {}).get('reqs', [])
+
+        if self.cfg_data['show_all']:
+            requirements = []
 
         return match_requirements(capabilities, requirements)
 
@@ -927,14 +927,17 @@ class HarbourMaster():
                     continue
 
                 if name_cleaner(port_name) in tmp_ports:
+                    # print(f"- {port_name} skipping (1)")
                     continue
 
                 new_port_info = self.port_info(port_name, installed=False)
 
                 if not self.match_filters(filters, new_port_info):
+                    # print(f"- {port_name} skipping (2)")
                     continue
 
                 if not self.match_requirements(new_port_info):
+                    # print(f"- {port_name} skipping (3)")
                     continue
 
                 tmp_ports[name_cleaner(port_name)] = new_port_info
