@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import xml.etree.ElementTree as ET
 import zipfile
 
 from gettext import gettext as _
@@ -26,10 +27,69 @@ class PlatformBase():
     MOVE_PM_BASH_DIR = None
     ES_NAME = None
 
+    XML_ELEMENT_MAP = {
+        'path': 'path',
+        'name': 'name',
+        'image': 'image',
+        'desc': 'desc',
+        'releasedate': 'releasedate',
+        'developer': 'developer',
+        'publisher': 'publisher',
+        'players': 'players',
+        'genre': 'genre',
+        }
+
+    BLANK_GAMELIST_XML = """<?xml version='1.0' encoding='utf-8'?>\n<gameList />\n"""
+
     def __init__(self, hm):
         self.hm = hm
         self.added_ports = set()
         self.removed_ports = set()
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / "gamelist.xml"
+        return None
+
+    def gamelist_add(self, gameinfo_file):
+        gamelist_xml = self.gamelist_file()
+        if gamelist_xml is None:
+            return
+
+        if not gamelist_xml.is_file():
+            with open(gamelist_xml, 'w') as fh:
+                print(self.BLANK_GAMELIST_XML, file=fh)
+
+        if not gameinfo_file.is_file():
+            return
+
+        gamelist_tree = ET.parse(gamelist_xml)
+        gamelist_root = gamelist_tree.getroot()
+
+        gameinfo_tree = ET.parse(gameinfo_file)
+        gameinfo_root = gameinfo_tree.getroot()
+
+        for gameinfo_element in gameinfo_tree.findall('game'):
+            path_merge = gameinfo_element.find('path').text
+
+            gamelist_update = gamelist_root.find(f'.//game[path="{path_merge}"]')
+            if gamelist_update is None:
+                # Create a new game element
+                gamelist_update = ET.SubElement(gamelist_root, 'game')
+
+            for child in gameinfo_element:
+                # Check if the child element is in the predefined list
+                if child.tag in self.XML_ELEMENT_MAP:
+                    gamelist_element = gamelist_update.find(self.XML_ELEMENT_MAP[child.tag])
+
+                    if gamelist_element is None:
+                        gamelist_element = ET.SubElement(gamelist_update, self.XML_ELEMENT_MAP[child.tag])
+
+                    gamelist_element.text = child.text
+
+        ET.indent(gamelist_root, space="  ", level=0)
+
+        with open(gamelist_xml, 'w') as fh:
+            print(ET.tostring(gamelist_root, encoding='unicode', xml_declaration=True), file=fh)
 
     def ports_changed(self):
         return (len(self.added_ports) > 0 or len(self.removed_ports) > 0)
@@ -186,10 +246,16 @@ class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = 'emulationstation'
 
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = 'emustation'
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
 
 
 class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):

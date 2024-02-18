@@ -30,6 +30,7 @@ def check_port(port_name, zip_file, extra_info=None):
     dirs = []
 
     port_info_file = None
+    game_info_file = None
 
     with zipfile.ZipFile(zip_file, 'r') as zf:
         for file_info in zf.infolist():
@@ -56,7 +57,7 @@ def check_port(port_name, zip_file, extra_info=None):
                     dirs.append(parts[0])
 
                 if len(parts) == 2:
-                    if parts[1].lower().endswith('.port.json'):
+                    if parts[1].lower().endswith('.port.json') or parts[1] == 'port.json':
                         ## TODO: add the ability for multiple port folders to have multiple port.json files. ?
                         if port_info_file is not None:
                             logger.warning(f"Port {port_name} has multiple port.json files.")
@@ -64,6 +65,9 @@ def check_port(port_name, zip_file, extra_info=None):
                             logger.warning(f"- Now:    {file_info.filename!r}")
 
                         port_info_file = file_info.filename
+
+                    if parts[1] == 'gameinfo.xml':
+                        game_info_file = file_info.filename
 
                 if file_info.filename.lower().endswith('.sh'):
                     logger.warning(f"Port {port_name} has {file_info.filename} inside, this can cause issues.")
@@ -108,6 +112,7 @@ def check_port(port_name, zip_file, extra_info=None):
 
     if extra_info is not None:
         extra_info['port_info_file'] = port_info_file
+        extra_info['gameinfo_xml'] = game_info_file
 
     return port_info
 

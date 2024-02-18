@@ -744,20 +744,22 @@ class RuntimesScene(BaseScene):
 
     def update_runtimes(self):
         runtimes = []
+        self.runtimes_data = {}
         self.runtimes = {}
-        download_size = {}
-        total_size = 0
 
-        for source_prefix, source in self.gui.hm.sources.items():
-            for runtime in source.utils:
-                if runtime not in runtimes:
-                    runtimes.append(runtime)
-                    download_size[runtime] = source._data[runtime]["size"]
-                    total_size += download_size[runtime]
+        all_download_size = 0
+        all_installed = True
 
-        runtimes.sort(key=lambda name: harbourmaster.runtime_nicename(runtime))
+        for runtime, runtime_data in self.gui.hm.list_runtimes():
+            runtimes.append(runtime)
+            self.runtimes_data[runtime] = runtime_data
+            if not (self.gui.hm.libs_dir / runtime).is_file():
+                all_installed = False
 
-        download_size['all'] = total_size
+            all_download_size += runtime_data["remote"]["size"]
+
+        runtimes.sort(key=lambda name: self.runtimes_data[name]['name'])
+
         runtimes.append('all')
 
         self.tags['runtime_list'].reset_options()
@@ -767,10 +769,10 @@ class RuntimesScene(BaseScene):
             if runtime == "all":
                 self.runtimes[runtime] = {
                     'name': _("Download All"),
-                    'installed': None,
+                    'installed': all_installed,
                     'file': None,
                     'ports': [],
-                    'download_size': download_size[runtime],
+                    'download_size': all_download_size,
                     'disk_size': 0,
                     }
 
@@ -778,11 +780,11 @@ class RuntimesScene(BaseScene):
 
             else:
                 self.runtimes[runtime] = {
-                    'name': harbourmaster.runtime_nicename(runtime),
+                    'name': self.runtimes_data[runtime]['name'],
                     'installed': None,
                     'file': (self.gui.hm.libs_dir / runtime),
                     'ports': [],
-                    'download_size': download_size[runtime],
+                    'download_size': self.runtimes_data[runtime]['remote']['size'],
                     'disk_size': 0,
                     }
 
@@ -795,8 +797,6 @@ class RuntimesScene(BaseScene):
                     all_installed = False
 
             self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
-
-        self.runtimes['all']['installed'] = all_installed
 
         for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
             if port_info['attr']['runtime'] in self.runtimes:

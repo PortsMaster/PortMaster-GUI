@@ -88,6 +88,7 @@ class HarbourMaster():
         self.ports_dir  = ports_dir
         self.scripts_dir  = scripts_dir
         self.cfg_file   = self.cfg_dir / "config.json"
+        self.runtimes_file = self.cfg_dir / "runtimes.json"
 
         self.sources = {}
         self.config = {
@@ -182,7 +183,10 @@ class HarbourMaster():
 
     def save_config(self):
         with open(self.cfg_file, 'w') as fh:
-            json.dump(self.cfg_data, fh, indent=4)
+            json.dump(self.cfg_data, fh, indent=4, sort_keys=True)
+
+        with open(self.runtimes_file, 'w') as fh:
+            json.dump(self.runtimes_info, fh, indent=4, sort_keys=True)
 
     def ports_info(self):
         if self.__PORTS_INFO is None:
@@ -212,6 +216,14 @@ class HarbourMaster():
         porters_file = self.cfg_dir / "porters.json"
         featured_ports_file = self.cfg_dir / "featured_ports.json"
         featured_ports_dir = self.cfg_dir / "featured_ports/"
+        self.runtimes_info = None
+
+        if self.runtimes_file.is_file():
+            with open(self.runtimes_file, 'r') as fh:
+                self.runtimes_info = json_safe_load(fh)
+
+        if self.runtimes_info is None:
+            self.runtimes_info = {}
 
         if self.config['offline']:
             if not porters_file.is_file():
@@ -492,7 +504,7 @@ class HarbourMaster():
         """
         Find all installed ports, because ports can be installed by zips we need to recheck every time.
         """
-        port_files = list(self.ports_dir.glob('*/*.port.json'))
+        port_files = list(self.ports_dir.glob('*/*.port.json')) + list(self.ports_dir.glob('*/port.json'))
         port_files.sort()
 
         self.installed_ports = {}
@@ -529,6 +541,58 @@ class HarbourMaster():
 
         """
 
+        ## Rename old <portname>.port.json to port.json.
+        port_dirs = {}
+
+        for port_file in port_files:
+            port_dir = port_file.parent.name
+
+            port_dirs.setdefault(port_dir, {})[port_file.name] = port_file
+
+        changes = False
+        for port_dir in port_dirs:
+            if port_dir == 'alephone':
+                continue
+
+            # Rename the port.json
+            port_jsons = list(port_dirs[port_dir].keys())
+
+            if len(port_jsons) == 1:
+                if 'port.json' not in port_jsons:
+                    port_dir_path = port_dirs[port_dir][port_jsons[0]].parent
+
+                    ## Rename
+                    logger.debug(f"rename {port_dir_path / port_jsons[0]} to {port_dir_path / 'port.json'}")
+                    (port_dir_path / port_jsons[0]).rename(port_dir_path / 'port.json')
+                    changes = True
+
+            elif len(port_jsons) == 2:
+                if 'port.json' not in port_jsons:
+                    ## HRMMmmmmm
+                    logger.debug(f'Multiple port.json files in {port_dir}: {port_jsons}')
+                    continue
+
+                else:
+                    # Remove the old one.
+                    port_jsons.remove('port.json')
+                    port_dir_path = port_dirs[port_dir][port_jsons[0]].parent
+                    logger.debug(f"unlink {port_dir_path / port_jsons[0]}")
+                    (port_dir_path / port_jsons[0]).unlink()
+                    changes = True
+
+            else:
+                if 'port.json' not in port_jsons:
+                    ## HRMMmmmmm
+                    logger.debug(f'Multiple port.json files in {port_dir}: {port_jsons}')
+                    continue
+
+        del port_dirs
+
+        if changes:
+            # Reload the port_files list.
+            port_files = list(self.ports_dir.glob('*/*.port.json')) + list(self.ports_dir.glob('*/port.json'))
+
+
         ## Phase 1: Load all the known ports with port.json files
         for port_file in port_files:
             port_info = self._load_port_info(port_file)
@@ -539,8 +603,12 @@ class HarbourMaster():
             # The files attribute keeps track of file renames.
             if port_info.get('files', None) is None:
                 port_info['files'] = {
-                    'port.json': str(self._ports_dir_relative_to(self.ports_dir)),
+                    'port.json': str(self._ports_dir_relative_to(port_file)),
                     }
+                port_info['changed'] = True
+
+            if 'port.json' not in port_info['files']:
+                port_info['files']['port.json'] = str(self._ports_dir_relative_to(port_file))
                 port_info['changed'] = True
 
             if port_info['attr']['porter'] is None:
@@ -814,6 +882,7 @@ class HarbourMaster():
         runtime_fix = {
             'frt':  'godot',
             'mono': 'mono',
+            'solarus': 'solarus',
             'jdk11': 'jre',
             }
 
@@ -1106,6 +1175,47 @@ class HarbourMaster():
 
         return None
 
+    def list_runtimes(self):
+        result = []
+        changed = False
+        for runtime_name, runtime_data in self.runtimes_info.items():
+            if 'local' not in runtime_data:
+                changed = True
+                runtime_file = (self.libs_dir / runtime_name)
+                runtime_md5 = None
+                runtime_md5_file = (self.libs_dir / (runtime_name + '.md5'))
+
+                if runtime_md5_file.is_file():
+                    runtime_md5 = runtime_md5_file.read_text().strip().split(' ')[0]
+                else:
+                    runtime_md5 = runtime_data['remote']['md5']
+
+                if runtime_file.is_file():
+                    runtime_status = 'Unverified'
+
+                    runtime_md5_check = hash_file(runtime_file)
+
+                    if runtime_md5_check == runtime_md5:
+                        runtime_status = 'Verified'
+
+                    else:
+                        runtime_status = 'Broken'
+
+                else:
+                    runtime_status = 'Not Installed'
+
+                runtime_data['local'] = {
+                    'status': runtime_status,
+                    'md5': runtime_md5,
+                    }
+
+            result.append((runtime_name, runtime_data))
+
+        if changed:
+            self.save_config()
+
+        return result
+
     def set_gcd_mode(self, mode='standard'):
         self.platform.set_gcd_mode(mode)
 
@@ -1243,6 +1353,15 @@ class HarbourMaster():
             extra_info = {}
             port_info = check_port(download_info['name'], download_info['zip_file'], extra_info)
 
+            # Extra fix
+            port_info_file_old = None
+
+            if extra_info['port_info_file'] != 'port.json':
+                if 'alephone/' not in port_info['items'] and 'alephone' not in port_info['items']:
+                    # FUCK THESE GAMES. :D
+                    port_info_file_old = self.ports_dir / extra_info['port_info_file']
+                    extra_info['port_info_file'] = extra_info['port_info_file'].rsplit('/', 1)[0] + '/port.json'
+
             port_info_file = self.ports_dir / extra_info['port_info_file']
 
             with zipfile.ZipFile(download_info['zip_file'], 'r') as zf:
@@ -1268,6 +1387,13 @@ class HarbourMaster():
 
                     dest_file = path = self._ports_dir_file(file_info.filename, is_script)
                     dest_dir = (is_script and self.scripts_dir or self.ports_dir)
+
+                    if dest_file == port_info_file_old:
+                        dest_file = port_info_file
+                        if not dest_file.exists():
+                            add_list_unique(undo_data, dest_file)
+
+                        continue
 
                     if not file_info.filename.endswith('/'):
                         if not dest_file.parent.is_dir():
@@ -1319,6 +1445,7 @@ class HarbourMaster():
             if not port_info_file.is_file():
                 add_list_unique(undo_data, port_info_file)
 
+            print(f"-> {port_info_file}")
             with open(port_info_file, 'w') as fh:
                 json.dump(port_info, fh, indent=4)
 
@@ -1329,6 +1456,12 @@ class HarbourMaster():
             is_successs = True
 
             self.platform.port_install(port_info['name'], port_info, undo_data)
+
+            if extra_info['gameinfo_xml'] is not None:
+                gameinfo_xml = self._ports_dir_file(extra_info['gameinfo_xml'])
+
+                if gameinfo_xml.is_file():
+                    self.platform.gamelist_add(gameinfo_xml)
 
         except HarbourException as err:
             is_successs = False
@@ -1391,10 +1524,22 @@ class HarbourMaster():
         if not self.libs_dir.is_dir():
             self.libs_dir.mkdir(0o777)
 
+        if runtime not in self.runtimes_info:
+            if not in_install:
+                self.callback.message_box(_("Port {runtime} contains an unknown runtime, game may not run correctly.").format(
+                    runtime=runtime))
+
+            logger.error(f"Unknown runtime {runtime}")
+            return 255
+
+        # Fixes some stuff.
+        self.list_runtimes()
+
+        runtime_info = self.runtimes_info[runtime]
+        runtime_name = runtime_info['name']
         runtime_file = (self.libs_dir / runtime)
-        runtime_md5 = (self.libs_dir / (runtime + '.md5'))
-        runtime_name = runtime_nicename(runtime)
-        runtime_status = 'Not Present'
+        runtime_md5 = runtime_info.get('local', {}).get('md5', None)
+        runtime_status = 'Not Installed'
         runtime_md5sum = None
 
         status_language = {
@@ -1404,6 +1549,7 @@ class HarbourMaster():
             'Unverified':       _('Unverified'),
             'Broken':           _('Broken'),
             }
+
         logger.info(f"Installing {runtime_name}")
 
         if self.config['offline']:
@@ -1412,6 +1558,8 @@ class HarbourMaster():
             return 0
 
         if runtime_file.is_file():
+            runtime_status = 'Unverified'
+
             self.callback.message(_("Verifying runtime {runtime}").format(
                 runtime=runtime_name))
 
@@ -1423,11 +1571,7 @@ class HarbourMaster():
 
                 self.callback.progress(_('Verifying'), process_size, total_size)
 
-                while True:
-                    data = fh.read(1024 * 1024 * 10)
-                    if len(data) == 0:
-                        break
-
+                for data in iter(lambda: fh.read(1024 * 1024 * 10), b''):
                     self.callback.progress(_('Verifying'), process_size, total_size)
                     process_size += len(data)
                     md5obj.update(data)
@@ -1436,15 +1580,17 @@ class HarbourMaster():
 
                 runtime_md5sum = md5obj.hexdigest()
 
-            if not runtime_md5.is_file():
-                runtime_md5.write_text(runtime_md5sum)
+            if runtime_md5 is None:
+                # runtime_md5.write_text(runtime_md5sum)
                 runtime_status = 'Unverified'
 
-            elif runtime_md5.read_text().strip() == runtime_md5sum:
+            elif runtime_md5 == runtime_md5sum:
                 runtime_status = 'Verified'
 
             else:
                 runtime_status = 'Broken'
+
+            runtime_info['local']['status'] = runtime_status
         else:
             runtime_status = 'Not Installed'
 

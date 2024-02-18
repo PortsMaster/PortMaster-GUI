@@ -275,7 +275,8 @@ def hash_file(file_name):
 
     md5 = hashlib.md5()
     with file_name.open('rb') as fh:
-        md5.update(fh.read())
+        for data in iter(lambda: fh.read(1024 * 1024 * 10), b''):
+            md5.update(data)
 
     return md5.hexdigest()
 
@@ -283,6 +284,9 @@ def hash_file(file_name):
 def runtime_nicename(runtime):
     if runtime.startswith("frt"):
         return ("Godot/FRT {version}").format(version=runtime.split('_', 1)[1].rsplit('.', 1)[0])
+
+    if runtime.startswith("solarus"):
+        return ("Solarus {version}").format(version=runtime.split('-', 1)[1].rsplit('.', 1)[0])
 
     if runtime.startswith("mono"):
         return ("Mono {version}").format(version=runtime.split('-', 1)[1].rsplit('-', 1)[0])
