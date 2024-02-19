@@ -490,6 +490,18 @@ class OptionScene(BaseScene):
             _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")),
             description=_("Enable or Disable soundfx in PortMaster."))
 
+        self.tags['option_list'].add_option(None, _("Emulation Station"))
+
+        self.tags['option_list'].add_option(
+            'toggle-gamelist',
+            _("Gamelist Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Enabled") or _("Disabled")),
+            description=_("PortMaster updates gamelist.xml so that it shows port metadata in emulationstation."))
+
+        self.tags['option_list'].add_option(
+            'update-gamelist',
+            _("Gamelist.xml update."),
+            description=_("Manually update gamelist.xml with any missing/updated information."))
+
         self.tags['option_list'].add_option(None, _("System"))
 
         self.tags['option_list'].add_option(
@@ -656,6 +668,23 @@ class OptionScene(BaseScene):
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
                     _("Controller Mode: {controller_mode}").format(controller_mode=gcd_mode))
+
+                return True
+
+            if selected_option == 'toggle-gamelist':
+                self.gui.hm.cfg_data['gamelist_update'] = not self.gui.hm.cfg_data.get('gamelist_update', True)
+                self.gui.hm.save_config()
+
+                item = self.tags['option_list'].list_selected()
+                self.tags['option_list'].list[item] = (
+                    _("Gamelist Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Enabled") or _("Disabled")))
+                return True
+
+            if selected_option == 'update-gamelist':
+                if self.gui.message_box(
+                        _("Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information."),
+                        want_cancel=True):
+                    ...
 
                 return True
 

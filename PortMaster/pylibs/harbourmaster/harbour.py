@@ -1458,10 +1458,11 @@ class HarbourMaster():
             self.platform.port_install(port_info['name'], port_info, undo_data)
 
             if extra_info['gameinfo_xml'] is not None:
-                gameinfo_xml = self._ports_dir_file(extra_info['gameinfo_xml'])
+                if self.cfg_data.get('gamelist_update', True):
+                    gameinfo_xml = self._ports_dir_file(extra_info['gameinfo_xml'])
 
-                if gameinfo_xml.is_file():
-                    self.platform.gamelist_add(gameinfo_xml)
+                    if gameinfo_xml.is_file():
+                        self.platform.gamelist_add(gameinfo_xml)
 
         except HarbourException as err:
             is_successs = False

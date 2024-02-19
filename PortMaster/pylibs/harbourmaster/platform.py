@@ -47,7 +47,6 @@ class PlatformBase():
         self.removed_ports = set()
 
     def gamelist_file(self):
-        return self.hm.ports_dir / "gamelist.xml"
         return None
 
     def gamelist_add(self, gameinfo_file):
@@ -86,7 +85,8 @@ class PlatformBase():
 
                     gamelist_element.text = child.text
 
-        ET.indent(gamelist_root, space="  ", level=0)
+        if hasattr(ET, 'indent'):
+            ET.indent(gamelist_root, space="  ", level=0)
 
         with open(gamelist_xml, 'w') as fh:
             print(ET.tostring(gamelist_root, encoding='unicode', xml_declaration=True), file=fh)
@@ -204,9 +204,15 @@ class PlatformGCD_PortMaster:
 class PlatformUOS(PlatformGCD_PortMaster, PlatformBase):
     ES_NAME = 'emustation'
 
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformJELOS(PlatformBase):
     ES_NAME = 'emustation'
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
 
     def first_run(self):
         self.portmaster_install()
@@ -262,6 +268,9 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     MOVE_PM_BASH_DIR = Path("/emuelec/scripts/")
     ES_NAME = 'emustation'
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
 
 
 HM_PLATFORMS = {
