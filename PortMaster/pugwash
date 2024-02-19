@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.7.1'
+PORTMASTER_VERSION = '8.7.4'
 PORTMASTER_RELEASE_CHANNEL = 'beta'
 ## -- END PORTMASTER INFO --
 
 PORTMASTER_RELEASE_CHANNELS = {
     'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
-    'stable': 'https://github.com/PortsMaster/PortMaster-Releases/releases/latest/download/',
+    'stable': 'https://github.com/PortsMaster/PortMaster-New/releases/latest/download/',
     }
 
 PORTMASTER_UPDATE_FREQUENCY = (60 * 60 * 1)

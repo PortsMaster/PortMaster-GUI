@@ -36,8 +36,9 @@ if (Path().cwd() / '.git').is_dir():
     ## For testing
     HM_DEFAULT_TOOLS_DIR = Path('.').absolute()
     HM_DEFAULT_PORTS_DIR = Path('ports/').absolute()
-    HM_DEFAULT_SCRIPTS_DIR = Path('ports_scripts/').absolute()
+    HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
+
 elif Path("/opt/tools/PortMaster/").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/opt/tools")
 elif Path("/opt/system/Tools/PortMaster/").is_dir():

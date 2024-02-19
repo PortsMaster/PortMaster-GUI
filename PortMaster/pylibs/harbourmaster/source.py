@@ -837,6 +837,12 @@ class PortMasterV3(BaseSource):
                 'url': asset['url'],
                 }
 
+            if key.endswith('.squashfs'):
+                self.hm.runtimes_info.setdefault(key, {})['remote'] = result.copy()
+                self.hm.runtimes_info[key]['name'] = result['name']
+                self.hm.runtimes_info[key].setdefault('status', 'Unknown')
+
+
             self._data[self.clean_name(key)] = result
             if key.lower() in ('images.zip', 'portmaster.zip'):
                 continue
