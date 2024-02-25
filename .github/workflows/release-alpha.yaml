@@ -1,4 +1,4 @@
-name: GUI Alpha
+name: GUI Release Alpha
 
 on:
   # We only run manually
@@ -52,14 +52,12 @@ jobs:
         with:
           repository: ${{ github.repository }}
           latest: true
-          out-file-path: "releases"
           fileName: "*.json"
 
       - uses: robinraju/release-downloader@v1.8
         with:
           repository: ${{ github.repository }}
           latest: true
-          out-file-path: "releases"
           fileName: "Install*PortMaster.sh"
 
       - name: Get release name for artifacts
