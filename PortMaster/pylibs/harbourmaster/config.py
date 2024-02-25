@@ -41,7 +41,7 @@ if (Path().cwd() / '.git').is_dir():
     HM_TESTING=True
 
 elif Path("/opt/muos").is_dir():
-    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/mmc/ports")
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/mmc/MUOS")
     HM_DEFAULT_PORTS_DIR   = Path("/mnt/mmc/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/mmc/ROMS/PORTS")
 

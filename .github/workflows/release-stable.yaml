@@ -1,0 +1,120 @@
+name: GUI Release Alpha
+
+on:
+  # We only run manually
+  workflow_dispatch:
+
+concurrency: 
+  group: release # only 1 release at a time
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clean out files part 1
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - uses: actions/checkout@v4
+
+      - name: Clean out files part 2
+        run: |
+          rm -rf .git
+          echo "Free Space"
+          df -h
+
+      - name: env - better defaulting of env vars;
+        id: env
+        run: |
+            RELEASE_REPO="${{ secrets.RELEASE_REPO }}"
+            if [[ -z "$RELEASE_REPO" ]]; then
+              RELEASE_REPO="PortMaster-GUI"
+            fi
+            echo "RELEASE_REPO=$RELEASE_REPO" >> $GITHUB_OUTPUT
+
+            RELEASE_ORG="${{ secrets.RELEASE_ORG }}"
+            if [[ -z "$RELEASE_ORG" ]]; then
+              RELEASE_ORG="PortsMaster"
+            fi
+            echo "RELEASE_ORG=$RELEASE_ORG" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - uses: edgarrc/action-7z@v1
+
+      - uses: robinraju/release-downloader@v1.8
+        with:
+          repository: ${{ github.repository }}
+          latest: true
+          fileName: "*.json"
+
+      - uses: robinraju/release-downloader@v1.8
+        with:
+          repository: ${{ github.repository }}
+          latest: true
+          fileName: "Install*PortMaster.sh"
+
+      - name: Get release name for artifacts
+        id: version
+        run: |
+            echo "version=$(date -u +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+            echo "release=stable" >> $GITHUB_OUTPUT
+
+      - name: Install gettext
+        run: |
+          sudo apt-get install -y gettext
+
+      - name: Create PortMaster.zip
+        id: create-zip
+        run: |
+          ./do_release.sh "${{steps.version.outputs.release}}" "${{steps.version.outputs.version}}"
+ 
+      - name: Create md5 hashes
+        id: md5
+        run: |
+            for file in *.zip; do
+              if [ ! -f "$file" ]; then
+                continue
+              fi
+              echo "file: $file"
+              md5sum "$file" | cut -f1 -d' ' > "$file.md5"
+            done
+ 
+      - name: "Prepare Release"
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{steps.version.outputs.version}}"
+          allowUpdates: true
+          draft: true
+          prerelease: false
+          replacesArtifacts: false
+          omitNameDuringUpdate: true
+          body: "Release: ${{steps.version.outputs.release}} (${{steps.version.outputs.version}})"
+          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, version.json, Install*PortMaster.sh"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ steps.env.outputs.RELEASE_REPO }}
+          owner: ${{ steps.env.outputs.RELEASE_ORG }}
+
+      - name: "Publish Release"
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{steps.version.outputs.version}}"
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          allowUpdates: true
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ steps.env.outputs.RELEASE_REPO}}
+          owner: ${{ steps.env.outputs.RELEASE_ORG}}
+
+      - name: Release Info
+        id: info
+        run: |
+          echo "Published release: ${{steps.version.outputs.version}} to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"

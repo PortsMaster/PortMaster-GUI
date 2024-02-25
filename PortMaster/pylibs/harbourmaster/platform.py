@@ -284,17 +284,30 @@ class PlatformmuOS(PlatformBase):
         """
         Move files into place.
         """
-        Path("/roms/ports/PortMaster").mkdir(exist_ok=True)
 
         MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
 
         # ACTIVATE THE CONTROL
-        shutil.copy(MU_DIR / "control.txt", self.hm.tools_dir / "PortMaster" / "control.txt")
-        shutil.copy(MU_DIR / "control.txt", "/roms/ports/PortMaster/control.txt")
+        logger.debug(f'Copy {MU_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(MU_DIR / "control.txt", PM_DIR / "control.txt")
+
+        CONTROL_HACK = Path("/roms/ports/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        logger.debug(f'Copy {MU_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(MU_DIR / "control.txt", CONTROL_HACK)
 
         # PEBKAC
-        shutil.copy(MU_DIR / "PortMaster.txt", "/mnt/mmc/ROMS/PORTS/PortMaster.sh")
-        shutil.copy(MU_DIR / "control.txt", "/roms/ports/PortMaster/control.txt")
+        logger.debug(f'Move {MU_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(MU_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        TASK_SET = Path(self.hm.tools_dir / "PortMaster" / "tasksetter")
+        if TASK_SET.is_file():
+            TASK_SET.unlink()
+
+        TASK_SET.touch()
 
 
 HM_PLATFORMS = {

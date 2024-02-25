@@ -903,6 +903,11 @@ class HarbourMaster():
         if rtr:
             add_list_unique(attrs, 'rtr')
 
+        arch=port_info.get('attr', {}).get('arch', None)
+        if isinstance(arch, list):
+            for arc in arch:
+                add_list_unique(attrs, arc)
+
         exp = port_info.get('attr', {}).get('exp', False)
         if exp:
             add_list_unique(attrs, 'exp')

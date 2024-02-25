@@ -525,6 +525,13 @@ class OptionScene(BaseScene):
                 channel=self.gui.hm.cfg_data.get('release_channel', "stable")),
             description=_("Change release channel of PortMaster, either beta or stable."))
 
+        if self.gui.hm.cfg_data.get('konami', False):
+            if self.gui.hm.cfg_data.get('release_channel', 'stable') != 'alpha':
+                self.tags['option_list'].add_option(
+                    'release-alpha',
+                    _("Enable Alpha Releases"),
+                    description=_("Change release channel of PortMaster to alpha."))
+
         if len(self.gui.hm.get_gcd_modes()) > 0:
             gcd_mode = self.gui.hm.get_gcd_mode()
             self.tags['option_list'].add_option(
@@ -607,11 +614,31 @@ class OptionScene(BaseScene):
 
                 return True
 
+            if selected_option == 'release-alpha':
+                if self.gui.message_box(
+                        _("Are you sure you want to change to the alpha release channel?\n\nPortMaster will upgrade or downgrade accordingly.\n\nTHIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED"),
+                        want_cancel=True):
+
+                    self.gui.hm.cfg_data['release_channel'] = 'alpha'
+                    self.gui.hm.cfg_data['change_channel'] = True
+                    self.gui.hm.cfg_data['update_checked'] = None
+                    self.gui.hm.save_config()
+                    self.gui.events.running = False
+
+                    if not harbourmaster.HM_TESTING:
+                        reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
+                        if not reboot_file.is_file():
+                            reboot_file.touch(0o644)
+
+                return True
+
             if selected_option == 'release-channel':
                 channel_change = {
+                    "alpha": "beta",
                     "stable": "beta",
                     "beta": "stable",
                     }
+
                 current_channel = self.gui.hm.cfg_data.get('release_channel', "stable")
                 new_channel = channel_change[current_channel]
 
@@ -623,6 +650,7 @@ class OptionScene(BaseScene):
                         want_cancel=True):
 
                     self.gui.hm.cfg_data['release_channel'] = new_channel
+                    self.gui.hm.cfg_data['change_channel'] = True
                     self.gui.hm.cfg_data['update_checked'] = None
                     self.gui.hm.save_config()
                     self.gui.events.running = False
