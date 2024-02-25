@@ -1,6 +1,6 @@
 #!/bin/bash
 
-controlfolder="/mnt/mmc/ports/PortMaster"
+controlfolder="/mnt/mmc/MUOS/PortMaster"
 
 if [ ! -z "$(df | grep '/mnt/sdcard')" ]; then
   directory="/mnt/sdcard"

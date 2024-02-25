@@ -1,4 +1,4 @@
-name: GUI Release Alpha
+name: GUI Release Beta
 
 on:
   # We only run manually
@@ -64,7 +64,7 @@ jobs:
         id: version
         run: |
             echo "version=$(date -u +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
-            echo "release=alpha" >> $GITHUB_OUTPUT
+            echo "release=beta" >> $GITHUB_OUTPUT
 
       - name: Install gettext
         run: |

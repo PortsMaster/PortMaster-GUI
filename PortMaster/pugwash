@@ -1783,6 +1783,10 @@ def portmaster_check_update(pm, config, temp_dir):
                     allow_cancel=False,
                     md5_source=release_info[release_channel]['md5'])
 
+                if change_channel:
+                    pm.hm.cfg_data['change_channel'] = False
+                    pm.hm.save_config()
+
                 reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
                 if not reboot_file.is_file():
                     reboot_file.touch(0o644)
