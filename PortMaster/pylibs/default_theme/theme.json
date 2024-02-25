@@ -130,6 +130,29 @@
                     "image-mod": [ 255, 255, 255 ]
                 }
             }
+        },
+        "Dracula": {
+            "#pallet": {
+                "background": "#282a36",
+                "background_fade": [ 50, 50, 50, 0 ],
+                "list_text": "#f8f8f2",
+                "list_selected": "#bd93f9",
+                "list_unselectable": "#6272a4",
+                "button": [ 0, 0, 0, 255 ],
+                "general_font": "#f8f8f2",
+                "download_font": [ 255, 255, 255 ],
+                "panels": "#44475a",
+                "selection-fill": "#6272a4",
+                "secondary-selection-fill": [ 0, 0, 0 ]
+            },
+            "#resources": {
+                "buttons.png": {
+                    "image-mod": [ 255, 255, 255 ]
+                },
+                "pointenfedde.png": {
+                    "image-mod": [ 255, 255, 255 ]
+                }
+            }
         }
 
 

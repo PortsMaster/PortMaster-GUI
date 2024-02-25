@@ -4,6 +4,10 @@
 POT_DIR="PortMaster/pylibs/locales"
 POT_FILES=("messages" "themes")
 
+cp PortMaster/pugwash{,.bak}
+
+python3 tools/pm_release.py $*
+
 awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash > PortMaster/version
 cp PortMaster/version version
 
@@ -44,7 +48,11 @@ echo "Creating pylibs.zip"
 cd PortMaster
 
 rm -f pylibs.zip
-zip -9r pylibs.zip exlibs/ pylibs/ -x \*__pycache__\*/\* -x \*.DS_Store -x ._\* -x \*NotoSans\*.ttf
+zip -9r pylibs.zip exlibs/ pylibs/ \
+    -x \*__pycache__\*/\* \
+    -x \*.DS_Store \
+    -x ._\* \
+    -x \*NotoSans\*.ttf
 
 cd ..
 
@@ -56,11 +64,12 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/themes/\* \
     -x PortMaster/libs/\*.squashfs \
     -x PortMaster/libs/\*.squashfs.md5 \
+    -x PortMaster/pugwash.bak \
     -x PortMaster/pugwash.txt \
     -x PortMaster/harbourmaster.txt \
     -x '*.DS_Store'
 
-if [[ "$1" == "release" ]]; then
+if [[ "$3" == "stable" ]]; then
     echo "Creating Installers"
 
     if [ ! -f "runtimes.zip" ]; then
@@ -116,3 +125,8 @@ if [[ "$1" == "release" ]]; then
 
     rm -fRv pm_release
 fi
+
+python3 tools/pm_version.py $*
+
+# Restore this file
+mv PortMaster/pugwash{.bak,}

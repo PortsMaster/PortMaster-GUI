@@ -180,6 +180,7 @@ harbourmaster.txt
 PortMaster.zip
 pylibs.zip
 version
+version.json
 do_test.sh
 
 # PortMaster Installer scripts.

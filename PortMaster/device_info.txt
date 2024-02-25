@@ -7,26 +7,17 @@
 # - DISPLAY_ORIENTATION
 # - CFW_NAME
 # - CFW_VERSION
-# - DEVICE_RAM
 # - DEVICE_NAME
-# - ANALOG_STICKS
 # - DEVICE_CPU
+# - DEVICE_RAM
+# - DEVICE_ARCH
+# - ANALOG_STICKS
+#
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.1"
+DEVICE_INFO_VERSION="0.1.2"
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
-# get current resolution
-IFS='x' read -r DISPLAY_WIDTH DISPLAY_HEIGHT < <($SCRIPT_DIR/sdl_resolution 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
-
-unset SCRIPT_DIR
-
-# Check if the values are not empty, otherwise, set default resolution
-if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
-    DISPLAY_WIDTH=640
-    DISPLAY_HEIGHT=480
-fi
+SCRIPT_DIR="$controlfolder"
 
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
@@ -54,6 +45,12 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 
     unset CFW_INFO
     unset CFW_FFS
+
+elif [ -f "/opt/muos/config/version.txt" ]; then
+    # muOS - RG35XX Plus/H
+    CFW_NAME="muOS"
+    CFW_VERSION=$(cat "/opt/muos/config/version.txt")
+
 else
 
     # AmberELEC / EmuELEC
@@ -67,7 +64,7 @@ else
     fi
 fi
 
-DEVICE_RAM=$(free -t | grep 'Total:' | awk '{printf("%.0f", ($2 / 1024 / 1024))}')
+DEVICE_RAM=$(free | awk '/Mem:/ { printf("%.0f", ($2 / 1024 / 1024)) }')
 
 # Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
@@ -90,6 +87,7 @@ fi
 
 ANALOG_STICKS=2
 DEVICE_CPU="Unknown"
+DEVICE_ARCH="aarch64"
 DISPLAY_ORIENTATION=0
 
 ## FIXES
@@ -177,4 +175,32 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
     "odroid-go super")
         DEVICE_CPU="RK3326"
         ;;
+
+    "sun50iw9")
+        DEVICE_NAME="RG35XX H"
+        DEVICE_CPU="H700"
+        DEVICE_ARCH="armhf"
+        ;;
+
 esac
+
+# get current resolution
+IFS='x' read -r DISPLAY_WIDTH DISPLAY_HEIGHT < <($SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+
+unset SCRIPT_DIR
+
+# Check if the values are not empty, otherwise, set default resolution
+if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
+    DISPLAY_WIDTH=640
+    DISPLAY_HEIGHT=480
+fi
+
+
+# echo "# ${DEVICE_NAME} - ${CFW_NAME}"
+# echo "CFW_NAME=${CFW_NAME}"
+# echo "CFW_VERSION=${CFW_VERSION}"
+# echo "DEVICE_NAME=${DEVICE_NAME}"
+# echo "DEVICE_ARCH=${DEVICE_ARCH}"
+# echo "DEVICE_RAM=${DEVICE_RAM}"
+# echo "DISPLAY_WIDTH=${DISPLAY_WIDTH}"
+# echo "DISPLAY_HEIGHT=${DISPLAY_HEIGHT}"

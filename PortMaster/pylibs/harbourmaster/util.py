@@ -91,7 +91,7 @@ def nice_size(size):
     Make nicer data sizes.
     """
 
-    suffixes = ('B', 'KB', 'MB', 'GB')
+    suffixes = ('B', 'KB', 'MB', 'GB', 'TB')
     for suffix in suffixes:
         if size < 768:
             break
