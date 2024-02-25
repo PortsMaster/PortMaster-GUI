@@ -4,7 +4,7 @@ on:
   # We only run manually
   workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: release # only 1 release at a time
 
 jobs:
@@ -74,7 +74,7 @@ jobs:
         id: create-zip
         run: |
           ./do_release.sh "${{steps.version.outputs.release}}" "${{steps.version.outputs.version}}"
- 
+
       - name: Create md5 hashes
         id: md5
         run: |
@@ -85,7 +85,7 @@ jobs:
               echo "file: $file"
               md5sum "$file" | cut -f1 -d' ' > "$file.md5"
             done
- 
+
       - name: "Prepare Release"
         uses: ncipollo/release-action@v1
         with:
