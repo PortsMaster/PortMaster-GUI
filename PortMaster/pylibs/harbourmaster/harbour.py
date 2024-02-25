@@ -87,7 +87,7 @@ class HarbourMaster():
         self.themes_dir = tools_dir / "PortMaster" / "themes"
         self.ports_dir  = ports_dir
         self.scripts_dir  = scripts_dir
-        self.cfg_file   = self.cfg_dir / "config.json"
+        self.cfg_file     = self.cfg_dir / "config.json"
         self.runtimes_file = self.cfg_dir / "runtimes.json"
 
         self.sources = {}

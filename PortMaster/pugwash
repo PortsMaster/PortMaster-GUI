@@ -1724,7 +1724,12 @@ def portmaster_check_update(pm, config, temp_dir):
 
     if update_checked is None or harbourmaster.datetime_compare(update_checked) > PORTMASTER_UPDATE_FREQUENCY:
         update_checked_was_none = update_checked is None
-        release_info = harbourmaster.fetch_json(PORTMASTER_RELEASE_URL + 'version.json')
+        try:
+            release_info = harbourmaster.fetch_json(PORTMASTER_RELEASE_URL + 'version.json')
+
+        except Exception as err:
+            logger.error(f'Unable to download {PORTMASTER_RELEASE_URL}version.json: {err}')
+            return None
 
         if release_info is None:
             # Whelp, we tried.
