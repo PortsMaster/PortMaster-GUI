@@ -1,0 +1,25 @@
+#!/bin/bash
+
+controlfolder="/mnt/mmc/ports/PortMaster"
+
+if [ ! -z "$(df | grep '/mnt/sdcard')" ]; then
+  directory="/mnt/sdcard"
+else
+  directory="/mnt/mmc"
+fi
+
+export PATH="/opt/python/bin:$PATH"
+export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
+ESUDO=""
+ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+# export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+get_controls() {
+  # Clear the framebuffer :D
+  # Do it twice, it's just as nice!
+  cat /dev/zero > /dev/fb0 2>/dev/null
+  cat /dev/zero > /dev/fb0 2>/dev/null
+}
+
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb.armhf $ESUDOKILL"

@@ -273,12 +273,37 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
         return self.hm.ports_dir / 'gamelist.xml'
 
 
+class PlatformmuOS(PlatformBase):
+    MOVE_PM_BASH = False
+    ES_NAME = None
+
+    def first_run(self):
+        self.portmaster_install()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+        Path("/roms/ports/PortMaster").mkdir(exist_ok=True)
+
+        MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
+
+        # ACTIVATE THE CONTROL
+        shutil.copy(MU_DIR / "control.txt", self.hm.tools_dir / "PortMaster" / "control.txt")
+        shutil.copy(MU_DIR / "control.txt", "/roms/ports/PortMaster/control.txt")
+
+        # PEBKAC
+        shutil.copy(MU_DIR / "PortMaster.txt", "/mnt/mmc/ROMS/PORTS/PortMaster.sh")
+        shutil.copy(MU_DIR / "control.txt", "/roms/ports/PortMaster/control.txt")
+
+
 HM_PLATFORMS = {
     'jelos': PlatformJELOS,
     'arkos': PlatformArkOS,
     'amberelec': PlatformAmberELEC,
     'emuelec': PlatformEmuELEC,
     'unofficialos': PlatformUOS,
+    'muos': PlatformmuOS,
     'default': PlatformBase,
     # 'default': PlatformAmberELEC,
     }

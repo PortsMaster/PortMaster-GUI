@@ -3,6 +3,7 @@
 import pathlib
 import platform
 import os
+import subprocess
 import textwrap
 
 from pathlib import Path
@@ -39,18 +40,31 @@ if (Path().cwd() / '.git').is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
 
+elif Path("/opt/muos").is_dir():
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/mmc/ports")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/mmc/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/mmc/ROMS/PORTS")
+
+    if '/mnt/sdcard' in subprocess.getoutput(['df']):
+        HM_DEFAULT_PORTS_DIR   = Path("/mnt/sdcard/ports")
+        HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/sdcard/ROMS/PORTS")
+
 elif Path("/opt/tools/PortMaster/").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/opt/tools")
+
 elif Path("/opt/system/Tools/PortMaster/").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/opt/system/Tools")
+
 elif Path("/storage/roms/ports_scripts").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports_scripts")
+
 elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
+
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+controlfolder="/mnt/mmc/ports/PortMaster"
+
+if [ ! -z "$(df | grep '/mnt/sdcard')" ]; then
+  directory="/mnt/sdcard"
+else
+  directory="/mnt/mmc"
+fi
+
+OLD_PATH="$PATH"
+export PATH="/opt/python/bin:$PATH"
+export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
+ESUDO=""
+ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+# export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
+CUR_TTY=/dev/tty0
+
+cd "$controlfolder"
+
+export TERM=linux
+$ESUDO chmod 666 $CUR_TTY
+printf "\033c" > $CUR_TTY
+
+# Do it twice, it's just as nice!
+cat /dev/zero > /dev/fb0 2>/dev/null
+cat /dev/zero > /dev/fb0 2>/dev/null
+
+echo "Starting PortMaster." > $CUR_TTY
+
+$ESUDO chmod -R +x .
+
+export PYSDL2_DLL_PATH="/usr/lib"
+$ESUDO rm -f "${controlfolder}/.pugwash-reboot"
+while true; do
+  $ESUDO ./pugwash 2>&1 | $ESUDO tee -a ./log.txt
+
+  # Do it twice, it's just as nice!
+  cat /dev/zero > /dev/fb0 2>/dev/null
+  cat /dev/zero > /dev/fb0 2>/dev/null
+  if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
+    break;
+  fi
+
+  $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
+done
+
+unset LD_LIBRARY_PATH
+unset SDL_GAMECONTROLLERCONFIG
+PATH="$OLD_PATH"
+
+printf "\033c" > $CUR_TTY

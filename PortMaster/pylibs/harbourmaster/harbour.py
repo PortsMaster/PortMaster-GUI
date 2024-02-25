@@ -1320,7 +1320,7 @@ class HarbourMaster():
                             move_bash_dir = self.ports_dir
 
                         self.callback.message(f"- moving {dest_file} to {move_bash_dir / dest_file.name}")
-                        os.replace(dest_file, move_bash_dir / dest_file.name)
+                        shutil.move(dest_file, move_bash_dir / dest_file.name)
 
             self.set_gcd_mode(gcd_mode)
 
@@ -1697,7 +1697,7 @@ class HarbourMaster():
             logger.error(f"Unable to find suitable source for {runtime}.")
             return 255
 
-    def install_port(self, port_name):
+    def install_port(self, port_name, md5_source=None):
         # Special HTTP download code.
         if port_name.startswith('http'):
             if self.config['offline']:
@@ -1705,7 +1705,7 @@ class HarbourMaster():
                 self.callback.message_box(_("Unable do download a port when in offline mode."))
                 return 255
 
-            download_info = raw_download(self.temp_dir, port_name, callback=self.callback)
+            download_info = raw_download(self.temp_dir, port_name, callback=self.callback, md5_source=md5_source)
 
             if download_info is None:
                 return 255

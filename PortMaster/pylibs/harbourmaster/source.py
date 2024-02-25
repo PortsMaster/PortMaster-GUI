@@ -944,7 +944,7 @@ class PortMasterV3(BaseSource):
 ################################################################################
 ## Raw Downloader
 
-def raw_download(save_path, file_url, callback=None):
+def raw_download(save_path, file_url, callback=None, md5_source=None):
     """
     This is a bit of a hack, this acts as a source of ports, but for raw urls.
     This only supports downloading so not bothering to add it as a full blown source.
@@ -966,8 +966,6 @@ def raw_download(save_path, file_url, callback=None):
 
         file_name = file_name.rsplit('.', 1)[0]
         file_url = urlunparse(url_info._replace(path=url_info.path.rsplit('.', 1)[0]))
-    else:
-        md5_source = None
 
     if not file_name.endswith('.zip'):
         if callback is not None:

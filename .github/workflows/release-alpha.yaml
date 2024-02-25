@@ -1,14 +1,7 @@
-name: release
+name: GUI Alpha
 
 on:
-  push:
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-
-    branches:
-      - main
-
+  # We only run manually
   workflow_dispatch:
 
 concurrency: 
@@ -19,6 +12,21 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Clean out files part 1
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - uses: actions/checkout@v4
+
+      - name: Clean out files part 2
+        run: |
+          rm -rf .git
+          echo "Free Space"
+          df -h
+
       - name: env - better defaulting of env vars;
         id: env
         run: |
@@ -34,15 +42,31 @@ jobs:
             fi
             echo "RELEASE_ORG=$RELEASE_ORG" >> $GITHUB_OUTPUT
 
-      - uses: hmarr/debug-action@v2
-        name: "debug: ${{github.event_name}}"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-      - uses: actions/checkout@v2
+      - uses: edgarrc/action-7z@v1
+
+      - uses: robinraju/release-downloader@v1.8
+        with:
+          repository: ${{ github.repository }}
+          latest: true
+          out-file-path: "releases"
+          fileName: "*.json"
+
+      - uses: robinraju/release-downloader@v1.8
+        with:
+          repository: ${{ github.repository }}
+          latest: true
+          out-file-path: "releases"
+          fileName: "Install*PortMaster.sh"
 
       - name: Get release name for artifacts
         id: version
         run: |
-            echo "version=$(awk -F"'" '/PORTMASTER_VERSION = / {print $2}' PortMaster/pugwash)$(date +'_%H%M')" >> $GITHUB_OUTPUT
+            echo "version=$(date -u +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+            echo "release=alpha" >> $GITHUB_OUTPUT
 
       - name: Install gettext
         run: |
@@ -51,7 +75,7 @@ jobs:
       - name: Create PortMaster.zip
         id: create-zip
         run: |
-          ./do_release.sh release
+          ./do_release.sh "${{steps.version.outputs.release}}" "${{steps.version.outputs.version}}"
  
       - name: Create md5 hashes
         id: md5
@@ -73,7 +97,8 @@ jobs:
           prerelease: false
           replacesArtifacts: false
           omitNameDuringUpdate: true
-          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, Install*PortMaster.sh"
+          body: "Release: ${{steps.version.outputs.release}} (${{steps.version.outputs.version}})"
+          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, version.json, Install*PortMaster.sh"
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ steps.env.outputs.RELEASE_REPO }}
           owner: ${{ steps.env.outputs.RELEASE_ORG }}

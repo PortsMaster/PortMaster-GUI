@@ -36,6 +36,10 @@ HW_INFO = {
     'rg353m':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
     'rg351v':  {'resolution': ( 640,  480), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
 
+    # Anbernic RG35XX
+    'rg35xx h':    {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'h700', 'capabilities': []},
+    'rg35xx plus': {'resolution': (640, 480), 'analogsticks': 0, 'cpu': 'h700', 'capabilities': []},
+
     # Hardkernel Devices
     'oga': {'resolution': (480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
     'ogs': {'resolution': (854, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
@@ -65,10 +69,20 @@ HW_INFO = {
 
 CFW_INFO = {
     ## From PortMaster.sh from JELOS, all devices except x55 and rg10max3 have opengl
-    ('jelos', 'x55'): {'capabilities': []},
+    ('jelos', 'x55'):       {'capabilities': []},
     ('jelos', 'rgb10max3'): {'capabilities': []},
-    ('jelos', 'rgb30'): {'capabilities': []},
-    ('jelos', HW_ANY): {'capabilities': ['opengl']},
+    ('jelos', 'rgb30'):     {'capabilities': []},
+    ('jelos',  HW_ANY):     {'capabilities': ['opengl']},
+    }
+
+
+CPU_INFO = {
+    'rk3326':  {'capabilities': ['armhf', 'aarch64']},
+    'rk3399':  {'capabilities': ['armhf', 'aarch64']},
+    'rk3566':  {'capabilities': ['armhf', 'aarch64']},
+    'h700':    {'capabilities': ['armhf']},
+    's922x':   {'capabilities': ['aarch64']},
+    'unknown': {'capabilities': ['armhf', 'aarch64', 'x86_64']},
     }
 
 
@@ -96,6 +110,8 @@ def nice_device_to_device(raw_device):
     raw_device = raw_device.split('\0', 1)[0]
 
     pattern_to_device = (
+        ('sun50iw9', 'rg35xx h'),
+
         ('Hardkernel ODROID-GO-Ultra', 'ogu'),
         ('ODROID-GO Advance*',   'oga'),
         ('ODROID-GO Super*',     'ogs'),
@@ -138,7 +154,11 @@ def new_device_info():
 
     info = {}
 
-    ## Get Device
+    ## Works on muOS (obviously)
+    muos_version = safe_cat('/opt/muos/config/version.txt')
+    if muos_version != '':
+        info['name'] = 'muOS'
+        info['version'] = muos_version.strip()
 
     # Works on ArkOS
     config_device = safe_cat('~/.config/.DEVICE')
@@ -152,7 +172,7 @@ def new_device_info():
             info['name'] = result[0].split(' ', 1)[0]
             info['version'] = result[1]
 
-    # Works on uOS / JELOS / AmberELEC
+    # Works on uOS / JELOS / AmberELEC / muOS
     sfdbm = safe_cat('/sys/firmware/devicetree/base/model')
     if sfdbm != '':
         device = nice_device_to_device(sfdbm)
@@ -239,6 +259,9 @@ def _merge_info(info, new_info):
 
 
 def mem_limits():
+    if not hasattr(os, 'sysconf_names'):
+        return ['2gb', '1gb']
+
     if 'SC_PAGE_SIZE' not in os.sysconf_names:
         memory = 2
     elif 'SC_PHYS_PAGES' not in os.sysconf_names:
@@ -281,6 +304,9 @@ def device_info(override_device=None, override_resolution=None):
 
     elif (info['name'].lower(), HW_ANY) in CFW_INFO:
         _merge_info(info, CFW_INFO[(info['name'].lower(), HW_ANY)])
+
+    if info['cpu'] in CPU_INFO:
+        _merge_info(info, CPU_INFO[info['cpu']])
 
     if override_resolution is not None:
         info['resolution'] = override_resolution

@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '8.7.4'
-PORTMASTER_RELEASE_CHANNEL = 'beta'
+PORTMASTER_VERSION = '2023-01-07-1007'
+PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
-PORTMASTER_RELEASE_CHANNELS = {
-    'beta': 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/',
-    'stable': 'https://github.com/PortsMaster/PortMaster-New/releases/latest/download/',
-    }
+PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
+PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 
 PORTMASTER_UPDATE_FREQUENCY = (60 * 60 * 1)
 __builtins__.PORTMASTER_DEBUG = False  ## This adds a lot of extra info
@@ -114,6 +112,7 @@ _ = gettext.gettext
 ################################################################################
 ## Logging
 LOG_FILE = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "pugwash.txt"
+LOG_FILE_HANDLE = None
 if LOG_FILE.parent.is_dir():
     LOG_FILE_HANDLE = logger.add(LOG_FILE, level="DEBUG", backtrace=True, diagnose=True)
 
@@ -709,6 +708,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         if self.timers.elapsed('updates_per_second', 1000, run_first=True):
             if PORTMASTER_DEBUG:
                 print(f"UPS: {self.draw_counter} / {self.update_counter}")
+
             self.update_counter = 0
             self.draw_counter = 0
             self.updated = True
@@ -730,9 +730,15 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 self.set_data("system.used_space", "000 B")
                 self.set_data("system.total_space", "000 B")
 
-            battery_file = Path("/sys/class/power_supply/battery/capacity")
-            if battery_file.exists():
-                self.set_data("system.battery_level", f"{int(battery_file.read_text().strip())}%")
+            battery_paths = [
+                Path("/sys/class/power_supply/battery/capacity"),
+                Path("/sys/class/power_supply/axp2202-battery/capacity"),
+                ]
+
+            for battery_file in battery_paths:
+                if battery_file.exists():
+                    self.set_data("system.battery_level", f"{int(battery_file.read_text().strip())}%")
+                    break
 
             else:
                 self.set_data("system.battery_level", _("N/A"))
@@ -1296,7 +1302,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             self.cancellable = old_cancellable
 
     ## HarbourMaster Commands.
-    def do_install(self, port_name, port_url=None, allow_cancel=True):
+    def do_install(self, port_name, port_url=None, allow_cancel=True, md5_source=None):
         if port_url is None:
             port_url = port_name
 
@@ -1705,10 +1711,12 @@ def portmaster_check_update(pm, config, temp_dir):
             cfg_data = json.load(fh)
 
     update_checked = cfg_data.get('update_checked', None)
-    release_channel = cfg_data.setdefault('release_channel', PORTMASTER_RELEASE_CHANNEL)
 
-    if release_channel not in PORTMASTER_RELEASE_CHANNELS:
-        release_channel = list(PORTMASTER_RELEASE_CHANNELS.keys())[0]
+    release_channel = cfg_data.setdefault('release_channel', PORTMASTER_RELEASE_CHANNEL)
+    change_channel = cfg_data.setdefault('change_channel', False)
+
+    if release_channel not in PORTMASTER_RELEASE_VALUES:
+        release_channel = PORTMASTER_RELEASE_VALUES[-1]
         cfg_data['release_channel'] = release_channel
 
         with open(cfg_file, 'w') as fh:
@@ -1716,7 +1724,19 @@ def portmaster_check_update(pm, config, temp_dir):
 
     if update_checked is None or harbourmaster.datetime_compare(update_checked) > PORTMASTER_UPDATE_FREQUENCY:
         update_checked_was_none = update_checked is None
-        latest_version = harbourmaster.fetch_text(PORTMASTER_RELEASE_CHANNELS[release_channel] + 'version').strip()
+        release_info = harbourmaster.fetch_json(PORTMASTER_RELEASE_URL + 'version.json')
+
+        if release_info is None:
+            # Whelp, we tried.
+            logger.error(f'Unable to download {PORTMASTER_RELEASE_URL}version.json')
+            return False
+
+        if release_channel not in release_info:
+            logger.error(f'Unable to find {release_channel} in {release_info!r}')
+            # Whelp, we tried.
+            return False
+
+        latest_version = release_info[release_channel]['version']
         logger.info(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
 
         cfg_data['update_checked'] = datetime.datetime.now().isoformat()
@@ -1733,7 +1753,7 @@ def portmaster_check_update(pm, config, temp_dir):
         VERSION_NEWER = harbourmaster.version_parse(latest_version) > harbourmaster.version_parse(PORTMASTER_VERSION)
         VERSION_OLDER = harbourmaster.version_parse(latest_version) < harbourmaster.version_parse(PORTMASTER_VERSION)
 
-        if release_channel != PORTMASTER_RELEASE_CHANNEL and VERSION_OLDER:
+        if change_channel and VERSION_OLDER:
             update_release = True
             update_ask = True
             update_reason = _("You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?").format(
@@ -1757,7 +1777,11 @@ def portmaster_check_update(pm, config, temp_dir):
                 config['no-check'] = True
                 pm.hm = HarbourMaster(config, temp_dir=temp_dir, callback=pm)
 
-                pm.do_install("PortMaster", PORTMASTER_RELEASE_CHANNELS[release_channel] + "PortMaster.zip", allow_cancel=False)
+                pm.do_install(
+                    "PortMaster",
+                    release_info[release_channel]['url'],
+                    allow_cancel=False,
+                    md5_source=release_info[release_channel]['md5'])
 
                 reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
                 if not reboot_file.is_file():
