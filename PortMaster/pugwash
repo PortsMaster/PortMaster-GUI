@@ -5,6 +5,7 @@ PORTMASTER_VERSION = '2023-01-07-1007'
 PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
+PORTMASTER_MIN_VERSION = '2024-02-25-0000'
 PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
 PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 
@@ -1742,6 +1743,10 @@ def portmaster_check_update(pm, config, temp_dir):
             return False
 
         latest_version = release_info[release_channel]['version']
+        if harbourmaster.version_parse(latest_version) < harbourmaster.version_parse(PORTMASTER_MIN_VERSION):
+            logger.info(f"PortMaster cannot downgrade to {latest_version}, minimum version is {PORTMASTER_MIN_VERSION}")
+            return False
+
         logger.info(f"Checking for updates: {latest_version} vs {PORTMASTER_VERSION}")
 
         cfg_data['update_checked'] = datetime.datetime.now().isoformat()
