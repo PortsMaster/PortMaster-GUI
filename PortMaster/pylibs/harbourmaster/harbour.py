@@ -87,7 +87,7 @@ class HarbourMaster():
         self.themes_dir = tools_dir / "PortMaster" / "themes"
         self.ports_dir  = ports_dir
         self.scripts_dir  = scripts_dir
-        self.cfg_file   = self.cfg_dir / "config.json"
+        self.cfg_file     = self.cfg_dir / "config.json"
         self.runtimes_file = self.cfg_dir / "runtimes.json"
 
         self.sources = {}
@@ -903,11 +903,6 @@ class HarbourMaster():
         if rtr:
             add_list_unique(attrs, 'rtr')
 
-        arch=port_info.get('attr', {}).get('arch', None)
-        if isinstance(arch, list):
-            for arc in arch:
-                add_list_unique(attrs, arc)
-
         exp = port_info.get('attr', {}).get('exp', False)
         if exp:
             add_list_unique(attrs, 'exp')
@@ -949,6 +944,18 @@ class HarbourMaster():
         capabilities = self.device['capabilities']
 
         requirements = port_info.get('attr', {}).get('reqs', [])
+
+        runtime = port_info.get('attr', {}).get('runtime', None)
+
+        if runtime is not None:
+            # Shortcut. :(
+            requirements.append('aarch64')
+
+        else:
+            arch = port_info.get('attr', {}).get('arch', [])
+
+            if isinstance(arch, list) and len(arch) > 0:
+                requirements.append('|'.join(arch))
 
         if self.cfg_data.get('show_all', False):
             requirements = []

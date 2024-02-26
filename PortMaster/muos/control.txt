@@ -22,4 +22,9 @@ get_controls() {
   cat /dev/zero > /dev/fb0 2>/dev/null
 }
 
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb.armhf $ESUDOKILL"
+# CRUSH KILL DESTROY
+if [ -f "$controlfolder/gptokeyb.armhf" ]; then
+  mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
+fi
+
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

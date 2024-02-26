@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-25 14:11+0800\n"
-"PO-Revision-Date: 2024-02-25 06:12\n"
+"PO-Revision-Date: 2024-02-25 07:28\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -243,7 +243,7 @@ msgstr "Port {runtime} zawiera złe działanie, gra może nie działać prawidł
 #: PortMaster/pylibs/harbourmaster/harbour.py:1535
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
-msgstr ""
+msgstr "Port {runtime} zawiera nieznany runtime, gra może nie działać prawidłowo."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1554
 msgid "Verified"
@@ -588,23 +588,23 @@ msgstr "Włącz lub wyłącz efekty dźwiękowe w PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:493
 msgid "Emulation Station"
-msgstr ""
+msgstr "Emulation Station"
 
 #: PortMaster/pylibs/pugscene.py:497 PortMaster/pylibs/pugscene.py:708
 msgid "Gamelist Update: "
-msgstr ""
+msgstr "Aktualizacja list gier: "
 
 #: PortMaster/pylibs/pugscene.py:498
 msgid "PortMaster updates gamelist.xml so that it shows port metadata in emulationstation."
-msgstr ""
+msgstr "PortMaster aktualizuje gamelist.xml, aby wyświetlić metadane portu w emulationstation."
 
 #: PortMaster/pylibs/pugscene.py:502
 msgid "Gamelist.xml update."
-msgstr ""
+msgstr "Aktualizacja Gamelist.xml."
 
 #: PortMaster/pylibs/pugscene.py:503
 msgid "Manually update gamelist.xml with any missing/updated information."
-msgstr ""
+msgstr "Ręcznie zaktualizuj gamelist.xml z jakimikolwiek brakującymi lub zaktualizowanymi informacjami."
 
 #: PortMaster/pylibs/pugscene.py:505
 msgid "System"
@@ -645,11 +645,11 @@ msgstr "Zmień kanał wydania PortMaster, beta lub stabilny."
 
 #: PortMaster/pylibs/pugscene.py:532
 msgid "Enable Alpha Releases"
-msgstr ""
+msgstr "Włącz wydania Alfa"
 
 #: PortMaster/pylibs/pugscene.py:533
 msgid "Change release channel of PortMaster to alpha."
-msgstr ""
+msgstr "Zmień kanał wydania PortMaster na Alpha."
 
 #: PortMaster/pylibs/pugscene.py:539 PortMaster/pylibs/pugscene.py:698
 #, python-brace-format
@@ -707,7 +707,9 @@ msgstr "Powrót"
 msgid "Are you sure you want to change to the alpha release channel?\n\n"
 "PortMaster will upgrade or downgrade accordingly.\n\n"
 "THIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED"
-msgstr ""
+msgstr "Czy na pewno chcesz przejść na kanał wersji alfa?\n\n"
+"PortMaster odpowiednio zaktualizuje lub obniży wersję.\n\n"
+"TO MOŻE ZEPSUĆ PEWNE RZECZY, ZOSTAŁEŚ OSTRZEŻONY"
 
 #: PortMaster/pylibs/pugscene.py:646
 #, python-brace-format
@@ -719,7 +721,8 @@ msgstr "Czy na pewno chcesz zmienić kanał wydania z {current_channel} na {new_
 #: PortMaster/pylibs/pugscene.py:713
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
 "This will override any scraped artwork or port information."
-msgstr ""
+msgstr "Czy na pewno chcesz zaktualizować swoją listę gamelist.xml?\n\n"
+"Zastąpi to wszelkie scrapowane informacje o grafice lub porcie."
 
 #: PortMaster/pylibs/pugscene.py:764
 msgid "Deleting Runtimes:"

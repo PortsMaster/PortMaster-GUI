@@ -25,6 +25,7 @@ from .util import *
 
 HW_ANY = object()
 
+
 HW_INFO = {
     # Anbernic Devices
     'rg552':   {'resolution': (1920, 1152), 'analogsticks': 2, 'cpu': 'rk3399', 'capabilities': ['power']},
@@ -82,7 +83,7 @@ CPU_INFO = {
     'rk3566':  {'capabilities': ['armhf', 'aarch64']},
     'h700':    {'capabilities': ['armhf']},
     's922x':   {'capabilities': ['aarch64']},
-    'unknown': {'capabilities': ['armhf', 'aarch64', 'x86_64']},
+    'unknown': {'capabilities': ['armhf', 'aarch64']},
     }
 
 
