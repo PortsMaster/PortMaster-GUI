@@ -40,6 +40,7 @@ HW_INFO = {
     # Anbernic RG35XX
     'rg35xx h':    {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'h700', 'capabilities': []},
     'rg35xx plus': {'resolution': (640, 480), 'analogsticks': 0, 'cpu': 'h700', 'capabilities': []},
+    'rg35xx':      {'resolution': (640, 480), 'analogsticks': 0, 'cpu': 'h700', 'capabilities': []},
 
     # Hardkernel Devices
     'oga': {'resolution': (480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
@@ -78,12 +79,12 @@ CFW_INFO = {
 
 
 CPU_INFO = {
-    'rk3326':  {'capabilities': ['armhf', 'aarch64']},
-    'rk3399':  {'capabilities': ['armhf', 'aarch64']},
-    'rk3566':  {'capabilities': ['armhf', 'aarch64']},
-    'h700':    {'capabilities': ['armhf']},
-    's922x':   {'capabilities': ['aarch64']},
-    'unknown': {'capabilities': ['armhf', 'aarch64']},
+    'rk3326':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
+    'rk3399':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
+    'rk3566':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
+    'h700':    {'capabilities': ['armhf'],            'primary_arch': 'armhf'},
+    's922x':   {'capabilities': ['aarch64'],          'primary_arch': 'aarch64'},
+    'unknown': {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
     }
 
 
@@ -160,6 +161,10 @@ def new_device_info():
     if muos_version != '':
         info['name'] = 'muOS'
         info['version'] = muos_version.strip()
+
+    muos_device = safe_cat('/opt/muos/config/device.txt')
+    if muos_device != '':
+        info['device'] = muos_device.lower().replace('-', ' ')
 
     # Works on ArkOS
     config_device = safe_cat('~/.config/.DEVICE')

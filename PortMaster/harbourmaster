@@ -79,122 +79,6 @@ if LOG_FILE.parent.is_dir():
 
 
 ################################################################################
-## Self updater url
-HM_UPDATE_URLS = {
-    "harbourmaster": "https://github.com/kloptops/harbourmaster/raw/main/harbourmaster.md5",
-    "pylibs.zip": "https://github.com/kloptops/harbourmaster/raw/main/pylibs.zip.md5",
-    }
-
-
-def self_upgrade():
-    """
-    Self-upgrading code.
-    """
-    if harbourmaster.HM_TESTING:
-        cprint("<error>Unable to update in test environment.</error>")
-        return 255
-
-    self_path = Path(__file__).parent
-
-    if not self_path.is_absolute():
-        self_path = self_path.absolute()
-
-    results = []
-
-    cprint("<b>Performing Self Upgrade.</b>")
-    for file_name, file_url_md5 in HM_UPDATE_URLS.items():
-        if not file_url_md5.endswith('.md5'):
-            logger.error("Self Upgrade: Something is funky, quitting.")
-            return 255
-
-        file_md5_result = harbourmaster.fetch_text(file_url_md5)
-        if file_md5_result is None:
-            logger.error(f"Self Upgrade: File download failed. [{file_url_md5}]")
-            return 255
-
-        file_md5_result = file_md5_result.strip()
-
-        if file_name == 'pylibs.zip':
-            if (self_path / (file_name + '.md5')).is_file():
-                if (self_path / (file_name + '.md5')).read_text().strip() == file_md5_result:
-                    cprint(f"- skipping <b>{file_name!r}</b>, already up to date. [<b>{file_md5_result}</b>]")
-                    continue
-
-        elif (self_path / file_name).is_file():
-            md5 = hashlib.md5()
-            with open(self_path / file_name, 'rb') as fh:
-                md5.update(fh.read())
-
-            if md5.hexdigest() == file_md5_result:
-                cprint(f"- skipping <b>{file_name!r}</b>, already up to date. [<b>{file_md5_result}</b>]")
-                continue
-
-        file_url = file_url_md5.rsplit('.', 1)[0]
-
-        file_data = harbourmaster.fetch_data(file_url)
-        if file_data is None:
-            logger.error(f"Self Upgrade: File download failed. [{file_url}]")
-            return 255
-
-        md5 = hashlib.md5()
-        md5.update(file_data)
-        file_md5_check = md5.hexdigest()
-
-        if file_md5_check != file_md5_result:
-            logger.error(f"Self Upgrade: MD5 sum doesn't match. [{file_md5_check} vs {file_md5_result}]")
-            return 255
-
-        results.append((file_name, file_data))
-
-    if len(results) == 0:
-        cprint("<b>Skipping, harbourmaster is already up to date.</b>")
-
-    else:
-        cprint("<b,g,>Succesfully fetched files, updating.</b,g,>")
-        for file_name, file_data in results:
-            cprint(f"- updating <b>{file_name!r}</b>")
-            with open(self_path / file_name, 'wb') as fh:
-                fh.write(file_data)
-            cprint("  done.")
-
-        cprint("<b>All Done!</b>")
-
-    return 0
-
-
-"""
-HM_NEED_UPDATE = False
-
-def first_run():
-    r = requests.get("https://github.com/kloptops/harbourmaster/raw/main/sources/defaults.json")
-    if r.status_code != 200:
-        logger.error(f"Unable to fetch sources list. [{r.status_code}]")
-        exit(255)
-
-    sources = r.json()
-    for source, data in sources.items():
-
-
-if not (harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config").is_dir():
-    first_run()
-"""
-
-################################################################################
-## Utils
-def runtime_nicename(runtime):
-    if runtime.startswith("frt"):
-        return f"Godot/FRT {runtime.split('_', 1)[1].rsplit('.', 1)[0]}"
-
-    if runtime.startswith("mono"):
-        return f"Mono {runtime.split('-', 1)[1].rsplit('-', 1)[0]}"
-
-    if "jdk" in runtime and runtime.startswith("zulu11"):
-        return f"JDK {runtime.split('-')[2][3:]}"
-
-    return runtime
-
-
-################################################################################
 ## Utils
 class ConsoleCallback(harbourmaster.Callback):
     def __init__(self, config):
@@ -517,28 +401,6 @@ def do_install(hm, argv):
     return 0
 
 
-def do_upgrade(hm, argv):
-    """
-    Upgrade a port
-
-    {command} upgrade Half-Life.zip               # Update from highest priority repo
-    {command} upgrade */Half-Life.zip             # Same as above.
-    {command} upgrade pm/Half-Life.zip            # Update specifically from portmaster repo
-    """
-
-    if len(argv) == 0:
-        cprint("Missing arguments.")
-        return do_help(hm, ['upgrade'])
-
-    if len(argv) == 1 and argv[0] == 'harbourmaster':
-        ## SPECIAL CASE!
-
-        return self_upgrade()
-
-    logger.error("Error: Not yet implemented.")
-    return 255
-
-
 def do_runtime_list(hm, argv):
     """
     List available runtimes
@@ -715,7 +577,6 @@ all_commands = {
     'list': do_list,
     'install': do_install,
     'uninstall': do_uninstall,
-    'upgrade': do_upgrade,
     'runtime_list': do_runtime_list,
     'runtime_check': do_runtime_check,
     'help': do_help,

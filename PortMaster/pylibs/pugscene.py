@@ -807,14 +807,18 @@ class RuntimesScene(BaseScene):
 
         all_download_size = 0
         all_installed = True
+        primary_arch = self.gui.hm.device['primary_arch']
 
         for runtime, runtime_data in self.gui.hm.list_runtimes():
+            if primary_arch not in runtime_data['remote']:
+                continue
+
             runtimes.append(runtime)
             self.runtimes_data[runtime] = runtime_data
             if not (self.gui.hm.libs_dir / runtime).is_file():
                 all_installed = False
 
-            all_download_size += runtime_data["remote"]["size"]
+            all_download_size += runtime_data["remote"][primary_arch]["size"]
 
         runtimes.sort(key=lambda name: self.runtimes_data[name]['name'])
 
@@ -842,7 +846,7 @@ class RuntimesScene(BaseScene):
                     'installed': None,
                     'file': (self.gui.hm.libs_dir / runtime),
                     'ports': [],
-                    'download_size': self.runtimes_data[runtime]['remote']['size'],
+                    'download_size': self.runtimes_data[runtime]['remote'][primary_arch]['size'],
                     'disk_size': 0,
                     }
 
