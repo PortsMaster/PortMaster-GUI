@@ -87,7 +87,7 @@ fi
 
 ANALOG_STICKS=2
 DEVICE_CPU="Unknown"
-DEVICE_ARCH="aarch64"
+DEVICE_ARCH=$(uname -m)
 DISPLAY_ORIENTATION=0
 
 ## FIXES
@@ -177,7 +177,17 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         ;;
 
     "sun50iw9")
-        DEVICE_NAME="RG35XX H"
+        if [ -f "/opt/muos/config/device.txt" ]; then
+            if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then
+                ANALOG_STICKS=0
+                DEVICE_NAME="RG35XX PLUS"
+            else
+                DEVICE_NAME="RG35XX H"
+            fi
+        else
+            DEVICE_NAME="RG35XX H"
+        fi
+
         DEVICE_CPU="H700"
         DEVICE_ARCH="armhf"
         ;;
@@ -196,11 +206,12 @@ if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
 fi
 
 
-# echo "# ${DEVICE_NAME} - ${CFW_NAME}"
-# echo "CFW_NAME=${CFW_NAME}"
-# echo "CFW_VERSION=${CFW_VERSION}"
-# echo "DEVICE_NAME=${DEVICE_NAME}"
-# echo "DEVICE_ARCH=${DEVICE_ARCH}"
-# echo "DEVICE_RAM=${DEVICE_RAM}"
-# echo "DISPLAY_WIDTH=${DISPLAY_WIDTH}"
-# echo "DISPLAY_HEIGHT=${DISPLAY_HEIGHT}"
+echo "# ${DEVICE_NAME} - ${CFW_NAME}"
+echo "CFW_NAME=${CFW_NAME}"
+echo "CFW_VERSION=${CFW_VERSION}"
+echo "DEVICE_NAME=${DEVICE_NAME}"
+echo "DEVICE_ARCH=${DEVICE_ARCH}"
+echo "DEVICE_RAM=${DEVICE_RAM}"
+echo "DISPLAY_WIDTH=${DISPLAY_WIDTH}"
+echo "DISPLAY_HEIGHT=${DISPLAY_HEIGHT}"
+echo "ANALOG_STICKS=${ANALOG_STICKS}"

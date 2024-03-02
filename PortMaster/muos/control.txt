@@ -8,7 +8,8 @@ else
   directory="/mnt/mmc"
 fi
 
-export PATH="/opt/python/bin:$PATH"
+export PATH="/opt/python/bin:$controlfolder/muos:$controlfolder/muos:$PATH"
+
 export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
@@ -25,6 +26,11 @@ get_controls() {
 # CRUSH KILL DESTROY
 if [ -f "$controlfolder/gptokeyb.armhf" ]; then
   mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
+fi
+
+# CRUSH KILL DESTROY
+if [ -f "$controlfolder/xdelta3.armhf" ]; then
+  mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
 fi
 
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
