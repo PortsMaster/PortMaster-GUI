@@ -43,11 +43,11 @@ if (Path().cwd() / '.git').is_dir():
 elif Path("/opt/muos").is_dir():
     HM_DEFAULT_TOOLS_DIR   = Path("/mnt/mmc/MUOS")
     HM_DEFAULT_PORTS_DIR   = Path("/mnt/mmc/ports")
-    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/mmc/ROMS/PORTS")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/mmc/ROMS/Ports")
 
     if '/mnt/sdcard' in subprocess.getoutput(['df']):
         HM_DEFAULT_PORTS_DIR   = Path("/mnt/sdcard/ports")
-        HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/sdcard/ROMS/PORTS")
+        HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/sdcard/ROMS/Ports")
 
 elif Path("/opt/system/Tools").is_dir():
     if Path("/roms2/tools").is_dir():
