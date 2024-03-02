@@ -671,8 +671,9 @@ class HarbourMaster():
                 # Ignore non bash files.
                 continue
 
-            if "# PORTMASTER NO TOUCHY" in file_item.read_text():
-                logger.debug("NO TOUCHY")
+            if file_item.is_file() and "PORTMASTER NO TOUCHY" in file_item.read_text():
+                logger.debug(f"NO TOUCHY {file_name}")
+                continue
 
             port_owners = get_dict_list(all_items, file_name)
 
