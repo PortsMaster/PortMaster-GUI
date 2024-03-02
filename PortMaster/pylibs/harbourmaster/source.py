@@ -796,6 +796,7 @@ class PortMasterV3(BaseSource):
         if self.hm.callback is not None:
             self.hm.callback.message(" - {}".format(_("Updating")))
 
+        changed = False
         # Scrap the rest
         self._data = {}
         self._info = {}
@@ -838,9 +839,23 @@ class PortMasterV3(BaseSource):
                 }
 
             if key.endswith('.squashfs'):
-                self.hm.runtimes_info.setdefault(key, {})['remote'] = result.copy()
+                if 'runtime_name' in asset:
+                    key=asset['runtime_name']
+                    arch=asset['runtime_arch']
+                    self.hm.runtimes_info.setdefault(key, {}).setdefault('remote', {})[arch] = result.copy()
+
+                else:
+                    self.hm.runtimes_info.setdefault(key, {}).setdefault('remote', {})['aarch64'] = result.copy()
+
+                if 'name' in self.hm.runtimes_info[key]['remote']:
+                    del self.hm.runtimes_info[key]['remote']['name']
+                    del self.hm.runtimes_info[key]['remote']['size']
+                    del self.hm.runtimes_info[key]['remote']['md5']
+                    del self.hm.runtimes_info[key]['remote']['url']
+
                 self.hm.runtimes_info[key]['name'] = result['name']
                 self.hm.runtimes_info[key].setdefault('status', 'Unknown')
+                changed = True
 
 
             self._data[self.clean_name(key)] = result
@@ -848,6 +863,10 @@ class PortMasterV3(BaseSource):
                 continue
 
             self.utils.append(self.clean_name(key))
+
+        if changed:
+            self.hm.list_runtimes()
+            self.hm.save_config()
 
         self._update()
 
@@ -944,14 +963,16 @@ class PortMasterV3(BaseSource):
 ################################################################################
 ## Raw Downloader
 
-def raw_download(save_path, file_url, callback=None, md5_source=None):
+def raw_download(save_path, file_url, callback=None, file_name=None, md5_source=None):
     """
     This is a bit of a hack, this acts as a source of ports, but for raw urls.
     This only supports downloading so not bothering to add it as a full blown source.
     """
     original_url = file_url
     url_info = urlparse(file_url)
-    file_name = url_info.path.rsplit('/', 1)[1]
+
+    if file_name is None:
+        file_name = url_info.path.rsplit('/', 1)[1]
 
     if file_name.endswith('.md5') or file_name.endswith('.md5sum'):
         ## If it is an md5 file, we assume the actual zip is sans the md5/md5sum

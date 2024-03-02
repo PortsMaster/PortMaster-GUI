@@ -222,6 +222,8 @@ class HarbourMaster():
             with open(self.runtimes_file, 'r') as fh:
                 self.runtimes_info = json_safe_load(fh)
 
+            self.list_runtimes()
+
         if self.runtimes_info is None:
             self.runtimes_info = {}
 
@@ -669,6 +671,9 @@ class HarbourMaster():
                 # Ignore non bash files.
                 continue
 
+            if "# PORTMASTER NO TOUCHY" in file_item.read_text():
+                logger.debug("NO TOUCHY")
+
             port_owners = get_dict_list(all_items, file_name)
 
             if len(port_owners) > 0:
@@ -940,7 +945,10 @@ class HarbourMaster():
         """
         Matches hardware capabilities to port requirements.
         """
+        if not hasattr(self, '_TESTING'):
+            self._TESTING = {}
 
+        show = False
         capabilities = self.device['capabilities']
 
         requirements = port_info.get('attr', {}).get('reqs', [])
@@ -948,8 +956,11 @@ class HarbourMaster():
         runtime = port_info.get('attr', {}).get('runtime', None)
 
         if runtime is not None:
-            # Shortcut. :(
-            requirements.append('aarch64')
+            if not runtime.endswith('.squashfs'):
+                runtime += '.squashfs'
+
+            requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
+            show = True
 
         else:
             arch = port_info.get('attr', {}).get('arch', [])
@@ -960,7 +971,13 @@ class HarbourMaster():
         if self.cfg_data.get('show_all', False):
             requirements = []
 
-        return match_requirements(capabilities, requirements)
+        result = match_requirements(capabilities, requirements)
+        if port_info['name'] not in self._TESTING:
+            if show:
+                print(f"{port_info['name']}: {capabilities}, {requirements}: {result}")
+            self._TESTING[port_info['name']] = True
+
+        return result
 
     def list_ports(self, filters=[], sort_by='alphabetical', reverse=False):
         ## Filters can be genre, runtime
@@ -1191,27 +1208,45 @@ class HarbourMaster():
         result = []
         changed = False
         for runtime_name, runtime_data in self.runtimes_info.items():
+            runtime_file = self.libs_dir / runtime_name
+
+            # FIX IT
+            if 'remote' in runtime_data and 'name' in runtime_data['remote']:
+                temp = runtime_data['remote']
+                runtime_data['remote'] = {}
+                runtime_data['remote']['aarch64'] = temp
+                changed = True
+
             if 'local' not in runtime_data:
                 changed = True
                 runtime_file = (self.libs_dir / runtime_name)
                 runtime_md5 = None
                 runtime_md5_file = (self.libs_dir / (runtime_name + '.md5'))
-
-                if runtime_md5_file.is_file():
-                    runtime_md5 = runtime_md5_file.read_text().strip().split(' ')[0]
-                else:
-                    runtime_md5 = runtime_data['remote']['md5']
+                runtime_local_arch = None
 
                 if runtime_file.is_file():
                     runtime_status = 'Unverified'
 
                     runtime_md5_check = hash_file(runtime_file)
 
-                    if runtime_md5_check == runtime_md5:
-                        runtime_status = 'Verified'
+                    if runtime_md5_file.is_file():
+                        runtime_md5 = runtime_md5_file.read_text().strip().split(' ')[0]
+                        if runtime_md5_check == runtime_md5:
+                            runtime_status = 'Verified'
+                            runtime_local_arch = 'aarch64'
 
                     else:
-                        runtime_status = 'Broken'
+                        for runtime_arch in runtime_data['remote']:
+                            runtime_md5 = runtime_data['remote'][runtime_arch]['md5']
+
+                            if runtime_md5_check == runtime_md5:
+
+                                runtime_status = 'Verified'
+                                runtime_local_arch = runtime_arch
+                                break
+
+                        else:
+                            runtime_status = 'Broken'
 
                 else:
                     runtime_status = 'Not Installed'
@@ -1219,7 +1254,17 @@ class HarbourMaster():
                 runtime_data['local'] = {
                     'status': runtime_status,
                     'md5': runtime_md5,
+                    'arch': runtime_local_arch,
                     }
+
+            else:
+                if not runtime_file.is_file():
+                    changed = True
+                    runtime_data['local'] = {
+                        'status': 'Not Installed',
+                        'md5': None,
+                        'arch': None,
+                        }
 
             result.append((runtime_name, runtime_data))
 
@@ -1537,6 +1582,9 @@ class HarbourMaster():
         if not self.libs_dir.is_dir():
             self.libs_dir.mkdir(0o777)
 
+        if not runtime.endswith('.squashfs'):
+            runtime += '.squashfs'
+
         if runtime not in self.runtimes_info:
             if not in_install:
                 self.callback.message_box(_("Port {runtime} contains an unknown runtime, game may not run correctly.").format(
@@ -1604,110 +1652,107 @@ class HarbourMaster():
                 runtime_status = 'Broken'
 
             runtime_info['local']['status'] = runtime_status
+
         else:
             runtime_status = 'Not Installed'
 
-        for source_prefix, source in self.sources.items():
-            if runtime not in source.utils:
-                continue
+        if runtime not in self.runtimes_info:
+            if not in_install:
+                self.callback.message_box(_("Unable to find a download for {runtime}.").format(runtime=runtime))
 
-            if runtime_status in ('Verified', 'Unverified'):
-                runtime_md5url = None
-                if runtime in getattr(source, '_data', {}) and 'md5' in source._data[runtime]:
-                    md5verify = source._data[runtime]['md5']
-                    runtime_md5url = None
+            logger.error(f"Unable to find suitable source for {runtime}.")
+            return 255
 
-                elif (runtime + '.md5') in getattr(source, '_data', {}):
-                    md5verify = None
-                    runtime_md5url = source._data[(runtime + '.md5')]['url']
+        if self.device['primary_arch'] not in self.runtimes_info[runtime]['remote']:
+            self.callback.message_box(_("Unable to download {runtime} in {device_arch}.").format(
+                runtime=runtime_name,
+                device_arch=self.device['primary_arch']))
 
-                elif (runtime + '.md5sum') in getattr(source, '_data', {}):
-                    md5verify = None
-                    runtime_md5url = source._data[(runtime + '.md5sum')]['url']
+            logger.error(f"Unable to download {runtime} in {self.device['primary_arch']}.")
+            return 255
 
-                else:
-                    continue
+        runtime_remote_info = self.runtimes_info[runtime]['remote'][self.device['primary_arch']]
 
-                if md5verify is None:
-                    md5verify = fetch_text(runtime_md5url).strip().split(' ', 1)[0]
+        if runtime_remote_info['md5'] == runtime_md5sum:
+            runtime_status = 'Verified'
 
-                if md5verify == runtime_md5sum:
-                    runtime_status = 'Verified'
+        else:
+            runtime_status = {
+                'Verified': 'Update Available',
+                'Unverified': 'Broken',
+                'Not Installed': 'Not Installed',
+                }[runtime_status]
 
-                else:
-                    runtime_status = {
-                        'Verified': 'Update Available',
-                        'Unverified': 'Broken',
-                        }[runtime_status]
-
-            if runtime_status == 'Verified':
-                if not in_install:
-                    self.callback.message_box(_("Verified {runtime} successfully.").format(
-                        runtime=runtime_name))
-                else:
-                    self.callback.message(_("Verified {runtime}.").format(
-                        runtime=runtime_name))
-
-                return 0
-
-            elif runtime_status == 'Update Available':
-                self.callback.message(_("Updating {runtime}.").format(
-                        runtime=runtime_name))
-
-            elif runtime_status == 'Broken':
-                self.callback.message(_("Runtime {runtime} is broken, reinstalling.").format(
-                        runtime=runtime_name))
-
+        if runtime_status == 'Verified':
+            if not in_install:
+                self.callback.message_box(_("Verified {runtime} successfully.").format(
+                    runtime=runtime_name))
             else:
-                self.callback.message(_("Downloading runtime {runtime}.").format(
+                self.callback.message(_("Verified {runtime}.").format(
                     runtime=runtime_name))
 
-            download_successfull = False
-            try:
-                with self.callback.enable_cancellable(True):
-                    md5_result = [None]
+            return 0
 
-                    runtime_download = source.download(runtime, temp_dir=self.libs_dir, md5_result=md5_result)
+        elif runtime_status == 'Update Available':
+            self.callback.message(_("Updating {runtime}.").format(
+                    runtime=runtime_name))
 
-                    (self.libs_dir / (runtime + '.md5')).write_text(md5_result[0])
-                    download_successfull = True
+        elif runtime_status == 'Broken':
+            self.callback.message(_("Runtime {runtime} is broken, reinstalling.").format(
+                    runtime=runtime_name))
 
-                    self.platform.runtime_install(runtime, [runtime_download])
+        else:
+            self.callback.message(_("Downloading runtime {runtime}.").format(
+                runtime=runtime_name))
 
-                if self.callback.was_cancelled or not download_successfull:
-                    if runtime_file.is_file():
-                        runtime_file.unlink()
+        download_successfull = False
+        try:
+            with self.callback.enable_cancellable(True):
+                md5_result = [None]
+                runtime_url = runtime_remote_info['url']
+                runtime_md5 = runtime_remote_info['md5']
 
-                    if not in_install:
-                        self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
+                runtime_file = download(runtime_file, runtime_url, md5_source=runtime_md5, callback=self.callback)
 
-                    return 255
+                self.runtimes_info[runtime]['local'] = {
+                    "arch": self.device['primary_arch'],
+                    "md5": runtime_md5,
+                    "status": "Verified"
+                    }
 
-            except Exception as err:
-                ## We need to catch any errors and delete the file if it fails,
-                ## here we are not using the temp file auto deletion.
-                logger.error(err)
+                download_successfull = True
+
+                self.platform.runtime_install(runtime, [runtime_file])
+
+                self.save_config()
+
+            if self.callback.was_cancelled or not download_successfull:
+                if runtime_file.is_file():
+                    runtime_file.unlink()
 
                 if not in_install:
                     self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
 
                 return 255
 
-            finally:
-                if not download_successfull and runtime_file.is_file():
-                    runtime_file.unlink()
+        except Exception as err:
+            ## We need to catch any errors and delete the file if it fails,
+            ## here we are not using the temp file auto deletion.
+            logger.error(err)
 
             if not in_install:
-                self.callback.message_box(_("Successfully downloaded {runtime}.").format(runtime=runtime))
+                self.callback.message_box(_("Unable to download {runtime}, game may not run correctly.").format(runtime=runtime))
 
-            return 0
-
-        else:
-            if not in_install:
-                self.callback.message_box(_("Unable to find a download for {runtime}.").format(runtime=runtime))
-
-            logger.error(f"Unable to find suitable source for {runtime}.")
             return 255
+
+        finally:
+            if not download_successfull and runtime_file.is_file():
+                runtime_file.unlink()
+
+        if not in_install:
+            self.callback.message_box(_("Successfully downloaded {runtime}.").format(runtime=runtime))
+
+        return 0
 
     def install_port(self, port_name, md5_source=None):
         # Special HTTP download code.

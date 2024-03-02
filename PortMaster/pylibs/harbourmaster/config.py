@@ -49,11 +49,21 @@ elif Path("/opt/muos").is_dir():
         HM_DEFAULT_PORTS_DIR   = Path("/mnt/sdcard/ports")
         HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/sdcard/ROMS/PORTS")
 
-elif Path("/opt/tools/PortMaster/").is_dir():
-    HM_DEFAULT_TOOLS_DIR = Path("/opt/tools")
+elif Path("/opt/system/Tools").is_dir():
+    if Path("/roms2/tools").is_dir():
+        HM_DEFAULT_TOOLS_DIR = Path("/roms2/tools")
+        HM_DEFAULT_PORTS_DIR = Path("/roms2/ports")
+        HM_DEFAULT_SCRIPTS_DIR = Path("/roms2/ports")
 
-elif Path("/opt/system/Tools/PortMaster/").is_dir():
-    HM_DEFAULT_TOOLS_DIR = Path("/opt/system/Tools")
+    else:
+        HM_DEFAULT_TOOLS_DIR = Path("/roms/tools")
+        HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
+        HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
+
+elif Path("/opt/tools/PortMaster").is_dir():
+    HM_DEFAULT_TOOLS_DIR = Path("/opt/tools")
+    HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 
 elif Path("/storage/roms/ports_scripts").is_dir():
     HM_DEFAULT_TOOLS_DIR = Path("/storage/roms/ports")
@@ -68,9 +78,9 @@ elif Path("/storage/roms/ports").is_dir():
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
-if Path("/roms2/ports").is_dir():
-    HM_DEFAULT_PORTS_DIR = Path("/roms2/ports")
-    HM_DEFAULT_SCRIPTS_DIR = Path("/roms2/ports")
+logger.debug(f"HM_DEFAULT_TOOLS_DIR:   {HM_DEFAULT_TOOLS_DIR}")
+logger.debug(f"HM_DEFAULT_PORTS_DIR:   {HM_DEFAULT_PORTS_DIR}")
+logger.debug(f"HM_DEFAULT_SCRIPTS_DIR: {HM_DEFAULT_SCRIPTS_DIR}")
 
 ## Default TOOLS_DIR
 if HM_TOOLS_DIR is None:
