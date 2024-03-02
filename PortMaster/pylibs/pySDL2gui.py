@@ -1772,7 +1772,7 @@ class SoundManager():
             return
 
         if name is None:
-            return None
+            return
 
         sample = self.sounds.get(name)
         if not sample:
@@ -1781,8 +1781,10 @@ class SoundManager():
 
         channel = sdl2.sdlmixer.Mix_PlayChannel(-1, sample, 0)
         if channel == -1:
-            raise GUIRuntimeError(
-                f'Cannot play sample {name}: {sdl2.sdlmixer.Mix_GetError()}')
+            # RAN OUT OF CHANNELS YO
+            logger.debug(f"Cannot play sample {name}: {sdl2.sdlmixer.Mix_GetError()}")
+            return
+
         sdl2.sdlmixer.Mix_Volume(channel, int(max(0, min(volume, 128))))
 
     def __del__(self):
