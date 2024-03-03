@@ -57,6 +57,9 @@ __builtins__.PYLIB_PATH = PYLIB_PATH
 sys.path.insert(0, str(EXLIB_PATH))
 sys.path.insert(0, str(PYLIB_PATH))
 
+## STUFF :D
+__builtins__.PORTMASTER_DEBUG = False  ## This adds a lot of extra info
+
 ################################################################################
 ## Now load the stuff we include
 import utility

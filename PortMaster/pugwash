@@ -553,7 +553,11 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 ## uncomment to make it *fullscreen
                 # pretend_device = None
 
-            capabilities = harbourmaster.device_info(pretend_device)
+            pretend_resolution = None
+            ## Uncomment to choose a particular resolution
+            # pretend_resolution = (1024, 768)
+
+            capabilities = harbourmaster.device_info(pretend_device, override_resolution=pretend_resolution)
 
         if capabilities['device'] == 'default':
             device = harbourmaster.find_device_by_resolution((self.display_width, self.display_height))
