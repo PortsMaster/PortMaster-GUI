@@ -54,12 +54,20 @@ class PlatformBase():
         if gamelist_xml is None:
             return
 
-        if not gamelist_xml.is_file():
-            with open(gamelist_xml, 'w') as fh:
-                print(self.BLANK_GAMELIST_XML, file=fh)
-
         if not gameinfo_file.is_file():
             return
+
+        broken = False
+        if not gamelist_xml.is_file():
+            broken = True
+
+        elif gamelist_xml.is_file() and gamelist_xml.stat().st_size == 0:
+            # SOMEHOW THIS HAPPENED
+            broken = True
+
+        if broken:
+            with open(gamelist_xml, 'w') as fh:
+                print(self.BLANK_GAMELIST_XML, file=fh)
 
         gamelist_tree = ET.parse(gamelist_xml)
         gamelist_root = gamelist_tree.getroot()
