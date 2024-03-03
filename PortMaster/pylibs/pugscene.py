@@ -1760,6 +1760,7 @@ class FiltersScene(BaseScene):
             # Runtimes.
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "godot":            _("{runtime_name} Runtime").format(runtime_name="Godot/FRT"),
+            "solarus":          _("{runtime_name} Runtime").format(runtime_name="Solarus"),
             }
 
         # Hack to make other appear last, by default the order will be 0, you can set it to -1 for it to appear at the top.
@@ -1852,7 +1853,7 @@ class FiltersScene(BaseScene):
                         selected_offset = len(self.tags['filter_list'].options) - 1
 
             elif display_order == 'attr':
-                for hm_genre in ['rtr', 'mono', 'godot', 'not installed', 'update available', 'broken']:
+                for hm_genre in ['rtr', 'mono', 'godot', 'solarus', 'not installed', 'update available', 'broken']:
                     if hm_genre in self.locked_genres:
                         continue
 

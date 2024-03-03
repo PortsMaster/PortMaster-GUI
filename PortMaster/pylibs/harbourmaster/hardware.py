@@ -265,15 +265,20 @@ def _merge_info(info, new_info):
 
 
 def mem_limits():
-    if not hasattr(os, 'sysconf_names'):
-        return ['2gb', '1gb']
+    # Lets not go crazy, who gives a fuck over 4gb
+    MAX_RAM = 4
 
-    if 'SC_PAGE_SIZE' not in os.sysconf_names:
+    if not hasattr(os, 'sysconf_names'):
         memory = 2
+
+    elif 'SC_PAGE_SIZE' not in os.sysconf_names:
+        memory = 2
+
     elif 'SC_PHYS_PAGES' not in os.sysconf_names:
         memory = 2
+
     else:
-        memory = math.ceil((os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')) / (1024**3))
+        memory = min(MAX_RAM, math.ceil((os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')) / (1024**3)))
 
     results = []
     while memory > 0:
@@ -327,6 +332,12 @@ def device_info(override_device=None, override_resolution=None):
 
     info['capabilities'].append(display_ratio)
     info['capabilities'].append(f"{info['resolution'][0]}x{info['resolution'][1]}")
+
+    info['capabilities'].append(info['name'])
+    info['capabilities'].append(info['device'])
+
+    for i in range(info['analogsticks']+1):
+        info['capabilities'].append(f"analog_{i}")
 
     if info['resolution'][1] < 480:
         info['capabilities'].append("lowres")

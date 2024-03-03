@@ -1782,7 +1782,7 @@ class SoundManager():
         channel = sdl2.sdlmixer.Mix_PlayChannel(-1, sample, 0)
         if channel == -1:
             # RAN OUT OF CHANNELS YO
-            logger.debug(f"Cannot play sample {name}: {sdl2.sdlmixer.Mix_GetError()}")
+            # logger.debug(f"Cannot play sample {name}: {sdl2.sdlmixer.Mix_GetError()}")
             return
 
         sdl2.sdlmixer.Mix_Volume(channel, int(max(0, min(volume, 128))))
