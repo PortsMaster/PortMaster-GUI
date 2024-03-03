@@ -973,7 +973,7 @@ class HarbourMaster():
             requirements = []
 
         result = match_requirements(capabilities, requirements)
-        if port_info['name'] not in self._TESTING:
+        if PORTMASTER_DEBUG and port_info['name'] not in self._TESTING:
             if show:
                 print(f"{port_info['name']}: {capabilities}, {requirements}: {result}")
             self._TESTING[port_info['name']] = True
