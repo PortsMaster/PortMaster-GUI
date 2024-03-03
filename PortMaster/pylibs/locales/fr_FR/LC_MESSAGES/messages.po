@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 11:17+0800\n"
-"PO-Revision-Date: 2024-03-02 03:18\n"
+"POT-Creation-Date: 2024-03-03 11:12+0800\n"
+"PO-Revision-Date: 2024-03-03 03:13\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -98,12 +98,12 @@ msgstr "Installé"
 msgid "Missing"
 msgstr "Manquant"
 
-#: PortMaster/pugwash:908 PortMaster/pylibs/harbourmaster/harbour.py:1608
+#: PortMaster/pugwash:908 PortMaster/pylibs/harbourmaster/harbour.py:1609
 #: PortMaster/pylibs/pugscene.py:1751
 msgid "Update Available"
 msgstr "Nouvelle mise à jour disponible"
 
-#: PortMaster/pugwash:909 PortMaster/pylibs/harbourmaster/harbour.py:1607
+#: PortMaster/pugwash:909 PortMaster/pylibs/harbourmaster/harbour.py:1608
 #: PortMaster/pylibs/pugscene.py:875 PortMaster/pylibs/pugscene.py:1750
 msgid "Not Installed"
 msgstr "Non installé"
@@ -190,154 +190,154 @@ msgstr "Chargement des sources."
 msgid "Loading Ports."
 msgstr "Chargement des Ports."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1317
+#: PortMaster/pylibs/harbourmaster/harbour.py:1318
 #, python-brace-format
 msgid "Installing Theme {download_name}."
 msgstr "Installation du thème {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1324
-#: PortMaster/pylibs/harbourmaster/harbour.py:1366
-#: PortMaster/pylibs/harbourmaster/harbour.py:1438
+#: PortMaster/pylibs/harbourmaster/harbour.py:1325
+#: PortMaster/pylibs/harbourmaster/harbour.py:1367
+#: PortMaster/pylibs/harbourmaster/harbour.py:1439
 msgid "Installing"
 msgstr "Installation en cours"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1334
+#: PortMaster/pylibs/harbourmaster/harbour.py:1335
 msgid "Theme {download_name!r} installed successfully."
 msgstr "Le thème {download_name!r} a été installé avec succès."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1357
-#: PortMaster/pylibs/harbourmaster/harbour.py:1429
+#: PortMaster/pylibs/harbourmaster/harbour.py:1358
+#: PortMaster/pylibs/harbourmaster/harbour.py:1430
 #, python-brace-format
 msgid "Installing {download_name}."
 msgstr "Installation de {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1386
-#: PortMaster/pylibs/harbourmaster/harbour.py:1566
+#: PortMaster/pylibs/harbourmaster/harbour.py:1387
+#: PortMaster/pylibs/harbourmaster/harbour.py:1567
 msgid "Port {download_name!r} installed successfully."
 msgstr "Le thème {download_name!r} a été installé avec succès."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1532
+#: PortMaster/pylibs/harbourmaster/harbour.py:1533
 msgid "Installation failed, removing files..."
 msgstr "Échec de l'installation, suppression des fichiers en cours..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1544
+#: PortMaster/pylibs/harbourmaster/harbour.py:1545
 #, python-brace-format
 msgid "Port {download_name} installed failed."
 msgstr "Échec de l'installation du port {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1556
+#: PortMaster/pylibs/harbourmaster/harbour.py:1557
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
 msgstr "Port {download_name!r} et {runtime_name!r} installé avec succès."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1561
+#: PortMaster/pylibs/harbourmaster/harbour.py:1562
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
 msgstr "Le port {download_name!r} a été installé avec succès, mais {runtime_name!r} n'a pas pu être installé!!\n\n"
 "Réinstaller pour essayer à nouveau, ou consulter le wiki pour obtenir de l'aide."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1576
+#: PortMaster/pylibs/harbourmaster/harbour.py:1577
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
 msgstr "Le port {runtime} contient une runtime corrompue, le jeu pourrait ne pas s'exécuter correctement."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1590
+#: PortMaster/pylibs/harbourmaster/harbour.py:1591
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1609
+#: PortMaster/pylibs/harbourmaster/harbour.py:1610
 msgid "Verified"
 msgstr "Vérifié"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1610
+#: PortMaster/pylibs/harbourmaster/harbour.py:1611
 msgid "Unverified"
 msgstr "Non vérifié"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1611
+#: PortMaster/pylibs/harbourmaster/harbour.py:1612
 msgid "Broken"
 msgstr "Cassé"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1618
+#: PortMaster/pylibs/harbourmaster/harbour.py:1619
 msgid "Unable do download a runtime when in offline mode."
 msgstr "Impossible de télécharger une runtime en mode hors ligne."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1624
+#: PortMaster/pylibs/harbourmaster/harbour.py:1625
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
 msgstr "Vérification du runtime {runtime}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1633
-#: PortMaster/pylibs/harbourmaster/harbour.py:1636
+#: PortMaster/pylibs/harbourmaster/harbour.py:1634
+#: PortMaster/pylibs/harbourmaster/harbour.py:1637
 msgid "Verifying"
 msgstr "Vérification"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1661
+#: PortMaster/pylibs/harbourmaster/harbour.py:1662
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
 msgstr "Impossible de trouver un téléchargement pour {runtime}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1667
+#: PortMaster/pylibs/harbourmaster/harbour.py:1668
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1688
+#: PortMaster/pylibs/harbourmaster/harbour.py:1689
 #, python-brace-format
 msgid "Verified {runtime} successfully."
 msgstr "{runtime} vérifié avec succès."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1691
+#: PortMaster/pylibs/harbourmaster/harbour.py:1692
 #, python-brace-format
 msgid "Verified {runtime}."
 msgstr "{runtime} vérifié."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1697
+#: PortMaster/pylibs/harbourmaster/harbour.py:1698
 #, python-brace-format
 msgid "Updating {runtime}."
 msgstr "Mise à jour {runtime}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1701
+#: PortMaster/pylibs/harbourmaster/harbour.py:1702
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
 msgstr "L'exécution {runtime} est cassée, réinstallation."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1705
+#: PortMaster/pylibs/harbourmaster/harbour.py:1706
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
 msgstr "Téléchargement de la runtime {runtime}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1734
-#: PortMaster/pylibs/harbourmaster/harbour.py:1744
+#: PortMaster/pylibs/harbourmaster/harbour.py:1735
+#: PortMaster/pylibs/harbourmaster/harbour.py:1745
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
 msgstr "Impossible de télécharger {runtime}, le jeu pourrait ne pas s'exécuter correctement."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1753
+#: PortMaster/pylibs/harbourmaster/harbour.py:1754
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
 msgstr "Téléchargement de {runtime} réussi."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1762
-#: PortMaster/pylibs/harbourmaster/harbour.py:1841
+#: PortMaster/pylibs/harbourmaster/harbour.py:1763
+#: PortMaster/pylibs/harbourmaster/harbour.py:1842
 msgid "Unable do download a port when in offline mode."
 msgstr "Impossible de télécharger un port en mode hors ligne."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1859
+#: PortMaster/pylibs/harbourmaster/harbour.py:1860
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
 msgstr "Impossible de trouver une source pour {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1873
+#: PortMaster/pylibs/harbourmaster/harbour.py:1874
 #, python-brace-format
 msgid "Unknown port {port_name}"
 msgstr "Port inconnu {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1906
+#: PortMaster/pylibs/harbourmaster/harbour.py:1907
 #, python-brace-format
 msgid "Removing {port_name}"
 msgstr "Suppression de {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1947
+#: PortMaster/pylibs/harbourmaster/harbour.py:1948
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
 msgstr "{port_name} désinstallé avec succès."
