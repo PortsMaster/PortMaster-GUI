@@ -97,7 +97,7 @@ class PlatformBase():
             ET.indent(gamelist_root, space="  ", level=0)
 
         with open(gamelist_xml, 'w') as fh:
-            print(ET.tostring(gamelist_root, encoding='unicode', xml_declaration=True), file=fh)
+            print(ET.tostring(gamelist_root, encoding='unicode'), file=fh)
 
     def ports_changed(self):
         return (len(self.added_ports) > 0 or len(self.removed_ports) > 0)
