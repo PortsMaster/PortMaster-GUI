@@ -90,8 +90,6 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
-<<<<<<< HEAD
-=======
 ## Check if retrodeck.cfg exists. Chose this file/location as platform independent from were retrodeck is installed.
 elif (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
     retrodeck_roms_path = safe_cat(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
@@ -101,7 +99,6 @@ elif (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck
         HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path)
         HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path)
 
->>>>>>> 6de6d6a (Initial x86_64 support to config.py and hardware.py)
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
