@@ -5,6 +5,7 @@ import platform
 import os
 import subprocess
 import textwrap
+import re
 
 from pathlib import Path
 
