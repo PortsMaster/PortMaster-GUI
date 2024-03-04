@@ -711,9 +711,10 @@ class OptionScene(BaseScene):
 
             if selected_option == 'update-gamelist':
                 if self.gui.message_box(
-                        _("Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information."),
+                        _("Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information and will require a 30+ MB download."),
                         want_cancel=True):
-                    ...
+
+                    self.gui.update_gamelist_xml()
 
                 return True
 

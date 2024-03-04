@@ -1,5 +1,6 @@
 
 # System imports
+import contextlib
 import datetime
 import json
 import os
@@ -21,6 +22,7 @@ from .config import *
 from .hardware import *
 from .util import *
 
+SPECIAL_GAMELIST_CODE = object()
 
 class PlatformBase():
     MOVE_PM_BASH = False
@@ -49,55 +51,104 @@ class PlatformBase():
     def gamelist_file(self):
         return None
 
-    def gamelist_add(self, gameinfo_file):
-        gamelist_xml = self.gamelist_file()
-        if gamelist_xml is None:
-            return
+    @contextlib.contextmanager
+    def gamelist_backup(self):
+        if not hasattr(self, '_GAMELIST_BACKUP'):
+            self._GAMELIST_BACKUP = 0
 
-        if not gameinfo_file.is_file():
-            return
+        gamelist_xml = self.gamelist_file()
+
+        if gamelist_xml in (None, SPECIAL_GAMELIST_CODE):
+            try:
+                yield gamelist_xml
+
+            finally:
+                return
+
+        gamelist_xml = self.gamelist_file()
+        gamelist_bak = gamelist_xml.with_name(gamelist_xml.name + '.bak')
 
         broken = False
         if not gamelist_xml.is_file():
-            broken = True
+            if gamelist_bak.is_file():
+                logger.debug(f"Restore {gamelist_bak} to {gamelist_xml}")
+                shutil.copy(gamelist_bak, gamelist_xml)
+
+            else:
+                broken = True
 
         elif gamelist_xml.is_file() and gamelist_xml.stat().st_size == 0:
-            # SOMEHOW THIS HAPPENED
-            broken = True
+            if gamelist_bak.is_file():
+                logger.debug(f"Restore {gamelist_bak} to {gamelist_xml}")
+                shutil.copy(gamelist_bak, gamelist_xml)
+
+            else:
+                broken = True
 
         if broken:
+            logger.debug(f"Creating empty {gamelist_xml}")
             with open(gamelist_xml, 'w') as fh:
                 print(self.BLANK_GAMELIST_XML, file=fh)
 
-        gamelist_tree = ET.parse(gamelist_xml)
-        gamelist_root = gamelist_tree.getroot()
+        try:
+            if self._GAMELIST_BACKUP == 0:
+                logger.debug(f"Backing up {gamelist_xml} to {gamelist_bak}")
+                shutil.copy(gamelist_xml, gamelist_bak)
 
-        gameinfo_tree = ET.parse(gameinfo_file)
-        gameinfo_root = gameinfo_tree.getroot()
+            self._GAMELIST_BACKUP += 1
 
-        for gameinfo_element in gameinfo_tree.findall('game'):
-            path_merge = gameinfo_element.find('path').text
+            yield gamelist_xml
 
-            gamelist_update = gamelist_root.find(f'.//game[path="{path_merge}"]')
-            if gamelist_update is None:
-                # Create a new game element
-                gamelist_update = ET.SubElement(gamelist_root, 'game')
+        except:
+            if self._GAMELIST_BACKUP == 1:
+                logger.debug(f"Restoring {gamelist_bak} to {gamelist_xml}")
+                shutil.copy(gamelist_bak, gamelist_xml)
 
-            for child in gameinfo_element:
-                # Check if the child element is in the predefined list
-                if child.tag in self.XML_ELEMENT_MAP:
-                    gamelist_element = gamelist_update.find(self.XML_ELEMENT_MAP[child.tag])
+            raise
 
-                    if gamelist_element is None:
-                        gamelist_element = ET.SubElement(gamelist_update, self.XML_ELEMENT_MAP[child.tag])
+        finally:
+            self._GAMELIST_BACKUP -= 1
+            return
 
-                    gamelist_element.text = child.text
+    def gamelist_add(self, gameinfo_file):
+        if not gameinfo_file.is_file():
+            return
 
-        if hasattr(ET, 'indent'):
-            ET.indent(gamelist_root, space="  ", level=0)
+        with self.gamelist_backup() as gamelist_xml:
+            if gamelist_xml is None:
+                return
 
-        with open(gamelist_xml, 'w') as fh:
-            print(ET.tostring(gamelist_root, encoding='unicode'), file=fh)
+            gamelist_tree = ET.parse(gamelist_xml)
+            gamelist_root = gamelist_tree.getroot()
+
+            gameinfo_tree = ET.parse(gameinfo_file)
+            gameinfo_root = gameinfo_tree.getroot()
+
+            for gameinfo_element in gameinfo_tree.findall('game'):
+                path_merge = gameinfo_element.find('path').text
+
+                gamelist_update = gamelist_root.find(f'.//game[path="{path_merge}"]')
+                if gamelist_update is None:
+                    # Create a new game element
+                    gamelist_update = ET.SubElement(gamelist_root, 'game')
+
+                for child in gameinfo_element:
+                    # Check if the child element is in the predefined list
+                    if child.tag in self.XML_ELEMENT_MAP:
+                        gamelist_element = gamelist_update.find(self.XML_ELEMENT_MAP[child.tag])
+
+                        if gamelist_element is None:
+                            gamelist_element = ET.SubElement(gamelist_update, self.XML_ELEMENT_MAP[child.tag])
+
+                        gamelist_element.text = child.text
+
+            if hasattr(ET, 'indent'):
+                ET.indent(gamelist_root, space="  ", level=0)
+
+            with open(gamelist_xml, 'w') as fh:
+                print("<?xml version='1.0' encoding='utf-8'?>", file=fh)
+                print("", file=fh)
+                print(ET.tostring(gamelist_root, encoding='unicode'), file=fh)
 
     def ports_changed(self):
         return (len(self.added_ports) > 0 or len(self.removed_ports) > 0)
@@ -318,6 +369,12 @@ class PlatformmuOS(PlatformBase):
         TASK_SET.touch()
 
 
+class PlatformTesting(PlatformBase):
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
+
 HM_PLATFORMS = {
     'jelos': PlatformJELOS,
     'arkos': PlatformArkOS,
@@ -325,6 +382,7 @@ HM_PLATFORMS = {
     'emuelec': PlatformEmuELEC,
     'unofficialos': PlatformUOS,
     'muos': PlatformmuOS,
+    'darwin': PlatformTesting,
     'default': PlatformBase,
     # 'default': PlatformAmberELEC,
     }

@@ -180,7 +180,6 @@ class HarbourMaster():
 
             version = 2
 
-
     def save_config(self):
         with open(self.cfg_file, 'w') as fh:
             json.dump(self.cfg_data, fh, indent=4, sort_keys=True)
