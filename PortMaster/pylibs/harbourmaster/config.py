@@ -12,6 +12,20 @@ from pathlib import Path
 
 from loguru import logger
 
+def safe_cat(file_name):
+    if isinstance(file_name, str):
+        file_name = pathlib.Path(file_name)
+
+    elif not isinstance(file_name, pathlib.PurePath):
+        raise ValueError(file_name)
+
+    if str(file_name).startswith('~/'):
+        file_name = file_name.expanduser()
+
+    if not file_name.is_file():
+        return ''
+
+    return file_name.read_text()
 
 ################################################################################
 ## Override this for custom tools/ports directories
@@ -75,6 +89,18 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
+<<<<<<< HEAD
+=======
+## Check if retrodeck.cfg exists. Chose this file/location as platform independent from were retrodeck is installed.
+elif (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
+    retrodeck_roms_path = safe_cat(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
+    if retrodeck_roms_path != '':
+        retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path))
+        HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path)
+        HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path)
+        HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path)
+
+>>>>>>> 6de6d6a (Initial x86_64 support to config.py and hardware.py)
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
