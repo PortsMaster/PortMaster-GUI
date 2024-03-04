@@ -75,6 +75,14 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
+## Check if retrodeck.cfg exists. Chose this file/location as platofrm indepenedent from were retrodeck is installed.
+## For now assumes that default install chosen for internal storage of roms.
+## ToDo part the cfg file to see where roms are installed as also suport external storage options.
+elif Path(str(Path.home()) + "/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
+    HM_DEFAULT_TOOLS_DIR   = Path(str(Path.home())+"/retrodeck/roms/ports")
+    HM_DEFAULT_PORTS_DIR   = Path(str(Path.home())+"/retrodeck/roms/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path(str(Path.home())+"/retrodeck/roms/ports")
+
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
