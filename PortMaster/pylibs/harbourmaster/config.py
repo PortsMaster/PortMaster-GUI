@@ -94,7 +94,7 @@ elif Path("/storage/roms/ports").is_dir():
 elif (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
     retrodeck_roms_path = safe_cat(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
     if retrodeck_roms_path != '':
-        retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path))
+        retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path)) + "/ports"
         HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path)
         HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path)
         HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path)
