@@ -116,7 +116,7 @@ fi
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
-  $ESUDO ./pugwash 2>&1 | $ESUDO tee -a ./log.txt
+  $ESUDO ./pugwash $PORTMASTER_CMDS 2>&1 | $ESUDO tee -a ./log.txt
 
   if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
     break;

@@ -857,7 +857,6 @@ class PortMasterV3(BaseSource):
                 self.hm.runtimes_info[key].setdefault('status', 'Unknown')
                 changed = True
 
-
             self._data[self.clean_name(key)] = result
             if key.lower() in ('images.zip', 'portmaster.zip'):
                 continue

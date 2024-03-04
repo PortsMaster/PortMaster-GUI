@@ -1306,6 +1306,60 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         finally:
             self.cancellable = old_cancellable
 
+    ## Gamelist xml updater
+    def update_gamelist_xml(self):
+        with self.enable_cancellable(False), \
+                self.enable_messages(), \
+                self.hm.platform.gamelist_backup() as gamelist_xml:
+
+            self.message(_("Fetching latest gameinfo.xml files and cover images."))
+
+            port_updates = []
+
+            for source_name, source in self.hm.sources.items():
+                if 'gameinfo.zip' not in source.utils:
+                    continue
+
+                gameinfo_zip = (self.hm.cfg_dir / f'gameinfo_{source_name}.zip')
+                do_download = False
+
+                if gameinfo_zip.is_file():
+                    md5sum = harbourmaster.hash_file(gameinfo_zip)
+                    logger.debug(f"{gameinfo_zip}: {md5sum}")
+                    if md5sum != source._data['gameinfo.zip']['md5']:
+                        do_download = True
+
+                else:
+                    do_download = True
+
+                if do_download:
+                    self.message(_("Downloading gameinfo.xml for {source_name}").format(
+                        source_name=source.name))
+
+                    gameinfo_temp = source.download('gameinfo.zip')
+
+                    shutil.copy(gameinfo_temp, gameinfo_zip)
+
+                with zipfile.ZipFile(gameinfo_zip, 'r') as zf:
+                    for file_info in zf.infolist():
+                        file_name = self.hm.ports_dir / file_info.filename
+
+                        if not file_name.parent.is_dir():
+                            logger.debug(f"- Skipping {file_name.parent.name}/{file_name.name}")
+                            continue
+
+                        if file_name.name == 'gameinfo.xml':
+                            logger.debug(f"- Updating {file_name.parent.name}/{file_name.name}")
+                            port_updates.append(file_name)
+                        else:
+                            logger.debug(f"- Adding {file_name.parent.name}/{file_name.name}")
+
+
+                        zf.extract(file_info, path=self.hm.ports_dir)
+
+            for port_update in port_updates:
+                self.hm.platform.gamelist_add(port_update)
+
     ## HarbourMaster Commands.
     def do_install(self, port_name, port_url=None, allow_cancel=True, md5_source=None):
         if port_url is None:
