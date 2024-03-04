@@ -491,17 +491,17 @@ class OptionScene(BaseScene):
             description=_("Enable or Disable soundfx in PortMaster."))
 
         if self.gui.hm.platform.gamelist_file() is not None:
-            self.tags['option_list'].add_option(None, _("Emulation Station"))
+            self.tags['option_list'].add_option(None, _("Port Metadata"))
 
             self.tags['option_list'].add_option(
                 'toggle-gamelist',
-                _("Gamelist Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Enabled") or _("Disabled")),
-                description=_("PortMaster updates gamelist.xml so that it shows port metadata in emulationstation."))
+                _("Metadata Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Auto") or _("Manual")),
+                description=_("PortMaster updates metadata when ports are installed so that it shows port images and descriptions when browsing ports on your device."))
 
             self.tags['option_list'].add_option(
                 'update-gamelist',
-                _("Gamelist.xml update."),
-                description=_("Manually update gamelist.xml with any missing/updated information."))
+                _("Metadata Refresh"),
+                description=_("Manually update port metadata with missing/updated information and artwork."))
 
         self.tags['option_list'].add_option(None, _("System"))
 
@@ -706,7 +706,8 @@ class OptionScene(BaseScene):
 
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
-                    _("Gamelist Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Enabled") or _("Disabled")))
+                    _("Metadata Update: ") + (self.gui.hm.cfg_data.get('gamelist_update', True) and _("Auto") or _("Manual")))
+
                 return True
 
             if selected_option == 'update-gamelist':

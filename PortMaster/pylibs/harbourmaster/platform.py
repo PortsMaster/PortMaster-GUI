@@ -150,6 +150,8 @@ class PlatformBase():
                 print("", file=fh)
                 print(ET.tostring(gamelist_root, encoding='unicode'), file=fh)
 
+            self.added_ports.add('GAMELIST UPDATER')
+
     def ports_changed(self):
         return (len(self.added_ports) > 0 or len(self.removed_ports) > 0)
 
@@ -334,7 +336,84 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
 class PlatformmuOS(PlatformBase):
     MOVE_PM_BASH = False
-    ES_NAME = None
+    ES_NAME = "muos"
+
+    XML_ELEMENT_MAP = {
+        'image': 'image',
+        'desc': 'desc',
+        }
+
+    def gamelist_file(self):
+        return SPECIAL_GAMELIST_CODE
+
+    def gamelist_add(self, gameinfo_file):
+        # Xonglebongle: the sound of someone sneezing while trying to pronounce 'jungle' underwater.
+        if not gameinfo_file.is_file():
+            return
+
+        INFO_CATALOG = Path("/mnt/mmc/MUOS/info/catalogue/External - Ports")
+        INFO_BOX_DIR     = INFO_CATALOG / "box"
+        INFO_PREVIEW_DIR = INFO_CATALOG / "preview"
+        INFO_TEXT_DIR    = INFO_CATALOG / "text"
+
+        with self.gamelist_backup() as gamelist_xml:
+            if gamelist_xml is None:
+                return
+
+            gameinfo_tree = ET.parse(gameinfo_file)
+            gameinfo_root = gameinfo_tree.getroot()
+
+            for gameinfo_element in gameinfo_tree.findall('game'):
+                path_merge = gameinfo_element.find('path').text
+
+                if path_merge.startswith('./'):
+                    path_merge = path_merge[2:]
+
+                path_merge = path_merge.rsplit('.', 1)[0]
+
+                for child in gameinfo_element:
+                    # Check if the child element is in the predefined list
+                    if child.tag not in self.XML_ELEMENT_MAP:
+                        continue
+
+                    # logger.warning(f"{child.tag}: {child.text}")
+
+                    if child.tag == 'image':
+                        text = child.text
+
+                        if text.startswith('./'):
+                            text = text[2:]
+
+                        image_file = self.hm.ports_dir / text
+                        if not image_file.is_file():
+                            continue
+
+                        target_file = INFO_BOX_DIR / (path_merge + image_file.suffix)
+                        logger.debug(f"copying {str(image_file)} to {str(target_file)}")
+                        shutil.copy(image_file, target_file)
+
+                        screenshot_file = None
+                        if (image_file.parent / 'screenshot.jpg').is_file():
+                            screenshot_file = (image_file.parent / 'screenshot.jpg')
+
+                        elif (image_file.parent / 'screenshot.png').is_file():
+                            screenshot_file = (image_file.parent / 'screenshot.png')
+
+                        if screenshot_file:
+                            target_file = INFO_PREVIEW_DIR / (path_merge + image_file.suffix)
+                            logger.debug(f"copying {str(screenshot_file)} to {str(target_file)}")
+                            shutil.copy(screenshot_file, target_file)
+
+                    elif child.tag == 'desc':
+                        target_file = INFO_TEXT_DIR / (path_merge + '.txt')
+                        text = child.text.strip().split('\n', 1)[0].strip()
+
+                        logger.debug(f"creating {str(target_file)}")
+                        with open(target_file, 'w') as fh:
+                            print(text, file=fh)
+
+            # HAHA THIS IS FUCKED
+            self.added_ports.add('GAMELIST UPDATER')
 
     def first_run(self):
         self.portmaster_install()

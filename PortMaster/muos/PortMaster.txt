@@ -52,4 +52,8 @@ unset LD_LIBRARY_PATH
 unset SDL_GAMECONTROLLERCONFIG
 PATH="$OLD_PATH"
 
-printf "\033c" > $CUR_TTY
+if [ -f "${controlfolder}/.muos-refresh" ]; then
+  rm -f "${controlfolder}/.muos-refresh"
+  # HULK SMASH
+  ${controlfolder}/muos/image_smash.txt
+fi
