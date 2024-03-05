@@ -63,7 +63,7 @@ HW_INFO = {
 
     # Computer/Testing
     'pc':      {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
-    'x86_64':      {'resolution': (1920, 1080), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
+    'RetroDECK':      {'resolution': (1280, 720), 'analogsticks': 2, 'cpu': 'x86_64', 'capabilities': ['opengl', 'power']},
 
     # Default
     'default': {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
@@ -162,7 +162,7 @@ def new_device_info():
     if retrodeck_version != '':
         info['name'] = 'RetroDECK'
         info['version'] = retrodeck_version.join(re.findall(r'version=(.*)', retrodeck_version))
-        info['device'] = platform.machine()
+        info['device'] = 'RetroDECK'
 
     ## Works on muOS (obviously)
     muos_version = safe_cat('/opt/muos/config/version.txt')
