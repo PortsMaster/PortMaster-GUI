@@ -49,8 +49,7 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
-    CFW_VERSION=$(cat "/opt/muos/config/version.txt")
-
+    CFW_VERSION=$(head -n1 "/opt/muos/config/version.txt")
 else
 
     # AmberELEC / EmuELEC

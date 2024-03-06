@@ -135,6 +135,7 @@ ALL_LANGUAGES = {
     "fr_FR": _("French"),
     "it_IT": _("Italian"),
     "ja_JP": _("Japanese"),
+    "ko_KR": _("Korean"),
     "nl_NL": _("Dutch"),
     "pl_PL": _("Polish"),
     "pt_PT": _("Portuguese (Portugal)"),

@@ -160,7 +160,7 @@ def new_device_info():
     muos_version = safe_cat('/opt/muos/config/version.txt')
     if muos_version != '':
         info['name'] = 'muOS'
-        info['version'] = muos_version.strip()
+        info['version'] = muos_version.strip().split('\n')[0]
 
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 18:00+0800\n"
-"PO-Revision-Date: 2024-03-05 11:29\n"
+"POT-Creation-Date: 2024-03-06 19:02+0800\n"
+"PO-Revision-Date: 2024-03-06 11:02\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -50,120 +50,124 @@ msgid "Japanese"
 msgstr "Japoński"
 
 #: PortMaster/pugwash:138
+msgid "Korean"
+msgstr ""
+
+#: PortMaster/pugwash:139
 msgid "Dutch"
 msgstr "Holenderski"
 
-#: PortMaster/pugwash:139
+#: PortMaster/pugwash:140
 msgid "Polish"
 msgstr "Polski"
 
-#: PortMaster/pugwash:140
+#: PortMaster/pugwash:141
 msgid "Portuguese (Portugal)"
 msgstr "Portugalski (Portugalia)"
 
-#: PortMaster/pugwash:141
+#: PortMaster/pugwash:142
 msgid "Portuguese (Brazil)"
 msgstr "Portugalski (Brazylia)"
 
-#: PortMaster/pugwash:142
+#: PortMaster/pugwash:143
 msgid "Chinese Simplified"
 msgstr "Chiński Uproszczony"
 
-#: PortMaster/pugwash:642
+#: PortMaster/pugwash:643
 msgid "Unknown IP"
 msgstr "Nieznany adres IP"
 
-#: PortMaster/pugwash:749 PortMaster/pugwash:890
+#: PortMaster/pugwash:750 PortMaster/pugwash:891
 msgid "N/A"
 msgstr "Nie dostępne"
 
-#: PortMaster/pugwash:858
+#: PortMaster/pugwash:859
 msgid "** NO PORT **"
 msgstr "** BRAK PORTU **"
 
-#: PortMaster/pugwash:877 PortMaster/pylibs/pugscene.py:1751
+#: PortMaster/pugwash:878 PortMaster/pylibs/pugscene.py:1751
 msgid "Ready to Run"
 msgstr "Gotowe do uruchomienia"
 
-#: PortMaster/pugwash:877
+#: PortMaster/pugwash:878
 msgid "Requires Files"
 msgstr "Wymagane pliki"
 
-#: PortMaster/pugwash:884 PortMaster/pugwash:911
+#: PortMaster/pugwash:885 PortMaster/pugwash:912
 #: PortMaster/pylibs/pugscene.py:877
 msgid "Installed"
 msgstr "Zainstalowane"
 
-#: PortMaster/pugwash:886
+#: PortMaster/pugwash:887
 msgid "Missing"
 msgstr "Brakujące"
 
-#: PortMaster/pugwash:912 PortMaster/pylibs/harbourmaster/harbour.py:1608
+#: PortMaster/pugwash:913 PortMaster/pylibs/harbourmaster/harbour.py:1608
 #: PortMaster/pylibs/pugscene.py:1753
 msgid "Update Available"
 msgstr "Dostępna aktualizacja"
 
-#: PortMaster/pugwash:913 PortMaster/pylibs/harbourmaster/harbour.py:1607
+#: PortMaster/pugwash:914 PortMaster/pylibs/harbourmaster/harbour.py:1607
 #: PortMaster/pylibs/pugscene.py:877 PortMaster/pylibs/pugscene.py:1752
 msgid "Not Installed"
 msgstr "Nie zainstalowano"
 
-#: PortMaster/pugwash:1089 PortMaster/pugwash:1463
+#: PortMaster/pugwash:1090 PortMaster/pugwash:1464
 #: PortMaster/pylibs/pugscene.py:2051 PortMaster/pylibs/pugscene.py:2099
 #: PortMaster/pylibs/pugscene.py:2101
 msgid "Okay"
 msgstr "W porządku"
 
-#: PortMaster/pugwash:1092 PortMaster/pugwash:1464
+#: PortMaster/pugwash:1093 PortMaster/pugwash:1465
 #: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
 #: PortMaster/pylibs/pugscene.py:2020 PortMaster/pylibs/pugscene.py:2054
 #: PortMaster/pylibs/pugscene.py:2099
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: PortMaster/pugwash:1315
+#: PortMaster/pugwash:1316
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr "Pobieranie najnowszych plików gameinfo.xml i okładek."
 
-#: PortMaster/pugwash:1336
+#: PortMaster/pugwash:1337
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr "Pobieranie gameinfo.xml dla {source_name}"
 
-#: PortMaster/pugwash:1369
+#: PortMaster/pugwash:1370
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "Instalacja {port_name}"
 
-#: PortMaster/pugwash:1378
+#: PortMaster/pugwash:1379
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "Odinstalowywanie {port_name}"
 
-#: PortMaster/pugwash:1389
+#: PortMaster/pugwash:1390
 msgid "Updating all port sources:"
 msgstr "Aktualizowanie wszystkich źródeł portów:"
 
-#: PortMaster/pugwash:1399
+#: PortMaster/pugwash:1400
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "Sprawdzanie {runtime_name}"
 
-#: PortMaster/pugwash:1827
+#: PortMaster/pugwash:1828
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "Przechodzisz z {old_release_channel} na wersję {new_release_channel}.\n\n"
 "Czy chcesz kontynuować?"
 
-#: PortMaster/pugwash:1833
+#: PortMaster/pugwash:1834
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "Dostępna jest nowa wersja PortMaster ({portmaster_version})\n\n"
 "Czy chcesz zaktualizować?"
 
-#: PortMaster/pugwash:1838
+#: PortMaster/pugwash:1839
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
