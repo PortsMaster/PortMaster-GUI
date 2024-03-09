@@ -23,68 +23,99 @@ from .info import *
 from .util import *
 
 
-HW_ANY = object()
+DEVICES = {
+    # Anbernic
+    "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS"]},
+    "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
+    "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "TheRA"]},
+    "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
+    "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS"]},
+    "Anbernic RG35XX PLUS": {"device": "rg35xx plus", "manufacturer": "Anbernic",  "cfw": ["muOS"]},
+    "Anbernic RG35XX H":    {"device": "rg35xx h",    "manufacturer": "Anbernic",  "cfw": ["muOS"]},
+    "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS"]},
+    "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS"]},
+
+    # Powkiddy
+    "Powkiddy RGB10":  {"device": "rgb10",  "manufacturer": "Powkiddy",  "cfw": ["ArkOS"]},
+    "Powkiddy RGB20S": {"device": "rgb20s", "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
+    "Powkiddy RGB30":  {"device": "rgb30",  "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS"]},
+    "Powkiddy RK2023": {"device": "rk2023", "manufacturer": "Powkiddy",  "cfw": ["ArkOS"]},
+    "Powkiddy X55":    {"device": "x55",    "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
+
+    # Hardkernel
+    "Hardkernel ODROID GO Advance": {"device": "oga", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC"]},
+    "Hardkernel ODROID GO Super":   {"device": "ogs", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC"]},
+    "Hardkernel ODROID GO Ultra":   {"device": "ogu", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC"]},
+
+    # Gameforce
+    "Gameforce Ace": {"device": "ace", "manufacturer": "Gameforce", "cfw": ["JELOS"]},
+    "Gameforce Chi": {"device": "chi", "manufacturer": "Gameforce", "cfw": ["ArkOS", "EmuELEC"]},
+    }
 
 
 HW_INFO = {
     # Anbernic Devices
-    'rg552':   {'resolution': (1920, 1152), 'analogsticks': 2, 'cpu': 'rk3399', 'capabilities': ['power']},
-    'rg503':   {'resolution': ( 960,  544), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rg351mp': {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rg351p':  {'resolution': ( 480,  320), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rg353v':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rg353p':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rg353m':  {'resolution': ( 640,  480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rg351v':  {'resolution': ( 640,  480), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
+    "rg552":   {"resolution": (1920, 1152), "analogsticks": 2, "cpu": "rk3399", "capabilities": ["power"], "ram": 4096},
+    "rg503":   {"resolution": ( 960,  544), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg351mp": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg351p":  {"resolution": ( 480,  320), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353v":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353p":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353m":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg351v":  {"resolution": ( 640,  480), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353vs": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg353ps": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
 
     # Anbernic RG35XX
-    'rg35xx h':    {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'h700', 'capabilities': []},
-    'rg35xx plus': {'resolution': (640, 480), 'analogsticks': 0, 'cpu': 'h700', 'capabilities': []},
-    'rg35xx':      {'resolution': (640, 480), 'analogsticks': 0, 'cpu': 'h700', 'capabilities': []},
+    "rg35xx h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": [], "ram": 1024},
+    "rg35xx plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 1024},
+    "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
 
     # Hardkernel Devices
-    'oga': {'resolution': (480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
-    'ogs': {'resolution': (854, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'ogu': {'resolution': (854, 480), 'analogsticks': 2, 'cpu': 's922x',  'capabilities': ['power']},
+    "oga": {"resolution": (480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "ogs": {"resolution": (854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "ogu": {"resolution": (854, 480), "analogsticks": 2, "cpu": "s922x",  "capabilities": ["power"], "ram": 2048},
 
     # Powkiddy
-    'x55':       {'resolution': (1280, 720), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rgb10max3': {'resolution': ( 854, 480), 'analogsticks': 2, 'cpu': 's922x',  'capabilities': ['power']},
-    'rgb10max2': {'resolution': ( 854, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rgb10max':  {'resolution': ( 854, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rgb10s':    {'resolution': ( 480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
-    'rgb20s':    {'resolution': ( 640, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
-    'rgb30':     {'resolution': ( 720, 720), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rk2023':    {'resolution': ( 640, 480), 'analogsticks': 2, 'cpu': 'rk3566', 'capabilities': ['power']},
-    'rk2020':    {'resolution': ( 480, 320), 'analogsticks': 1, 'cpu': 'rk3326', 'capabilities': []},
+    "x55":       {"resolution": (1280, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rgb10max3": {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "s922x",  "capabilities": ["power"], "ram": 2048},
+    "rgb10max2": {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb10max":  {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb10s":    {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb20s":    {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb30":     {"resolution": ( 720, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rk2023":    {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rk2020":    {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
 
-    # Gameforce Chi
-    'chi':     {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'rk3326', 'capabilities': []},
+    # Gameforce Chi / Ace
+    "chi":       {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power"], "ram": 8192},
 
     # Computer/Testing
-    'pc':      {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
+    "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
 
     # Default
-    'default': {'resolution': (640, 480), 'analogsticks': 2, 'cpu': 'unknown', 'capabilities': ['opengl', 'power']},
+    "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
     }
 
 
 CFW_INFO = {
     ## From PortMaster.sh from JELOS, all devices except x55 and rg10max3 have opengl
-    ('jelos', 'x55'):       {'capabilities': []},
-    ('jelos', 'rgb10max3'): {'capabilities': []},
-    ('jelos', 'rgb30'):     {'capabilities': []},
-    ('jelos',  HW_ANY):     {'capabilities': ['opengl']},
+    "jelos-x55":       {"capabilities": []},
+    "jelos-rgb10max3": {"capabilities": []},
+    "jelos-rgb30":     {"capabilities": []},
+    "jelos":           {"capabilities": ["opengl"]},
     }
 
 
 CPU_INFO = {
-    'rk3326':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
-    'rk3399':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
-    'rk3566':  {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
-    'h700':    {'capabilities': ['armhf'],            'primary_arch': 'armhf'},
-    's922x':   {'capabilities': ['aarch64'],          'primary_arch': 'aarch64'},
-    'unknown': {'capabilities': ['armhf', 'aarch64'], 'primary_arch': 'aarch64'},
+    "rk3326":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3399":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3566":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3588":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "h700":    {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "s922x":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "unknown": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
 
 
@@ -130,6 +161,8 @@ def nice_device_to_device(raw_device):
         ('Anbernic RG353V*',  'rg353v'),
         ('Anbernic RG353P*',  'rg353p'),
         ('Anbernic RG552',    'rg552'),
+
+        ('GameForce ACE',     'ace'),
         )
 
     for pattern, device in pattern_to_device:
@@ -160,7 +193,7 @@ def new_device_info():
     muos_version = safe_cat('/opt/muos/config/version.txt')
     if muos_version != '':
         info['name'] = 'muOS'
-        info['version'] = muos_version.strip()
+        info['version'] = muos_version.strip().split('\n')[0]
 
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':
@@ -266,7 +299,7 @@ def _merge_info(info, new_info):
 
 def mem_limits():
     # Lets not go crazy, who gives a fuck over 4gb
-    MAX_RAM = 4
+    MAX_RAM = 16
 
     if not hasattr(os, 'sysconf_names'):
         memory = 2
@@ -280,12 +313,7 @@ def mem_limits():
     else:
         memory = min(MAX_RAM, math.ceil((os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')) / (1024**3)))
 
-    results = []
-    while memory > 0:
-        results.append(f"{memory}gb")
-        memory -= 1
-
-    return results
+    return memory * 1024
 
 
 def find_device_by_resolution(resolution):
@@ -296,31 +324,27 @@ def find_device_by_resolution(resolution):
     return 'default'
 
 
-__root_info = None
-def device_info(override_device=None, override_resolution=None):
-    global __root_info
-    if override_device is None and override_resolution is None and __root_info is not None:
-        return __root_info
-
-    # Best guess at what device we are running on, and what it is capable of.
-    info = new_device_info()
-
-    if override_device is not None:
-        info['device'] = override_device
+def expand_info(info, override_resolution=None, override_ram=None):
+    """
+    This turns fetches device info and expands out the capabilities based on that device/cfw.
+    """
 
     _merge_info(info, HW_INFO.get(info['device'], HW_INFO['default']))
 
-    if (info['name'].lower(), info['device']) in CFW_INFO:
-        _merge_info(info, CFW_INFO[(info['name'].lower(), info['device'])])
+    if f"{info['name'].lower()}-{info['device']}" in CFW_INFO:
+        _merge_info(info, CFW_INFO[f"{info['name'].lower()}-{info['device']}"])
 
-    elif (info['name'].lower(), HW_ANY) in CFW_INFO:
-        _merge_info(info, CFW_INFO[(info['name'].lower(), HW_ANY)])
+    elif info['name'].lower() in CFW_INFO:
+        _merge_info(info, CFW_INFO[info['name'].lower()])
 
     if info['cpu'] in CPU_INFO:
         _merge_info(info, CPU_INFO[info['cpu']])
 
     if override_resolution is not None:
         info['resolution'] = override_resolution
+
+    if override_ram is not None:
+        info['ram'] = override_ram
 
     display_gcd = math.gcd(info['resolution'][0], info['resolution'][1])
     display_ratio = f"{info['resolution'][0] // display_gcd}:{info['resolution'][1] // display_gcd}"
@@ -352,7 +376,33 @@ def device_info(override_device=None, override_resolution=None):
         if info['resolution'][0] > info['resolution'][1]:
             info['capabilities'].append("wide")
 
-    info['capabilities'].extend(mem_limits())
+    results = []
+    memory = info.get('ram', 1024)
+    while memory >= 1024:
+        info['capabilities'].append(f"{memory // 1024}gb")
+        memory //= 2
+
+    return info
+
+
+__root_info = None
+def device_info(override_device=None, override_resolution=None):
+    global __root_info
+    if override_device is None and override_resolution is None and __root_info is not None:
+        return __root_info
+
+    # Best guess at what device we are running on, and what it is capable of.
+    info = new_device_info()
+
+    if override_device is not None:
+        info['device'] = override_device
+
+    override_ram = mem_limits()
+
+    if info['device'] in ('rg353v', 'rg353p') and override_ram == 1024:
+        info['device'] += 's'
+
+    expand_info(info, override_resolution, override_ram)
 
     logger.debug(f"DEVICE INFO: {info}")
     __root_info = info
@@ -361,6 +411,8 @@ def device_info(override_device=None, override_resolution=None):
 
 __all__ = (
     'device_info',
+    'expand_info',
     'find_device_by_resolution',
     'HW_INFO',
+    'DEVICES',
     )

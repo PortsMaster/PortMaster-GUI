@@ -49,8 +49,7 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
-    CFW_VERSION=$(cat "/opt/muos/config/version.txt")
-
+    CFW_VERSION=$(head -n1 "/opt/muos/config/version.txt")
 else
 
     # AmberELEC / EmuELEC
@@ -160,6 +159,10 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
 
     "gameforce")
         DEVICE_CPU="RK3326"
+        ;;
+
+    "ace")
+        DEVICE_CPU="RK3388"
         ;;
 
     "amlogic-ng")

@@ -519,6 +519,27 @@ def do_fifo_control(hm, argv):
         logger.info("-- Endo Fifo Control --")
 
 
+def do_device_info(hm, argv):
+    import json
+
+    website_data = {}
+    for device_name, device_data in harbourmaster.DEVICES.items():
+        website_data[device_name] = {}
+
+        for cfw_name in device_data['cfw']:
+            info = {'name': cfw_name.lower(), 'version': 'N/A', 'device': device_data['device']}
+            harbourmaster.expand_info(info)
+
+            website_data[device_name][cfw_name] = info
+
+    if len(argv) > 0:
+        with open(argv[0], 'w') as fh:
+            json.dump(website_data, fh, indent=4)
+
+    else:
+        print(json.dumps(website_data, indent=4))
+
+
 def do_help(hm, argv):
     """
     Shows general help or help for a particular command.
@@ -577,6 +598,7 @@ all_commands = {
     'portsmd': do_portsmd,
     'ports': do_ports,
     'ports.json': do_portsjson,
+    'device_info': do_device_info,
     'list': do_list,
     'install': do_install,
     'uninstall': do_uninstall,

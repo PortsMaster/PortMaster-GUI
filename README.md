@@ -5,11 +5,11 @@ PortMaster is a convenient script designed to facilitate the downloading and ins
 # Features (it has them)
 
 - Completely custom GUI using Python SDL2 bindings
-- Small size, only 3.8mb!
+- Small size, only 11mb!
 - Port previews, we can really showcase the ports.
 - Cancellable downloads, accidentally started a 300mb download? Get out of here.
 - Filter ports by genre/porter/runtime
-- Localizations (We currently have English, Italian, French, German, and Polish), translators welcome! [![Crowdin](https://badges.crowdin.net/portmaster/localized.svg)](https://crowdin.com/project/portmaster)
+- Localizations (We currently have English, Chinese, French, German, Italian, Japanese, Korean, Polish, Portuguese, and Spanish), translators welcome! [![Crowdin](https://badges.crowdin.net/portmaster/localized.svg)](https://crowdin.com/project/portmaster)
 - **Themes:**
   - Since it was possible with the custom GUI, we went for it.
   - We have a few themes at launch, but contributions are more than welcome.
@@ -25,21 +25,9 @@ PortMaster is a convenient script designed to facilitate the downloading and ins
 - **Custom Sources**: want to control your own ports repository? no worries!
 - **Platform Hooks**: PortMaster on raspberry pi? Lets gooooo.
 
-
 # Installation
 
 [Install](https://portmaster.games/installation.html)
-
-
-# Things to know
-
-There are a few bugs, which we are looking to fix.
-
-- ~~ArkOS has volume issues on some devices, so it is disabled by default there for now.~~ **Fixed** (Thanks to @christianhaitian & @RetroGFX)
-- Some resolutions of the themes need some work, but for the most part are good.
-- The options menus need a bit of reworking.
-- ~~JELOS controls are flipped~~ **Fixed**
-- In controller mode xbox, the controls dont match the icons.
 
 
 # Feedback
@@ -55,7 +43,7 @@ I want to thank everyone on the PortMaster crew who have helped, but a special t
 - [cebion](https://github.com/cebion)
 - [christopher-roelofs](https://github.com/christopher-roelofs)
 - [tekkenfede](https://github.com/tekkenfede)
-
+- and so many more! :heart:
 
 ## Python libraries used:
 
