@@ -161,6 +161,10 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="RK3326"
         ;;
 
+    "ace")
+        DEVICE_CPU="RK3388"
+        ;;
+
     "amlogic-ng")
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2> /dev/null | cut -d' ' -f 2)
         DEVICE_CPU="S922X"

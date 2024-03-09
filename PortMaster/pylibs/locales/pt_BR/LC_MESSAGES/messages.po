@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-06 19:02+0800\n"
-"PO-Revision-Date: 2024-03-06 11:02\n"
+"PO-Revision-Date: 2024-03-07 08:34\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -51,7 +51,7 @@ msgstr "Japonês"
 
 #: PortMaster/pugwash:138
 msgid "Korean"
-msgstr ""
+msgstr "Coreano"
 
 #: PortMaster/pugwash:139
 msgid "Dutch"
