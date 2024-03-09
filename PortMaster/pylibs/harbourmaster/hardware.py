@@ -233,6 +233,11 @@ def new_device_info():
         if device != 'default':
             info.setdefault('device', device)
 
+    # Works on AmberELEC rg351mp image.
+    stcd = safe_cat('/storage/.config/device')
+    if info.get('device') == 'rg351mp' and stcd != '':
+        info['device'] = stcd
+
     # Works on AmberELEC / uOS / JELOS
     os_release = safe_cat('/etc/os-release')
     for result in re.findall(r'^([a-z0-9_]+)="([^"]+)"$', os_release, re.I | re.M):

@@ -15,7 +15,7 @@
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.3"
+DEVICE_INFO_VERSION="0.1.4"
 
 SCRIPT_DIR="$controlfolder"
 
@@ -80,6 +80,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     if [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
     fi
+
+    if [[ "$CFW_NAME" == "AmberELEC" ]] && [[ -f "/storage/.config/device" ]]; then
+        DEVICE_NAME=$(cat /storage/.config/device)
+    fi
 else
     DEVICE_NAME="Unknown"
 fi
@@ -140,7 +144,12 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="RK3566"
         ;;
 
-    "rg351mp"|"rg351p")
+    "rg351mp"|"rg351p"|"r35s"|"r36s")
+        DEVICE_CPU="RK3326"
+        ;;
+
+    "r33s")
+        ANALOG_STICKS=0
         DEVICE_CPU="RK3326"
         ;;
 
@@ -163,10 +172,6 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
 
     "ace")
         DEVICE_CPU="RK3388"
-        ;;
-
-    "xu10")
-        DEVICE_CPU="RK3326"
         ;;
 
     "amlogic-ng")
@@ -212,13 +217,19 @@ if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
     DISPLAY_HEIGHT=480
 fi
 
-
-echo "# ${DEVICE_NAME} - ${CFW_NAME}"
-echo "CFW_NAME=${CFW_NAME}"
-echo "CFW_VERSION=${CFW_VERSION}"
-echo "DEVICE_NAME=${DEVICE_NAME}"
-echo "DEVICE_ARCH=${DEVICE_ARCH}"
-echo "DEVICE_RAM=${DEVICE_RAM}"
-echo "DISPLAY_WIDTH=${DISPLAY_WIDTH}"
-echo "DISPLAY_HEIGHT=${DISPLAY_HEIGHT}"
-echo "ANALOG_STICKS=${ANALOG_STICKS}"
+cat << __INFO_DUMP__ | tee "device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
+# ${DEVICE_NAME} - ${CFW_NAME}
+\`\`\`bash
+DEVICE_INFO_VERSION=${DEVICE_INFO_VERSION}
+CFW_NAME=${CFW_NAME}
+CFW_VERSION=${CFW_VERSION}
+DEVICE_NAME=${DEVICE_NAME}
+DEVICE_CPU=${DEVICE_CPU}
+DEVICE_ARCH=${DEVICE_ARCH}
+DEVICE_RAM=${DEVICE_RAM}
+DISPLAY_WIDTH=${DISPLAY_WIDTH}
+DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
+DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
+ANALOG_STICKS=${ANALOG_STICKS}
+\`\`\`
+__INFO_DUMP__
