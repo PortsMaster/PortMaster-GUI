@@ -1108,7 +1108,15 @@ class HarbourMaster():
                         logger.error(f"Bad featured_ports[{idx}]['ports'][{idx}]: unknown port {port_name}")
                     continue
 
+                # Only show ports in here that are possible to install.
+                if not self.match_requirements(port_info):
+                    continue
+
                 port_list_ports[port_info['name']] = port_info
+
+            if len(port_list_ports) == 0:
+                # Don't show empty featured ports.
+                continue
 
             full_port_list = {
                 'name': port_list['name'],

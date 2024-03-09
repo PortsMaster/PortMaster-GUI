@@ -23,13 +23,14 @@ from .info import *
 from .util import *
 
 
+# This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
 DEVICES = {
     # Anbernic
     "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS"]},
     "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
     "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "TheRA"]},
-    "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
-    "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS"]},
+    "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS"]},
+    "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["JELOS", "AmberELEC"]},
     "Anbernic RG35XX PLUS": {"device": "rg35xx plus", "manufacturer": "Anbernic",  "cfw": ["muOS"]},
     "Anbernic RG35XX H":    {"device": "rg35xx h",    "manufacturer": "Anbernic",  "cfw": ["muOS"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS"]},
@@ -50,6 +51,12 @@ DEVICES = {
     # Gameforce
     "Gameforce Ace": {"device": "ace", "manufacturer": "Gameforce", "cfw": ["JELOS"]},
     "Gameforce Chi": {"device": "chi", "manufacturer": "Gameforce", "cfw": ["ArkOS", "EmuELEC"]},
+
+    # Generic
+    "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
+    "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Generic", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
+    "R35S Retro Handheld": {"device": "r35s", "manufacturer": "Generic", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
+    "R36S Retro Handheld": {"device": "r36s", "manufacturer": "Generic", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
     }
 
 
@@ -90,6 +97,12 @@ HW_INFO = {
     # Gameforce Chi / Ace
     "chi":       {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
     "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power"], "ram": 8192},
+
+    # Generic
+    "xu10":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "r33s":      {"resolution": ( 640,  480), "analogsticks": 0, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "r35s":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "r36s":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -163,6 +176,8 @@ def nice_device_to_device(raw_device):
         ('Anbernic RG552',    'rg552'),
 
         ('GameForce ACE',     'ace'),
+
+        ('MagicX XU10',       'xu10'),
         )
 
     for pattern, device in pattern_to_device:
