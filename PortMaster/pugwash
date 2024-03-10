@@ -127,8 +127,8 @@ __builtins__.CURRENT_LANG = None
 
 ALL_LANGUAGES = {
     ## Keep it in order of importance, for example pt_PT before pt_BR.
-    "de_DE": _("German"),
     "da_DK": _("Danish"),
+    "de_DE": _("German"),
     "en_US": _("English"),
     "es_ES": _("Spanish"),
     "fi_FI": _("Finnish"),
@@ -140,6 +140,8 @@ ALL_LANGUAGES = {
     "pl_PL": _("Polish"),
     "pt_PT": _("Portuguese (Portugal)"),
     "pt_BR": _("Portuguese (Brazil)"),
+    "ru_RU": _("Russian"),
+    "uk_UA": _("Ukrainian"),
     "zh_CN": _("Chinese Simplified"),
     }
 
