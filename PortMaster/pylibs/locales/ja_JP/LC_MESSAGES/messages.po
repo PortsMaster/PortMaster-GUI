@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-06 19:02+0800\n"
-"PO-Revision-Date: 2024-03-06 11:02\n"
+"POT-Creation-Date: 2024-03-10 12:21+0800\n"
+"PO-Revision-Date: 2024-03-10 04:21\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -18,156 +18,160 @@ msgstr ""
 "X-Crowdin-File-ID: 1\n"
 
 #: PortMaster/pugwash:130
-msgid "German"
-msgstr "ドイツ語"
+msgid "Chinese Simplified"
+msgstr "中国語 (簡体字)"
 
 #: PortMaster/pugwash:131
 msgid "Danish"
 msgstr "デンマーク語"
 
 #: PortMaster/pugwash:132
+msgid "German"
+msgstr "ドイツ語"
+
+#: PortMaster/pugwash:133
 msgid "English"
 msgstr "英語"
 
-#: PortMaster/pugwash:133
+#: PortMaster/pugwash:134
 msgid "Spanish"
 msgstr "スペイン語"
 
-#: PortMaster/pugwash:134
+#: PortMaster/pugwash:135
 msgid "Finnish"
 msgstr "フィンランド語"
 
-#: PortMaster/pugwash:135
+#: PortMaster/pugwash:136
 msgid "French"
 msgstr "フランス語"
 
-#: PortMaster/pugwash:136
+#: PortMaster/pugwash:137
 msgid "Italian"
 msgstr "イタリア語"
 
-#: PortMaster/pugwash:137
+#: PortMaster/pugwash:138
 msgid "Japanese"
 msgstr "日本語"
 
-#: PortMaster/pugwash:138
+#: PortMaster/pugwash:139
 msgid "Korean"
 msgstr ""
 
-#: PortMaster/pugwash:139
+#: PortMaster/pugwash:140
 msgid "Dutch"
 msgstr "オランダ語"
 
-#: PortMaster/pugwash:140
+#: PortMaster/pugwash:141
 msgid "Polish"
 msgstr "ポーランド語"
 
-#: PortMaster/pugwash:141
+#: PortMaster/pugwash:142
 msgid "Portuguese (Portugal)"
 msgstr "ポルトガル語 (ポルトガル)"
 
-#: PortMaster/pugwash:142
+#: PortMaster/pugwash:143
 msgid "Portuguese (Brazil)"
 msgstr "ポルトガル語 (ブラジル)"
 
-#: PortMaster/pugwash:143
-msgid "Chinese Simplified"
-msgstr "中国語 (簡体字)"
+#: PortMaster/pugwash:144
+msgid "Russian"
+msgstr ""
 
-#: PortMaster/pugwash:643
+#: PortMaster/pugwash:644
 msgid "Unknown IP"
 msgstr "不明なIP"
 
-#: PortMaster/pugwash:750 PortMaster/pugwash:891
+#: PortMaster/pugwash:751 PortMaster/pugwash:892
 msgid "N/A"
 msgstr "N/A"
 
-#: PortMaster/pugwash:859
+#: PortMaster/pugwash:860
 msgid "** NO PORT **"
 msgstr "** ポートなし **"
 
-#: PortMaster/pugwash:878 PortMaster/pylibs/pugscene.py:1751
+#: PortMaster/pugwash:879 PortMaster/pylibs/pugscene.py:1751
 msgid "Ready to Run"
 msgstr "実行準備完了"
 
-#: PortMaster/pugwash:878
+#: PortMaster/pugwash:879
 msgid "Requires Files"
 msgstr "必要なファイル"
 
-#: PortMaster/pugwash:885 PortMaster/pugwash:912
+#: PortMaster/pugwash:886 PortMaster/pugwash:913
 #: PortMaster/pylibs/pugscene.py:877
 msgid "Installed"
 msgstr "インストール済み"
 
-#: PortMaster/pugwash:887
+#: PortMaster/pugwash:888
 msgid "Missing"
 msgstr "欠落"
 
-#: PortMaster/pugwash:913 PortMaster/pylibs/harbourmaster/harbour.py:1608
+#: PortMaster/pugwash:914 PortMaster/pylibs/harbourmaster/harbour.py:1616
 #: PortMaster/pylibs/pugscene.py:1753
 msgid "Update Available"
 msgstr "アップデートが利用できます"
 
-#: PortMaster/pugwash:914 PortMaster/pylibs/harbourmaster/harbour.py:1607
+#: PortMaster/pugwash:915 PortMaster/pylibs/harbourmaster/harbour.py:1615
 #: PortMaster/pylibs/pugscene.py:877 PortMaster/pylibs/pugscene.py:1752
 msgid "Not Installed"
 msgstr "インストールされていません"
 
-#: PortMaster/pugwash:1090 PortMaster/pugwash:1464
+#: PortMaster/pugwash:1091 PortMaster/pugwash:1465
 #: PortMaster/pylibs/pugscene.py:2051 PortMaster/pylibs/pugscene.py:2099
 #: PortMaster/pylibs/pugscene.py:2101
 msgid "Okay"
 msgstr "了解"
 
-#: PortMaster/pugwash:1093 PortMaster/pugwash:1465
+#: PortMaster/pugwash:1094 PortMaster/pugwash:1466
 #: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
 #: PortMaster/pylibs/pugscene.py:2020 PortMaster/pylibs/pugscene.py:2054
 #: PortMaster/pylibs/pugscene.py:2099
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: PortMaster/pugwash:1316
+#: PortMaster/pugwash:1317
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr ""
 
-#: PortMaster/pugwash:1337
+#: PortMaster/pugwash:1338
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr ""
 
-#: PortMaster/pugwash:1370
+#: PortMaster/pugwash:1371
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "{port_name} インストール中"
 
-#: PortMaster/pugwash:1379
+#: PortMaster/pugwash:1380
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "{port_name} をアンインストール中"
 
-#: PortMaster/pugwash:1390
+#: PortMaster/pugwash:1391
 msgid "Updating all port sources:"
 msgstr "すべてのポートソースを更新しています:"
 
-#: PortMaster/pugwash:1400
+#: PortMaster/pugwash:1401
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "{runtime_name} を確認中"
 
-#: PortMaster/pugwash:1828
+#: PortMaster/pugwash:1829
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "{old_release_channel} から {new_release_channel} へ切り替えています。\n\n"
 "ダウングレードしますか？"
 
-#: PortMaster/pugwash:1834
+#: PortMaster/pugwash:1835
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "PortMaster ({portmaster_version})\n\n"
 "アップグレードしますか？"
 
-#: PortMaster/pugwash:1839
+#: PortMaster/pugwash:1840
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
@@ -203,154 +207,154 @@ msgstr "ソースの読み込み中"
 msgid "Loading Ports."
 msgstr "ポートを読み込み中"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1317
+#: PortMaster/pylibs/harbourmaster/harbour.py:1325
 #, python-brace-format
 msgid "Installing Theme {download_name}."
 msgstr "テーマ {download_name} のインストール中。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1324
-#: PortMaster/pylibs/harbourmaster/harbour.py:1366
-#: PortMaster/pylibs/harbourmaster/harbour.py:1438
+#: PortMaster/pylibs/harbourmaster/harbour.py:1332
+#: PortMaster/pylibs/harbourmaster/harbour.py:1374
+#: PortMaster/pylibs/harbourmaster/harbour.py:1446
 msgid "Installing"
 msgstr "インストール中"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1334
+#: PortMaster/pylibs/harbourmaster/harbour.py:1342
 msgid "Theme {download_name!r} installed successfully."
 msgstr "テーマ {download_name!r} のインストールに成功しました。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1357
-#: PortMaster/pylibs/harbourmaster/harbour.py:1429
+#: PortMaster/pylibs/harbourmaster/harbour.py:1365
+#: PortMaster/pylibs/harbourmaster/harbour.py:1437
 #, python-brace-format
 msgid "Installing {download_name}."
 msgstr "{download_name} インストール中."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1386
-#: PortMaster/pylibs/harbourmaster/harbour.py:1566
+#: PortMaster/pylibs/harbourmaster/harbour.py:1394
+#: PortMaster/pylibs/harbourmaster/harbour.py:1574
 msgid "Port {download_name!r} installed successfully."
 msgstr "ポート {download_name!r} が正常にインストールされました。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1532
+#: PortMaster/pylibs/harbourmaster/harbour.py:1540
 msgid "Installation failed, removing files..."
 msgstr "インストールに失敗しました。ファイルの削除中..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1544
+#: PortMaster/pylibs/harbourmaster/harbour.py:1552
 #, python-brace-format
 msgid "Port {download_name} installed failed."
 msgstr "ポート {download_name} がインストールされませんでした。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1556
+#: PortMaster/pylibs/harbourmaster/harbour.py:1564
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
 msgstr "ポート {download_name!r} と {runtime_name!r} が正常にインストールされました。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1561
+#: PortMaster/pylibs/harbourmaster/harbour.py:1569
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
 msgstr "ポート {download_name!r} は正常にインストールされましたが、{runtime_name!r} のインストールに失敗しました！\n\n"
 "再インストールして再試行するか、ウィキのヘルプを確認してください。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1576
+#: PortMaster/pylibs/harbourmaster/harbour.py:1584
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
 msgstr "ポート {runtime} に不正なランタイムが含まれています。ゲームが正しく動作しない可能性があります。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1590
+#: PortMaster/pylibs/harbourmaster/harbour.py:1598
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1609
+#: PortMaster/pylibs/harbourmaster/harbour.py:1617
 msgid "Verified"
 msgstr "認証済み"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1610
+#: PortMaster/pylibs/harbourmaster/harbour.py:1618
 msgid "Unverified"
 msgstr "未確認"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1611
+#: PortMaster/pylibs/harbourmaster/harbour.py:1619
 msgid "Broken"
 msgstr "損壊"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1618
+#: PortMaster/pylibs/harbourmaster/harbour.py:1626
 msgid "Unable do download a runtime when in offline mode."
 msgstr "オフラインモードではランタイムをダウンロードできません。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1624
+#: PortMaster/pylibs/harbourmaster/harbour.py:1632
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
 msgstr "ランタイム {runtime} を確認しています"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1633
-#: PortMaster/pylibs/harbourmaster/harbour.py:1636
+#: PortMaster/pylibs/harbourmaster/harbour.py:1641
+#: PortMaster/pylibs/harbourmaster/harbour.py:1644
 msgid "Verifying"
 msgstr "検証中"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1661
+#: PortMaster/pylibs/harbourmaster/harbour.py:1669
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
 msgstr "{runtime} のダウンロードが見つかりません。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1667
+#: PortMaster/pylibs/harbourmaster/harbour.py:1675
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1688
+#: PortMaster/pylibs/harbourmaster/harbour.py:1696
 #, python-brace-format
 msgid "Verified {runtime} successfully."
 msgstr "{runtime} 認証された。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1691
+#: PortMaster/pylibs/harbourmaster/harbour.py:1699
 #, python-brace-format
 msgid "Verified {runtime}."
 msgstr "{runtime} 認証済み"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1697
+#: PortMaster/pylibs/harbourmaster/harbour.py:1705
 #, python-brace-format
 msgid "Updating {runtime}."
 msgstr "{runtime} を更新中"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1701
+#: PortMaster/pylibs/harbourmaster/harbour.py:1709
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
 msgstr "ランタイム {runtime} が壊れています。再インストールします。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1705
+#: PortMaster/pylibs/harbourmaster/harbour.py:1713
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
 msgstr "ランタイム {runtime} をダウンロードしています。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1734
-#: PortMaster/pylibs/harbourmaster/harbour.py:1744
+#: PortMaster/pylibs/harbourmaster/harbour.py:1742
+#: PortMaster/pylibs/harbourmaster/harbour.py:1752
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
 msgstr "{runtime} をダウンロードできません。ゲームが正しく実行されない可能性があります。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1753
+#: PortMaster/pylibs/harbourmaster/harbour.py:1761
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
 msgstr "{runtime} のダウンロードに成功しました。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1762
-#: PortMaster/pylibs/harbourmaster/harbour.py:1841
+#: PortMaster/pylibs/harbourmaster/harbour.py:1770
+#: PortMaster/pylibs/harbourmaster/harbour.py:1849
 msgid "Unable do download a port when in offline mode."
 msgstr "オフラインモードではポート ランタイムをダウンロードできません。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1859
+#: PortMaster/pylibs/harbourmaster/harbour.py:1867
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
 msgstr "{port_name} のソースが見つかりません"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1873
+#: PortMaster/pylibs/harbourmaster/harbour.py:1881
 #, python-brace-format
 msgid "Unknown port {port_name}"
 msgstr "不明なポート {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1906
+#: PortMaster/pylibs/harbourmaster/harbour.py:1914
 #, python-brace-format
 msgid "Removing {port_name}"
 msgstr "{port_name} を削除中"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1947
+#: PortMaster/pylibs/harbourmaster/harbour.py:1955
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
 msgstr "{port_name} のアンインストールに成功しました"
