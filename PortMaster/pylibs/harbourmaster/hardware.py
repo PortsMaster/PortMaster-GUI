@@ -74,8 +74,8 @@ HW_INFO = {
     "rg353ps": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
 
     # Anbernic RG35XX
-    "rg35xx h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": [], "ram": 1024},
-    "rg35xx plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 1024},
+    "rg35xx h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rg35xx plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
 
     # Hardkernel Devices
