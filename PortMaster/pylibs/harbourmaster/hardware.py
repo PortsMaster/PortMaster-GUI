@@ -106,6 +106,7 @@ HW_INFO = {
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
+    'RetroDECK':      {'resolution': (1280, 720), 'analogsticks': 2, 'cpu': 'x86_64', 'capabilities': ['opengl', 'power']},
 
     # Default
     "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -203,6 +204,13 @@ def new_device_info():
             }
 
     info = {}
+
+   # Works on RetroDECK if flatplack deployed to $HOME folder.
+    retrodeck_version = safe_cat(Path.home() / '.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')
+    if retrodeck_version != '':
+        info['name'] = 'RetroDECK'
+        info['version'] = retrodeck_version.join(re.findall(r'version=(.*)', retrodeck_version))
+        info['device'] = 'RetroDECK'
 
     ## Works on muOS (obviously)
     muos_version = safe_cat('/opt/muos/config/version.txt')
