@@ -217,7 +217,7 @@ if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
     DISPLAY_HEIGHT=480
 fi
 
-cat << __INFO_DUMP__ | tee "device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
+cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
 # ${DEVICE_NAME} - ${CFW_NAME}
 \`\`\`bash
 DEVICE_INFO_VERSION=${DEVICE_INFO_VERSION}
