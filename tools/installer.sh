@@ -53,6 +53,9 @@ printf "\033c" > $CUR_TTY
 cd "$controlfolder"
 echo "Installing PortMaster to $controlfolder" | tee -a $CUR_TTY
 
+$ESUDO mkdir temp_runtimes
+$ESUDO mv PortMaster/libs/*.squashfs temp_runtimes/
+
 $ESUDO rm -fRv "PortMaster" "PortMaster.sh" | tee -a $CUR_TTY
 
 if [[ "${OS_NAME}" == "JELOS" ]]; then
@@ -116,6 +119,9 @@ if [ ! -z "$RELOCATE_PM" ]; then
   $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | tee -a $CUR_TTY
 fi
 
+$ESUDO mv temp_runtimes/*.squashfs PortMaster/libs/
+$ESUDO rm -fR temp_runtimes/
+
 if [ -f "$TEMP_DIR/runtimes.zip" ]; then
   cd PortMaster/libs/
   $ESUDO unzip "$TEMP_DIR/runtimes.zip" | tee -a $CUR_TTY
@@ -128,4 +134,8 @@ $ESUDO rm -vf Install*PortMaster.sh | tee -a $CUR_TTY
 echo "Finished installing PortMaster" | tee -a $CUR_TTY
 sleep 2
 
-$ESUDO systemctl restart $ES_NAME
+if [ ! -f "$HOME/no_es_restart" ]; then
+  $ESUDO systemctl restart $ES_NAME
+else
+  $ESUDO rm -f "$HOME/no_es_restart"
+fi
