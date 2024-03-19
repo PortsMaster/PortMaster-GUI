@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2024-03-10 05:51\n"
+"PO-Revision-Date: 2024-03-19 12:20\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -17,17 +17,17 @@ msgstr ""
 "X-Crowdin-File: themes.pot\n"
 "X-Crowdin-File-ID: 3\n"
 
-#: Stardew.theme.zip/theme.json:369, ff_VII.theme.zip/theme.json:245, Doom.theme.zip/theme.json:314, Fallout.theme.zip/theme.json:541
+#: ff_VII.theme.zip/theme.json:246, Stardew.theme.zip/theme.json:369, Doom.theme.zip/theme.json:317, Fallout.theme.zip/theme.json:547
 msgid "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
 msgstr "Gêneros: {port_info.genres}    Tamanho do download: {port_info.download_size}{if:port_info.runtime}    Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
-#: Stardew.theme.zip/theme.json:469, ff_VII.theme.zip/theme.json:346, Doom.theme.zip/theme.json:416, Fallout.theme.zip/theme.json:601
+#: ff_VII.theme.zip/theme.json:347, Stardew.theme.zip/theme.json:470, Doom.theme.zip/theme.json:419, Fallout.theme.zip/theme.json:608
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
 "Filters: {ports_list.filters}{endif}"
 msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Jogos disponíveis: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
 "Filtros: {ports_list.filters}{endif}"
 
-#: Stardew.theme.zip/theme.json:535, ff_VII.theme.zip/theme.json:413, Doom.theme.zip/theme.json:484, Zelda.theme.zip/theme.json:471, Fallout.theme.zip/theme.json:674
+#: ff_VII.theme.zip/theme.json:414, Zelda.theme.zip/theme.json:478, Stardew.theme.zip/theme.json:536, Doom.theme.zip/theme.json:487, Fallout.theme.zip/theme.json:681
 #: default_theme/theme.json:414
 msgid "Free Space: {system.free_space}\n\n"
 "Porter: {port_info.porter}\n"
@@ -42,7 +42,7 @@ msgstr "Espaço livre: {system.free_space}\n\n"
 "Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Instrução: {port_info.instructions}"
 
-#: Stardew.theme.zip/theme.json:598, ff_VII.theme.zip/theme.json:453, default_theme/theme.json:441
+#: ff_VII.theme.zip/theme.json:454, Stardew.theme.zip/theme.json:599, default_theme/theme.json:441
 msgid "Time: {system.time_24hr}\n"
 "CFW: {system.cfw_name} ({system.cfw_version})\n"
 "Device: {system.device_name}\n"
@@ -52,27 +52,7 @@ msgstr "Hora: {system.time_24hr}\n"
 "Aparelho: {system.device_name}\n"
 "Bateria: {system.battery_level}"
 
-#: Stardew.theme.zip/theme.json:606
-msgid "PM: {system.portmaster_version}\n"
-"HM: {system.harbourmaster_version}\n"
-"Space: {system.free_space} free"
-msgstr "PM: {system.portmaster_version}\n"
-"HM: {system.harbourmaster_version}\n"
-"Espaço: {system.free_space} livre"
-
-#: Stardew.theme.zip/theme.json:644, ff_VII.theme.zip/theme.json:496, Doom.theme.zip/theme.json:594, Zelda.theme.zip/theme.json:537, Fallout.theme.zip/theme.json:752
-#: default_theme/theme.json:499, default_theme/theme.json:625
-msgid "IP: {system.ip_address}"
-msgstr "IP: {system.ip_address}"
-
-#: Stardew.theme.zip/theme.json:730, ff_VII.theme.zip/theme.json:579, Doom.theme.zip/theme.json:677, Zelda.theme.zip/theme.json:619, Fallout.theme.zip/theme.json:821
-#: default_theme/theme.json:550
-msgid "Creator: {theme_info.creator}\n"
-"Status: {theme_info.status}"
-msgstr "Criador: {theme_info.creator}\n"
-"Estado: {theme_info.status}"
-
-#: ff_VII.theme.zip/theme.json:461, default_theme/theme.json:449
+#: ff_VII.theme.zip/theme.json:462, default_theme/theme.json:449
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
@@ -80,19 +60,23 @@ msgstr "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Espaço: {system.free_space} livre / {system.total_space} total"
 
-#: Doom.theme.zip/theme.json:542
-msgid "Time: {system.time_24hr}\n"
-"Battery: {system.battery_level}\n"
-"Space: {system.free_space} free"
-msgstr "Hora: {system.time_24hr}\n"
-"Bateria: {system.battery_level}\n"
-"Espaço: {system.free_space} livre"
+#: ff_VII.theme.zip/theme.json:497, Zelda.theme.zip/theme.json:544, Stardew.theme.zip/theme.json:645, Doom.theme.zip/theme.json:597, Fallout.theme.zip/theme.json:759
+#: default_theme/theme.json:499, default_theme/theme.json:625
+msgid "IP: {system.ip_address}"
+msgstr "IP: {system.ip_address}"
 
-#: Zelda.theme.zip/theme.json:315
+#: ff_VII.theme.zip/theme.json:581, Zelda.theme.zip/theme.json:626, Stardew.theme.zip/theme.json:733, Doom.theme.zip/theme.json:684, Fallout.theme.zip/theme.json:828
+#: default_theme/theme.json:550
+msgid "Creator: {theme_info.creator}\n"
+"Status: {theme_info.status}"
+msgstr "Criador: {theme_info.creator}\n"
+"Estado: {theme_info.status}"
+
+#: Zelda.theme.zip/theme.json:320
 msgid "Filters: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
 msgstr "Filtros: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
 
-#: Zelda.theme.zip/theme.json:365
+#: Zelda.theme.zip/theme.json:370
 msgid "Genres: {port_info.genres}\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
@@ -100,21 +84,25 @@ msgstr "Gêneros: {port_info.genres}\n"
 "Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
 "Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
-#: Zelda.theme.zip/theme.json:508
+#: Zelda.theme.zip/theme.json:515
 msgid "Time: {system.time_24hr}      Battery: {system.battery_level}"
 msgstr "Hora: {system.time_24hr}      Bateria: {system.battery_level}"
 
-#: Fallout.theme.zip/theme.json:716
+#: Stardew.theme.zip/theme.json:607
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
-"Space: {system.free_space} free / {system.total_space} total\n"
-"Time: {system.time_24hr}\n"
-"Battery: {system.battery_level}"
+"Space: {system.free_space} free"
 msgstr "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
-"Espaço: {system.free_space} livre / {system.total_space} total\n"
-"Hora: {system.time_24hr}\n"
-"Bateria: {system.battery_level}"
+"Espaço: {system.free_space} livre"
+
+#: Doom.theme.zip/theme.json:545
+msgid "Time: {system.time_24hr}\n"
+"Battery: {system.battery_level}\n"
+"Space: {system.free_space} free"
+msgstr "Hora: {system.time_24hr}\n"
+"Bateria: {system.battery_level}\n"
+"Espaço: {system.free_space} livre"
 
 #: basic_theme.theme.zip/theme.json:77
 msgid "Title: {port_info.title}\n"
@@ -129,6 +117,18 @@ msgstr "Título: {port_info.title}\n"
 "Tamanho do download: {port_info.download_size}{if:port_info.runtime}\n"
 "Tempo de execução: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
 "Descrição: {port_info.description}"
+
+#: Fallout.theme.zip/theme.json:723
+msgid "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"Space: {system.free_space} free / {system.total_space} total\n"
+"Time: {system.time_24hr}\n"
+"Battery: {system.battery_level}"
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"Espaço: {system.free_space} livre / {system.total_space} total\n"
+"Hora: {system.time_24hr}\n"
+"Bateria: {system.battery_level}"
 
 #: default_theme/theme.json:315
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
