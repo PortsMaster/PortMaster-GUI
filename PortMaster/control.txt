@@ -153,4 +153,8 @@ fi
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
 
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+if [ -f "$controlfolder/cwtbe_flag" ]; then
+  GPTOKEYB="$ESUDO $controlfolder/gptokeyb2 $ESUDOKILL"
+else
+  GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+fi
