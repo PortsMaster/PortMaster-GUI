@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-19 20:19+0800\n"
-"PO-Revision-Date: 2024-03-19 12:20\n"
+"PO-Revision-Date: 2024-03-20 09:58\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -716,11 +716,11 @@ msgstr "Exibir ou ocultar jogos experimentais."
 
 #: PortMaster/pylibs/pugscene.py:555 PortMaster/pylibs/pugscene.py:632
 msgid "CWTBE Mode: "
-msgstr ""
+msgstr "Modo CWTBE: "
 
 #: PortMaster/pylibs/pugscene.py:556
 msgid "Enable gptokeyb2 by default."
-msgstr ""
+msgstr "Habilitar gptokeyb2 por padrão."
 
 #: PortMaster/pylibs/pugscene.py:559
 msgid "Delete PortMaster Config"
