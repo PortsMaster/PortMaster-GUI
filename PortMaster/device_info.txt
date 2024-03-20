@@ -46,6 +46,11 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     unset CFW_INFO
     unset CFW_FFS
 
+elif [ -f "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
+    # RetroDeck
+    CFW_NAME="RetroDECK"
+    DEVICE_NAME"RetroDECK"
+    CFW_VERSION==$(grep 'version' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
 elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
@@ -207,6 +212,10 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
 
         DEVICE_CPU="H700"
         DEVICE_ARCH="armhf"
+        ;;
+
+     "RetroDECK")
+        DEVICE_CPU="x86_64"
         ;;
 
 esac
