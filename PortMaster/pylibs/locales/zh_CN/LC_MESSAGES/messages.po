@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-10 13:53+0800\n"
-"PO-Revision-Date: 2024-03-10 05:53\n"
+"POT-Creation-Date: 2024-03-19 20:19+0800\n"
+"PO-Revision-Date: 2024-03-19 12:20\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -93,7 +93,7 @@ msgstr "不适用"
 msgid "** NO PORT **"
 msgstr "** 无PORT **"
 
-#: PortMaster/pugwash:880 PortMaster/pylibs/pugscene.py:1751
+#: PortMaster/pugwash:880 PortMaster/pylibs/pugscene.py:1767
 msgid "Ready to Run"
 msgstr "可以运行"
 
@@ -102,7 +102,7 @@ msgid "Requires Files"
 msgstr "所需的文件"
 
 #: PortMaster/pugwash:887 PortMaster/pugwash:914
-#: PortMaster/pylibs/pugscene.py:877
+#: PortMaster/pylibs/pugscene.py:893
 msgid "Installed"
 msgstr "已安装"
 
@@ -111,25 +111,25 @@ msgid "Missing"
 msgstr "缺失"
 
 #: PortMaster/pugwash:915 PortMaster/pylibs/harbourmaster/harbour.py:1616
-#: PortMaster/pylibs/pugscene.py:1753
+#: PortMaster/pylibs/pugscene.py:1769
 msgid "Update Available"
 msgstr "有可用更新"
 
 #: PortMaster/pugwash:916 PortMaster/pylibs/harbourmaster/harbour.py:1615
-#: PortMaster/pylibs/pugscene.py:877 PortMaster/pylibs/pugscene.py:1752
+#: PortMaster/pylibs/pugscene.py:893 PortMaster/pylibs/pugscene.py:1768
 msgid "Not Installed"
 msgstr "未安装"
 
 #: PortMaster/pugwash:1092 PortMaster/pugwash:1466
-#: PortMaster/pylibs/pugscene.py:2051 PortMaster/pylibs/pugscene.py:2099
-#: PortMaster/pylibs/pugscene.py:2101
+#: PortMaster/pylibs/pugscene.py:2067 PortMaster/pylibs/pugscene.py:2115
+#: PortMaster/pylibs/pugscene.py:2117
 msgid "Okay"
 msgstr "确定"
 
 #: PortMaster/pugwash:1095 PortMaster/pugwash:1467
-#: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
-#: PortMaster/pylibs/pugscene.py:2020 PortMaster/pylibs/pugscene.py:2054
-#: PortMaster/pylibs/pugscene.py:2099
+#: PortMaster/pylibs/pugscene.py:1221 PortMaster/pylibs/pugscene.py:1229
+#: PortMaster/pylibs/pugscene.py:2036 PortMaster/pylibs/pugscene.py:2070
+#: PortMaster/pylibs/pugscene.py:2115
 msgid "Cancel"
 msgstr "取消"
 
@@ -474,7 +474,7 @@ msgstr "无法验证下载。"
 msgid "Main Menu"
 msgstr "主菜单"
 
-#: PortMaster/pylibs/pugscene.py:370 PortMaster/pylibs/pugscene.py:1257
+#: PortMaster/pylibs/pugscene.py:370 PortMaster/pylibs/pugscene.py:1273
 msgid "Featured Ports"
 msgstr "精选端口"
 
@@ -522,8 +522,8 @@ msgstr "退出"
 msgid "Quit PortMaster"
 msgstr "退出 Portmaster"
 
-#: PortMaster/pylibs/pugscene.py:395 PortMaster/pylibs/pugscene.py:565
-#: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
+#: PortMaster/pylibs/pugscene.py:395 PortMaster/pylibs/pugscene.py:569
+#: PortMaster/pylibs/pugscene.py:1221 PortMaster/pylibs/pugscene.py:1229
 msgid "Enter"
 msgstr "进入"
 
@@ -538,17 +538,19 @@ msgstr "隐私模式 {secret_mode}"
 
 #: PortMaster/pylibs/pugscene.py:410 PortMaster/pylibs/pugscene.py:486
 #: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:547
-#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:604
-#: PortMaster/pylibs/pugscene.py:614 PortMaster/pylibs/pugscene.py:672
-#: PortMaster/pylibs/pugscene.py:681
+#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:555
+#: PortMaster/pylibs/pugscene.py:608 PortMaster/pylibs/pugscene.py:618
+#: PortMaster/pylibs/pugscene.py:632 PortMaster/pylibs/pugscene.py:688
+#: PortMaster/pylibs/pugscene.py:697
 msgid "Enabled"
 msgstr "已启用"
 
 #: PortMaster/pylibs/pugscene.py:410 PortMaster/pylibs/pugscene.py:486
 #: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:547
-#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:604
-#: PortMaster/pylibs/pugscene.py:614 PortMaster/pylibs/pugscene.py:672
-#: PortMaster/pylibs/pugscene.py:681
+#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:555
+#: PortMaster/pylibs/pugscene.py:608 PortMaster/pylibs/pugscene.py:618
+#: PortMaster/pylibs/pugscene.py:632 PortMaster/pylibs/pugscene.py:688
+#: PortMaster/pylibs/pugscene.py:697
 msgid "Disabled"
 msgstr "已禁用"
 
@@ -572,7 +574,7 @@ msgstr "选择语言"
 msgid "Select the language PortMaster uses."
 msgstr "选择 PortMaster 语言。"
 
-#: PortMaster/pylibs/pugscene.py:472 PortMaster/pylibs/pugscene.py:970
+#: PortMaster/pylibs/pugscene.py:472 PortMaster/pylibs/pugscene.py:986
 msgid "Select Theme"
 msgstr "选择主题"
 
@@ -592,7 +594,7 @@ msgstr "为 PortMaster 选择一个颜色方案"
 msgid "Audio"
 msgstr "音频："
 
-#: PortMaster/pylibs/pugscene.py:486 PortMaster/pylibs/pugscene.py:672
+#: PortMaster/pylibs/pugscene.py:486 PortMaster/pylibs/pugscene.py:688
 msgid "Music: "
 msgstr "音乐： "
 
@@ -600,7 +602,7 @@ msgstr "音乐： "
 msgid "Enable or Disable background music in PortMaster."
 msgstr "在 PortMaster中启用或禁用背景音乐"
 
-#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:681
+#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:697
 msgid "Sound FX: "
 msgstr "音效： "
 
@@ -612,15 +614,15 @@ msgstr "在 PortMaster中启用或禁用背景音乐"
 msgid "Port Metadata"
 msgstr ""
 
-#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:709
+#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:725
 msgid "Metadata Update: "
 msgstr ""
 
-#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:709
+#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:725
 msgid "Auto"
 msgstr ""
 
-#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:709
+#: PortMaster/pylibs/pugscene.py:498 PortMaster/pylibs/pugscene.py:725
 msgid "Manual"
 msgstr ""
 
@@ -640,7 +642,7 @@ msgstr ""
 msgid "System"
 msgstr "系统"
 
-#: PortMaster/pylibs/pugscene.py:510 PortMaster/pylibs/pugscene.py:800
+#: PortMaster/pylibs/pugscene.py:510 PortMaster/pylibs/pugscene.py:816
 msgid "Runtime Manager"
 msgstr "运行时管理器"
 
@@ -681,7 +683,7 @@ msgstr "启用 Alpha 版本"
 msgid "Change release channel of PortMaster to alpha."
 msgstr "更改PortMaster的发行频道为Alpha"
 
-#: PortMaster/pylibs/pugscene.py:540 PortMaster/pylibs/pugscene.py:699
+#: PortMaster/pylibs/pugscene.py:540 PortMaster/pylibs/pugscene.py:715
 #, python-brace-format
 msgid "Controller Mode: {controller_mode}"
 msgstr "控制器模式： {controller_mode}"
@@ -694,7 +696,7 @@ msgstr "切换不同控制器布局。"
 msgid "Secret Options"
 msgstr "隐私选项"
 
-#: PortMaster/pylibs/pugscene.py:547 PortMaster/pylibs/pugscene.py:604
+#: PortMaster/pylibs/pugscene.py:547 PortMaster/pylibs/pugscene.py:608
 msgid "All Ports: "
 msgstr "所有端口: "
 
@@ -702,7 +704,7 @@ msgstr "所有端口: "
 msgid "Show all ports, ignoring requirements."
 msgstr "显示所有端口，忽略要求。"
 
-#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:614
+#: PortMaster/pylibs/pugscene.py:551 PortMaster/pylibs/pugscene.py:618
 msgid "Experimental Ports: "
 msgstr "实验端口： "
 
@@ -710,30 +712,38 @@ msgstr "实验端口： "
 msgid "Show or hide experimental ports."
 msgstr "是否显示实验性端口。"
 
-#: PortMaster/pylibs/pugscene.py:555
+#: PortMaster/pylibs/pugscene.py:555 PortMaster/pylibs/pugscene.py:632
+msgid "CWTBE Mode: "
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:556
+msgid "Enable gptokeyb2 by default."
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:559
 msgid "Delete PortMaster Config"
 msgstr "删除 PortMaster 配置"
 
-#: PortMaster/pylibs/pugscene.py:556 PortMaster/pylibs/pugscene.py:560
+#: PortMaster/pylibs/pugscene.py:560 PortMaster/pylibs/pugscene.py:564
 msgid "This can break stuff, don't touch unless you know what you are doing."
 msgstr "除非你知道你在做什么，否则可能会弄砸配置，不要乱动。"
 
-#: PortMaster/pylibs/pugscene.py:559
+#: PortMaster/pylibs/pugscene.py:563
 msgid "Delete PortMaster Runtimes"
 msgstr "删除 PortMaster 配置"
 
-#: PortMaster/pylibs/pugscene.py:565 PortMaster/pylibs/pugscene.py:893
-#: PortMaster/pylibs/pugscene.py:896 PortMaster/pylibs/pugscene.py:1004
-#: PortMaster/pylibs/pugscene.py:1086 PortMaster/pylibs/pugscene.py:1087
-#: PortMaster/pylibs/pugscene.py:1140 PortMaster/pylibs/pugscene.py:1141
-#: PortMaster/pylibs/pugscene.py:1268 PortMaster/pylibs/pugscene.py:1503
-#: PortMaster/pylibs/pugscene.py:1527 PortMaster/pylibs/pugscene.py:1529
-#: PortMaster/pylibs/pugscene.py:1556 PortMaster/pylibs/pugscene.py:1559
-#: PortMaster/pylibs/pugscene.py:1634 PortMaster/pylibs/pugscene.py:1636
+#: PortMaster/pylibs/pugscene.py:569 PortMaster/pylibs/pugscene.py:909
+#: PortMaster/pylibs/pugscene.py:912 PortMaster/pylibs/pugscene.py:1020
+#: PortMaster/pylibs/pugscene.py:1102 PortMaster/pylibs/pugscene.py:1103
+#: PortMaster/pylibs/pugscene.py:1156 PortMaster/pylibs/pugscene.py:1157
+#: PortMaster/pylibs/pugscene.py:1284 PortMaster/pylibs/pugscene.py:1519
+#: PortMaster/pylibs/pugscene.py:1543 PortMaster/pylibs/pugscene.py:1545
+#: PortMaster/pylibs/pugscene.py:1572 PortMaster/pylibs/pugscene.py:1575
+#: PortMaster/pylibs/pugscene.py:1650 PortMaster/pylibs/pugscene.py:1652
 msgid "Back"
 msgstr "返回"
 
-#: PortMaster/pylibs/pugscene.py:620
+#: PortMaster/pylibs/pugscene.py:636
 msgid "Are you sure you want to change to the alpha release channel?\n\n"
 "PortMaster will upgrade or downgrade accordingly.\n\n"
 "THIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED"
@@ -741,314 +751,314 @@ msgstr "你是否真的要切换到Alpha通道？\n"
 "PortMaster可能会因此而升级或降级。\n"
 "警告：此举可能会搞坏设置"
 
-#: PortMaster/pylibs/pugscene.py:647
+#: PortMaster/pylibs/pugscene.py:663
 #, python-brace-format
 msgid "Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\n"
 "PortMaster will upgrade or downgrade accordingly."
 msgstr "你确定要把发行渠道从 {current_channel} 改为 {new_channel}？\n\n"
 "依据该设置，PortMaster可能会升级或者降级。"
 
-#: PortMaster/pylibs/pugscene.py:715
+#: PortMaster/pylibs/pugscene.py:731
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
 "This will override any scraped artwork or port information and will require a 30+ MB download."
 msgstr ""
 
-#: PortMaster/pylibs/pugscene.py:767
+#: PortMaster/pylibs/pugscene.py:783
 msgid "Deleting Runtimes:"
 msgstr "删除运行时："
 
-#: PortMaster/pylibs/pugscene.py:792
+#: PortMaster/pylibs/pugscene.py:808
 msgid "Source Manager"
 msgstr "源管理器"
 
-#: PortMaster/pylibs/pugscene.py:835
+#: PortMaster/pylibs/pugscene.py:851
 msgid "Download All"
 msgstr "下载全部"
 
-#: PortMaster/pylibs/pugscene.py:878
+#: PortMaster/pylibs/pugscene.py:894
 msgid "Used"
 msgstr "已用"
 
-#: PortMaster/pylibs/pugscene.py:878
+#: PortMaster/pylibs/pugscene.py:894
 msgid "Not Used"
 msgstr "未使用"
 
-#: PortMaster/pylibs/pugscene.py:893
+#: PortMaster/pylibs/pugscene.py:909
 msgid "Check"
 msgstr "检查"
 
-#: PortMaster/pylibs/pugscene.py:893 PortMaster/pylibs/pugscene.py:1556
-#: PortMaster/pylibs/pugscene.py:1634
+#: PortMaster/pylibs/pugscene.py:909 PortMaster/pylibs/pugscene.py:1572
+#: PortMaster/pylibs/pugscene.py:1650
 msgid "Uninstall"
 msgstr "卸载"
 
-#: PortMaster/pylibs/pugscene.py:896 PortMaster/pylibs/pugscene.py:1559
-#: PortMaster/pylibs/pugscene.py:1636
+#: PortMaster/pylibs/pugscene.py:912 PortMaster/pylibs/pugscene.py:1575
+#: PortMaster/pylibs/pugscene.py:1652
 msgid "Install"
 msgstr "安装"
 
-#: PortMaster/pylibs/pugscene.py:911
+#: PortMaster/pylibs/pugscene.py:927
 msgid "Are you sure you want to download and verify all runtimes?"
 msgstr "您确定要下载并验证所有运行时？"
 
-#: PortMaster/pylibs/pugscene.py:953
+#: PortMaster/pylibs/pugscene.py:969
 #, python-brace-format
 msgid "Deleted runtime {runtime}"
 msgstr "删除运行时 {runtime}"
 
-#: PortMaster/pylibs/pugscene.py:988
+#: PortMaster/pylibs/pugscene.py:1004
 #, python-brace-format
 msgid "{theme_name} (Selected)"
 msgstr "{theme_name} （已选）"
 
-#: PortMaster/pylibs/pugscene.py:1002 PortMaster/pylibs/pugscene.py:1087
-#: PortMaster/pylibs/pugscene.py:1141 PortMaster/pylibs/pugscene.py:1205
-#: PortMaster/pylibs/pugscene.py:1213 PortMaster/pylibs/pugscene.py:1268
+#: PortMaster/pylibs/pugscene.py:1018 PortMaster/pylibs/pugscene.py:1103
+#: PortMaster/pylibs/pugscene.py:1157 PortMaster/pylibs/pugscene.py:1221
+#: PortMaster/pylibs/pugscene.py:1229 PortMaster/pylibs/pugscene.py:1284
 msgid "Select"
 msgstr "选择"
 
-#: PortMaster/pylibs/pugscene.py:1007
+#: PortMaster/pylibs/pugscene.py:1023
 msgid "Download"
 msgstr "下载"
 
-#: PortMaster/pylibs/pugscene.py:1026
+#: PortMaster/pylibs/pugscene.py:1042
 msgid "Do you want to change theme?\n\n"
 "You will have to restart for it to take affect."
 msgstr "你要更换主题吗？\n\n"
 "可能需要重启程序以适用更改。"
 
-#: PortMaster/pylibs/pugscene.py:1067
+#: PortMaster/pylibs/pugscene.py:1083
 msgid "Select Colour Scheme"
 msgstr "选择配色方案"
 
-#: PortMaster/pylibs/pugscene.py:1081
+#: PortMaster/pylibs/pugscene.py:1097
 #, python-brace-format
 msgid "{item_name} (Selected)"
 msgstr "{item_name}  （已选）"
 
-#: PortMaster/pylibs/pugscene.py:1104
+#: PortMaster/pylibs/pugscene.py:1120
 msgid "Do you want to change the themes color scheme?\n\n"
 "You will have to restart for it to take affect."
 msgstr "您想要更改主题颜色方案吗？\n\n"
 "需要重新启动才能适用。"
 
-#: PortMaster/pylibs/pugscene.py:1125
+#: PortMaster/pylibs/pugscene.py:1141
 msgid "Language Select"
 msgstr "选择语言"
 
-#: PortMaster/pylibs/pugscene.py:1135
+#: PortMaster/pylibs/pugscene.py:1151
 #, python-brace-format
 msgid "{lang_name} (Selected)"
 msgstr "{lang_name} （已选）"
 
-#: PortMaster/pylibs/pugscene.py:1158
+#: PortMaster/pylibs/pugscene.py:1174
 msgid "Do you want to change language?\n\n"
 "You will have to restart for it to take affect."
 msgstr "您想要更改语言吗？\n\n"
 "需要重新启动才能适用。"
 
-#: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
+#: PortMaster/pylibs/pugscene.py:1221 PortMaster/pylibs/pugscene.py:1229
 msgid "Delete"
 msgstr "删除"
 
-#: PortMaster/pylibs/pugscene.py:1205
+#: PortMaster/pylibs/pugscene.py:1221
 msgid "Upper Case"
 msgstr "大写"
 
-#: PortMaster/pylibs/pugscene.py:1205 PortMaster/pylibs/pugscene.py:1213
+#: PortMaster/pylibs/pugscene.py:1221 PortMaster/pylibs/pugscene.py:1229
 msgid "Space"
 msgstr "空格"
 
-#: PortMaster/pylibs/pugscene.py:1213
+#: PortMaster/pylibs/pugscene.py:1229
 msgid "Lower Case"
 msgstr "小写"
 
-#: PortMaster/pylibs/pugscene.py:1285
+#: PortMaster/pylibs/pugscene.py:1301
 msgid "No featured ports found, internet connection is required."
 msgstr "未找到精选端口，需要网络连接。"
 
-#: PortMaster/pylibs/pugscene.py:1313 PortMaster/pylibs/pugscene.py:1336
+#: PortMaster/pylibs/pugscene.py:1329 PortMaster/pylibs/pugscene.py:1352
 msgid "NO PORTS"
 msgstr "无PORT"
 
-#: PortMaster/pylibs/pugscene.py:1317 PortMaster/pylibs/pugscene.py:1343
+#: PortMaster/pylibs/pugscene.py:1333 PortMaster/pylibs/pugscene.py:1359
 msgid "** NO PORTS FOUND **"
 msgstr "** 没有发现PORTS**"
 
-#: PortMaster/pylibs/pugscene.py:1319 PortMaster/pylibs/pugscene.py:1346
+#: PortMaster/pylibs/pugscene.py:1335 PortMaster/pylibs/pugscene.py:1362
 msgid "Download ports first."
 msgstr "首先下载端口。"
 
-#: PortMaster/pylibs/pugscene.py:1348
+#: PortMaster/pylibs/pugscene.py:1364
 msgid "Try removing some filters."
 msgstr "试试看去除一些筛选器。"
 
-#: PortMaster/pylibs/pugscene.py:1503 PortMaster/pylibs/pugscene.py:1527
-#: PortMaster/pylibs/pugscene.py:1529 PortMaster/pylibs/pugscene.py:1614
-#: PortMaster/pylibs/pugscene.py:1619
+#: PortMaster/pylibs/pugscene.py:1519 PortMaster/pylibs/pugscene.py:1543
+#: PortMaster/pylibs/pugscene.py:1545 PortMaster/pylibs/pugscene.py:1630
+#: PortMaster/pylibs/pugscene.py:1635
 msgid "Show Info"
 msgstr "显示详情"
 
-#: PortMaster/pylibs/pugscene.py:1508
+#: PortMaster/pylibs/pugscene.py:1524
 msgid "Ports List"
 msgstr "端口列表"
 
-#: PortMaster/pylibs/pugscene.py:1527
+#: PortMaster/pylibs/pugscene.py:1543
 msgid "Filters"
 msgstr "筛选器"
 
-#: PortMaster/pylibs/pugscene.py:1535
+#: PortMaster/pylibs/pugscene.py:1551
 msgid "Port Info Popup"
 msgstr "端口信息弹出"
 
-#: PortMaster/pylibs/pugscene.py:1546 PortMaster/pylibs/pugscene.py:1549
+#: PortMaster/pylibs/pugscene.py:1562 PortMaster/pylibs/pugscene.py:1565
 msgid "Hide Info"
 msgstr "隐藏信息"
 
-#: PortMaster/pylibs/pugscene.py:1556 PortMaster/pylibs/pugscene.py:1634
+#: PortMaster/pylibs/pugscene.py:1572 PortMaster/pylibs/pugscene.py:1650
 msgid "Reinstall"
 msgstr "重新安装"
 
-#: PortMaster/pylibs/pugscene.py:1583
+#: PortMaster/pylibs/pugscene.py:1599
 msgid "Port Info"
 msgstr "端口信息"
 
-#: PortMaster/pylibs/pugscene.py:1656
+#: PortMaster/pylibs/pugscene.py:1672
 #, python-brace-format
 msgid "Are you sure you want to uninstall {port_name}?"
 msgstr "您确定要卸载 {port_name}？"
 
-#: PortMaster/pylibs/pugscene.py:1700
+#: PortMaster/pylibs/pugscene.py:1716
 msgid "Filters Scene"
 msgstr "筛选场景"
 
-#: PortMaster/pylibs/pugscene.py:1729
+#: PortMaster/pylibs/pugscene.py:1745
 msgid "Alphabetical"
 msgstr "按字母顺序"
 
-#: PortMaster/pylibs/pugscene.py:1730
+#: PortMaster/pylibs/pugscene.py:1746
 msgid "Recently Added"
 msgstr "最近添加"
 
-#: PortMaster/pylibs/pugscene.py:1731
+#: PortMaster/pylibs/pugscene.py:1747
 msgid "Recently Updated"
 msgstr "最近更新"
 
-#: PortMaster/pylibs/pugscene.py:1734
+#: PortMaster/pylibs/pugscene.py:1750
 msgid "Action"
 msgstr "操作"
 
-#: PortMaster/pylibs/pugscene.py:1735
+#: PortMaster/pylibs/pugscene.py:1751
 msgid "Adventure"
 msgstr "冒险"
 
-#: PortMaster/pylibs/pugscene.py:1736
+#: PortMaster/pylibs/pugscene.py:1752
 msgid "Arcade"
 msgstr "街机"
 
-#: PortMaster/pylibs/pugscene.py:1737
+#: PortMaster/pylibs/pugscene.py:1753
 msgid "Casino/Card"
 msgstr "赌博/卡牌"
 
-#: PortMaster/pylibs/pugscene.py:1738
+#: PortMaster/pylibs/pugscene.py:1754
 msgid "First Person Shooter"
 msgstr "FPS"
 
-#: PortMaster/pylibs/pugscene.py:1739
+#: PortMaster/pylibs/pugscene.py:1755
 msgid "Platformer"
 msgstr "平台"
 
-#: PortMaster/pylibs/pugscene.py:1740
+#: PortMaster/pylibs/pugscene.py:1756
 msgid "Puzzle"
 msgstr "解谜"
 
-#: PortMaster/pylibs/pugscene.py:1741
+#: PortMaster/pylibs/pugscene.py:1757
 msgid "Racing"
 msgstr "竞速"
 
-#: PortMaster/pylibs/pugscene.py:1742
+#: PortMaster/pylibs/pugscene.py:1758
 msgid "Rhythm"
 msgstr "节奏"
 
-#: PortMaster/pylibs/pugscene.py:1743
+#: PortMaster/pylibs/pugscene.py:1759
 msgid "Role Playing Game"
 msgstr "RPG"
 
-#: PortMaster/pylibs/pugscene.py:1744
+#: PortMaster/pylibs/pugscene.py:1760
 msgid "Simulation"
 msgstr "模拟"
 
-#: PortMaster/pylibs/pugscene.py:1745
+#: PortMaster/pylibs/pugscene.py:1761
 msgid "Sports"
 msgstr "运动"
 
-#: PortMaster/pylibs/pugscene.py:1746
+#: PortMaster/pylibs/pugscene.py:1762
 msgid "Strategy"
 msgstr "策略"
 
-#: PortMaster/pylibs/pugscene.py:1747
+#: PortMaster/pylibs/pugscene.py:1763
 msgid "Visual Novel"
 msgstr "视觉小说"
 
-#: PortMaster/pylibs/pugscene.py:1748
+#: PortMaster/pylibs/pugscene.py:1764
 msgid "Other"
 msgstr "其他"
 
-#: PortMaster/pylibs/pugscene.py:1754
+#: PortMaster/pylibs/pugscene.py:1770
 msgid "Broken Ports"
 msgstr "损坏的端口"
 
-#: PortMaster/pylibs/pugscene.py:1757
+#: PortMaster/pylibs/pugscene.py:1773
 msgid "Free game, all files included."
 msgstr "免费游戏，包含所有文件。"
 
-#: PortMaster/pylibs/pugscene.py:1758
+#: PortMaster/pylibs/pugscene.py:1774
 msgid "Demo files included."
 msgstr "包含Demo。"
 
-#: PortMaster/pylibs/pugscene.py:1759
+#: PortMaster/pylibs/pugscene.py:1775
 msgid "Free external assets needed."
 msgstr "需要可免费下载的外部资源。"
 
-#: PortMaster/pylibs/pugscene.py:1760
+#: PortMaster/pylibs/pugscene.py:1776
 msgid "Paid external assets needed."
 msgstr "需要付费下载的外部资源。"
 
-#: PortMaster/pylibs/pugscene.py:1763 PortMaster/pylibs/pugscene.py:1764
-#: PortMaster/pylibs/pugscene.py:1765
+#: PortMaster/pylibs/pugscene.py:1779 PortMaster/pylibs/pugscene.py:1780
+#: PortMaster/pylibs/pugscene.py:1781
 #, python-brace-format
 msgid "{runtime_name} Runtime"
 msgstr "运行时 {runtime_name}"
 
-#: PortMaster/pylibs/pugscene.py:1809
+#: PortMaster/pylibs/pugscene.py:1825
 msgid "Sort:"
 msgstr "排序："
 
-#: PortMaster/pylibs/pugscene.py:1824
+#: PortMaster/pylibs/pugscene.py:1840
 msgid "Clear Filters"
 msgstr "重置筛选"
 
-#: PortMaster/pylibs/pugscene.py:1848
+#: PortMaster/pylibs/pugscene.py:1864
 msgid "Genres:"
 msgstr "类型："
 
-#: PortMaster/pylibs/pugscene.py:1878
+#: PortMaster/pylibs/pugscene.py:1894
 msgid "Attributes:"
 msgstr "属性"
 
-#: PortMaster/pylibs/pugscene.py:1907
+#: PortMaster/pylibs/pugscene.py:1923
 msgid "Availability:"
 msgstr "可用性："
 
-#: PortMaster/pylibs/pugscene.py:1936
+#: PortMaster/pylibs/pugscene.py:1952
 msgid "Porters:"
 msgstr "端口："
 
-#: PortMaster/pylibs/pugscene.py:2004
+#: PortMaster/pylibs/pugscene.py:2020
 msgid "Messages"
 msgstr "消息"
 
-#: PortMaster/pylibs/pugscene.py:2039
+#: PortMaster/pylibs/pugscene.py:2055
 msgid "Are you sure you want to cancel?"
 msgstr "要取消吗？"
 

@@ -551,6 +551,10 @@ class OptionScene(BaseScene):
                 _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")),
                 description=_("Show or hide experimental ports."))
             self.tags['option_list'].add_option(
+                'toggle-cwtbe',
+                _("CWTBE Mode: ") + ((self.gui.hm.tools_dir / "PortMaster" / "cwtbe_flag").is_file() and _("Enabled") or _("Disabled")),
+                description=_("Enable gptokeyb2 by default."))
+            self.tags['option_list'].add_option(
                 'delete-config',
                 _("Delete PortMaster Config"),
                 description=_("This can break stuff, don't touch unless you know what you are doing."))
@@ -614,6 +618,18 @@ class OptionScene(BaseScene):
                     _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")))
 
                 return True
+
+            if selected_option == 'toggle-cwtbe':
+                cwtbe_flag = (self.gui.hm.tools_dir / "PortMaster" / "cwtbe_flag")
+
+                if cwtbe_flag.is_file():
+                    cwtbe_flag.unlink()
+                else:
+                    cwtbe_flag.touch()
+
+                item = self.tags['option_list'].list_selected()
+                self.tags['option_list'].list[item] = (
+                    _("CWTBE Mode: ") + (cwtbe_flag.is_file() and _("Enabled") or _("Disabled")))
 
             if selected_option == 'release-alpha':
                 if self.gui.message_box(

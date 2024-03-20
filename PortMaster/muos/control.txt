@@ -28,9 +28,17 @@ if [ -f "$controlfolder/gptokeyb.armhf" ]; then
   mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
 fi
 
+if [ -f "$controlfolder/gptokeyb2.armhf" ]; then
+  mv "$controlfolder/gptokeyb2.armhf" "$controlfolder/gptokeyb2"
+fi
+
 # CRUSH KILL DESTROY
 if [ -f "$controlfolder/xdelta3.armhf" ]; then
   mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
 fi
 
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+if [ -f "$controlfolder/cwtbe_flag" ]; then
+  GPTOKEYB="$ESUDO $controlfolder/gptokeyb2 $ESUDOKILL"
+else
+  GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+fi
