@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Referenced by RetroDeck when the app is running. Might be needed at future point.
+#source /app/libexec/global.sh
+
+
 if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
   controlfolder=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')"/ports/PortMaster"
 fi
@@ -7,7 +11,7 @@ fi
 directory=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
 directory=${directory:1}
 
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 
 get_controls() {
   ANALOGSTICKS="2"
