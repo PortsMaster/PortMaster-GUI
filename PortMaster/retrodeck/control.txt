@@ -4,6 +4,8 @@ if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
   controlfolder=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')"/ports/PortMaster"
 fi
 
+directory=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
+directory=${directory:1}
 
 export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 
@@ -17,8 +19,8 @@ if [ -f "$controlfolder/gptokeyb.x86_64" ]; then
   mv "$controlfolder/gptokeyb.x86_64" "$controlfolder/gptokeyb"
 fi
 
-if [ -f "$controlfolder/gptokeyb2.armhf" ]; then
-  mv "$controlfolder/gptokeyb2.armhf" "$controlfolder/gptokeyb2"
+if [ -f "$controlfolder/gptokeyb2.x86_64" ]; then
+  mv "$controlfolder/gptokeyb2.x86_64" "$controlfolder/gptokeyb2"
 fi
 
 # CRUSH KILL DESTROY
