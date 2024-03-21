@@ -333,6 +333,13 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
 
+class PlatformRetroDECK(PlatformBase):
+    MOVE_PM_BASH = False
+    ES_NAME = 'es-de'
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformmuOS(PlatformBase):
     MOVE_PM_BASH = False
@@ -426,8 +433,14 @@ class PlatformmuOS(PlatformBase):
         Move files into place.
         """
 
+        RD_DIR = self.hm.tools_dir / "PortMaster" / "retrodeck"
         MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
         PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        # ACTIVATE THE RetroDECK CONTROL
+        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(RD_DIR / "control.txt", PM_DIR / "control.txt")
+
 
         # ACTIVATE THE CONTROL
         logger.debug(f'Copy {MU_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
@@ -437,8 +450,16 @@ class PlatformmuOS(PlatformBase):
         if not CONTROL_HACK.parent.is_dir():
             CONTROL_HACK.parent.mkdir(parents=True)
 
+        #RetroDECK
+        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(RD_DIR / "control.txt", CONTROL_HACK)
+
         logger.debug(f'Copy {MU_DIR / "control.txt"} -> {CONTROL_HACK}')
         shutil.copy(MU_DIR / "control.txt", CONTROL_HACK)
+
+        # PEBKAC RD
+        logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         # PEBKAC
         logger.debug(f'Move {MU_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
@@ -464,6 +485,7 @@ HM_PLATFORMS = {
     'emuelec': PlatformEmuELEC,
     'unofficialos': PlatformUOS,
     'muos': PlatformmuOS,
+    'retrodeck': PlatformRetroDECK,
     'darwin': PlatformTesting,
     'default': PlatformBase,
     # 'default': PlatformAmberELEC,
