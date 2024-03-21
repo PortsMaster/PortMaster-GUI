@@ -101,8 +101,7 @@ while true; do
 done
 
 ps -f es-de
-es-de --home /var/config/
-
+es-de
 
 unset LD_LIBRARY_PATH
 unset SDL_GAMECONTROLLERCONFIG
