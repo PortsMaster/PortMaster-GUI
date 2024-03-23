@@ -127,9 +127,10 @@ if [ -f "$TEMP_DIR/runtimes.zip" ]; then
   $ESUDO unzip "$TEMP_DIR/runtimes.zip" | tee -a $CUR_TTY
 fi
 
-cd "/$directory/ports"
-
-$ESUDO rm -vf Install*PortMaster.sh | tee -a $CUR_TTY
+$ESUDO rm -vf "/$directory/port_scripts/Install*PortMaster*.sh" | tee -a $CUR_TTY
+$ESUDO rm -vf "/$directory/port_scripts/Restore*PortMaster*.sh" | tee -a $CUR_TTY
+$ESUDO rm -vf "/$directory/ports/Install*PortMaster*.sh" | tee -a $CUR_TTY
+$ESUDO rm -vf "/$directory/ports/Restore*PortMaster*.sh" | tee -a $CUR_TTY
 
 echo "Finished installing PortMaster" | tee -a $CUR_TTY
 sleep 2

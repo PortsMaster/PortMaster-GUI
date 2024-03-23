@@ -520,6 +520,12 @@ class OptionScene(BaseScene):
             _("Update PortMaster"),
             description=_("Force check for a new PortMaster version."))
 
+        if self.gui.hm.device['name'] != 'muOS':
+            self.tags['option_list'].add_option(
+                'restore-portmaster',
+                _("Restore PortMaster"),
+                description=_("This will restore PortMaster to the latest stable version of PortMaster."))
+
         self.tags['option_list'].add_option(
             'release-channel',
             _("Release Channel: {channel}").format(
@@ -630,6 +636,26 @@ class OptionScene(BaseScene):
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
                     _("CWTBE Mode: ") + (cwtbe_flag.is_file() and _("Enabled") or _("Disabled")))
+
+            if selected_option == 'restore-portmaster':
+                if not self.gui.message_box(
+                        _("Are you sure you want to restore PortMaster?\n\nThis will require you to follow a few simple steps."),
+                        want_cancel=True):
+                    return True
+
+                logger.warning("-- RESTORE PORTMASTER --")
+                with self.gui.enable_cancellable(False):
+                    if self.gui.hm.install_port("restore.portmaster.zip") != 0:
+                        return True
+
+                self.gui.message_box(
+                    _("A special port has been installed called \"Restore PortMaster.sh\"\n\nRun this port to restore your PortMaster installation."))
+
+                self.gui.message_box(
+                    _("PortMaster will now quit so you can run the restoration port."))
+
+                self.gui.events.running = False
+                return True
 
             if selected_option == 'release-alpha':
                 if self.gui.message_box(
