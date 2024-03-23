@@ -340,6 +340,56 @@ class PlatformRetroDECK(PlatformBase):
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
 
+    def gamelist_add(self, gameinfo_file):
+        # Xonglebongle: the sound of someone sneezing while trying to pronounce 'jungle' underwater.
+        if not gameinfo_file.is_file():
+            return
+
+        if not Path("/opt/graphicsmagick").is_dir():
+            return
+
+        INFO_CATALOG = Path("/mnt/mmc/MUOS/info/catalogue/External - Ports")
+        INFO_BOX_DIR     = INFO_CATALOG / "box"
+        INFO_PREVIEW_DIR = INFO_CATALOG / "preview"
+        INFO_TEXT_DIR    = INFO_CATALOG / "text"
+
+        with self.gamelist_backup() as gamelist_xml:
+            if gamelist_xml is None:
+                return
+
+    def first_run(self):
+        self.portmaster_install()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+
+        RD_DIR = self.hm.tools_dir / "PortMaster" / "retrodeck"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        # ACTIVATE THE RetroDECK CONTROL
+        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(RD_DIR / "control.txt", PM_DIR / "control.txt")
+
+        CONTROL_HACK = Path("/roms/ports/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        #RetroDECK
+        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(RD_DIR / "control.txt", CONTROL_HACK)
+
+        # PEBKAC RD
+        logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        TASK_SET = Path(self.hm.tools_dir / "PortMaster" / "tasksetter")
+        if TASK_SET.is_file():
+            TASK_SET.unlink()
+
+        TASK_SET.touch()
+
 
 class PlatformmuOS(PlatformBase):
     MOVE_PM_BASH = False
@@ -433,7 +483,6 @@ class PlatformmuOS(PlatformBase):
         Move files into place.
         """
 
-        RD_DIR = self.hm.tools_dir / "PortMaster" / "retrodeck"
         MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
         PM_DIR = self.hm.tools_dir / "PortMaster"
 
@@ -450,16 +499,8 @@ class PlatformmuOS(PlatformBase):
         if not CONTROL_HACK.parent.is_dir():
             CONTROL_HACK.parent.mkdir(parents=True)
 
-        #RetroDECK
-        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {CONTROL_HACK}')
-        shutil.copy(RD_DIR / "control.txt", CONTROL_HACK)
-
         logger.debug(f'Copy {MU_DIR / "control.txt"} -> {CONTROL_HACK}')
         shutil.copy(MU_DIR / "control.txt", CONTROL_HACK)
-
-        # PEBKAC RD
-        logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
-        shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         # PEBKAC
         logger.debug(f'Move {MU_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
