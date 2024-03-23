@@ -644,7 +644,7 @@ class OptionScene(BaseScene):
                     return True
 
                 logger.warning("-- RESTORE PORTMASTER --")
-                with self.gui.enable_cancellable(False):
+                with self.gui.enable_cancellable(False), self.gui.enable_messages():
                     if self.gui.hm.install_port("restore.portmaster.zip") != 0:
                         return True
 

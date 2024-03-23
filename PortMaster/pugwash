@@ -182,9 +182,13 @@ def load_lang():
     config = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config" / "config.json"
     if config.is_file():
         with open(config, 'r') as fh:
-            config = json.load(fh)
+            config = harbourmaster.json_safe_load(fh)
 
-        config_lang = config.get("language", None)
+        if config is not None:
+            config_lang = config.get("language", None)
+
+        else:
+            config_lang = None
 
     else:
         config_lang = None

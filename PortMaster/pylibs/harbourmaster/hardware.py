@@ -382,6 +382,8 @@ def expand_info(info, override_resolution=None, override_ram=None):
         info['capabilities'].append("16:9")
         display_ratio = "16:10"
 
+    info['capabilities'].append('restore')
+
     info['capabilities'].append(display_ratio)
     info['capabilities'].append(f"{info['resolution'][0]}x{info['resolution'][1]}")
 
@@ -405,10 +407,11 @@ def expand_info(info, override_resolution=None, override_ram=None):
             info['capabilities'].append("wide")
 
     results = []
-    memory = info.get('ram', 1024)
-    while memory >= 1024:
+    max_memory = info.get('ram', 1024)
+    memory = 1024
+    while memory <= max_memory:
         info['capabilities'].append(f"{memory // 1024}gb")
-        memory //= 2
+        memory *= 2
 
     return info
 
