@@ -10,4 +10,4 @@
 export SPA_PLUGIN_DIR="/usr/lib32/spa-0.2"
 export PIPEWIRE_MODULE_DIR="/usr/lib32/pipewire-0.3/"
 
-export LIBGL_DRIVERS_PATH=/usr/lib32/dri
+export LIBGL_DRIVERS_PATH=/usr/lib32/dri:/usr/lib/dri
