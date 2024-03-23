@@ -2,6 +2,7 @@ cat << EOF  > "$archname"
 #!/bin/sh
 # This script was generated using Makeself $MS_VERSION
 # The license covering this archive and its contents, if any, is wholly independent of the Makeself license (GPL)
+# PORTMASTER: restore.portmaster.zip, Restore PortMaster.sh
 
 exec > \$HOME/portmaster.log 2>&1
 
