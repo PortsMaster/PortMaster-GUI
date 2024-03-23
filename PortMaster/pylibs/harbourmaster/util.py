@@ -177,16 +177,19 @@ def load_pm_signature(file_name):
         return None
 
     try:
-        for line in file_name.read_text().split('\n'):
-            if not line.strip().startswith('#'):
-                continue
+        with open(file_name, 'rb') as fh:
+            data = fh.read(1024)
 
-            if 'PORTMASTER:' not in line:
-                continue
+            for line in data.decode('utf-8').split('\n'):
+                if not line.strip().startswith('#'):
+                    continue
 
-            return [
-                item.strip()
-                for item in line.split(':', 1)[1].strip().split(',', 1)]
+                if 'PORTMASTER:' not in line:
+                    continue
+
+                return [
+                    item.strip()
+                    for item in line.split(':', 1)[1].strip().split(',', 1)]
 
     except UnicodeDecodeError as err:
         logger.error(f"Error loading {file_name}: {err}")
@@ -216,19 +219,31 @@ def add_pm_signature(file_name, info):
 
     # See if it has some info already.
     old_info = load_pm_signature(file_name)
-    if old_info is not None:
-        # Info is the same, ignore it
-        if old_info == info:
-            return
 
-        file_data = [
-            line
-            for line in file_name.read_text().split('\n')
-            if not (line.strip().startswith('#') and 'PORTMASTER:' in line)]
-    else:
-        file_data = [
-            line
-            for line in file_name.read_text().split('\n')]
+    try:
+        if old_info is not None:
+            # Info is the same, ignore it
+            if old_info == info:
+                return
+
+            file_data = [
+                line
+                for line in file_name.read_text().split('\n')
+                if not (line.strip().startswith('#') and 'PORTMASTER:' in line)]
+
+        else:
+            file_data = [
+                line
+                for line in file_name.read_text().split('\n')]
+
+    except UnicodeDecodeError as err:
+        logger.error(f"Error loading {file_name}: {err}")
+        return
+
+    except Exception as err:
+        # Bad but we will live.
+        logger.error(f"Error loading {file_name}: {err}")
+        return
 
     file_data.insert(1, f"# PORTMASTER: {', '.join(info)}")
 

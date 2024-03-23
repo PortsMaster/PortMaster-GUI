@@ -644,7 +644,7 @@ class HarbourMaster():
         ## Phase 2: Check all files
         for file_item in self._iter_ports_dir():
             ## Skip these
-            if file_item.name.casefold() in (
+            if file_item.name.lower() in (
                     'gamelist.xml',
                     'gamelist.xml.old',
                     'harbourmaster',
@@ -654,10 +654,6 @@ class HarbourMaster():
                     'portmaster.sh',
                     'thememaster',
                     'thememaster.sh',
-                    'install portmaster.sh',
-                    'install full portmaster.sh',
-                    'install.portmaster.sh',
-                    'install.full.portmaster.sh',
                     'videos',
                     ):
                 continue
@@ -670,7 +666,7 @@ class HarbourMaster():
                 # Ignore non bash files.
                 continue
 
-            if file_item.is_file() and "PORTMASTER NO TOUCHY" in file_item.read_text():
+            if file_item.is_file() and b"PORTMASTER NO TOUCHY" in file_item.read_bytes():
                 logger.debug(f"NO TOUCHY {file_name}")
                 continue
 
