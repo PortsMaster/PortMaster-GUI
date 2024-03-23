@@ -1673,7 +1673,7 @@ class PortInfoScene(BaseScene):
                         port_name=self.port_info['attr']['title']), want_cancel=True):
 
                     self.gui.do_uninstall(self.port_name)
-                    self.gui.pop_scene('port_info')
+                    self.gui.pop_scene()
 
         if events.was_pressed('B'):
             self.button_back()

@@ -33,6 +33,7 @@ class BaseSource():
         self._wants_update = None
         self._images_dir = self.hm.cfg_dir / f"images_{self._prefix}"
         self._images_md5_file = self._images_dir / "images.md5"
+        self._images_json_file = self._images_dir / "images.json"
         self._images_md5 = None
 
         if not self._images_dir.is_dir():
@@ -733,12 +734,98 @@ class PortMasterV3(BaseSource):
         for port_name in (all_ports - seen_ports):
             logger.warning(f"Port image {port_name}: missing.")
 
+    def _update2(self):
+        ## The new images.xxx.zip system.
+        img_id = 0
+
+        images_data = None
+
+        if self._images_json_file.is_file():
+            with open(self._images_json_file, 'r') as fh:
+                images_data = json_safe_load(fh)
+
+        if images_data is None:
+            images_data = {}
+
+        # Find all the current images.
+        images_to_delete = [
+            file_name
+            for file_name in self._images_dir.iterdir()
+            if file_name.suffix in ('.png', '.jpg')]
+
+        for img_id in range(1000):
+            zip_xxx_name = f'images.{img_id:03d}.zip'
+
+            if zip_xxx_name not in self._data:
+                break
+
+            images_zip_url = self._data[zip_xxx_name]['url']
+            images_zip_md5 = self._data[zip_xxx_name]['md5']
+
+            # Has this zip been updated?
+            images_local_md5 = images_data.get(zip_xxx_name, {}).get('md5', None)
+            if images_local_md5 == images_zip_md5:
+                # This zip file hasn't been updated, mark all images from this zip as okay.
+                for image_name in images_data[zip_xxx_name]['images']:
+                    file_name = (self._images_dir / image_name)
+
+                    images_to_delete.remove(file_name)
+
+                continue
+
+            logger.debug(f"images_zip_md5={images_zip_md5} != images_local_md5={images_local_md5}")
+
+            # fetch the new archive
+            images_zip = download(self.hm.temp_dir / zip_xxx_name, images_zip_url, images_zip_md5, callback=self.hm.callback)
+            if images_zip is None:
+                logger.debug(f"Unable to download {images_zip_url}")
+                return
+
+            images_data[zip_xxx_name] = {}
+            images_data[zip_xxx_name]['md5'] = images_zip_md5
+            images_data[zip_xxx_name]['images'] = []
+
+            # unzip the files, keep only png & jpg files
+            with zipfile.ZipFile(images_zip, 'r') as zf:
+                for zip_name in zf.namelist():
+                    if zip_name.casefold().rsplit('.')[-1] not in ('jpg', 'png'):
+                        continue
+
+                    clean_name = self.clean_name(zip_name.rsplit('/', 1)[-1])
+
+                    # Keep track of the files in this zip
+                    images_data[zip_xxx_name]['images'].append(clean_name)
+
+                    file_name = self._images_dir / clean_name
+                    if file_name not in images_to_delete:
+                        logger.debug(f"adding {file_name}")
+
+                    with open(file_name, 'wb') as fh:
+                        fh.write(zf.read(zip_name))
+
+                    # Mark the files for keeping.
+                    if file_name in images_to_delete:
+                        images_to_delete.remove(file_name)
+
+            # delete the sucker.
+            images_zip.unlink()
+
+        # delete any images not listed in any zip file.
+        for image_to_delete in images_to_delete:
+            logger.debug(f"removing {image_to_delete}")
+            image_to_delete.unlink()
+
+        with open(self._images_json_file, 'w') as fh:
+            json.dump(images_data, fh, indent=4, sort_keys=True)
+
     def _update(self):
         # cprint(f"- <b>{self._config['name']}</b>: Fetching info")
         self.hm.callback.message("  - {}".format(_("Fetching info")))
 
         ## Download latest images.zip if needed.
-        ## Uncomment after images has been added to PortMaster.
+        if 'images.000.zip' in self._data:
+            return self._update2()
+
         if 'images.zip' not in self._data:
             return
 
