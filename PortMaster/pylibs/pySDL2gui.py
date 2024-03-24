@@ -1606,7 +1606,7 @@ class SoundManager():
         '''
         if not self.is_init and not self.init_failed:
             if sdl2.SDL_Init(sdl2.SDL_INIT_AUDIO) != 0:
-                print("Cannot initialize audio system: {}".format(SDL_GetError()))
+                print("Cannot initialize audio system: {}".format(sdl2.SDL_GetError()))
                 self.init_failed = True
                 return
 
