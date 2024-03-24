@@ -340,23 +340,6 @@ class PlatformRetroDECK(PlatformBase):
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
 
-    def gamelist_add(self, gameinfo_file):
-        # Xonglebongle: the sound of someone sneezing while trying to pronounce 'jungle' underwater.
-        if not gameinfo_file.is_file():
-            return
-
-        if not Path("/opt/graphicsmagick").is_dir():
-            return
-
-        INFO_CATALOG = Path("/mnt/mmc/MUOS/info/catalogue/External - Ports")
-        INFO_BOX_DIR     = INFO_CATALOG / "box"
-        INFO_PREVIEW_DIR = INFO_CATALOG / "preview"
-        INFO_TEXT_DIR    = INFO_CATALOG / "text"
-
-        with self.gamelist_backup() as gamelist_xml:
-            if gamelist_xml is None:
-                return
-
     def first_run(self):
         self.portmaster_install()
 
