@@ -199,6 +199,10 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="RK3326"
         ;;
 
+     "RetroDECK")
+        DEVICE_CPU="x86_64"
+        ;;
+
     "sun50iw9")
         if [ -f "/opt/muos/config/device.txt" ]; then
             if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then

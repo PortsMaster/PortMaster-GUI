@@ -106,7 +106,7 @@ HW_INFO = {
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
-    'RetroDECK':      {'resolution': (1280, 720), 'analogsticks': 2, 'cpu': 'x86_64', 'capabilities': ['opengl', 'power']},
+    "RetroDECK": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
 
     # Default
     "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -128,6 +128,7 @@ CPU_INFO = {
     "rk3566":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700":    {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "x86_64":  {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "unknown": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
