@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2024-03-19 12:20\n"
+"PO-Revision-Date: 2024-03-25 09:48\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -130,6 +130,44 @@ msgstr "PortMaster版本： {system.portmaster_version}\n"
 "时间： {system.time_24hr}\n"
 "电量： {system.battery_level}"
 
+#: hiviz.theme.zip/theme.json:262
+msgid "• Porter: {port_info.porter}\n"
+"• Genres: {port_info.genres}\n"
+"• Description: {port_info.description}"
+msgstr ""
+
+#: hiviz.theme.zip/theme.json:322
+msgid "• Genres: {port_info.genres}\n"
+"• Download Size: {port_info.download_size}{if:port_info.runtime}\n"
+"• Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"• Description: {port_info.description}\n"
+"• Instructions:\n"
+"{port_info.instructions}"
+msgstr ""
+
+#: hiviz.theme.zip/theme.json:370
+msgid "PM: {system.portmaster_version}, HM: {system.harbourmaster_version}"
+msgstr ""
+
+#: hiviz.theme.zip/theme.json:458
+msgid "• Creator: {theme_info.creator}\n"
+"• Status: {theme_info.status}\n"
+"• Description:\n"
+"{theme_info.description}"
+msgstr ""
+
+#: hiviz.theme.zip/theme.json:521, default_theme/theme.json:616
+msgid "Name: {runtime_info.name}\n"
+"Status: {runtime_info.status}\n"
+"Ports: {runtime_info.ports}\n"
+"Download Size: {runtime_info.download_size}\n"
+"Install Size: {runtime_info.disk_size}"
+msgstr "游戏名： {runtime_info.name}\n"
+"状态： {runtime_info.status}\n"
+"端口： {runtime_info.ports}\n"
+"下载大小： {runtime_info.download_size}\n"
+"安装大小： {runtime_info.disk_size}"
+
 #: default_theme/theme.json:315
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Filters: {ports_list.filters}{endif}"
@@ -143,16 +181,4 @@ msgid "Genres: {port_info.genres}\n"
 msgstr "类别： {port_info.genres}\n"
 "{if:port_info.install_size} 已安装： {port_info.install_size}{else} 已下载：{port_info.download_size}{endif}{if:port_info.runtime}\n"
 "运行时： {port_info.runtime} ({port_info.runtime_status}){endif}"
-
-#: default_theme/theme.json:616
-msgid "Name: {runtime_info.name}\n"
-"Status: {runtime_info.status}\n"
-"Ports: {runtime_info.ports}\n"
-"Download Size: {runtime_info.download_size}\n"
-"Install Size: {runtime_info.disk_size}"
-msgstr "游戏名： {runtime_info.name}\n"
-"状态： {runtime_info.status}\n"
-"端口： {runtime_info.ports}\n"
-"下载大小： {runtime_info.download_size}\n"
-"安装大小： {runtime_info.disk_size}"
 
