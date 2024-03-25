@@ -639,7 +639,7 @@ class OptionScene(BaseScene):
 
             if selected_option == 'restore-portmaster':
                 if not self.gui.message_box(
-                        _("Are you sure you want to restore PortMaster?\n\nThis will require you to follow a few simple steps."),
+                        _("Are you sure you want to restore PortMaster?\n\nThis will require you to run a specially crafted port that will be installed."),
                         want_cancel=True):
                     return True
 
