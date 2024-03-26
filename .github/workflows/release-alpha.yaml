@@ -32,13 +32,13 @@ jobs:
         run: |
             RELEASE_REPO="${{ secrets.RELEASE_REPO }}"
             if [[ -z "$RELEASE_REPO" ]]; then
-              RELEASE_REPO="PortMaster-GUI-x86_64"
+              RELEASE_REPO="PortMaster-GUI"
             fi
             echo "RELEASE_REPO=$RELEASE_REPO" >> $GITHUB_OUTPUT
 
             RELEASE_ORG="${{ secrets.RELEASE_ORG }}"
             if [[ -z "$RELEASE_ORG" ]]; then
-              RELEASE_ORG="monkeyx-net"
+              RELEASE_ORG="PortsMaster"
             fi
             echo "RELEASE_ORG=$RELEASE_ORG" >> $GITHUB_OUTPUT
 
