@@ -40,7 +40,7 @@ cp retrodeck/PortMaster.txt PortMaster.sh
 rm tasksetter
 touch tasksetter
 
-cd "$RESTORE_DIR/retrodeck_build"
+cd "$RESTORE_DIR/retrodeck_build/"
 zip -9r "$RESTORE_DIR/retrodeck.portmaster.zip" PortMaster/
 cd $RESTORE_DIR
 rm -fRv retrodeck_build
