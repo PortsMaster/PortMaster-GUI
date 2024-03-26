@@ -470,11 +470,6 @@ class PlatformmuOS(PlatformBase):
         MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
         PM_DIR = self.hm.tools_dir / "PortMaster"
 
-        # ACTIVATE THE RetroDECK CONTROL
-        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
-        shutil.copy(RD_DIR / "control.txt", PM_DIR / "control.txt")
-
-
         # ACTIVATE THE CONTROL
         logger.debug(f'Copy {MU_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
         shutil.copy(MU_DIR / "control.txt", PM_DIR / "control.txt")
