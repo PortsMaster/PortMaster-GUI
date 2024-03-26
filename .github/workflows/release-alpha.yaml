@@ -38,7 +38,7 @@ jobs:
 
             RELEASE_ORG="${{ secrets.RELEASE_ORG }}"
             if [[ -z "$RELEASE_ORG" ]]; then
-              RELEASE_ORG="PortsMaster"
+              RELEASE_ORG="PortMaster"
             fi
             echo "RELEASE_ORG=$RELEASE_ORG" >> $GITHUB_OUTPUT
 
