@@ -28,9 +28,9 @@ else
     exit 255
 fi
 
-mkdir -p $HOME/RD_PM/
+mkdir -p RD_PM/
 
-cd $HOME/RD_PM/
+cd RD_PM/
 
 unzip "$PORTMASTER_ZIP"
 
@@ -40,8 +40,7 @@ cp retrodeck/PortMaster.txt PortMaster.sh
 rm tasksetter
 touch tasksetter
 
-cd $HOME/RD_PM
-zip -9r ../retrodeck.portmaster.zip PortMaster/
-cd $HOME
+zip -9r "$RESTORE_DIR/retrodeck.portmaster.zip" PortMaster/
 
+cd $RESTORE_DIR
 rm -fRv retrodeck_build
