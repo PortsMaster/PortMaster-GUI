@@ -41,7 +41,7 @@ rm tasksetter
 touch tasksetter
 
 cd $HOME/RD_PM
-zip -9r ../update.portmaster.zip PortMaster/
+zip -9r ../retrodeck.portmaster.zip PortMaster/
 cd $HOME
 
 rm -fRv retrodeck_build
