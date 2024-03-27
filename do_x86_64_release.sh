@@ -2,22 +2,31 @@
 
 RESTORE_DIR=$PWD
 
-rm update.portmaster.zip
+rm retrodeck.portmaster.zip
 
 mkdir retrodeck_build
 
 cd retrodeck_build
 
-if [[ "$1" == "alpha" ]]; then
-    wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
 
-    if [[ ! -f "version.json" ]]; then
-        echo "Missing version.json file."
-        exit 255
-    fi
-
-    wget "$(jq -r '.alpha.url' 'version.json')"
+wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
+if [[ ! -f "version.json" ]]; then
+    echo "Missing version.json file."
+    exit 255
 fi
+
+case "$1" in
+    alpha)
+        wget "$(jq -r ".$1.url" "version.json")"
+        ;;
+    beta)
+        wget "$(jq -r ".$1.url" "version.json")"
+        ;;
+    stable)
+        wget "$(jq -r ".$1.url" "version.json")"
+        ;;
+
+esac
 
 if [[ -f "$PWD/PortMaster.zip" ]]; then
     PORTMASTER_ZIP="$PWD/PortMaster.zip"
