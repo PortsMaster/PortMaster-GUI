@@ -9,23 +9,15 @@ mkdir retrodeck_build
 cd retrodeck_build
 
 
-wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
-if [[ ! -f "version.json" ]]; then
-    echo "Missing version.json file."
-    exit 255
-fi
-
 case "$1" in
-    alpha)
+    alpha|beta|stable)
+        wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
+        if [[ ! -f "version.json" ]]; then
+            echo "Missing version.json file."
+            exit 255
+        fi
         wget "$(jq -r ".$1.url" "version.json")"
         ;;
-    beta)
-        wget "$(jq -r ".$1.url" "version.json")"
-        ;;
-    stable)
-        wget "$(jq -r ".$1.url" "version.json")"
-        ;;
-
 esac
 
 if [[ -f "$PWD/PortMaster.zip" ]]; then
