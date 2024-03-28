@@ -852,7 +852,6 @@ class RuntimesScene(BaseScene):
         all_download_size = 0
         all_installed = True
         primary_arch = self.gui.hm.device['primary_arch']
-
         for runtime, runtime_data in self.gui.hm.list_runtimes():
             if primary_arch not in runtime_data['remote']:
                 continue
@@ -910,8 +909,9 @@ class RuntimesScene(BaseScene):
 
         self.last_select = self.tags['runtime_list'].selected_option()
         self.last_verified = None
-        self.update_selection()
-
+        if not runtimes:
+            self.update_selection()
+            
     def update_selection(self):
         runtime_info = self.runtimes[self.last_select]
 
