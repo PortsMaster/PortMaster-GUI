@@ -98,7 +98,7 @@ jobs:
           replacesArtifacts: false
           omitNameDuringUpdate: true
           body: "Release: ${{steps.version.outputs.version}} (${{steps.version.outputs.release}})"
-          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, version.json, Install*PortMaster.sh, muos.portmaster.zip, muos.portmaster.zip.md5"
+          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, version.json, Install*PortMaster.sh, muos.portmaster.zip, muos.portmaster.zip.md5, retrodeck.portmaster.zip, retrodeck.portmaster.zip.md5"
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ steps.env.outputs.RELEASE_REPO }}
           owner: ${{ steps.env.outputs.RELEASE_ORG }}
