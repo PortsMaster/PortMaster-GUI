@@ -356,6 +356,13 @@ class PlatformRetroDECK(PlatformBase):
         logger.debug(f'Copy {RD_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
         shutil.copy(RD_DIR / "control.txt", PM_DIR / "control.txt")
 
+        CONTROL_HACK = Path(Path.home() / ".config/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        logger.debug(f'Copy {RD_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(RD_DIR / "control.txt", CONTROL_HACK)
+
         # PEBKAC RD
         logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
         shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
@@ -365,7 +372,6 @@ class PlatformRetroDECK(PlatformBase):
             TASK_SET.unlink()
 
         TASK_SET.touch()
-
 
 class PlatformmuOS(PlatformBase):
     MOVE_PM_BASH = False

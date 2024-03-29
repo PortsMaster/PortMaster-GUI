@@ -1,13 +1,10 @@
 if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
-  controlfolder=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')"/ports/PortMaster"
+  mkdir -p "$HOME/.config/PortMaster"
+  cp retrodeck/control.txt "$HOME/.config/PortMaster"
+  controlfolder="$HOME/.config/PortMaster"
 fi
-
-echo $controlfolder
 
 source $controlfolder/control.txt
-if [ -z ${TASKSET+x} ]; then
-  source $controlfolder/tasksetter
-fi
 
 get_controls
 

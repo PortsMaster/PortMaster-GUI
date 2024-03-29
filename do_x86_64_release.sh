@@ -3,11 +3,8 @@
 RESTORE_DIR=$PWD
 
 rm retrodeck.portmaster.zip
-
 mkdir retrodeck_build
-
 cd retrodeck_build
-
 
 case "$1" in
     alpha|beta|stable)
@@ -30,13 +27,13 @@ else
 fi
 
 mkdir -p RD_PM/
-
+mkdir -p $PMC_DIR
 cd RD_PM/
 
 unzip "$PORTMASTER_ZIP"
 
 cd PortMaster
-cp retrodeck/control.txt control.txt
+cp retrodeck/control.txt control.txt 
 cp retrodeck/PortMaster.txt PortMaster.sh
 rm tasksetter
 touch tasksetter
