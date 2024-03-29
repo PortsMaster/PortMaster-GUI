@@ -203,6 +203,13 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="x86_64"
         ;;
 
+    "sun50iw10")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+        CFW_NAME="TrimUI Smart"
+        CFW_VERSION="??????"
+        ;;
+
     "sun50iw9")
         if [ -f "/opt/muos/config/device.txt" ]; then
             if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then

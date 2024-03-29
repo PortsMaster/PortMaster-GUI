@@ -52,6 +52,9 @@ DEVICES = {
     "Gameforce Ace": {"device": "ace", "manufacturer": "Gameforce", "cfw": ["JELOS"]},
     "Gameforce Chi": {"device": "chi", "manufacturer": "Gameforce", "cfw": ["ArkOS", "EmuELEC"]},
 
+    # TrimUI
+    "TrimUI Smart Pro": {"device": "trimui-smart-pro", "manufacturer": "TrimUI", "cfw": ["TrimUI"]},
+
     # Generic
     "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
     "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Generic", "cfw": ["ArkOS", "JELOS", "AmberELEC"]},
@@ -104,6 +107,9 @@ HW_INFO = {
     "r35s":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
     "r36s":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
 
+    # TrimUI
+    "trimui-smart-pro": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "a133plus", "capabilities": ["power"], "ram": 1024},
+
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
     "RetroDECK": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
@@ -123,14 +129,15 @@ CFW_INFO = {
 
 
 CPU_INFO = {
-    "rk3326":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3399":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3566":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3588":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "h700":    {"capabilities": ["armhf"],            "primary_arch": "armhf"},
-    "x86_64":  {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
-    "s922x":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
-    "unknown": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3326":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3399":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3566":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3588":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "h700":     {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "a133plus": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "x86_64":   {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
+    "s922x":    {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "unknown":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
 
 
@@ -159,6 +166,7 @@ def nice_device_to_device(raw_device):
 
     pattern_to_device = (
         ('sun50iw9', 'rg35xx h'),
+        ('sun50iw10', 'trimui-smart-pro'),
 
         ('Hardkernel ODROID-GO-Ultra', 'ogu'),
         ('ODROID-GO Advance*',   'oga'),
