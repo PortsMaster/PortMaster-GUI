@@ -1963,8 +1963,10 @@ def main(argv):
         with pm.enable_cancellable(False):
             pm.hm = HarbourMaster(config, temp_dir=temp_dir, callback=pm)
 
-        with pm.enable_cancellable(True):
-            pm.run()
+        reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
+        if not reboot_file.is_file():
+            with pm.enable_cancellable(True):
+                pm.run()
 
         if not harbourmaster.HM_TESTING:
             if pm.hm is not None and pm.hm.platform.ES_NAME is not None:

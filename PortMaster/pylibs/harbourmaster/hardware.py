@@ -9,6 +9,7 @@ import os
 import pathlib
 import platform
 import re
+import subprocess
 import zipfile
 
 from pathlib import Path
@@ -125,6 +126,7 @@ CFW_INFO = {
     "jelos-rgb10max3": {"capabilities": []},
     "jelos-rgb30":     {"capabilities": []},
     "jelos":           {"capabilities": ["opengl"]},
+    "batocera-rg35xx h": {"capabilities": ["aarch64"], "primary_arch": "aarch64"},
     }
 
 
@@ -230,6 +232,16 @@ def new_device_info():
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':
         info['device'] = muos_device.lower().replace('-', ' ')
+
+    # Works on Batocera
+    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
+    if batocera_version != '':
+        info['name'] = 'Batocera'
+        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
+
+        if info['device'] == 'rg35xx-plus':
+            info['device'] = 'rg35xx plus'
 
     # Works on ArkOS
     config_device = safe_cat('~/.config/.DEVICE')

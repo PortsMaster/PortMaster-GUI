@@ -7,14 +7,15 @@ if [ -d "/opt/system/Tools/PortMaster/" ]; then
   controlfolder="/opt/system/Tools/PortMaster"
 elif [ -d "/opt/tools/PortMaster/" ]; then
   controlfolder="/opt/tools/PortMaster"
+elif [ -d "/storage/roms/ports/PortMaster/" ]; then
+  controlfolder="/storage/roms/ports/PortMaster"
+elif [ -d "$HOME/.config/PortMaster/" ]; then
+  controlfolder="$HOME/.config/PortMaster"
 else
   controlfolder="/roms/ports/PortMaster"
 fi
 
 source $controlfolder/control.txt
-if [ -z ${TASKSET+x} ]; then
-  source $controlfolder/tasksetter
-fi
 
 get_controls
 
@@ -33,6 +34,8 @@ $ESUDO chmod -R +x .
 
 if [[ -e "/storage/.config/.OS_ARCH" ]] || [ "${OS_NAME}" == "JELOS" ] || [ "${OS_NAME}" == "UnofficialOS" ]; then
   toolsfolderloc="/storage/roms/ports"
+elif [[ -e "$(which batocera-version)" ]]; then
+    toolsfolderloc="/userdata/roms/ports"
 else
   isitthera=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
   if [[ $isitthera == *"TheRA"* ]]; then

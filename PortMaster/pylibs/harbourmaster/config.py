@@ -47,6 +47,12 @@ elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
     HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/PORTS")
 
+elif Path("/userdata/roms/ports").is_dir():
+    ## Batocera
+    HM_DEFAULT_TOOLS_DIR   = Path("/userdata/roms/ports")
+    HM_DEFAULT_PORTS_DIR   = Path("/userdata/roms/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/userdata/roms/ports")
+
 elif Path("/opt/muos").is_dir():
     ## muOS
     HM_DEFAULT_TOOLS_DIR   = Path("/mnt/mmc/MUOS")
