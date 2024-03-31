@@ -150,6 +150,8 @@ class HarbourMaster():
 
             self.load_ports()
 
+            self.platform.loaded()
+
             self.save_config()
 
     def update_config(self):

@@ -242,6 +242,11 @@ def new_device_info():
     if muos_device != '':
         info['device'] = muos_device.lower().replace('-', ' ')
 
+    # Works on TrimUI Smart Pro
+    if Path('/usr/trimui').is_dir():
+        info['name'] = 'TrimUI'
+        info['version'] = safe_cat("/etc/version")
+
     # Works on Batocera
     batocera_version = safe_cat('/usr/share/batocera/batocera.version')
     if batocera_version != '':

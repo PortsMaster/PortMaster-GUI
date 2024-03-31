@@ -690,6 +690,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
     ## Loop stuff.
     def run(self):
+        if self.hm is not None and self.hm.platform.WANT_XBOX_FIX:
+            self.events.fix_xbox_mode()
+
         try:
             while True:
                 self.do_loop()
