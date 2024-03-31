@@ -31,6 +31,9 @@ HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
 HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
 
+if 'XDG_DATA_HOME' not in os.environ:
+    os.environ['XDG_DATA_HOME'] = str(Path().home() / '.local' / 'share')
+
 if (Path().cwd() / '..' / '.git').is_dir():
     os.chdir(Path().cwd() / '..')
 
@@ -49,7 +52,7 @@ elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
 
 elif Path("/userdata/roms/ports").is_dir():
     ## Batocera
-    HM_DEFAULT_TOOLS_DIR   = Path("/userdata/roms/ports")
+    HM_DEFAULT_TOOLS_DIR   = Path(os.environ['XDG_DATA_HOME'])
     HM_DEFAULT_PORTS_DIR   = Path("/userdata/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/userdata/roms/ports")
 

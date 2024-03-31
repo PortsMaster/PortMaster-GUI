@@ -1,7 +1,5 @@
 #!/bin/bash
 
-controlfolder="/userdata/roms/ports/PortMaster"
-
 directory="userdata/roms"
 
 ESUDO=""
@@ -15,6 +13,7 @@ fi
 
 get_controls() {
   # DO NOTHING
+  printf ""
 }
 
 if [ -f "$controlfolder/cwtbe_flag" ]; then

@@ -300,9 +300,13 @@ class PlatformJELOS(PlatformBase):
             shutil.copy(oga_control, PM_DIR / oga_control.name)
 
 
+class PlatformROCKNIX(PlatformJELOS):
+    ...
+
+
 class PlatformBatocera(PlatformBase):
     MOVE_PM_BASH = True
-    ES_NAME = None
+    ES_NAME = "batocera-es"
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
@@ -317,7 +321,6 @@ class PlatformBatocera(PlatformBase):
         """
         Move files into place.
         """
-        HK_DIR = Path().home() / ".config" / "PortMaster"
         TL_DIR = self.hm.tools_dir / "PortMaster"
         BC_DIR = TL_DIR / "batocera"
 
@@ -325,17 +328,15 @@ class PlatformBatocera(PlatformBase):
         logger.debug(f'Copy {BC_DIR / "control.txt"} -> {TL_DIR / "control.txt"}')
         shutil.copy(BC_DIR / "control.txt", TL_DIR / "control.txt")
 
-        if not HK_DIR.is_dir():
-            HK_DIR.mkdir(parents=True)
-
-        logger.debug(f'Copy {BC_DIR / "control.txt"} -> {HK_DIR / "control.txt"}')
-        shutil.copy(BC_DIR / "control.txt", HK_DIR / "control.txt")
-
         TASK_SET = TL_DIR / "tasksetter"
         if TASK_SET.is_file():
             TASK_SET.unlink()
 
         TASK_SET.touch()
+
+
+class PlatformPhasmidOS(PlatformBatocera):
+    ...
 
 
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
@@ -361,6 +362,7 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
@@ -519,16 +521,18 @@ class PlatformTesting(PlatformBase):
 
 
 HM_PLATFORMS = {
-    'jelos': PlatformJELOS,
-    'arkos': PlatformArkOS,
+    'arkos':     PlatformArkOS,
     'amberelec': PlatformAmberELEC,
-    'emuelec': PlatformEmuELEC,
+    'emuelec':   PlatformEmuELEC,
     'unofficialos': PlatformUOS,
-    'batocera': PlatformBatocera,
-    'muos': PlatformmuOS,
+    'jelos':     PlatformJELOS,
+    'rocknix':   PlatformROCKNIX,
+    'batocera':  PlatformBatocera,
+    'phasmidos': PlatformPhasmidOS,
+    'muos':      PlatformmuOS,
     'retrodeck': PlatformRetroDECK,
-    'darwin': PlatformTesting,
-    'default': PlatformBase,
+    'darwin':    PlatformTesting,
+    'default':   PlatformBase,
     # 'default': PlatformAmberELEC,
     }
 

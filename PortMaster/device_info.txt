@@ -63,7 +63,7 @@ else
     CFW_VERSION=$(grep -a '^VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
 
     if [ -z "$CFW_NAME" ]; then
-        # uOS / JELOS
+        # uOS / JELOS / ROCKNIX
         CFW_NAME=$(grep -a '^OS_NAME=".*"' /etc/os-release | cut -d'"' -f 2)
         CFW_VERSION=$(grep -a '^OS_VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
     fi
