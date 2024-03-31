@@ -188,5 +188,4 @@ makeself*/
 makeself-*.run
 runtimes.zip
 Install*PortMaster.sh
-muos.portmaster.zip
-retrodeck.portmaster.zip
+*.portmaster.zip

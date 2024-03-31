@@ -3,10 +3,16 @@
 # SPDX-License-Identifier: MIT
 #
 
+XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+
 if [ -d "/opt/system/Tools/" ]; then
   controlfolder="/opt/system/Tools"
 elif [ -d "/opt/tools/" ]; then
   controlfolder="/opt/tools"
+elif [ -d "/userdata/system" ]; then
+  controlfolder="$XDG_DATA_HOME"
+  mkdir -pv "$controlfolder/PortMaster"
+  OS_NAME="Batocera"
 else
   controlfolder="/roms/ports"
 fi
@@ -17,6 +23,8 @@ if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
   else
     directory="roms"
   fi
+elif [ -d "/userdata/roms/ports" ]; then
+  directory="userdata/roms"
 else
   directory="roms"
 fi
@@ -29,6 +37,8 @@ if [ -f "/etc/os-release" ]; then
   source /etc/os-release
 fi
 
+echo "-- Installing on $OS_NAME --"
+
 sudo echo "Testing for sudo..." > /dev/null 2>&1
 if [ $? != 0 ]; then
   ESUDO=""
@@ -38,12 +48,14 @@ fi
 
 if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
   ES_NAME="emulationstation"
+elif [ -d "/userdata/roms/ports" ]; then
+  ES_NAME="batocera-es-swissknife"
 else
   ES_NAME="emustation"
 fi
 
 RELOCATE_PM=""
-if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ]; then
+if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ] && [ "${OS_NAME}" != "ROCKNIX" ]; then
   RELOCATE_PM="TRUE"
 fi
 
@@ -58,7 +70,7 @@ $ESUDO mv PortMaster/libs/*.squashfs temp_runtimes/
 
 $ESUDO rm -fRv "PortMaster" "PortMaster.sh" | tee -a $CUR_TTY
 
-if [[ "${OS_NAME}" == "JELOS" ]]; then
+if [[ "${OS_NAME}" == "JELOS" ]] || [[ "${OS_NAME}" == "ROCKNIX" ]]; then
   ## Taken from this: https://github.com/brooksytech/JELOS/blob/main/packages/apps/portmaster/scripts/start_portmaster.sh
   # Make sure PortMaster exists in .config/PortMaster
   if [ ! -d "/storage/.config/PortMaster" ]; then
@@ -81,42 +93,29 @@ if [[ "${OS_NAME}" == "JELOS" ]]; then
   ln -svf /usr/bin/gptokeyb gptokeyb | tee -a $CUR_TTY
   cp -v /usr/config/PortMaster/portmaster.gptk portmaster.gptk | tee -a $CUR_TTY
 
-  # These are our changes
-  ## Create our own Start PortMaster.sh and Uninstall PortMaster which restores the default JELOS portmaster stuff.
-  echo "Creating new Start PortMaster.sh" | tee -a $CUR_TTY
-  cat << __END_FILE__ > /storage/.config/modules/Start\ PortMaster.sh
-#!/bin/bash
-
-# SPDX-License-Identifier: MIT
-# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster)
-
-source /etc/profile
-
-/roms/ports/PortMaster/PortMaster.sh
-__END_FILE__
-
-  echo "Creating new Restore JELOS PortMaster.sh" | tee -a $CUR_TTY
-  cat << __END_FILE__ > /storage/.config/modules/Restore\ JELOS\ PortMaster.sh
-#!/bin/bash
-
-# SPDX-License-Identifier: MIT
-# Copyright (C) 2023-present PortMaster (https://github.com/PortsMaster)
-
-source /etc/profile
-
-mv -fv /usr/config/modules/Start\ PortMaster.sh /storage/.config/modules
-rm -fv /storage/.config/modules/Restore\ JELOS\ PortMaster.sh
-systemctl restart emustation
-__END_FILE__
-
-  chmod +x /storage/.config/modules/Restore\ JELOS\ PortMaster.sh
-
   cd "$controlfolder"
 fi
 
 $ESUDO unzip -o "$TEMP_DIR/PortMaster.zip" | tee -a $CUR_TTY
+
+# Overrides
+if [ ! -z "$OS_NAME" ]; then
+  PORTMASTER_DIR="$controlfolder/PortMaster"
+  OVERRIDE_DIR="$PORTMASTER_DIR/${OS_NAME,,}"
+
+  echo "--> $OVERRIDE_DIR <--" | tee -a $CUR_TTY
+  if [ -d "$OVERRIDE_DIR" ]; then
+    [ -f "$OVERRIDE_DIR/PortMaster.txt" ] && $ESUDO cp -vf "$OVERRIDE_DIR/PortMaster.txt" "$PORTMASTER_DIR/PortMaster.sh" | tee -a $CUR_TTY
+    [ -f "$OVERRIDE_DIR/control.txt"    ] && $ESUDO cp -vf "$OVERRIDE_DIR/control.txt" "$PORTMASTER_DIR/" | tee -a $CUR_TTY
+  fi
+fi
+
 if [ ! -z "$RELOCATE_PM" ]; then
-  $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | tee -a $CUR_TTY
+  if [ -d "/userdata/roms/ports" ]; then
+    $ESUDO mv -vf PortMaster/PortMaster.sh /$directory/ports/PortMaster.sh | tee -a $CUR_TTY
+  else
+    $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | tee -a $CUR_TTY
+  fi
 fi
 
 $ESUDO mv temp_runtimes/*.squashfs PortMaster/libs/
@@ -136,7 +135,11 @@ echo "Finished installing PortMaster" | tee -a $CUR_TTY
 sleep 2
 
 if [ ! -f "$HOME/no_es_restart" ]; then
-  $ESUDO systemctl restart $ES_NAME
+  if [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
+    batocera-es-swissknife --restart
+  else
+    $ESUDO systemctl restart $ES_NAME
+  fi
 else
   $ESUDO rm -f "$HOME/no_es_restart"
 fi

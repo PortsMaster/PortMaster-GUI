@@ -120,11 +120,13 @@ if [[ "$1" == "stable" ]]; then
 
     makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.PortMaster.sh" "PortMaster Installer" ./installer.sh
 
-    cd pm_release
-    cp ../runtimes.zip .
-    cd ..
+    if [ -z "$NO_FULL_INSTALL" ]; then
+        cd pm_release
+        cp ../runtimes.zip .
+        cd ..
 
-    makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.Full.PortMaster.sh" "PortMaster Full Installer" ./installer.sh
+        makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.Full.PortMaster.sh" "PortMaster Full Installer" ./installer.sh
+    fi
 
     rm -fRv pm_release
 fi

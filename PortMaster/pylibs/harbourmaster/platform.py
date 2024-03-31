@@ -290,16 +290,6 @@ class PlatformJELOS(PlatformBase):
         if not JELOS_PM_DIR.is_dir():
             shutil.copytree("/usr/config/PortMaster", JELOS_PM_DIR)
 
-        ## This fixes it if you have the older mapper.txt
-        BROKEN_MAPPER = JELOS_PM_DIR / "mapper.txt"
-        BROKEN_MAPPER_MD5 = "edb6c56435798cd8a5bc15be71a3c124"
-        PM_DIR = HM_TOOLS_DIR / "PortMaster"
-
-        if hash_file(BROKEN_MAPPER) == BROKEN_MAPPER_MD5:
-            logger.info("Replacing broken mapper.txt if it is still there.")
-            FIXED_MAPPER = PM_DIR / ".Backup" / "mapper.txt"
-            shutil.copy(FIXED_MAPPER, BROKEN_MAPPER)
-
         ## Copy the files as per usual.
         shutil.copy(JELOS_PM_DIR / "control.txt", PM_DIR / "control.txt")
         # shutil.copy(JELOS_PM_DIR / "gptokeyb", PM_DIR / "gptokeyb")
@@ -308,6 +298,45 @@ class PlatformJELOS(PlatformBase):
 
         for oga_control in JELOS_PM_DIR.glob("oga_controls*"):
             shutil.copy(oga_control, PM_DIR / oga_control.name)
+
+
+class PlatformROCKNIX(PlatformJELOS):
+    ...
+
+
+class PlatformBatocera(PlatformBase):
+    MOVE_PM_BASH = True
+    ES_NAME = "batocera-es"
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
+    def first_run(self):
+        self.portmaster_install()
+
+        REBOOT_FILE = self.hm.tools_dir / ".pugwash-reboot"
+        REBOOT_FILE.touch()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+        TL_DIR = self.hm.tools_dir / "PortMaster"
+        BC_DIR = TL_DIR / "batocera"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {BC_DIR / "control.txt"} -> {TL_DIR / "control.txt"}')
+        shutil.copy(BC_DIR / "control.txt", TL_DIR / "control.txt")
+
+        TASK_SET = TL_DIR / "tasksetter"
+        if TASK_SET.is_file():
+            TASK_SET.unlink()
+
+        TASK_SET.touch()
+
+
+class PlatformPhasmidOS(PlatformBatocera):
+    ...
 
 
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
@@ -333,6 +362,7 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
@@ -491,15 +521,18 @@ class PlatformTesting(PlatformBase):
 
 
 HM_PLATFORMS = {
-    'jelos': PlatformJELOS,
-    'arkos': PlatformArkOS,
+    'arkos':     PlatformArkOS,
     'amberelec': PlatformAmberELEC,
-    'emuelec': PlatformEmuELEC,
+    'emuelec':   PlatformEmuELEC,
     'unofficialos': PlatformUOS,
-    'muos': PlatformmuOS,
+    'jelos':     PlatformJELOS,
+    'rocknix':   PlatformROCKNIX,
+    'batocera':  PlatformBatocera,
+    'phasmidos': PlatformPhasmidOS,
+    'muos':      PlatformmuOS,
     'retrodeck': PlatformRetroDECK,
-    'darwin': PlatformTesting,
-    'default': PlatformBase,
+    'darwin':    PlatformTesting,
+    'default':   PlatformBase,
     # 'default': PlatformAmberELEC,
     }
 
