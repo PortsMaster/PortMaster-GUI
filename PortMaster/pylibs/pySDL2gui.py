@@ -1550,8 +1550,8 @@ class EventManager:
 
             elif event.type == sdl2.SDL_CONTROLLERDEVICEREMOVED:
                 print(f"Closing {event.cdevice.which}")
-                controller = SDL_GameControllerFromInstanceID(event.cdevice.which)
-                SDL_GameControllerClose(controller)
+                controller = sdl2.SDL_GameControllerFromInstanceID(event.cdevice.which)
+                sdl2.SDL_GameControllerClose(controller)
 
         for key in self.repeat.keys():
             next_repeat = self.repeat[key]
