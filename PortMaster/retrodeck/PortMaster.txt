@@ -1,13 +1,11 @@
+XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+controlfolder="$XDG_DATA_HOME/PortMaster"
 if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
-  controlfolder=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')"/ports/PortMaster"
+  mkdir -p $controlfolder
+  cp retrodeck/control.txt $controlfolder
 fi
-
-echo $controlfolder
 
 source $controlfolder/control.txt
-if [ -z ${TASKSET+x} ]; then
-  source $controlfolder/tasksetter
-fi
 
 get_controls
 
@@ -24,7 +22,6 @@ chmod -R +x .
 if [[ -e "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]]; then
   toolsfolderloc="${controlfolder/\/PortMaster/}"
 fi
-
 
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
