@@ -50,6 +50,9 @@ class PlatformBase():
         self.added_ports = set()
         self.removed_ports = set()
 
+    def loaded(self):
+        ...
+
     def gamelist_file(self):
         return None
 
@@ -267,9 +270,6 @@ class PlatformGCD_PortMaster:
 
         logger.debug(f"{self.__class__.__name__}: Get GCD Mode: {gcd_mode}")
         return gcd_mode
-
-    def loaded(self):
-        ...
 
 
 class PlatformUOS(PlatformGCD_PortMaster, PlatformBase):
@@ -551,7 +551,7 @@ class PlatformTrimUI(PlatformBase):
 
         # PEBKAC
         logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / ".." / "launch.sh"}')
-        shutil.copy(MU_DIR / "PortMaster.txt", self.hm.tools_dir / '..' / "launch.sh")
+        shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / '..' / "launch.sh")
 
         TASK_SET = Path(PM_DIR / "tasksetter")
         if TASK_SET.is_file():

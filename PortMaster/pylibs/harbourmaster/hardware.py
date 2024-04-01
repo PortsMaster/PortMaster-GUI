@@ -145,7 +145,7 @@ CPU_INFO = {
     "rk3566":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700":     {"capabilities": ["armhf"],            "primary_arch": "armhf"},
-    "a133plus": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "a133plus": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "x86_64":   {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":    {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "unknown":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},

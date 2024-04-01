@@ -59,7 +59,7 @@ elif [ -e "$(which batocera-version)" ]; then
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
 elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
-    CFW_NAME="TrimUI Smart"
+    CFW_NAME="TrimUI"
     CFW_VERSION="$(cat /etc/version)"
 else
     # AmberELEC / EmuELEC
