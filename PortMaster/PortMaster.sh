@@ -3,18 +3,19 @@
 # SPDX-License-Identifier: MIT
 #
 
+export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+
 if [ -d "/opt/system/Tools/PortMaster/" ]; then
   controlfolder="/opt/system/Tools/PortMaster"
 elif [ -d "/opt/tools/PortMaster/" ]; then
   controlfolder="/opt/tools/PortMaster"
+elif [ -d "$XDG_DATA_HOME/PortMaster/" ]; then
+  controlfolder="$XDG_DATA_HOME/PortMaster"
 else
   controlfolder="/roms/ports/PortMaster"
 fi
 
 source $controlfolder/control.txt
-if [ -z ${TASKSET+x} ]; then
-  source $controlfolder/tasksetter
-fi
 
 get_controls
 
@@ -33,6 +34,8 @@ $ESUDO chmod -R +x .
 
 if [[ -e "/storage/.config/.OS_ARCH" ]] || [ "${OS_NAME}" == "JELOS" ] || [ "${OS_NAME}" == "UnofficialOS" ]; then
   toolsfolderloc="/storage/roms/ports"
+elif [[ -e "$(which batocera-version)" ]]; then
+    toolsfolderloc="/userdata/roms/ports"
 else
   isitthera=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
   if [[ $isitthera == *"TheRA"* ]]; then
@@ -113,6 +116,8 @@ if [ -n "$AUTOINSTALL" ]; then
   fi
 fi
 
+PORTMASTER_CMDS=${PORTMASTER_CMDS:---debug}
+
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
@@ -136,4 +141,7 @@ if [ -f "${controlfolder}/.emustation-refresh" ]; then
 elif [ -f "${controlfolder}/.emulationstation-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.emulationstation-refresh"
   $ESUDO systemctl restart emulationstation
+elif [ -f "${controlfolder}/.batocera-es-refresh" ]; then
+  $ESUDO rm -f "${controlfolder}/.batocera-es-refresh"
+  batocera-es-swissknife --restart
 fi

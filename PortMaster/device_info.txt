@@ -15,7 +15,7 @@
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.4"
+DEVICE_INFO_VERSION="0.1.5"
 
 SCRIPT_DIR="$controlfolder"
 
@@ -54,14 +54,16 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
     CFW_VERSION=$(head -n1 "/opt/muos/config/version.txt")
+elif [ -e "$(which batocera-version)" ]; then
+    CFW_NAME="Batocera"
+    CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
 else
-
     # AmberELEC / EmuELEC
     CFW_NAME=$(grep -a '^NAME=".*"' /etc/os-release | cut -d'"' -f 2)
     CFW_VERSION=$(grep -a '^VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
 
     if [ -z "$CFW_NAME" ]; then
-        # uOS / JELOS
+        # uOS / JELOS / ROCKNIX
         CFW_NAME=$(grep -a '^OS_NAME=".*"' /etc/os-release | cut -d'"' -f 2)
         CFW_VERSION=$(grep -a '^OS_VERSION=".*"' /etc/os-release | cut -d'"' -f 2)
     fi
@@ -80,6 +82,8 @@ elif [ -f "~/.config/.OS_ARCH" ]; then
     DEVICE_NAME=$(cat "~/.config/.OS_ARCH")
 elif [  -f "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
     DEVICE_NAME="RetroDECK"
+elif [ -f "/boot/boot/batocera.board" ]; then
+    DEVICE_NAME=$(cat /boot/boot/batocera.board)
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 
@@ -203,20 +207,32 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="x86_64"
         ;;
 
+    "sun50iw10")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+        CFW_NAME="TrimUI Smart"
+        CFW_VERSION="??????"
+        ;;
+
     "sun50iw9")
-        if [ -f "/opt/muos/config/device.txt" ]; then
+        if [[ "$CFW_NAME" == "Batocera" ]]; then
+            ANALOG_STICKS=0
+            DEVICE_NAME="RG35XX PLUS"
+        elif [ -f "/opt/muos/config/device.txt" ]; then
             if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then
                 ANALOG_STICKS=0
                 DEVICE_NAME="RG35XX PLUS"
             else
                 DEVICE_NAME="RG35XX H"
             fi
+
+            DEVICE_ARCH="armhf"
         else
             DEVICE_NAME="RG35XX H"
+            DEVICE_ARCH="armhf"
         fi
 
         DEVICE_CPU="H700"
-        DEVICE_ARCH="armhf"
         ;;
 
 esac
