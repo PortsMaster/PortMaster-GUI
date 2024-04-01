@@ -1446,6 +1446,7 @@ class EventManager:
                 self.controller = sdl2.SDL_GameControllerOpen(i)
 
     def fix_xbox_mode(self):
+        print("XBOX FIXER")
         self.BUTTON_MAP.update({
             sdl2.SDL_CONTROLLER_BUTTON_A: 'B',
             sdl2.SDL_CONTROLLER_BUTTON_B: 'A',

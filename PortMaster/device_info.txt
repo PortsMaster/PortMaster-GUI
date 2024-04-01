@@ -15,9 +15,9 @@
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.5"
+DEVICE_INFO_VERSION="0.1.6"
 
-SCRIPT_DIR="$controlfolder"
+SCRIPT_DIR="$(dirname "$0")"
 
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
@@ -46,10 +46,10 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     unset CFW_INFO
     unset CFW_FFS
 
-elif [ -f "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
+elif [ -f "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
     # RetroDeck
     CFW_NAME="RetroDECK"
-    CFW_VERSION=$(grep 'version' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
+    CFW_VERSION=$(grep 'version' "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
 elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
@@ -57,6 +57,10 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
+elif [ -d "/usr/trimui" ]; then
+    # TrimUI Smart Pro
+    CFW_NAME="TrimUI"
+    CFW_VERSION="$(cat /etc/version)"
 else
     # AmberELEC / EmuELEC
     CFW_NAME=$(grep -a '^NAME=".*"' /etc/os-release | cut -d'"' -f 2)
@@ -74,13 +78,15 @@ DEVICE_RAM=$(free | awk '/Mem:/ { printf("%.0f", ($2 / 1024 / 1024)) }')
 # Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
     DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
-elif [ -f "~/.config/.CUSTOM_DEVICE" ]; then
-    DEVICE_NAME=$(cat "~/.config/.CUSTOM_DEVICE")
-elif [ -f "~/.config/.DEVICE" ]; then
-    DEVICE_NAME=$(cat "~/.config/.DEVICE")
-elif [ -f "~/.config/.OS_ARCH" ]; then
-    DEVICE_NAME=$(cat "~/.config/.OS_ARCH")
-elif [  -f "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
+elif [[ "$CFW_NAME" == "TrimUI Smart" ]]; then
+    DEVICE_NAME="TrimUI Smart Pro"
+elif [ -f "$HOME/.config/.CUSTOM_DEVICE" ]; then
+    DEVICE_NAME=$(cat "$HOME/.config/.CUSTOM_DEVICE")
+elif [ -f "$HOME/.config/.DEVICE" ]; then
+    DEVICE_NAME=$(cat "$HOME/.config/.DEVICE")
+elif [ -f "$HOME/.config/.OS_ARCH" ]; then
+    DEVICE_NAME=$(cat "$HOME/.config/.OS_ARCH")
+elif [  -f "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
     DEVICE_NAME="RetroDECK"
 elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(cat /boot/boot/batocera.board)
@@ -105,7 +111,7 @@ DISPLAY_ORIENTATION=0
 
 ## FIXES
 # Here is where we can add custome rules to fill out extra info on the device.
-case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
+case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
     # by cpu
     "rk3399")
         DEVICE_NAME="RG552"
@@ -209,9 +215,6 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
 
     "sun50iw10")
         DEVICE_CPU="a133plus"
-        DEVICE_NAME="TrimUI Smart Pro"
-        CFW_NAME="TrimUI Smart"
-        CFW_VERSION="??????"
         ;;
 
     "sun50iw9")
@@ -238,15 +241,21 @@ case "$(echo ${DEVICE_NAME} | tr '[:upper:]' '[:lower:]')" in
 esac
 
 # get current resolution
-IFS='x' read -r DISPLAY_WIDTH DISPLAY_HEIGHT < <($SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+
+RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
 
 unset SCRIPT_DIR
 
 # Check if the values are not empty, otherwise, set default resolution
-if [ -z "$DISPLAY_WIDTH" ] || [ -z "$DISPLAY_HEIGHT" ]; then
+if [ -z "$RESOLUTION" ]; then
     DISPLAY_WIDTH=640
     DISPLAY_HEIGHT=480
+else
+    DISPLAY_WIDTH=$(echo "$RESOLUTION" | cut -d'x' -f 1)
+    DISPLAY_HEIGHT=$(echo "$RESOLUTION" | cut -d'x' -f 2)
 fi
+
+unset RESOLUTION
 
 cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
 # ${DEVICE_NAME} - ${CFW_NAME}

@@ -1,17 +1,18 @@
 #!/bin/bash
 
-controlfolder="/mnt/SDCARD/Apps/PortMaster"
-directory="/mnt/mmc/SDCARD/ports"
+controlfolder="/mnt/SDCARD/Apps/PortMaster/PortMaster"
+directory="mnt/SDCARD"
 
 source /mnt/SDCARD/System/etc/ex_config
 
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/gamecontrollerdb.txt"
 # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
 
 get_controls() {
   # Do nothing for now.
+  printf ""
 }
 
 if [ -f "$controlfolder/cwtbe_flag" ]; then

@@ -145,7 +145,7 @@ CPU_INFO = {
     "rk3566":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700":     {"capabilities": ["armhf"],            "primary_arch": "armhf"},
-    "a133plus": {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "a133plus": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "x86_64":   {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":    {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "unknown":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
@@ -241,6 +241,11 @@ def new_device_info():
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':
         info['device'] = muos_device.lower().replace('-', ' ')
+
+    # Works on TrimUI Smart Pro
+    if Path('/usr/trimui').is_dir():
+        info['name'] = 'TrimUI'
+        info['version'] = safe_cat("/etc/version")
 
     # Works on Batocera
     batocera_version = safe_cat('/usr/share/batocera/batocera.version')
