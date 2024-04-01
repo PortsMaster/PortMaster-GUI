@@ -26,6 +26,7 @@ from .util import *
 SPECIAL_GAMELIST_CODE = object()
 
 class PlatformBase():
+    WANT_XBOX_FIX = False
     MOVE_PM_BASH = False
     MOVE_PM_BASH_DIR = None
     ES_NAME = None
@@ -48,6 +49,9 @@ class PlatformBase():
         self.hm = hm
         self.added_ports = set()
         self.removed_ports = set()
+
+    def loaded(self):
+        ...
 
     def gamelist_file(self):
         return None
@@ -211,6 +215,11 @@ class PlatformGCD_PortMaster:
     """
     gamecontrollerdb standard / xbox mode
     """
+
+    def loaded(self):
+        if self.get_gcd_mode() == 'xbox':
+            self.WANT_XBOX_FIX = True
+
     def set_gcd_mode(self, gcd_mode=None):
         gamecontroller_file = self.hm.tools_dir / "PortMaster" / "gamecontrollerdb.txt"
         mode_files = {
@@ -286,19 +295,10 @@ class PlatformJELOS(PlatformBase):
 
         ## Copy the JELOS portmaster stuff into the right place.
         JELOS_PM_DIR = Path("/storage/.config/PortMaster")
+        PM_DIR = self.hm.tools_dir / "PortMaster"
 
         if not JELOS_PM_DIR.is_dir():
             shutil.copytree("/usr/config/PortMaster", JELOS_PM_DIR)
-
-        ## This fixes it if you have the older mapper.txt
-        BROKEN_MAPPER = JELOS_PM_DIR / "mapper.txt"
-        BROKEN_MAPPER_MD5 = "edb6c56435798cd8a5bc15be71a3c124"
-        PM_DIR = HM_TOOLS_DIR / "PortMaster"
-
-        if hash_file(BROKEN_MAPPER) == BROKEN_MAPPER_MD5:
-            logger.info("Replacing broken mapper.txt if it is still there.")
-            FIXED_MAPPER = PM_DIR / ".Backup" / "mapper.txt"
-            shutil.copy(FIXED_MAPPER, BROKEN_MAPPER)
 
         ## Copy the files as per usual.
         shutil.copy(JELOS_PM_DIR / "control.txt", PM_DIR / "control.txt")
@@ -308,6 +308,45 @@ class PlatformJELOS(PlatformBase):
 
         for oga_control in JELOS_PM_DIR.glob("oga_controls*"):
             shutil.copy(oga_control, PM_DIR / oga_control.name)
+
+
+class PlatformROCKNIX(PlatformJELOS):
+    ...
+
+
+class PlatformBatocera(PlatformBase):
+    MOVE_PM_BASH = True
+    ES_NAME = "batocera-es"
+
+    def gamelist_file(self):
+        return self.hm.ports_dir / 'gamelist.xml'
+
+    def first_run(self):
+        self.portmaster_install()
+
+        REBOOT_FILE = self.hm.tools_dir / ".pugwash-reboot"
+        REBOOT_FILE.touch()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+        TL_DIR = self.hm.tools_dir / "PortMaster"
+        BC_DIR = TL_DIR / "batocera"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {BC_DIR / "control.txt"} -> {TL_DIR / "control.txt"}')
+        shutil.copy(BC_DIR / "control.txt", TL_DIR / "control.txt")
+
+        TASK_SET = TL_DIR / "tasksetter"
+        if TASK_SET.is_file():
+            TASK_SET.unlink()
+
+        TASK_SET.touch()
+
+
+class PlatformPhasmidOS(PlatformBatocera):
+    ...
 
 
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
@@ -333,6 +372,7 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
+
 
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
@@ -491,22 +531,63 @@ class PlatformmuOS(PlatformBase):
         TASK_SET.touch()
 
 
+class PlatformTrimUI(PlatformBase):
+    WANT_XBOX_FIX = True
+
+    def first_run(self):
+        self.portmaster_install()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+
+        TU_DIR = self.hm.tools_dir / "PortMaster" / "trimui"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {TU_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(TU_DIR / "control.txt", PM_DIR / "control.txt")
+
+        CONTROL_HACK = Path("/roms/ports/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        logger.debug(f'Copy {TU_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(TU_DIR / "control.txt", CONTROL_HACK)
+
+        # PEBKAC
+        logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / ".." / "launch.sh"}')
+        shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / '..' / "launch.sh")
+
+        TASK_SET = Path(PM_DIR / "tasksetter")
+        if TASK_SET.is_file():
+            TASK_SET.unlink()
+
+        TASK_SET.touch()
+
+
 class PlatformTesting(PlatformBase):
+    WANT_XBOX_FIX = True
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
 
 
 HM_PLATFORMS = {
-    'jelos': PlatformJELOS,
-    'arkos': PlatformArkOS,
+    'arkos':     PlatformArkOS,
     'amberelec': PlatformAmberELEC,
-    'emuelec': PlatformEmuELEC,
+    'emuelec':   PlatformEmuELEC,
     'unofficialos': PlatformUOS,
-    'muos': PlatformmuOS,
+    'jelos':     PlatformJELOS,
+    'rocknix':   PlatformROCKNIX,
+    'batocera':  PlatformBatocera,
+    'phasmidos': PlatformPhasmidOS,
+    'muos':      PlatformmuOS,
+    'trimui':    PlatformTrimUI,
     'retrodeck': PlatformRetroDECK,
-    'darwin': PlatformTesting,
-    'default': PlatformBase,
+    'darwin':    PlatformTesting,
+    'default':   PlatformBase,
     # 'default': PlatformAmberELEC,
     }
 
