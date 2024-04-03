@@ -113,7 +113,7 @@ HW_INFO = {
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
-    "RetroDECK": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
+    "retrodeck": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
 
     # Default
     "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
