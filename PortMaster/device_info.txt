@@ -257,6 +257,26 @@ fi
 
 unset RESOLUTION
 
+# Calculate greatest common divisor (GCD) to simplify aspect ratio
+gcd() {
+  dividend=$1
+  divisor=$2
+  remainder=1
+  until [ "$remainder" -eq 0 ]; do
+    remainder=$((dividend % divisor))
+    dividend=$divisor
+    divisor=$remainder
+  done
+  echo $dividend
+}
+
+# Calculate greatest common divisor of width and height
+GCD=$(gcd $DISPLAY_WIDTH $DISPLAY_HEIGHT)
+
+# Calculate simplified aspect ratio
+ASPECT_X=$((DISPLAY_WIDTH / GCD))
+ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
+
 cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
 # ${DEVICE_NAME} - ${CFW_NAME}
 \`\`\`bash
