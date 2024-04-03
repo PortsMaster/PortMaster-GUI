@@ -267,7 +267,6 @@ gcd() {
     dividend=$divisor
     divisor=$remainder
   done
-  echo $dividend
 }
 
 # Calculate greatest common divisor of width and height
@@ -289,6 +288,8 @@ DEVICE_ARCH=${DEVICE_ARCH}
 DEVICE_RAM=${DEVICE_RAM}
 DISPLAY_WIDTH=${DISPLAY_WIDTH}
 DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
+ASPECT_X=${ASPECT_X}
+ASPECT_Y=${ASPECT_Y}
 DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
 ANALOG_STICKS=${ANALOG_STICKS}
 \`\`\`
