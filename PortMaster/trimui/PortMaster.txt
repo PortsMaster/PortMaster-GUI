@@ -18,6 +18,16 @@ export TERM=linux
 chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
 
+sdl2imgshow \
+    -i "$EX_RESOURCE_PATH/background.png" \
+    -f "$EX_RESOURCE_PATH/DejaVuSans.ttf" \
+    -s 48 \
+    -c "0,0,0" \
+    -t "Starting PortMaster" &
+
+sleep 0.5
+pkill -f sdl2imgshow
+
 echo "Starting PortMaster." > $CUR_TTY
 
 chmod -R +x .

@@ -5,7 +5,7 @@ PORTMASTER_VERSION = '2023-01-07-1007'
 PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
-PORTMASTER_MIN_VERSION = '2024-02-25-0000'
+PORTMASTER_MIN_VERSION = '2024-04-06-0000'
 PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
 PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 
@@ -503,6 +503,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         version = sdl2.SDL_version()
         sdl2.SDL_GetVersion(version)
 
+        logger.info(f"PM: {PORTMASTER_VERSION}")
+        logger.info(f"HM: {harbourmaster.HARBOURMASTER_VERSION}")
         logger.info(f"SDL DLL: {sdl2.dll.get_dll_file()},  {nice_version(version)}")
         logger.info(f"TTF DLL: {sdl2.sdlttf.get_dll_file()}, {nice_version(sdl2.sdlttf.TTF_Linked_Version()[0])}")
         logger.info(f"IMG DLL: {sdl2.sdlimage.get_dll_file()}, {nice_version(sdl2.sdlimage.IMG_Linked_Version()[0])}")
