@@ -17,7 +17,11 @@
 
 DEVICE_INFO_VERSION="0.1.6"
 
-SCRIPT_DIR="$(dirname "$0")"
+if [ -z "$controlfolder" ]; then
+    SCRIPT_DIR="$(dirname "$0")"
+else
+    SCRIPT_DIR="$controlfolder"
+fi
 
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
