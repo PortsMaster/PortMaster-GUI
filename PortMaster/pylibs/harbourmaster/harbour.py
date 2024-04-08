@@ -949,7 +949,7 @@ class HarbourMaster():
         show = False
         capabilities = self.device['capabilities']
 
-        requirements = port_info.get('attr', {}).get('reqs', [])
+        requirements = port_info.get('attr', {}).get('reqs', [])[:]
 
         runtime = port_info.get('attr', {}).get('runtime', None)
 
