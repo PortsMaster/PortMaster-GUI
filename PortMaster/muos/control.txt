@@ -32,7 +32,6 @@ if [ -f "$controlfolder/gptokeyb2.armhf" ]; then
   mv "$controlfolder/gptokeyb2.armhf" "$controlfolder/gptokeyb2"
 fi
 
-CRUSH KILL DESTROY
 if [ -f "$controlfolder/xdelta3.armhf" ]; then
   mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
 fi
