@@ -530,6 +530,10 @@ The format is:
 - scene.title
 - scene.tooltip
 
+### Menu
+
+- menu.selected
+
 ### Port info tags
 
 - port_info.image
