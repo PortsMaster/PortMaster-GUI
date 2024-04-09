@@ -147,7 +147,9 @@ class BaseScene:
         self.scene_tooltip = ""
 
     def scene_deactivate(self):
-        self.active = False
+        if self.active:
+            self.active = False
+            self.scene_deactivated()
 
     def scene_activate(self):
         if not self.active:
@@ -155,6 +157,13 @@ class BaseScene:
             self.gui.sounds.easy_music(self.music, volume=max(0, min(self.music_volume, 128)))
             self.gui.set_data("scene.title", self.scene_title)
             self.gui.set_data("scene.tooltip", self.scene_tooltip)
+            self.scene_activated()
+
+    def scene_deactivated(self):
+        ...
+
+    def scene_activated(self):
+        ...
 
     def set_tooltip(self, text):
         self.scene_tooltip = text
@@ -362,39 +371,51 @@ class MainMenuScene(BaseScene):
         super().__init__(gui)
         self.scene_title = _("Main Menu")
 
+        self.option_options = {
+            'install': [],
+            'install-rtr': ['rtr'],
+            'uninstall': ['installed'],
+            }
+
         self.load_regions("main_menu", ['option_list'])
 
         self.tags['option_list'].reset_options()
         self.tags['option_list'].add_option(
-            ('featured-ports', None),
+            'featured-ports',
             _('Featured Ports'),
             description=_("Hand curated lists of ports"))
         self.tags['option_list'].add_option(
-            ('install', []),
+            'install',
             _("All Ports"),
             description=_("List all ports available on PortMaster."))
         self.tags['option_list'].add_option(
-            ('install', ['rtr']),
+            'install-rtr',
             _("Ready to Run Ports"),
             description=_("List all ports that are ready to play!"))
         self.tags['option_list'].add_option(
-            ('uninstall', ['installed']),
+            'uninstall',
             _("Manage Ports"),
             description=_("Update / Uninstall Ports"))
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(
-            ('options', None),
+            'options',
             _("Options"),
             description=_("PortMaster Options"))
         self.tags['option_list'].add_option(
-            ('exit', None),
+            'exit',
             _("Exit"),
             description=_("Quit PortMaster"))
 
         self.set_buttons({'A': _('Enter'), 'B': _('Quit')})
         self.detecting_konami = 0
-        self.last_selected = None
+
+        self.set_tooltip(self.tags['option_list'].selected_description())
+        self.last_selected = self.tags['option_list'].selected_option()
+        self.gui.set_data('menu.selected', self.last_selected)
+
+    def scene_activated(self):
+        self.gui.set_data('menu.selected', self.last_selected)
 
     def do_update(self, events):
         super().do_update(events)
@@ -420,13 +441,15 @@ class MainMenuScene(BaseScene):
         if self.last_selected != self.tags['option_list'].selected_option():
             self.set_tooltip(self.tags['option_list'].selected_description())
             self.last_selected = self.tags['option_list'].selected_option()
+            self.gui.set_data('menu.selected', self.last_selected)
 
         if events.was_pressed('A'):
-            selected_option, selected_parameter = self.tags['option_list'].selected_option()
+            selected_option = self.tags['option_list'].selected_option()
+            selected_parameter = self.option_options.get(selected_option, None)
 
             self.button_activate()
 
-            if selected_option in ('install', 'uninstall'):
+            if selected_option in ('install', 'install-rtr', 'uninstall'):
                 self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter}))
                 return True
 
@@ -581,6 +604,7 @@ class OptionScene(BaseScene):
         if self.last_selected != self.tags['option_list'].selected_option():
             self.set_tooltip(self.tags['option_list'].selected_description())
             self.last_selected = self.tags['option_list'].selected_option()
+            self.gui.set_data('menu.selected', self.last_selected)
 
         if events.was_pressed('A'):
             selected_option = self.tags['option_list'].selected_option()
