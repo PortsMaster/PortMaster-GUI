@@ -447,6 +447,9 @@ class MainMenuScene(BaseScene):
             selected_option = self.tags['option_list'].selected_option()
             selected_parameter = self.option_options.get(selected_option, None)
 
+            if selected_option == 'install-rtr':
+                selected_option = 'install'
+
             self.button_activate()
 
             if selected_option in ('install', 'install-rtr', 'uninstall'):

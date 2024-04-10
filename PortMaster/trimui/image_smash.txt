@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -f "/mnt/SDCARD/System/bin/gm" ]; then
+    source /mnt/SDCARD/System/etc/ex_config
+
+    find "/mnt/SDCARD/Imgs/PORTS/" -type f \( -iname "*.jpg" -o -iname "*.png" \) -exec sh -c 'input="{}"; output="$(echo "$input" | sed "s/\(.*\)\..*/\1/").png"; gm convert "$input" -resize "244x244>" "$output"' \;
+fi

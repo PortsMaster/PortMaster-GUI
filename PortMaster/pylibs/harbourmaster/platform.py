@@ -533,6 +533,11 @@ class PlatformmuOS(PlatformBase):
 
 class PlatformTrimUI(PlatformBase):
     WANT_XBOX_FIX = True
+    ES_NAME = "trimui"
+
+    XML_ELEMENT_MAP = {
+        'image': 'image',
+        }
 
     def first_run(self):
         self.portmaster_install()
@@ -565,6 +570,54 @@ class PlatformTrimUI(PlatformBase):
             TASK_SET.unlink()
 
         TASK_SET.touch()
+
+    def gamelist_file(self):
+        return SPECIAL_GAMELIST_CODE
+
+    def gamelist_add(self, gameinfo_file):
+        if not gameinfo_file.is_file():
+            return
+
+        INFO_PREVIEW_DIR = Path("/mnt/SDCARD/Imgs/PORTS")
+
+        with self.gamelist_backup() as gamelist_xml:
+            if gamelist_xml is None:
+                return
+
+            gameinfo_tree = ET.parse(gameinfo_file)
+            gameinfo_root = gameinfo_tree.getroot()
+
+            for gameinfo_element in gameinfo_tree.findall('game'):
+                path_merge = gameinfo_element.find('path').text
+
+                if path_merge.startswith('./'):
+                    path_merge = path_merge[2:]
+
+                path_merge = path_merge.rsplit('.', 1)[0]
+
+                for child in gameinfo_element:
+                    # Check if the child element is in the predefined list
+                    if child.tag not in self.XML_ELEMENT_MAP:
+                        continue
+
+                    # logger.warning(f"{child.tag}: {child.text}")
+
+                    if child.tag == 'image':
+                        text = child.text
+
+                        if text.startswith('./'):
+                            text = text[2:]
+
+                        image_file = self.hm.ports_dir / text
+                        if not image_file.is_file():
+                            continue
+
+                        target_file = INFO_PREVIEW_DIR / (path_merge + image_file.suffix)
+                        logger.debug(f"copying {str(image_file)} to {str(target_file)}")
+                        shutil.copy(image_file, target_file)
+
+            # HAHA THIS IS FUCKED
+            self.added_ports.add('GAMELIST UPDATER')
 
 
 class PlatformTesting(PlatformBase):

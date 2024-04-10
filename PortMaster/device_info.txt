@@ -82,7 +82,7 @@ DEVICE_RAM=$(free | awk '/Mem:/ { printf("%.0f", ($2 / 1024 / 1024)) }')
 # Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
     DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
-elif [[ "$CFW_NAME" == "TrimUI Smart" ]]; then
+elif [[ "$CFW_NAME" == "TrimUI" ]]; then
     DEVICE_NAME="TrimUI Smart Pro"
 elif [ -f "$HOME/.config/.CUSTOM_DEVICE" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.CUSTOM_DEVICE")
@@ -96,6 +96,11 @@ elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(cat /boot/boot/batocera.board)
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
+
+    if [[ "${DEVICE_NAME}" == "RGB10" ]]; then
+        # This one is tricky :D
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+    fi
 
     if [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
@@ -217,7 +222,7 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="x86_64"
         ;;
 
-    "sun50iw10")
+    "TrimUI Smart Pro")
         DEVICE_CPU="a133plus"
         ;;
 
