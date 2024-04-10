@@ -47,7 +47,12 @@ if (Path().cwd() / '.git').is_dir():
 elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
     ## TrimUI Smart Pro
     HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Apps/PortMaster")
-    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/ports")
+
+    if Path("/mnt/SDCARD/Ports").is_dir():
+        HM_DEFAULT_PORTS_DIR = Path("/mnt/SDCARD/Ports")
+    else:
+        HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/ports")
+
     HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/PORTS")
 
 elif Path("/userdata/roms/ports").is_dir():

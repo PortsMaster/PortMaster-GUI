@@ -32,17 +32,18 @@ DEVICES = {
     "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "TheRA"]},
     "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
     "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS", "ROCKNIX"]},
-    "Anbernic RG35XX PLUS": {"device": "rg35xx plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
-    "Anbernic RG35XX H":    {"device": "rg35xx h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
+    "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
+    "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS", "ROCKNIX"]},
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
 
     # Powkiddy
-    "Powkiddy RGB10":  {"device": "rgb10",  "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy RGB20S": {"device": "rgb20s", "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
-    "Powkiddy RGB30":  {"device": "rgb30",  "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy RK2023": {"device": "rk2023", "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy X55":    {"device": "x55",    "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
+    "Powkiddy RGB10":       {"device": "rgb10",     "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy RGB20S":      {"device": "rgb20s",    "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
+    "Powkiddy RGB30":       {"device": "rgb30",     "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy RK2023":      {"device": "rk2023",    "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy X55":         {"device": "x55",       "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
+    "Powkiddy RGB10MAX3":   {"device": "rgb10max3", "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
 
     # Hardkernel
     "Hardkernel ODROID GO Advance": {"device": "oga", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "JELOS", "ROCKNIX"]},
@@ -88,15 +89,16 @@ HW_INFO = {
     "ogu": {"resolution": (854, 480), "analogsticks": 2, "cpu": "s922x",  "capabilities": ["power"], "ram": 2048},
 
     # Powkiddy
-    "x55":       {"resolution": (1280, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rgb10max3": {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "s922x",  "capabilities": ["power"], "ram": 2048},
-    "rgb10max2": {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rgb10max":  {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rgb10s":    {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rgb20s":    {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rgb30":     {"resolution": ( 720, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rk2023":    {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rk2020":    {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "x55":          {"resolution": (1280, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rgb10max3pro": {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "s922x",  "capabilities": ["power"], "ram": 2048},
+    "rgb10max3":    {"resolution": (1280, 480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rgb10max2":    {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb10max":     {"resolution": ( 854, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb10s":       {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb20s":       {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rgb30":        {"resolution": ( 720, 720), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rk2023":       {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rk2020":       {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
 
     # Gameforce Chi / Ace
     "chi":       {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -179,9 +181,9 @@ def nice_device_to_device(raw_device):
         ('sun50iw9', 'rg35xx-h'),
         ('sun50iw10', 'trimui-smart-pro'),
 
-        ('Hardkernel ODROID-GO-Ultra', 'ogu'),
-        ('ODROID-GO Advance*',   'oga'),
-        ('ODROID-GO Super*',     'ogs'),
+        ('Hardkernel ODROID-GO-Ultra',  'ogu'),
+        ('ODROID-GO Advance*',          'oga'),
+        ('ODROID-GO Super*',            'ogs'),
 
         ('Powkiddy RGB10 MAX 3', 'rgb10max3'),
         ('Powkiddy RGB30',       'rgb30'),
