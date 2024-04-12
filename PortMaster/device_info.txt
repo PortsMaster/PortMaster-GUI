@@ -15,12 +15,16 @@
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.6"
+DEVICE_INFO_VERSION="0.1.7"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
 else
     SCRIPT_DIR="$controlfolder"
+fi
+
+if [ -z "$PM_VERSION" ] && [ -f  "$SCRIPT_DIR/version" ]; then
+    PM_VERSION="$(cat "$SCRIPT_DIR/version")"
 fi
 
 CFW_NAME="Unknown"
@@ -290,6 +294,7 @@ cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
 # ${DEVICE_NAME} - ${CFW_NAME}
 \`\`\`bash
 DEVICE_INFO_VERSION=${DEVICE_INFO_VERSION}
+PM_VERSION=${PM_VERSION:-Unknown}
 CFW_NAME=${CFW_NAME}
 CFW_VERSION=${CFW_VERSION}
 DEVICE_NAME=${DEVICE_NAME}

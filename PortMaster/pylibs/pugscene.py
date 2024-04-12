@@ -546,7 +546,7 @@ class OptionScene(BaseScene):
             _("Update PortMaster"),
             description=_("Force check for a new PortMaster version."))
 
-        if self.gui.hm.device['name'] != 'muOS':
+        if self.gui.hm.device['name'] not in ('muOS', 'TrimUI'):
             self.tags['option_list'].add_option(
                 'restore-portmaster',
                 _("Restore PortMaster"),

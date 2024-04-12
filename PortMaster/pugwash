@@ -1853,11 +1853,14 @@ def portmaster_check_update(pm, config, temp_dir):
                 release_channel=release_channel)
 
         if update_ask:
+            old_check = config['no-check']
+            config['no-check'] = True
+
+            pm.hm = HarbourMaster(config, temp_dir=temp_dir, callback=pm)
+            if pm.hm.platform.WANT_XBOX_FIX:
+                pm.events.fix_xbox_mode()
+
             if pm.message_box(update_reason, want_cancel=True):
-
-                config['no-check'] = True
-                pm.hm = HarbourMaster(config, temp_dir=temp_dir, callback=pm)
-
                 pm.do_install(
                     "PortMaster",
                     release_info[release_channel]['url'],
@@ -1873,6 +1876,9 @@ def portmaster_check_update(pm, config, temp_dir):
                     reboot_file.touch(0o644)
 
                 return True
+
+            config['no-check'] = old_check
+            pm.hm = None
 
     return False
 
