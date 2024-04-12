@@ -228,7 +228,7 @@ class HarbourMaster():
         if self.runtimes_info is None:
             self.runtimes_info = {}
 
-        if self.config['offline']:
+        if self.config['offline'] or self.config['no-check']:
             if not porters_file.is_file():
                 with open(porters_file, 'w') as fh:
                     fh.write('{}')

@@ -621,7 +621,7 @@ class PlatformTrimUI(PlatformBase):
 
 
 class PlatformTesting(PlatformBase):
-    WANT_XBOX_FIX = True
+    WANT_XBOX_FIX = False
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
