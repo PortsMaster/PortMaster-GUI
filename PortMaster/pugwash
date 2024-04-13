@@ -359,7 +359,7 @@ class DirectoryScanner:
 
         yield total_size
 
-    def iterate(self, max_scans=30):
+    def iterate(self, max_scans=60):
         scanned_items = 0
         scanned = {}
 
@@ -768,7 +768,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         # Update scanning
         if self.timers.elapsed('dir_scan_interval', 500, run_first=True):
-            self.dir_scanner.iterate(50)
+            self.dir_scanner.iterate(30)
 
         ## Check for any keys changed in our template system.
         if len(self.changed_keys):

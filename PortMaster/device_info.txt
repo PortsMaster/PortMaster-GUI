@@ -11,11 +11,15 @@
 # - DEVICE_CPU
 # - DEVICE_RAM
 # - DEVICE_ARCH
+# - DEVICE_HAVE_ARMHF
+# - DEVICE_HAVE_AARCH64
+# - DEVICE_HAVE_X86
+# - DEVICE_HAVE_X86_64
 # - ANALOG_STICKS
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.7"
+DEVICE_INFO_VERSION="0.1.8"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -119,8 +123,33 @@ fi
 
 ANALOG_STICKS=2
 DEVICE_CPU=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
-DEVICE_ARCH=$(uname -m)
 DISPLAY_ORIENTATION=0
+
+DEVICE_ARCH="aarch64"
+DEVICE_HAVE_ARMHF="N"
+DEVICE_HAVE_AARCH64="N"
+DEVICE_HAVE_X86="N"
+DEVICE_HAVE_X86_64="N"
+
+if [ -f "/lib/ld-linux-armhf.so.3" ]; then
+    DEVICE_ARCH="armhf"
+    DEVICE_HAVE_ARMHF="Y"
+fi
+
+if [ -f "/lib/ld-linux-aarch64.so.1" ]; then
+    DEVICE_ARCH="aarch64"
+    DEVICE_HAVE_AARCH64="Y"
+fi
+
+if [ -f "/lib/ld-linux.so.2" ]; then
+    DEVICE_HAVE_X86="Y"
+    if [ "$(uname -i)" = "x86_64" ]; then
+        DEVICE_ARCH="x86_64"
+        DEVICE_HAVE_X86_64="Y"
+    else
+        DEVICE_ARCH="x86"
+    fi
+fi
 
 ## FIXES
 # Here is where we can add custome rules to fill out extra info on the device.
@@ -222,30 +251,24 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="RK3326"
         ;;
 
-     "RetroDECK")
+     "retrodeck")
         DEVICE_CPU="x86_64"
         ;;
 
-    "TrimUI Smart Pro")
+    "trimui smart pro")
         DEVICE_CPU="a133plus"
         ;;
 
     "sun50iw9")
-        if [[ "$CFW_NAME" == "Batocera" ]]; then
-            ANALOG_STICKS=0
-            DEVICE_NAME="RG35XX PLUS"
-        elif [ -f "/opt/muos/config/device.txt" ]; then
+        if [ -f "/opt/muos/config/device.txt" ]; then
             if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then
                 ANALOG_STICKS=0
                 DEVICE_NAME="RG35XX PLUS"
             else
                 DEVICE_NAME="RG35XX H"
             fi
-
-            DEVICE_ARCH="armhf"
         else
             DEVICE_NAME="RG35XX H"
-            DEVICE_ARCH="armhf"
         fi
 
         DEVICE_CPU="H700"
@@ -301,6 +324,10 @@ DEVICE_NAME=${DEVICE_NAME}
 DEVICE_CPU=${DEVICE_CPU}
 DEVICE_ARCH=${DEVICE_ARCH}
 DEVICE_RAM=${DEVICE_RAM}
+DEVICE_HAVE_ARMHF="${DEVICE_HAVE_ARMHF}"
+DEVICE_HAVE_AARCH64="${DEVICE_HAVE_AARCH64}"
+DEVICE_HAVE_X86="${DEVICE_HAVE_X86}"
+DEVICE_HAVE_X86_64="${DEVICE_HAVE_X86_64}"
 DISPLAY_WIDTH=${DISPLAY_WIDTH}
 DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
 ASPECT_X=${ASPECT_X}
