@@ -1,0 +1,29 @@
+#!/bin/ash
+
+NEW_DATA_DIR="/mnt/SDCARD/Data/ports"
+
+OLD_SCRIPT_DIR="/mnt/SDCARD/Roms/PORTS"
+if [ -d "/mnt/SDCARD/ports" ]; then
+    OLD_DATA_DIR="/mnt/SDCARD/ports"
+else
+    OLD_DATA_DIR="/mnt/SDCARD/Ports"
+fi
+
+if [ ! -d "$NEW_DATA_DIR" ]; then
+    mkdir -p "$NEW_DATA_DIR"
+
+    echo "Moving $OLD_DATA_DIR to $NEW_DATA_DIR"
+    for file in "$OLD_DATA_DIR"/*; do
+        mv -v "$file" "$NEW_DATA_DIR"
+    done
+
+    echo "Moving $OLD_SCRIPT_DIR to $NEW_DATA_DIR"
+    for file in "$OLD_SCRIPT_DIR"/*.sh; do
+        mv -v "$file" "$NEW_DATA_DIR"
+    done
+fi
+
+if [ -d "/mnt/SDCARD/ports" ]; then
+    rm -fR /mnt/SDCARD/ports
+    mkdir -p /mnt/SDCARD/Ports
+fi

@@ -95,7 +95,7 @@ if [ -n "$AUTOINSTALL" ]; then
   fi
 fi
 
-PORTMASTER_CMDS=${PORTMASTER_CMDS:---debug}
+# PORTMASTER_CMDS=${PORTMASTER_CMDS:---debug}
 
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"

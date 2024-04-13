@@ -28,6 +28,8 @@ sdl2imgshow \
 sleep 0.5
 pkill -f sdl2imgshow
 
+$controlfolder/PortMaster/update.txt
+
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))

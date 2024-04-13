@@ -11,10 +11,10 @@
 # - DEVICE_CPU
 # - DEVICE_RAM
 # - DEVICE_ARCH
-# - DEVICE_HAVE_ARMHF
-# - DEVICE_HAVE_AARCH64
-# - DEVICE_HAVE_X86
-# - DEVICE_HAVE_X86_64
+# - DEVICE_HAS_ARMHF
+# - DEVICE_HAS_AARCH64
+# - DEVICE_HAS_X86
+# - DEVICE_HAS_X86_64
 # - ANALOG_STICKS
 #
 # usage `source <path_to>/device_info.txt`
@@ -126,29 +126,29 @@ DEVICE_CPU=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
 DISPLAY_ORIENTATION=0
 
 DEVICE_ARCH="aarch64"
-DEVICE_HAVE_ARMHF="N"
-DEVICE_HAVE_AARCH64="N"
-DEVICE_HAVE_X86="N"
-DEVICE_HAVE_X86_64="N"
+DEVICE_HAS_ARMHF="N"
+DEVICE_HAS_AARCH64="N"
+DEVICE_HAS_X86="N"
+DEVICE_HAS_X86_64="N"
 
 if [ -f "/lib/ld-linux-armhf.so.3" ]; then
     DEVICE_ARCH="armhf"
-    DEVICE_HAVE_ARMHF="Y"
+    DEVICE_HAS_ARMHF="Y"
 fi
 
 if [ -f "/lib/ld-linux-aarch64.so.1" ]; then
     DEVICE_ARCH="aarch64"
-    DEVICE_HAVE_AARCH64="Y"
+    DEVICE_HAS_AARCH64="Y"
 fi
 
-if [ -f "/lib/ld-linux.so.2" ]; then
-    DEVICE_HAVE_X86="Y"
-    if [ "$(uname -i)" = "x86_64" ]; then
-        DEVICE_ARCH="x86_64"
-        DEVICE_HAVE_X86_64="Y"
-    else
-        DEVICE_ARCH="x86"
-    fi
+if [ -f "/lib/ld-linux.so.2" ] || [ "$(uname -i)" = "i686" ]; then
+    DEVICE_ARCH="x86"
+    DEVICE_HAS_X86="Y"
+fi
+
+if [ -f "/lib/ld-linux-x86-64.so.2" ] || [ "$(uname -i)" = "x86_64" ]; then
+    DEVICE_ARCH="x86_64"
+    DEVICE_HAS_X86_64="Y"
 fi
 
 ## FIXES
@@ -324,10 +324,10 @@ DEVICE_NAME=${DEVICE_NAME}
 DEVICE_CPU=${DEVICE_CPU}
 DEVICE_ARCH=${DEVICE_ARCH}
 DEVICE_RAM=${DEVICE_RAM}
-DEVICE_HAVE_ARMHF="${DEVICE_HAVE_ARMHF}"
-DEVICE_HAVE_AARCH64="${DEVICE_HAVE_AARCH64}"
-DEVICE_HAVE_X86="${DEVICE_HAVE_X86}"
-DEVICE_HAVE_X86_64="${DEVICE_HAVE_X86_64}"
+DEVICE_HAS_ARMHF="${DEVICE_HAS_ARMHF}"
+DEVICE_HAS_AARCH64="${DEVICE_HAS_AARCH64}"
+DEVICE_HAS_X86="${DEVICE_HAS_X86}"
+DEVICE_HAS_X86_64="${DEVICE_HAS_X86_64}"
 DISPLAY_WIDTH=${DISPLAY_WIDTH}
 DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
 ASPECT_X=${ASPECT_X}

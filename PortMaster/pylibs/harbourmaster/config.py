@@ -39,21 +39,16 @@ if (Path().cwd() / '..' / '.git').is_dir():
 
 if (Path().cwd() / '.git').is_dir():
     ## For testing
-    HM_DEFAULT_TOOLS_DIR = Path('.').absolute()
-    HM_DEFAULT_PORTS_DIR = Path('ports/').absolute()
+    HM_DEFAULT_TOOLS_DIR   = Path('.').absolute()
+    HM_DEFAULT_PORTS_DIR   = Path('ports/').absolute()
     HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
 
 elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
     ## TrimUI Smart Pro
     HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Apps/PortMaster")
-
-    if Path("/mnt/SDCARD/Ports").is_dir():
-        HM_DEFAULT_PORTS_DIR = Path("/mnt/SDCARD/Ports")
-    else:
-        HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/ports")
-
-    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/PORTS")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/Data/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Data/ports")
 
 elif Path("/userdata/roms/ports").is_dir():
     ## Batocera
@@ -73,28 +68,28 @@ elif Path("/opt/muos").is_dir():
 
 elif Path("/opt/system/Tools").is_dir():
     if Path("/roms2/tools").is_dir():
-        HM_DEFAULT_TOOLS_DIR = Path("/roms2/tools")
-        HM_DEFAULT_PORTS_DIR = Path("/roms2/ports")
+        HM_DEFAULT_TOOLS_DIR   = Path("/roms2/tools")
+        HM_DEFAULT_PORTS_DIR   = Path("/roms2/ports")
         HM_DEFAULT_SCRIPTS_DIR = Path("/roms2/ports")
 
     else:
-        HM_DEFAULT_TOOLS_DIR = Path("/roms/tools")
-        HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
+        HM_DEFAULT_TOOLS_DIR   = Path("/roms/tools")
+        HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
         HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 
 elif Path("/opt/tools/PortMaster").is_dir():
-    HM_DEFAULT_TOOLS_DIR = Path("/opt/tools")
-    HM_DEFAULT_PORTS_DIR = Path("/roms/ports")
+    HM_DEFAULT_TOOLS_DIR   = Path("/opt/tools")
+    HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 
 elif Path("/storage/roms/ports_scripts").is_dir():
-    HM_DEFAULT_TOOLS_DIR = Path("/storage/roms/ports")
-    HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
+    HM_DEFAULT_TOOLS_DIR   = Path("/storage/roms/ports")
+    HM_DEFAULT_PORTS_DIR   = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports_scripts")
 
 elif Path("/storage/roms/ports").is_dir():
-    HM_DEFAULT_TOOLS_DIR = Path("/storage/roms/ports")
-    HM_DEFAULT_PORTS_DIR = Path("/storage/roms/ports")
+    HM_DEFAULT_TOOLS_DIR   = Path("/storage/roms/ports")
+    HM_DEFAULT_PORTS_DIR   = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.cfg exists. Chose this file/location as platform independent from were retrodeck is installed.
