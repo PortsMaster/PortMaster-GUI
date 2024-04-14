@@ -5,7 +5,7 @@ PORTMASTER_VERSION = '2023-01-07-1007'
 PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
-PORTMASTER_MIN_VERSION = '2024-04-06-0000'
+PORTMASTER_MIN_VERSION = '2024-04-14-0000'
 PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
 PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 

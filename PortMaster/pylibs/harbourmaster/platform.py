@@ -348,7 +348,7 @@ class PlatformBatocera(PlatformBase):
         TASK_SET.touch()
 
 
-class PlatformPhasmidOS(PlatformBatocera):
+class PlatformKnulli(PlatformBatocera):
     ...
 
 
@@ -800,7 +800,7 @@ HM_PLATFORMS = {
     'jelos':     PlatformJELOS,
     'rocknix':   PlatformROCKNIX,
     'batocera':  PlatformBatocera,
-    'phasmidos': PlatformPhasmidOS,
+    'knulli':    PlatformKnulli,
     'muos':      PlatformmuOS,
     'trimui':    PlatformTrimUI,
     'retrodeck': PlatformRetroDECK,
