@@ -532,7 +532,7 @@ class OptionScene(BaseScene):
         if self.gui.hm.device['name'] == 'TrimUI':
             self.tags['option_list'].add_option(
                 'trimui-port-mode-toggle',
-                _("Ports Location: ") +  (self.gui.hm.cfg_data.get('trimui-port-mode', 'roms') == 'roms' and _("Roms Tab") or _("Ports Tab")),
+                _("Ports Location: ") +  (self.gui.hm.cfg_data.get('trimui-port-mode', 'roms') == 'roms' and _("Roms section") or _("Ports tab")),
                 description=_("Location where ports should be installed to."))
 
         self.tags['option_list'].add_option(None, _("System"))
@@ -796,8 +796,8 @@ class OptionScene(BaseScene):
 
             if selected_option == 'trimui-port-mode-toggle':
                 language_map = {
-                    'roms':  _('Roms Tab'),
-                    'ports': _('Ports Tab'),
+                    'roms':  _('Roms section'),
+                    'ports': _('Ports tab'),
                     }
 
                 change_map = {
@@ -816,7 +816,11 @@ class OptionScene(BaseScene):
                     self.gui.hm.cfg_data['trimui-port-mode'] = to_mode
                     self.gui.hm.save_config()
 
-                    self.hm.platform.do_move_ports()
+                    item = self.tags['option_list'].list_selected()
+                    self.tags['option_list'].list[item] = (
+                        _("Ports Location: ") +  language_map[to_mode])
+
+                    self.gui.hm.platform.do_move_ports()
 
             if selected_option == 'runtime-manager':
                 self.gui.push_scene('runtime-manager', RuntimesScene(self.gui))

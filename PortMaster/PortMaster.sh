@@ -24,6 +24,8 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
+exec > >(tee "$controlfolder/log.txt") 2>&1
+
 export TERM=linux
 $ESUDO chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
@@ -100,7 +102,7 @@ fi
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
-  $ESUDO ./pugwash $PORTMASTER_CMDS 2>&1 | $ESUDO tee -a ./log.txt
+  $ESUDO ./pugwash $PORTMASTER_CMDS
 
   if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
     break;

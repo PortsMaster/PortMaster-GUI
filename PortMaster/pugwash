@@ -1980,12 +1980,14 @@ def main(argv):
                 pm.run()
 
         if not harbourmaster.HM_TESTING:
+            logger.debug(f"{pm.hm}: {pm.hm.platform.ES_NAME}")
             if pm.hm is not None and pm.hm.platform.ES_NAME is not None:
+                logger.debug(f"{pm.hm.platform.ports_changed()}")
                 if pm.hm.platform.ports_changed():
-                    refresh_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
+                    refresh_file = (pm.hm.tools_dir / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
+                    logger.debug(f"{refresh_file}")
 
-                    if not refresh_file.is_file():
-                        refresh_file.touch(0o644)
+                    refresh_file.touch(0o644, exist_ok=True)
 
         # if harbourmaster.HM_TESTING:
         #     for key, value in pm.text_data.items():

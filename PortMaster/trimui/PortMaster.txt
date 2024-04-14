@@ -14,6 +14,8 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
+# exec > >(tee "$controlfolder/log.txt") 2>&1
+
 export TERM=linux
 chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
@@ -99,22 +101,23 @@ echo "Starting PortMaster." > $CUR_TTY
 
 chmod -R +x .
 
-rm -f "${controlfolder}/.pugwash-reboot"
+rm -f "$controlfolder/.pugwash-reboot"
 
 while true; do
-  ./pugwash 2>&1 | $ESUDO tee -a ./log.txt
+  ./pugwash --debug
 
-  if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
+  if [ ! -f "$controlfolder/.pugwash-reboot" ]; then
     break;
   fi
 
-  rm -f "${controlfolder}/.pugwash-reboot"
+  rm -f "$controlfolder/.pugwash-reboot"
 done
 
-if [ -f "${controlfolder}/.trimui-refresh" ]; then
-  rm -f "${controlfolder}/.trimui-refresh"
+if [ -f "$controlfolder/.trimui-refresh" ]; then
+  rm -f "$controlfolder/.trimui-refresh"
   # HULK SMASH
-  ${controlfolder}/trimui/image_smash.txt
+
+  "$controlfolder"/trimui/image_smash.txt
 fi
 
 unset LD_LIBRARY_PATH

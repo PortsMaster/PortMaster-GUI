@@ -539,7 +539,7 @@ PORT_CONFIG_JSON = """
     "label":"{{PORTTITLE}}",
     "icon":"icon.png",
     "themecolor":"61A8DD",
-    "launch":"launch.sh",
+    "launch":"{{PORTSCRIPT}}",
     "description":"A Port"
 }
 """
@@ -575,8 +575,8 @@ class PlatformTrimUI(PlatformBase):
         shutil.copy(TU_DIR / "control.txt", CONTROL_HACK)
 
         # PEBKAC
-        logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / ".." / "launch.sh"}')
-        shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / '..' / "launch.sh")
+        logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / "launch.sh"}')
+        shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / "launch.sh")
 
         TASK_SET = Path(PM_DIR / "tasksetter")
         if TASK_SET.is_file():
@@ -587,12 +587,71 @@ class PlatformTrimUI(PlatformBase):
     def port_install(self, port_name, port_info, port_files):
         super().port_install(port_name, port_info, port_files)
 
-        # Add stuff here that might not get addded if no gameinfo.xml exists. WERE GOING TO FUDGE IT.
+        ## Gets called when a port is installed.
+        # logger.debug(f"{port_name}: {port_files}")
+
+        scripts_dir = '/'.join(self.hm.scripts_dir.parts)
+        scripts_dir_parts = len(self.hm.scripts_dir.parts)
+
+        for port_file in port_files:
+            if not port_file.name.lower().endswith('.sh'):
+                continue
+
+            if len(port_file.parts) != (scripts_dir_parts+1):
+                logger.debug(f"{len(port_file.parts)} != {(scripts_dir_parts+1)}")
+                continue
+
+            if scripts_dir != '/'.join(port_file.parts[:scripts_dir_parts]):
+                logger.debug(f"{scripts_dir} != {str(port_file)}")
+                continue
+
+            self.add_port_script(port_file)
 
     def port_uninstall(self, port_name, port_info, port_files):
         super().port_uninstall(port_name, port_info, port_files)
+        # logger.debug(f"{port_name}: {port_files}")
 
-        # Delete stuff here like below.
+        for port_file in port_files:
+            if port_file.endswith('.sh'):
+                self.remove_port_script(self.hm.scripts_dir / port_file)
+
+    def add_port_script(self, port_script):
+        ROM_SCRIPT_DIR = Path("/mnt/SDCARD/Roms/PORTS")
+        PORT_DIR       = Path("/mnt/SDCARD/Ports")
+
+        port_mode = self.hm.cfg_data.get('trimui-port-mode', 'roms')
+
+        if port_mode == 'roms':
+            target_file = ROM_SCRIPT_DIR / (port_script.name)
+            logger.debug(f"Copying {str(port_script)} to {str(target_file)}")
+            shutil.copy(port_script, target_file)
+
+        elif port_mode == 'ports':
+            new_port_dir = PORT_DIR / f"portmaster-{name_cleaner(port_script.stem)}"
+
+            new_port_dir.mkdir(0o755, parents=True, exist_ok=True)
+
+            logger.debug(f"Creating {str(new_port_dir / 'config.json')}")
+            with open(new_port_dir / "config.json", "w") as fh:
+                fh.write(
+                    PORT_CONFIG_JSON
+                    .replace("{{PORTTITLE}}", port_script.stem)
+                    .replace("{{PORTNAME}}", new_port_dir.name.lower())
+                    .replace("{{PORTSCRIPT}}", str(port_script)))
+
+    def remove_port_script(self, port_script):
+        ROM_SCRIPT_DIR = Path("/mnt/SDCARD/Roms/PORTS")
+        PORT_DIR       = Path("/mnt/SDCARD/Ports")
+
+        rom_script = (ROM_SCRIPT_DIR / port_script.name)
+        if rom_script.is_file():
+            logger.info(f"Removing: {str(rom_script)}")
+            rom_script.unlink()
+
+        port_dir = (PORT_DIR / f"portmaster-{name_cleaner(port_script.stem)}")
+        if port_dir.is_dir():
+            logger.info(f"Removing: {str(port_dir)}")
+            shutil.rmtree(port_dir)
 
     def do_move_ports(self):
         port_mode = self.hm.cfg_data.get('trimui-port-mode', 'roms')
@@ -611,17 +670,25 @@ class PlatformTrimUI(PlatformBase):
 
         elif port_mode == 'ports':
             ## Delete ports scripts.
-            for port_file in PORT_DIR.glob('*.sh'):
+            for port_file in ROM_SCRIPT_DIR.glob('*.sh'):
                 if not port_file.is_file():
                     continue
 
                 port_file.unlink()
 
-        for port_dir in self.hm.ports_dir.iterdir():
-            if not ports_dir.is_dir():
+        for port_script in self.hm.ports_dir.iterdir():
+            # Do scripts
+            if not port_script.is_file():
                 continue
 
-            gameinfo_file = ports_dir / 'gameinfo.xml'
+            self.add_port_script(port_script)
+
+        for port_dir in self.hm.ports_dir.iterdir():
+            # Fill it out with gameinfo if available.
+            if not port_dir.is_dir():
+                continue
+
+            gameinfo_file = port_dir / 'gameinfo.xml'
 
             if not gameinfo_file.is_file():
                 continue
@@ -640,6 +707,10 @@ class PlatformTrimUI(PlatformBase):
         ROM_IMAGE_DIR  = Path("/mnt/SDCARD/Imgs/PORTS")
         ROM_SCRIPT_DIR = Path("/mnt/SDCARD/Roms/PORTS")
         PORT_DIR       = Path("/mnt/SDCARD/Ports")
+
+        logger.debug(f"Processing {gameinfo_file}")
+
+        self.added_ports.add('GAMELIST UPDATER')
 
         with self.gamelist_backup() as gamelist_xml:
             if gamelist_xml is None:
@@ -660,16 +731,14 @@ class PlatformTrimUI(PlatformBase):
                 if port_script.startswith('./'):
                     port_script = port_script[2:]
 
-                port_script_merge = port_script.rsplit('.', 1)[0]
-
                 port_title = gameinfo_element.find('name')
                 if port_title is None:
                     logger.debug(f"Cant find name tag for {port_script}")
+                    port_title = port_script_file.stem
                 else:
                     port_title = port_title.text.strip()
 
                 port_image = gameinfo_element.find('image')
-
                 if port_image is not None:
                     port_image = port_image.text.strip()
                     if port_image.startswith('./'):
@@ -680,42 +749,40 @@ class PlatformTrimUI(PlatformBase):
                         logger.debug(f"Cant find image file {image_file}")
                         image_file = None
 
+                    logger.info(f"{port_image}: {image_file}")
                 else:
+                    logger.debug(f"Cant find image tag.")
                     image_file = None
 
-                logger.info(f"GAMEINFO MAJIGGER: {port_mode}\n{port_script}\n{port_title}\n{port_image}")
+                logger.debug(f"{port_mode} -- {image_file}")
+
                 if port_mode == 'roms':
-                    target_file = ROM_IMAGE_DIR / (port_script_merge + image_file.suffix)
-                    logger.debug(f"Copying {str(image_file)} to {str(target_file)}")
-                    shutil.copy(image_file, target_file)
+                    if image_file is not None:
+                        target_file = ROM_IMAGE_DIR / (port_script_file.stem + "-pre" + image_file.suffix)
+                        logger.debug(f"Copying {str(image_file)} to {str(target_file)}")
+                        shutil.copy(image_file, target_file)
 
                     target_file = ROM_SCRIPT_DIR / (port_script_file.name)
                     logger.debug(f"Copying {str(port_script_file)} to {str(target_file)}")
                     shutil.copy(port_script_file, target_file)
 
                 elif port_mode == 'ports':
-                    NEW_PORT_DIR = PORT_DIR / f"portmaster-{name_cleaner(port_script_file.stem)}"
+                    new_port_dir = PORT_DIR / f"portmaster-{name_cleaner(port_script_file.stem)}"
 
-                    NEW_PORT_DIR.mkdir(0o755, parents=True, exist_ok=True)
+                    new_port_dir.mkdir(0o755, parents=True, exist_ok=True)
 
-                    logger.debug(f"Creating {str(NEW_PORT_DIR / 'config.json')}")
-                    with open(NEW_PORT_DIR / "config.json", "w") as fh:
+                    logger.debug(f"Creating {str(new_port_dir / 'config.json')}")
+                    with open(new_port_dir / "config.json", "w") as fh:
                         fh.write(
                             PORT_CONFIG_JSON
                             .replace("{{PORTTITLE}}", port_title)
-                            .replace("{{PORTNAME}}", NEW_PORT_DIR.name.lower()))
-
-                    target_file = NEW_PORT_DIR / 'launch.sh'
-                    logger.debug(f"Copying {str(port_script_file)} to {str(target_file)}")
-                    shutil.copy(port_script_file, target_file)
+                            .replace("{{PORTNAME}}", new_port_dir.name.lower())
+                            .replace("{{PORTSCRIPT}}", str(port_script_file)))
 
                     if image_file is not None:
-                        target_file = NEW_PORT_DIR / ("icon-pre" + image_file.suffix)
+                        target_file = new_port_dir / ("icon-pre" + image_file.suffix)
                         logger.debug(f"Copying {str(image_file)} to {str(target_file)}")
                         shutil.copy(image_file, target_file)
-
-            # HAHA THIS IS FUCKED
-            self.added_ports.add('GAMELIST UPDATER')
 
 
 class PlatformTesting(PlatformBase):

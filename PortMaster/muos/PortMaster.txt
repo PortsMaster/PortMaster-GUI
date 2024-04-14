@@ -21,6 +21,8 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
+exec > >(tee "$controlfolder/log.txt") 2>&1
+
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
@@ -100,7 +102,7 @@ $ESUDO chmod -R +x .
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
-  $ESUDO ./pugwash 2>&1 | $ESUDO tee -a ./log.txt
+  $ESUDO ./pugwash
 
   # Do it twice, it's just as nice!
   cat /dev/zero > /dev/fb0 2>/dev/null
