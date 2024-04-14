@@ -65,11 +65,12 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/libs/\*.squashfs \
     -x PortMaster/libs/\*.squashfs.md5 \
     -x PortMaster/pugwash.bak \
+    -x PortMaster/log.txt \
     -x PortMaster/pugwash.txt \
     -x PortMaster/harbourmaster.txt \
     -x '*.DS_Store'
 
-if [[ "$1" == "stable" ]]; then
+if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
     echo "Creating Installers"
 
     if [ ! -f "runtimes.zip" ]; then

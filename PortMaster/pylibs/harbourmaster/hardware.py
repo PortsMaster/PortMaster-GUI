@@ -134,24 +134,46 @@ CFW_INFO = {
     "rocknix-rgb10max3": {"capabilities": []},
     "rocknix-rgb30":     {"capabilities": []},
     "rocknix":           {"capabilities": ["opengl"]},
-
-    ## Batocera Overrides
-    "batocera-rg35xx-h":    {"capabilities": ["aarch64"], "primary_arch": "aarch64"},
-    "batocera-rg35xx-plus": {"capabilities": ["aarch64"], "primary_arch": "aarch64"},
     }
 
 
+## OBSOLETE
 CPU_INFO = {
-    "rk3326":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3399":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3566":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "rk3588":   {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "h700":     {"capabilities": ["armhf"],            "primary_arch": "armhf"},
-    "a133plus": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
-    "x86_64":   {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
-    "s922x":    {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
-    "unknown":  {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3326":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3399":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3566":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "h700":          {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "h700-batocera": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "h700":          {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "a133plus":      {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
+    "s922x":         {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "unknown":       {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
+
+
+def cpu_info_v2(info):
+    if Path('/lib/ld-linux-armhf.so.3').is_file():
+        info["capabilities"].append("armhf")
+        info['primary_arch'] = "armhf"
+
+    if Path('/lib/ld-linux-aarch64.so.1').is_file():
+        info["capabilities"].append("aarch64")
+        info['primary_arch'] = "aarch64"
+
+    if Path('/lib/ld-linux.so.2').is_file():
+        info["capabilities"].append("x86")
+        info['primary_arch'] = "x86"
+
+        if subprocess.getoutput('uname -i').strip() == 'x86_64':
+            info["capabilities"].append("x86_64")
+            info['primary_arch'] = "x86_64"
+
+    if HM_TESTING or 'primary_arch' not in info:
+        info["capabilities"].append("armhf")
+        info["capabilities"].append("aarch64")
+        info['primary_arch'] = "aarch64"
 
 
 def safe_cat(file_name):
@@ -390,15 +412,22 @@ def find_device_by_resolution(resolution):
     return 'default'
 
 
-def expand_info(info, override_resolution=None, override_ram=None):
+def expand_info(info, override_resolution=None, override_ram=None, use_old_cpu_info=False):
     """
     This turns fetches device info and expands out the capabilities based on that device/cfw.
     """
 
     _merge_info(info, HW_INFO.get(info['device'], HW_INFO['default']))
 
-    if info['cpu'] in CPU_INFO:
-        _merge_info(info, CPU_INFO[info['cpu']])
+    if not use_old_cpu_info:
+        cpu_info_v2(info)
+
+    else:
+        if f"{info['cpu']}-{info['device']}" in CPU_INFO:
+            _merge_info(info, f"{info['cpu']}-{info['device']}")
+
+        elif info['cpu'] in CPU_INFO:
+            _merge_info(info, CPU_INFO[info['cpu']])
 
     if f"{info['name'].lower()}-{info['device']}" in CFW_INFO:
         _merge_info(info, CFW_INFO[f"{info['name'].lower()}-{info['device']}"])

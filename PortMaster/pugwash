@@ -5,7 +5,7 @@ PORTMASTER_VERSION = '2023-01-07-1007'
 PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
-PORTMASTER_MIN_VERSION = '2024-04-06-0000'
+PORTMASTER_MIN_VERSION = '2024-04-14-0000'
 PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
 PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 
@@ -359,7 +359,7 @@ class DirectoryScanner:
 
         yield total_size
 
-    def iterate(self, max_scans=30):
+    def iterate(self, max_scans=60):
         scanned_items = 0
         scanned = {}
 
@@ -768,7 +768,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
         # Update scanning
         if self.timers.elapsed('dir_scan_interval', 500, run_first=True):
-            self.dir_scanner.iterate(50)
+            self.dir_scanner.iterate(30)
 
         ## Check for any keys changed in our template system.
         if len(self.changed_keys):
@@ -1980,12 +1980,14 @@ def main(argv):
                 pm.run()
 
         if not harbourmaster.HM_TESTING:
+            logger.debug(f"{pm.hm}: {pm.hm.platform.ES_NAME}")
             if pm.hm is not None and pm.hm.platform.ES_NAME is not None:
+                logger.debug(f"{pm.hm.platform.ports_changed()}")
                 if pm.hm.platform.ports_changed():
-                    refresh_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
+                    refresh_file = (pm.hm.tools_dir / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
+                    logger.debug(f"{refresh_file}")
 
-                    if not refresh_file.is_file():
-                        refresh_file.touch(0o644)
+                    refresh_file.touch(0o644, exist_ok=True)
 
         # if harbourmaster.HM_TESTING:
         #     for key, value in pm.text_data.items():
