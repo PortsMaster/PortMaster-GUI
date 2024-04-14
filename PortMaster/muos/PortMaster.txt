@@ -75,7 +75,7 @@ if [ -n "$AUTOINSTALL" ]; then
     fi
   fi
 
-  touch "$controlfolder/.trimui-refresh"
+  touch "$controlfolder/.muos-refresh"
 
   PortMasterDialog "messages_end"
   if [ -z "$GW" ]; then
