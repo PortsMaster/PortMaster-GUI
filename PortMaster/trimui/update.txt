@@ -19,7 +19,7 @@ if [ ! -d "$NEW_DATA_DIR" ]; then
 
     echo "Moving $OLD_SCRIPT_DIR to $NEW_DATA_DIR"
     for file in "$OLD_SCRIPT_DIR"/*.sh; do
-        mv -v "$file" "$NEW_DATA_DIR"
+        cp -v "$file" "$NEW_DATA_DIR"
     done
 fi
 
