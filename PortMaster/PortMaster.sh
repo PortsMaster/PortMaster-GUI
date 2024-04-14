@@ -38,7 +38,7 @@ $ESUDO chmod -R +x .
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
 if [ -n "$AUTOINSTALL" ]; then
-  source "PortMasterDialog.txt"
+  source "$controlfolder/PortMasterDialog.txt"
 
   GW=$(PortMasterIPCheck)
   PortMasterDialogInit "no-check"

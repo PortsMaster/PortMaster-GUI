@@ -14,7 +14,7 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
-# exec > >(tee "$controlfolder/log.txt") 2>&1
+exec > >(tee "$controlfolder/log.txt") 2>&1
 
 export TERM=linux
 chmod 666 $CUR_TTY
@@ -30,13 +30,13 @@ sdl2imgshow \
 sleep 0.5
 pkill -f sdl2imgshow
 
-$controlfolder/PortMaster/update.txt
+"$controlfolder/trimui/update.txt"
 
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
 if [ -n "$AUTOINSTALL" ]; then
-  source "PortMasterDialog.txt"
+  source "$controlfolder/PortMasterDialog.txt"
 
   GW=$(PortMasterIPCheck)
   PortMasterDialogInit "no-check"
@@ -83,6 +83,8 @@ if [ -n "$AUTOINSTALL" ]; then
       PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
     fi
   fi
+
+  touch "$controlfolder/.trimui-refresh"
 
   PortMasterDialog "messages_end"
   if [ -z "$GW" ]; then

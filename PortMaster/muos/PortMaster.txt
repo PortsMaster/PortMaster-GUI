@@ -27,7 +27,7 @@ exec > >(tee "$controlfolder/log.txt") 2>&1
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
 if [ -n "$AUTOINSTALL" ]; then
-  source "PortMasterDialog.txt"
+  source "$controlfolder/PortMasterDialog.txt"
 
   GW=$(PortMasterIPCheck)
   PortMasterDialogInit "no-check"
@@ -74,6 +74,8 @@ if [ -n "$AUTOINSTALL" ]; then
       PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
     fi
   fi
+
+  touch "$controlfolder/.muos-refresh"
 
   PortMasterDialog "messages_end"
   if [ -z "$GW" ]; then
