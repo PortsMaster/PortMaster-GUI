@@ -13,7 +13,11 @@ export PATH="/opt/python/bin:$controlfolder/muos:$controlfolder/muos:$PATH"
 export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+if [ -d "/usr/lib32/" ]; then
+  export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib32/gamecontrollerdb.txt"
+else
+  export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+fi
 # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
 
 get_controls() {
@@ -23,17 +27,20 @@ get_controls() {
   cat /dev/zero > /dev/fb0 2>/dev/null
 }
 
-# CRUSH KILL DESTROY
-if [ -f "$controlfolder/gptokeyb.armhf" ]; then
-  mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
-fi
+# HACKY MC HACK FACE
+if [ ! -d /lib32/ ]; then
+  # CRUSH KILL DESTROY
+  if [ -f "$controlfolder/gptokeyb.armhf" ]; then
+    mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
+  fi
 
-if [ -f "$controlfolder/gptokeyb2.armhf" ]; then
-  mv "$controlfolder/gptokeyb2.armhf" "$controlfolder/gptokeyb2"
-fi
+  if [ -f "$controlfolder/gptokeyb2.armhf" ]; then
+    mv "$controlfolder/gptokeyb2.armhf" "$controlfolder/gptokeyb2"
+  fi
 
-if [ -f "$controlfolder/xdelta3.armhf" ]; then
-  mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
+  if [ -f "$controlfolder/xdelta3.armhf" ]; then
+    mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
+  fi
 fi
 
 if [ -f "$controlfolder/cwtbe_flag" ]; then

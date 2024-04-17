@@ -635,9 +635,10 @@ class PlatformTrimUI(PlatformBase):
             with open(new_port_dir / "config.json", "w") as fh:
                 fh.write(
                     PORT_CONFIG_JSON
-                    .replace("{{PORTTITLE}}", port_script.stem)
+                    .replace("{{PORTTITLE}}", port_title)
                     .replace("{{PORTNAME}}", new_port_dir.name.lower())
-                    .replace("{{PORTSCRIPT}}", str(port_script)))
+                    ## A-PEH ESC-A-PEH
+                    .replace("{{PORTSCRIPT}}", str(port_script).replace(' ', '\\\\ ')))
 
     def remove_port_script(self, port_script):
         ROM_SCRIPT_DIR = Path("/mnt/SDCARD/Roms/PORTS")
@@ -777,7 +778,8 @@ class PlatformTrimUI(PlatformBase):
                             PORT_CONFIG_JSON
                             .replace("{{PORTTITLE}}", port_title)
                             .replace("{{PORTNAME}}", new_port_dir.name.lower())
-                            .replace("{{PORTSCRIPT}}", str(port_script_file)))
+                            ## A-PEH ESC-A-PEH
+                            .replace("{{PORTSCRIPT}}", str(port_script_file).replace(' ', '\\\\ ')))
 
                     if image_file is not None:
                         target_file = new_port_dir / ("icon-pre" + image_file.suffix)
