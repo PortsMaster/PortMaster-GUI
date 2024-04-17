@@ -4,6 +4,9 @@ if [ -d "Data/ports" ]; then
     exit 0
 fi
 
+LASTPWD="$PWD"
+cd /mnt/SDCARD/
+
 # Function to get the name of a directory with its original case sensitivity
 directory_name() {
     local dir="$1"
@@ -48,6 +51,7 @@ fi
 if ! mkdir -p "Data/ports"; then
     # WELL FUCK.
     echo "Error: Failed to create Data/ports directory." | tee -a "System/portmaster_migration.log"
+    cd "$LASTPWD"
     exit 1
 fi
 
@@ -69,3 +73,5 @@ fi
 
 # Okay we made it to the end...
 mkdir -v "Ports" | tee -a "System/portmaster_migration.log"
+
+cd "$LASTPWD"
