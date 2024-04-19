@@ -635,7 +635,7 @@ class PlatformTrimUI(PlatformBase):
             with open(new_port_dir / "config.json", "w") as fh:
                 fh.write(
                     PORT_CONFIG_JSON
-                    .replace("{{PORTTITLE}}", port_title)
+                    .replace("{{PORTTITLE}}", port_script.stem)
                     .replace("{{PORTNAME}}", new_port_dir.name.lower())
                     ## A-PEH ESC-A-PEH
                     .replace("{{PORTSCRIPT}}", str(port_script).replace(' ', '\\\\ ')))

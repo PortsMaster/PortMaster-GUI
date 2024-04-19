@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 if [ -d "/opt/system/Tools/" ]; then
   controlfolder="/opt/system/Tools"

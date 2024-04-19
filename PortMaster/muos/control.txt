@@ -41,6 +41,10 @@ if [ ! -d /lib32/ ]; then
   if [ -f "$controlfolder/xdelta3.armhf" ]; then
     mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
   fi
+else
+  if [ -f "$controlfolder/muos/mount" ]; then
+    rm -f "$controlfolder/muos/mount"
+  fi
 fi
 
 if [ -f "$controlfolder/cwtbe_flag" ]; then
