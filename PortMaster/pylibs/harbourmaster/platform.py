@@ -43,6 +43,8 @@ class PlatformBase():
         'genre': 'genre',
         }
 
+    XML_PATH_FIX = ['path', 'image']
+
     BLANK_GAMELIST_XML = """<?xml version='1.0' encoding='utf-8'?>\n<gameList />\n"""
 
     def __init__(self, hm):
@@ -122,6 +124,8 @@ class PlatformBase():
         if not gameinfo_file.is_file():
             return
 
+        FIX_PATH = self.hm.ports_dir != self.hm.scripts_dir
+
         with self.gamelist_backup() as gamelist_xml:
             if gamelist_xml is None:
                 return
@@ -148,7 +152,15 @@ class PlatformBase():
                         if gamelist_element is None:
                             gamelist_element = ET.SubElement(gamelist_update, self.XML_ELEMENT_MAP[child.tag])
 
-                        gamelist_element.text = child.text
+                        if FIX_PATH and child.tag in self.XML_PATH_FIX:
+                            new_path = child.text.strip()
+                            if new_path.startswith('./'):
+                                new_path = new_path[2:]
+
+                            gamelist_element.text = str(self.hm.ports_dir / new_path)
+
+                        else:
+                            gamelist_element.text = child.text
 
             if hasattr(ET, 'indent'):
                 ET.indent(gamelist_root, space="  ", level=0)
@@ -374,7 +386,7 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
     ES_NAME = 'emustation'
 
     def gamelist_file(self):
-        return self.hm.ports_dir / 'gamelist.xml'
+        return self.hm.scripts_dir / 'gamelist.xml'
 
 
 class PlatformRetroDECK(PlatformBase):
@@ -637,7 +649,8 @@ class PlatformTrimUI(PlatformBase):
                     PORT_CONFIG_JSON
                     .replace("{{PORTTITLE}}", port_script.stem)
                     .replace("{{PORTNAME}}", new_port_dir.name.lower())
-                    .replace("{{PORTSCRIPT}}", str(port_script)))
+                    ## A-PEH ESC-A-PEH
+                    .replace("{{PORTSCRIPT}}", str(port_script).replace(' ', '\\\\ ')))
 
     def remove_port_script(self, port_script):
         ROM_SCRIPT_DIR = Path("/mnt/SDCARD/Roms/PORTS")
@@ -777,7 +790,8 @@ class PlatformTrimUI(PlatformBase):
                             PORT_CONFIG_JSON
                             .replace("{{PORTTITLE}}", port_title)
                             .replace("{{PORTNAME}}", new_port_dir.name.lower())
-                            .replace("{{PORTSCRIPT}}", str(port_script_file)))
+                            ## A-PEH ESC-A-PEH
+                            .replace("{{PORTSCRIPT}}", str(port_script_file).replace(' ', '\\\\ ')))
 
                     if image_file is not None:
                         target_file = new_port_dir / ("icon-pre" + image_file.suffix)
@@ -789,7 +803,7 @@ class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
 
     def gamelist_file(self):
-        return self.hm.ports_dir / 'gamelist.xml'
+        return self.hm.scripts_dir / 'gamelist.xml'
 
 
 HM_PLATFORMS = {
