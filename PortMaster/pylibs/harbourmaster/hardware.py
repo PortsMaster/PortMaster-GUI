@@ -166,7 +166,7 @@ def cpu_info_v2(info):
         info["capabilities"].append("x86")
         info['primary_arch'] = "x86"
 
-        if subprocess.getoutput('uname -i').strip() == 'x86_64':
+        if subprocess.getoutput('uname -m').strip() == 'x86_64':
             info["capabilities"].append("x86_64")
             info['primary_arch'] = "x86_64"
 
