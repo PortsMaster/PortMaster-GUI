@@ -43,7 +43,9 @@ class PlatformBase():
         'genre': 'genre',
         }
 
-    XML_PATH_FIX = ['path', 'image']
+    XML_PATH_FIX = [
+        'image',
+        ]
 
     BLANK_GAMELIST_XML = """<?xml version='1.0' encoding='utf-8'?>\n<gameList />\n"""
 
