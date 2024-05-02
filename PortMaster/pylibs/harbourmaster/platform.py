@@ -448,7 +448,9 @@ class PlatformmuOS(PlatformBase):
         if not gameinfo_file.is_file():
             return
 
-        if not Path("/opt/graphicsmagick").is_dir():
+        if not any((
+                Path("/opt/graphicsmagick").is_dir(),
+                Path("/usr/bin/magick").is_file())):
             return
 
         INFO_CATALOG = Path("/mnt/mmc/MUOS/info/catalogue/External - Ports")
