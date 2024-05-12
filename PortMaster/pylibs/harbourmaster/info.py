@@ -14,7 +14,7 @@ from .util import *
 ################################################################################
 ## Port Information
 PORT_INFO_ROOT_ATTRS = {
-    'version': 2,
+    'version': 3,
     'name': None,
     'items': None,
     'items_opt': None,
@@ -118,6 +118,9 @@ def port_info_load(raw_info, source_name=None, do_default=False):
                 'status': "Unknown",
                 }
             del info['md5']
+
+    if info.get('version', None) == 2:
+        info['version'] = 3
 
     # WHOOPS! :O
     if info.get('attr', {}).get('runtime', None) == "blank":
