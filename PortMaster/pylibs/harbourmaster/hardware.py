@@ -200,7 +200,7 @@ def nice_device_to_device(raw_device):
     raw_device = raw_device.split('\0', 1)[0]
 
     pattern_to_device = (
-        ('sun50iw9', 'rg35xx-h'),
+        ('sun50iw9',  'rg35xx-h'),
         ('sun50iw10', 'trimui-smart-pro'),
 
         ('Hardkernel ODROID-GO-Ultra',  'ogu'),
@@ -254,7 +254,7 @@ def new_device_info():
     if retrodeck_version != '':
         info['name'] = 'RetroDECK'
         info['version'] = retrodeck_version.join(re.findall(r'version=(.*)', retrodeck_version))
-        info['device'] = 'RetroDECK'
+        info['device'] = 'retrodeck'
 
     ## Works on muOS (obviously)
     muos_version = safe_cat('/opt/muos/config/version.txt')
@@ -264,7 +264,7 @@ def new_device_info():
 
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':
-        info['device'] = muos_device.lower().replace('-', ' ')
+        info['device'] = muos_device.lower().replace(' ', '-')
 
     # Works on TrimUI Smart Pro
     if Path('/usr/trimui').is_dir():
