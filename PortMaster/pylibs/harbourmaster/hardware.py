@@ -81,6 +81,8 @@ HW_INFO = {
     # Anbernic RG35XX
     "rg35xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rg35xx-sp":   {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rg28xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
 
     # Hardkernel Devices
@@ -143,8 +145,8 @@ CPU_INFO = {
     "rk3399":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3566":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "h700":          {"capabilities": ["armhf"],            "primary_arch": "armhf"},
     "h700-batocera": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "h700-muos":     {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700":          {"capabilities": ["armhf"],            "primary_arch": "armhf"},
     "a133plus":      {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
@@ -271,13 +273,6 @@ def new_device_info():
         info['name'] = 'TrimUI'
         info['version'] = safe_cat("/etc/version")
 
-    # Works on Batocera
-    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
-    if batocera_version != '':
-        info['name'] = 'Batocera'
-        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
-        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
-
     # Works on ArkOS
     config_device = safe_cat('~/.config/.DEVICE')
     if config_device != '':
@@ -312,6 +307,13 @@ def new_device_info():
                 value = nice_device_to_device(value)
 
             info.setdefault(key, value)
+
+    # Works on Batocera
+    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
+    if batocera_version != '':
+        info.setdefault('name', 'Batocera')
+        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
     if 'device' not in info:
         info['device'] = old_device_info()
