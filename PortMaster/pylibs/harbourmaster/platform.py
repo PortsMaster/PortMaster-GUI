@@ -363,7 +363,7 @@ class PlatformBatocera(PlatformBase):
 
 
 class PlatformKnulli(PlatformBatocera):
-    ...
+    WANT_XBOX_FIX = True
 
 
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):

@@ -19,7 +19,7 @@
 #
 # usage `source <path_to>/device_info.txt`
 
-DEVICE_INFO_VERSION="0.1.8"
+DEVICE_INFO_VERSION="0.1.9"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -69,6 +69,12 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
+
+    TMP_NAME=$(grep -a '^OS_NAME=".*"' /etc/os-release | cut -d'"' -f 2)
+    if [ ! -z "$TMP_NAME" ]; then
+        CFW_NAME="$TMP_NAME"
+    fi
+    unset TMP_NAME
 elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
