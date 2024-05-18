@@ -866,7 +866,7 @@ msgstr "Télécharger"
 
 #: PortMaster/pylibs/pugscene.py:1129
 msgid "Do you want to change theme?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Voulez-vous changer de thème?\n\n"
 "Vous devrez redémarrer pour que cela prenne effet."
 
@@ -881,7 +881,7 @@ msgstr "{item_name} (Sélectionné)"
 
 #: PortMaster/pylibs/pugscene.py:1207
 msgid "Do you want to change the themes color scheme?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Voulez-vous changer le schéma de couleurs du thème?\n\n"
 "Vous devrez redémarrer pour que cela prenne effet."
 
@@ -896,7 +896,7 @@ msgstr "{lang_name} (Sélectionné)"
 
 #: PortMaster/pylibs/pugscene.py:1261
 msgid "Do you want to change language?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Voulez-vous changer de langue?\n\n"
 "Vous devrez redémarrer pour que cela prenne effet."
 

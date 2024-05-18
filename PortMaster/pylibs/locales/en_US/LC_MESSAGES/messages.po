@@ -436,7 +436,7 @@ msgstr ""
 msgid ""
 "Do you want to change theme?\n"
 "\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr ""
 
 #: pylibs/pugscene.py:581
@@ -448,7 +448,7 @@ msgstr ""
 msgid ""
 "Do you want to change the themes color scheme?\n"
 "\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr ""
 
 #: pylibs/pugscene.py:634
@@ -460,7 +460,7 @@ msgstr ""
 msgid ""
 "Do you want to change language?\n"
 "\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr ""
 
 #: pylibs/pugscene.py:699 pylibs/pugscene.py:707

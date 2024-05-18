@@ -802,7 +802,7 @@ msgstr "Czy na pewno chcesz zmienić kanał wydania z {current_channel} na {new_
 
 #: PortMaster/pylibs/pugscene.py:790
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
-"This will override any scraped artwork or port information and will require a 30+ MB download."
+"This will override any scraped artwork or port information and will require a 50+ MB download."
 msgstr "Czy na pewno chcesz zaktualizować swoją listę gamelist.xml?\n\n"
 "Zastąpi to wszelkie scrapowane informacje o grafice lub porcie."
 
@@ -871,7 +871,7 @@ msgstr "Pobierz"
 
 #: PortMaster/pylibs/pugscene.py:1129
 msgid "Do you want to change theme?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Czy chcesz zmienić motyw?\n\n"
 "Będziesz musiał zrestartować, aby zmienić ten motyw."
 
@@ -886,7 +886,7 @@ msgstr "{item_name} (Wybrany)"
 
 #: PortMaster/pylibs/pugscene.py:1207
 msgid "Do you want to change the themes color scheme?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Czy chcesz zmienić schemat kolorów motywu?\n\n"
 "Będziesz musiał zrestartować, aby go zmienić."
 
@@ -901,7 +901,7 @@ msgstr "{lang_name} (Wybrany)"
 
 #: PortMaster/pylibs/pugscene.py:1261
 msgid "Do you want to change language?\n\n"
-"You will have to restart for it to take affect."
+"You will have to restart for it to take effect."
 msgstr "Czy chcesz zmienić język?\n\n"
 "Będziesz musiał zrestartować, aby zastosować."
 
