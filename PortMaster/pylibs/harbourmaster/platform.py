@@ -27,6 +27,8 @@ SPECIAL_GAMELIST_CODE = object()
 
 class PlatformBase():
     WANT_XBOX_FIX = False
+    WANT_SWAP_BUTTONS = False
+
     MOVE_PM_BASH = False
     MOVE_PM_BASH_DIR = None
     ES_NAME = None
@@ -334,6 +336,33 @@ class PlatformROCKNIX(PlatformJELOS):
 class PlatformBatocera(PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = "batocera-es"
+
+    """
+    Taken from Mikhailzrick's getInvertButtonsValue
+    https://github.com/Mikhailzrick/batocera.linux/blob/43930d59a682953049c90833175c710f8f6fc018/package/batocera/core/batocera-configgen/configgen/configgen/generators/libretro/libretroConfig.py#L24
+    """
+    # Return value for es invertedbuttons
+    def get_invert_buttons_value(self):  
+        ES_SETTINGS = Path('/userdata/system/configs/emulationstation/es_settings.cfg')
+
+        if not ES_SETTINGS.is_file():
+            return False
+
+        tree = ET.parse(str(ES_SETTINGS))
+
+        root = tree.getroot()
+        # Find the InvertButtons element and return value
+        elem = root.find(".//bool[@name='InvertButtons']")
+
+        if elem is not None:
+            return elem.get('value') == 'true'
+
+        return False  # Return False if not found 
+
+    def loaded(self):
+        self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
+        if self.WANT_SWAP_BUTTONS:
+            self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
@@ -805,6 +834,7 @@ class PlatformTrimUI(PlatformBase):
 
 class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
+    WANT_SWAP_BUTTONS = True
 
     def gamelist_file(self):
         return self.hm.scripts_dir / 'gamelist.xml'

@@ -317,6 +317,10 @@ class BaseScene:
             self.tags['button_bar'].bar = None
             return
 
+        if self.gui.SWAP_BUTTONS:
+            key_to_image['A'], key_to_image['B'] = key_to_image['B'], key_to_image['A']
+            key_to_image['X'], key_to_image['Y'] = key_to_image['Y'], key_to_image['X']
+
         actions = {}
 
         for key, action in key_map.items():
@@ -327,7 +331,7 @@ class BaseScene:
             output.extend(key)
             output.append(action)
 
-        # print(f"-> {key_map} = {output}")
+        print(f"-> {key_map} = {output}")
 
         self.tags['button_bar'].bar = output
 
@@ -362,6 +366,24 @@ class BlankScene(BaseScene):
 
         self.load_regions("blank", [])
         self.set_buttons({})
+
+
+class TempMenuScene(BaseScene):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.scene_title = _("Main Menu")
+
+        self.load_regions("main_menu", ['option_list'])
+        self.set_buttons({})
+
+    def do_update(self, events):
+        self.scene_deactivate()
+        self.gui.updated = True
+        self.gui.scenes = [
+            ('root', [MainMenuScene(self.gui)]),
+            ]
+
+        return True
 
 
 class MainMenuScene(BaseScene):
@@ -2246,6 +2268,7 @@ __all__ = (
     'PortsListScene',
     'RuntimesScene',
     'SourceScene',
+    'TempMenuScene',
     'ThemeSchemeScene',
     'ThemesScene',
     )
