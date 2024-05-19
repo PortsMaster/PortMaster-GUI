@@ -787,7 +787,7 @@ class OptionScene(BaseScene):
 
             if selected_option == 'update-gamelist':
                 if self.gui.message_box(
-                        _("Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information and will require a 30+ MB download."),
+                        _("Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information and will require a 50+ MB download."),
                         want_cancel=True):
 
                     self.gui.update_gamelist_xml()
@@ -1126,7 +1126,7 @@ class ThemesScene(BaseScene):
 
             self.button_activate()
 
-            if self.gui.message_box(_("Do you want to change theme?\n\nYou will have to restart for it to take affect."), want_cancel=True):
+            if self.gui.message_box(_("Do you want to change theme?\n\nYou will have to restart for it to take effect."), want_cancel=True):
                 self.gui.hm.cfg_data['theme'] = self.last_select
                 self.gui.hm.cfg_data['theme-scheme'] = None
                 self.gui.hm.save_config()
