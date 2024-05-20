@@ -18,13 +18,30 @@ if [ -d "/usr/lib32/" ]; then
 else
   export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 fi
-# export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
+[ -z "${SDLDBFILE}" ] && SDLDBFILE="${controlfolder}/gamecontrollerdb.txt"
+SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
+
+export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "$SDL_GAMECONTROLLERCONFIG_FILE")
 
 get_controls() {
   # Clear the framebuffer :D
   # Do it twice, it's just as nice!
   cat /dev/zero > /dev/fb0 2>/dev/null
   cat /dev/zero > /dev/fb0 2>/dev/null
+
+  grep "${SDLDBUSERFILE}" -e "Deeplay-keys" > /tmp/gamecontrollerdb.txt
+
+  ANALOGSTICKS=2
+  LOWRES="N"
+
+  if [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-SP" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG28XX" ]]; then
+    ANALOGSTICKS=0
+  fi
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
 
 # HACKY MC HACK FACE

@@ -105,6 +105,8 @@ class GUIThemeError(GUIRuntimeError):
 
 class GUI:
     def __init__(self, renderer, formatter=None):
+        self.SWAP_BUTTONS = False
+
         self.renderer = renderer
 
         self.resources = ResourceManager(self)
@@ -1407,6 +1409,8 @@ class EventManager:
         self.gui = gui
         sdl2.ext.init(controller=True)
 
+        self.XBOX_FIXED = False
+
         self.running = True
         self.buttons = {
             key: False
@@ -1446,7 +1450,11 @@ class EventManager:
                 self.controller = sdl2.SDL_GameControllerOpen(i)
 
     def fix_xbox_mode(self):
+        if self.XBOX_FIXED:
+            return
+
         print("XBOX FIXER")
+        self.XBOX_FIXED = True
         self.BUTTON_MAP.update({
             sdl2.SDL_CONTROLLER_BUTTON_A: 'B',
             sdl2.SDL_CONTROLLER_BUTTON_B: 'A',

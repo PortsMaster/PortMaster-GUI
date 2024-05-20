@@ -267,9 +267,16 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
 
     "sun50iw9")
         if [ -f "/opt/muos/config/device.txt" ]; then
-            if [ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]; then
+            if [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]]; then
                 ANALOG_STICKS=0
                 DEVICE_NAME="RG35XX PLUS"
+            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-SP" ]]; then
+                ANALOG_STICKS=0
+                DEVICE_NAME="RG35XX SP"
+            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG28XX" ]]; then
+                ANALOG_STICKS=0
+                DEVICE_NAME="RG28XX"
+                DISPLAY_ORIENTATION=1
             else
                 DEVICE_NAME="RG35XX H"
             fi

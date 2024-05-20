@@ -628,7 +628,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 ]
         else:
             self.scenes = [
-                ('root', [MainMenuScene(self)]),
+                ('root', [TempMenuScene(self)]),
                 ]
 
         self.callback_messages = []
@@ -692,8 +692,11 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
 
     ## Loop stuff.
     def run(self):
-        if self.hm is not None and self.hm.platform.WANT_XBOX_FIX:
-            self.events.fix_xbox_mode()
+        if self.hm is not None:
+            if self.hm.platform.WANT_XBOX_FIX:
+                self.events.fix_xbox_mode()
+
+            self.SWAP_BUTTONS = self.hm.platform.WANT_SWAP_BUTTONS
 
         try:
             while True:
@@ -1859,6 +1862,8 @@ def portmaster_check_update(pm, config, temp_dir):
             pm.hm = HarbourMaster(config, temp_dir=temp_dir, callback=pm)
             if pm.hm.platform.WANT_XBOX_FIX:
                 pm.events.fix_xbox_mode()
+
+            pm.SWAP_BUTTONS = pm.hm.platform.WANT_SWAP_BUTTONS
 
             if pm.message_box(update_reason, want_cancel=True):
                 pm.do_install(
