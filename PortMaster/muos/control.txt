@@ -24,7 +24,7 @@ SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
 SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 [ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
-export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "$SDL_GAMECONTROLLERCONFIG_FILE")
+export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay-keys" "$SDL_GAMECONTROLLERCONFIG_FILE")
 
 get_controls() {
   # Clear the framebuffer :D
@@ -41,7 +41,7 @@ get_controls() {
     ANALOGSTICKS=0
   fi
 
-  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
+  sdl_controllerconfig="$(< "/tmp/gamecontrollerdb.txt")"
 }
 
 # HACKY MC HACK FACE

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-20 19:40+0800\n"
-"PO-Revision-Date: 2024-05-20 11:41\n"
+"PO-Revision-Date: 2024-05-21 08:41\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -803,7 +803,8 @@ msgstr "Você tem certeza que quer alterar o canal de lançamento de {current_ch
 #: PortMaster/pylibs/pugscene.py:812
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
 "This will override any scraped artwork or port information and will require a 50+ MB download."
-msgstr ""
+msgstr "Você tem certeza que quer atualizar seu gamelist.xml?\n\n"
+"Isso vai substituir qualquer arte ou informação baixada e necessitará um download de 50+ MB."
 
 #: PortMaster/pylibs/pugscene.py:833
 #, python-brace-format
@@ -871,7 +872,8 @@ msgstr "Baixar"
 #: PortMaster/pylibs/pugscene.py:1151
 msgid "Do you want to change theme?\n\n"
 "You will have to restart for it to take effect."
-msgstr ""
+msgstr "Você quer trocar de tema?\n\n"
+"Você terá que reiniciar para trocar de tema."
 
 #: PortMaster/pylibs/pugscene.py:1192
 msgid "Select Colour Scheme"
