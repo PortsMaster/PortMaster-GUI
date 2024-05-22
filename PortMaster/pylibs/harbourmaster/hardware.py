@@ -38,12 +38,13 @@ DEVICES = {
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
 
     # Powkiddy
-    "Powkiddy RGB10":       {"device": "rgb10",     "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy RGB20S":      {"device": "rgb20s",    "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
-    "Powkiddy RGB30":       {"device": "rgb30",     "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy RK2023":      {"device": "rk2023",    "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy X55":         {"device": "x55",       "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
-    "Powkiddy RGB10MAX3":   {"device": "rgb10max3", "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
+    "Powkiddy RGB10":         {"device": "rgb10",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy RGB20S":        {"device": "rgb20s",       "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
+    "Powkiddy RGB30":         {"device": "rgb30",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy RK2023":        {"device": "rk2023",       "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy X55":           {"device": "x55",          "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
+    "Powkiddy RGB10MAX3":     {"device": "rgb10max3",    "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
+    "Powkiddy RGB10MAX3 Pro": {"device": "rgb10max3pro", "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
 
     # Hardkernel
     "Hardkernel ODROID GO Advance": {"device": "oga", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "JELOS", "ROCKNIX"]},
@@ -209,10 +210,11 @@ def nice_device_to_device(raw_device):
         ('ODROID-GO Advance*',          'oga'),
         ('ODROID-GO Super*',            'ogs'),
 
-        ('Powkiddy RGB10 MAX 3', 'rgb10max3'),
-        ('Powkiddy RGB30',       'rgb30'),
-        ('Powkiddy RK2023',      'rk2023'),
-        ('Powkiddy x55',         'x55'),
+        ('Powkiddy RGB10 MAX 3 Pro', 'rgb10max3pro'),
+        ('Powkiddy RGB10 MAX 3',     'rgb10max3'),
+        ('Powkiddy RGB30',           'rgb30'),
+        ('Powkiddy RK2023',          'rk2023'),
+        ('Powkiddy x55',             'x55'),
 
         ('Anbernic RG351MP*', 'rg351mp'),
         ('Anbernic RG351V*',  'rg351v'),
