@@ -4,7 +4,7 @@
 POT_DIR="PortMaster/pylibs/locales"
 POT_FILES=("messages" "themes")
 # Languages registered but not yet translated
-NOT_WORKING=("da_DK" "fi_FI" "nl_NL" "ru_RU" "uk_UA")
+NOT_WORKING=("da_DK" "fi_FI")
 
 for POT_FILE in "${POT_FILES[@]}"; do
     if [[ "$POT_FILE" == "messages" ]]; then
