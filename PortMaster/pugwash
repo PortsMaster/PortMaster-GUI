@@ -147,6 +147,14 @@ ALL_LANGUAGES = {
 
 
 def check_lang(lang):
+    """
+    Check if `LANG_DIR / lang / "LC_MESSAGES"` exists
+
+    We simplify the language by removing any encoding eg: `en_AU.utf8` to `en_AU`
+    We then simplify the language by removing any sub-language: `en_AU` to `en`
+
+    We then check all languages on the list of languages.
+    """
     if lang is None:
         return None
 
