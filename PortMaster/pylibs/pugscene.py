@@ -331,7 +331,7 @@ class BaseScene:
             output.extend(key)
             output.append(action)
 
-        print(f"-> {key_map} = {output}")
+        # print(f"-> {key_map} = {output}")
 
         self.tags['button_bar'].bar = output
 
