@@ -34,6 +34,7 @@ DEVICES = {
     "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS", "ROCKNIX"]},
     "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
     "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
+    "Anbernic RG35XX SP":   {"device": "rg35xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS", "ROCKNIX"]},
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
 
@@ -148,7 +149,7 @@ CPU_INFO = {
     "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700-batocera": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "h700-muos":     {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
-    "h700":          {"capabilities": ["armhf"],            "primary_arch": "armhf"},
+    "h700":          {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "a133plus":      {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":         {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
