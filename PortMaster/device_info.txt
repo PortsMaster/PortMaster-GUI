@@ -52,6 +52,8 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 
         if [[ $CFW_FFS == *"wummle"* ]]; then
             CFW_NAME="${CFW_NAME} wuMMLe"
+        elif [[ $CFW_FFS == *"aeux"* ]]; then
+            CFW_NAME="${CFW_NAME} AeUX"
         fi
     fi
 
