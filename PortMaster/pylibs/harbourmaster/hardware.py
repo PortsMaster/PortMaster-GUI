@@ -284,7 +284,7 @@ def new_device_info():
     # Works on ArkOS
     plymouth = safe_cat('/usr/share/plymouth/themes/text.plymouth')
     if plymouth != '':
-        for result in re.findall(r'^title=(.*?) \(([^\)]+)\)$', plymouth, re.I | re.M):
+        for result in re.findall(r'^title=(.*?) \(([^\)]+)\)', plymouth, re.I | re.M):
             info['name'] = result[0].split(' ', 1)[0]
             info['version'] = result[1]
 
