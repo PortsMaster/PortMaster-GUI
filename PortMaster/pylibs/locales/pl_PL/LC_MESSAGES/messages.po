@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-01 19:12+0800\n"
-"PO-Revision-Date: 2024-07-01 11:13\n"
+"PO-Revision-Date: 2024-07-07 04:32\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -75,7 +75,7 @@ msgstr "Rosyjski"
 
 #: PortMaster/pugwash:144
 msgid "Swedish"
-msgstr ""
+msgstr "Szwedzki"
 
 #: PortMaster/pugwash:145
 msgid "Ukrainian"
@@ -663,11 +663,11 @@ msgstr "Lokalizacja, w której porty powinny być zainstalowane."
 
 #: PortMaster/pylibs/pugscene.py:569
 msgid "SD 1"
-msgstr ""
+msgstr "SD 1"
 
 #: PortMaster/pylibs/pugscene.py:569
 msgid "SD 2"
-msgstr ""
+msgstr "SD 2"
 
 #: PortMaster/pylibs/pugscene.py:572
 msgid "System"
@@ -826,11 +826,11 @@ msgstr "Czy na pewno chcesz przenieść porty z {from_mode} do {to_mode}"
 
 #: PortMaster/pylibs/pugscene.py:864
 msgid "SDCARD 1"
-msgstr ""
+msgstr "SDCARD 1"
 
 #: PortMaster/pylibs/pugscene.py:865
 msgid "SDCARD 2"
-msgstr ""
+msgstr "SDCARD 2"
 
 #: PortMaster/pylibs/pugscene.py:869
 #, python-brace-format
