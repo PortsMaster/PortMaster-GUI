@@ -251,25 +251,36 @@ class HarbourMaster():
             self.callback.message("  - {}".format(_("Fetching latest featured ports.")))
             ports_list_data = fetch_text(self.FEATURED_PORTS_URL)
 
+            if ports_list_data is None:
+                ports_list_data = "{}"
+                # Things are broken, probably muOS, put it in offline mode.
+                self.config['offline'] = True
+
             with open(featured_ports_file, 'w') as fh:
                 fh.write(ports_list_data)
 
             self.featured_ports()
 
-            self.cfg_data['featured_ports_checked'] = datetime.datetime.now().isoformat()
+            if ports_list_data != "{}":
+                self.cfg_data['featured_ports_checked'] = datetime.datetime.now().isoformat()
 
         if not info_file.is_file():
             self.callback.message("  - {}".format(_("Fetching latest info.")))
             info_md5 = fetch_text(self.PORTS_INFO_URL + '.md5')
             info_data = fetch_text(self.PORTS_INFO_URL)
 
+            if info_data is None:
+                info_data = '{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}'
+                self.config['offline'] = True
+
             with open(info_file, 'w') as fh:
                 fh.write(info_data)
 
-            with open(info_file_md5, 'w') as fh:
-                fh.write(info_md5)
+            if info_md5 is not None:
+                with open(info_file_md5, 'w') as fh:
+                    fh.write(info_md5)
 
-            self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
+                self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
 
         elif force_load is True or not self.config['no-check'] and (
                 self.cfg_data.get('ports_info_checked') is None or
@@ -280,13 +291,18 @@ class HarbourMaster():
                 self.callback.message("  - {}".format(_("Fetching latest info.")))
                 info_data = fetch_text(self.PORTS_INFO_URL)
 
+                if info_data is None:
+                    info_data = '{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}'
+                    self.config['offline'] = True
+
                 with open(info_file, 'w') as fh:
                     fh.write(info_data)
 
-                with open(info_file_md5, 'w') as fh:
-                    fh.write(info_md5)
+                if info_md5 is not None:
+                    with open(info_file_md5, 'w') as fh:
+                        fh.write(info_md5)
 
-            self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
+                    self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
 
         if force_load is True or not porters_file.is_file() or (
                 not self.config['no-check'] and (
@@ -296,10 +312,14 @@ class HarbourMaster():
             self.callback.message("  - {}".format(_("Fetching latest porters.")))
             porters_data = fetch_text(self.PORTERS_URL)
 
+            if porters_data is None:
+                porters_data = "{}"
+
             with open(porters_file, 'w') as fh:
                 fh.write(porters_data)
 
-            self.cfg_data['porters_checked'] = datetime.datetime.now().isoformat()
+            if porters_data != "{}":
+                self.cfg_data['porters_checked'] = datetime.datetime.now().isoformat()
 
     def load_sources(self):
         source_files = list(self.cfg_dir.glob('*.source.json'))
