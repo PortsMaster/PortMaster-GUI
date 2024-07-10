@@ -652,6 +652,11 @@ class Timer:
     def __init__(self):
         self._register = {}
 
+    def since(self, name):
+        time = sdl2.SDL_GetTicks64()
+
+        return  (time - self._register.setdefault(name, time))
+
     def elapsed(self, name, millis, *, run_first=False):
         """
         check if name was last checked more than millis seconds ago, if so reset the timer and return true, otherwise false and do nothing
