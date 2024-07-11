@@ -196,6 +196,10 @@ def theme_load(gui, theme_file, color_scheme=None):
                 "font-color": [ 0, 0, 0 ],
                 "align": "topleft",
                 "text": "",
+                "autoscroll": "slide",
+                "scroll-speed": 5,
+                "scroll-delay-start": 1000,
+                "scroll-delay-end": 1000,
             },
             "button_bar": {
                 "font": "DejaVuSans.ttf",
