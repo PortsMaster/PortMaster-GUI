@@ -382,11 +382,87 @@ class TempMenuScene(BaseScene):
     def do_update(self, events):
         self.scene_deactivate()
         self.gui.updated = True
-        self.gui.scenes = [
-            ('root', [MainMenuScene(self.gui)]),
-            ]
+
+        cfg_data = self.gui.get_config()
+
+        if not cfg_data.get('disclaimer', False):
+            self.gui.scenes = [
+                ('root', [DisclaimerScene(self.gui)]),
+                ]
+
+        else:
+            self.gui.scenes = [
+                ('root', [MainMenuScene(self.gui)]),
+                ]
 
         return True
+
+
+class DisclaimerScene(BaseScene):
+
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.scene_title = _("Disclaimer")
+
+        ## Wait x seconds.
+        self.disclaimer_wait = 15
+
+        self.load_regions("disclaimer", ['disclaimer_text'])
+
+        self.tags['disclaimer_text'].text = (
+            "Disclaimer\n"
+            "\n"
+            "PortMaster does not endorse or support any form of piracy. All ready-to-run ports included in our software are provided with full respect to the wishes and licenses of the respective copyright holders. We take intellectual property rights very seriously and ensure that our offerings comply with all relevant legal requirements and permissions.\n"
+            "\n"
+            "It is important to note that game files for ports that are not ready-to-run must be obtained legally. Users are required to purchase or otherwise acquire these games through legitimate means to include support for them in PortMaster. By using our software, you agree to abide by these terms and respect the rights of content creators and developers."
+            )
+
+        self.last_elapsed = None
+
+    def do_draw(self):
+        elapsed = self.gui.timers.since('disclaimer_wait') // 1000
+
+        elapsed = min(elapsed, self.disclaimer_wait)
+
+        if elapsed != self.last_elapsed:
+            if elapsed < self.disclaimer_wait:
+                self.tags['button_bar'].bar = [f'Wait {self.disclaimer_wait - elapsed} seconds']
+            else:
+                self.set_buttons({'A': _('Accept'), 'B': _('Quit')})
+
+            self.last_elapsed = elapsed
+
+        super().do_draw()
+
+    def do_update(self, events):
+        super().do_update(events)
+
+        elapsed = self.gui.timers.since('disclaimer_wait') // 1000
+
+        elapsed = min(elapsed, self.disclaimer_wait)
+
+        if elapsed == self.disclaimer_wait:
+            if events.was_pressed('A'):
+                cfg_data = self.gui.get_config()
+                cfg_data['disclaimer'] = True
+                self.gui.save_config(cfg_data)
+
+                self.scene_deactivate()
+                self.gui.updated = True
+                self.gui.scenes = [
+                    ('root', [MainMenuScene(self.gui)]),
+                    ]
+
+                return True
+
+            if events.was_pressed('B'):
+                self.button_back()
+                if self.gui.message_box(
+                        _("Are you sure you want to exit PortMaster?"),
+                        want_cancel=True):
+
+                    self.gui.do_cancel()
+                    return True
 
 
 class MainMenuScene(BaseScene):

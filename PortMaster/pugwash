@@ -564,6 +564,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 # 'ogs'
                 # 'ogu'
                 # 'x55'
+                # 'ace'
                 )
 
             if not pretend_device:
@@ -589,6 +590,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         capabilities['capabilities'].append(CURRENT_LANG)
 
         logger.info(capabilities)
+        print(capabilities)
 
         # Create the window
         if harbourmaster.HM_TESTING:
@@ -698,6 +700,17 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             cfg_data = self.hm.cfg_data
 
         return cfg_data
+
+    def save_config(self, cfg_data):
+        cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
+        cfg_file = cfg_dir / "config" / "config.json"
+
+        if self.hm is None:
+            with open(cfg_file, 'w') as fh:
+                json.dump(cfg_data, fh, indent=4)
+
+        else:
+            self.hm.save_config()
 
     ## Loop stuff.
     def run(self):

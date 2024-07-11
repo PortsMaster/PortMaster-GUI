@@ -51,9 +51,14 @@ def json_safe_load(*args):
 
 
 def fetch(url):
-    r = requests.get(url, timeout=20)
-    if r.status_code != 200:
-        logger.error(f"Failed to download {url!r}: {r.status_code}")
+    try:
+        r = requests.get(url, timeout=20)
+        if r.status_code != 200:
+            logger.error(f"Failed to download {url!r}: {r.status_code}")
+            return None
+
+    except requests.exceptions.ConnectionError as err:
+        logger.error(f"Failed to download {url!r}: {err}")
         return None
 
     return r
