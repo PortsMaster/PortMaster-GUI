@@ -4,7 +4,7 @@
 # > gamedir="/$directory/ports/stardewvalley"
 # > cd "$gamedir/"
 
-if ! glxinfo | grep "OpenGL version string"; then
+if [ "$(gpudriver)" = "libmali" ]; then
   export LIBGL_ES=2
   export LIBGL_GL=21
   export LIBGL_FB=4	
