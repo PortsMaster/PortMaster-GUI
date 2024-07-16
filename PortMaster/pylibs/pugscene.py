@@ -653,9 +653,14 @@ class OptionScene(BaseScene):
             description=_("Manage port runtimes."))
 
         self.tags['option_list'].add_option(
+            'toggle-experimental',
+            _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")),
+            description=_("Show or hide experimental ports."))
+
+        self.tags['option_list'].add_option(
             'update-ports',
             _("Update Ports"),
-            description=_("Update all ports and associated information"))
+            description=_("Fetch latest ports information."))
 
         self.tags['option_list'].add_option(
             'update-portmaster',
@@ -694,10 +699,6 @@ class OptionScene(BaseScene):
                 'toggle-all',
                 _("All Ports: ") + (self.gui.hm.cfg_data.get('show_all', False) and _("Enabled") or _("Disabled")),
                 description=_("Show all ports, ignoring requirements."))
-            self.tags['option_list'].add_option(
-                'toggle-experimental',
-                _("Experimental Ports: ") + (self.gui.hm.cfg_data.get('show_experimental', False) and _("Enabled") or _("Disabled")),
-                description=_("Show or hide experimental ports."))
             self.tags['option_list'].add_option(
                 'toggle-cwtbe',
                 _("CWTBE Mode: ") + ((self.gui.hm.tools_dir / "PortMaster" / "cwtbe_flag").is_file() and _("Enabled") or _("Disabled")),
@@ -1991,6 +1992,7 @@ class FiltersScene(BaseScene):
 
             # Attrs.
             "rtr":              _("Ready to Run"),
+            "exp":              _("Experimental"),
             "not installed":    _("Not Installed"),
             "update available": _("Update Available"),
             "broken":           _("Broken Ports"),
@@ -2002,8 +2004,9 @@ class FiltersScene(BaseScene):
             "paid":             _("Paid external assets needed."),
 
             # Runtimes.
-            "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "godot":            _("{runtime_name} Runtime").format(runtime_name="Godot/FRT"),
+            "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
+            "rlvm":             _("{runtime_name} Runtime").format(runtime_name="RLVM"),
             "solarus":          _("{runtime_name} Runtime").format(runtime_name="Solarus"),
             }
 
@@ -2097,7 +2100,7 @@ class FiltersScene(BaseScene):
                         selected_offset = len(self.tags['filter_list'].options) - 1
 
             elif display_order == 'attr':
-                for hm_genre in ['rtr', 'mono', 'godot', 'solarus', 'not installed', 'update available', 'broken']:
+                for hm_genre in ['rtr', 'mono', 'godot', 'solarus', 'rlvm', 'exp', 'not installed', 'update available', 'broken']:
                     if hm_genre in self.locked_genres:
                         continue
 
