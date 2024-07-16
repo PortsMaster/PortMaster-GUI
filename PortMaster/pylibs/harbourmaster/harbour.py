@@ -905,6 +905,7 @@ class HarbourMaster():
         runtime_fix = {
             'frt':  'godot',
             'mono': 'mono',
+            'rlvm': 'rlvm',
             'solarus': 'solarus',
             'jdk11': 'jre',
             }
