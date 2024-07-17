@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-16 19:46+0800\n"
-"PO-Revision-Date: 2024-07-16 11:47\n"
+"PO-Revision-Date: 2024-07-17 08:29\n"
 "Last-Translator: \n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -486,7 +486,7 @@ msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:431
 msgid "Accept"
-msgstr ""
+msgstr "Akceptuj"
 
 #: PortMaster/pylibs/pugscene.py:431 PortMaster/pylibs/pugscene.py:511
 msgid "Quit"
@@ -703,7 +703,7 @@ msgstr "Aktualizuj porty"
 
 #: PortMaster/pylibs/pugscene.py:663
 msgid "Fetch latest ports information."
-msgstr ""
+msgstr "Pobierz najnowsze informacje o portach."
 
 #: PortMaster/pylibs/pugscene.py:667
 msgid "Update PortMaster"
@@ -1090,7 +1090,7 @@ msgstr "Inne"
 
 #: PortMaster/pylibs/pugscene.py:1995
 msgid "Experimental"
-msgstr ""
+msgstr "Eksperymentalne"
 
 #: PortMaster/pylibs/pugscene.py:1998
 msgid "Broken Ports"
