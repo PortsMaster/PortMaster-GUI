@@ -119,7 +119,7 @@ HW_INFO = {
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
-    "retrodeck": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
+    "retrodeck": {"resolution": (1280, 800), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
 
     # Default
     "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -170,9 +170,9 @@ def cpu_info_v2(info):
         info["capabilities"].append("x86")
         info['primary_arch'] = "x86"
 
-        if subprocess.getoutput('uname -m').strip() == 'x86_64':
-            info["capabilities"].append("x86_64")
-            info['primary_arch'] = "x86_64"
+    if subprocess.getoutput('uname -m').strip() == 'x86_64':
+        info["capabilities"].append("x86_64")
+        info['primary_arch'] = "x86_64"
 
     if HM_TESTING or 'primary_arch' not in info:
         info["capabilities"].append("armhf")
