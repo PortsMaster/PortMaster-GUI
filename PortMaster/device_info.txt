@@ -279,6 +279,8 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
                 ANALOG_STICKS=0
                 DEVICE_NAME="RG28XX"
                 DISPLAY_ORIENTATION=1
+            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG40XX" ]]; then
+                DEVICE_NAME="RG40XX"
             else
                 DEVICE_NAME="RG35XX H"
             fi
