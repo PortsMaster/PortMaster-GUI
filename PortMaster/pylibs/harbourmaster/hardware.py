@@ -32,9 +32,11 @@ DEVICES = {
     "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "TheRA"]},
     "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
     "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS", "ROCKNIX"]},
+    "Anbernic RG40XX H":    {"device": "rg40xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
     "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
     "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
     "Anbernic RG35XX SP":   {"device": "rg35xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
+    "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS", "ROCKNIX"]},
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
 
@@ -81,6 +83,7 @@ HW_INFO = {
     "rg353ps": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
 
     # Anbernic RG35XX
+    "rg40xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-sp":   {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},

@@ -46,12 +46,20 @@ if [ -n "$AUTOINSTALL" ]; then
 
   for file_name in "$controlfolder/autoinstall"/*.squashfs
   do
+    if [ ! -f "$file_name" ]; then
+      continue
+    fi
+
     $ESUDO mv -f "$file_name" "$controlfolder/libs"
     PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
   done
 
   for file_name in "$controlfolder/autoinstall"/*.zip
   do
+    if [ ! -f "$file_name" ]; then
+      continue
+    fi
+
     if [[ "$(basename $file_name)" == "PortMaster.zip" ]]; then
       continue
     fi
@@ -62,9 +70,15 @@ if [ -n "$AUTOINSTALL" ]; then
     else
       PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
     fi
+
+    touch "$controlfolder/.muos-refresh"
   done
 
   if [ -f "$controlfolder/autoinstall/PortMaster.zip" ]; then
+    if [ ! -f "$file_name" ]; then
+      continue
+    fi
+
     file_name="$controlfolder/autoinstall/PortMaster.zip"
 
     if [[ $(PortMasterDialogResult "install" "$file_name") == "OKAY" ]]; then
@@ -75,12 +89,15 @@ if [ -n "$AUTOINSTALL" ]; then
     fi
   fi
 
-  touch "$controlfolder/.muos-refresh"
-
   PortMasterDialog "messages_end"
   if [ -z "$GW" ]; then
     PortMasterDialogMessageBox "Finished running autoinstall.\n\nNo internet connection present so exiting."
     PortMasterDialogExit
+
+    rm -f "${controlfolder}/.muos-refresh"
+    # HULK SMASH
+    ${controlfolder}/muos/image_smash.txt
+
     exit 0
   else
     PortMasterDialogMessageBox "Finished running autoinstall."
