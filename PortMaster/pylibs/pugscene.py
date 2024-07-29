@@ -2008,6 +2008,11 @@ class FiltersScene(BaseScene):
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "rlvm":             _("{runtime_name} Runtime").format(runtime_name="RLVM"),
             "solarus":          _("{runtime_name} Runtime").format(runtime_name="Solarus"),
+
+            # Architecture
+            "armhf":            _("ARM 32bit"),
+            "aarch64":          _("ARM 64bit"),
+            "x86_64":           _("x86 64bit"),
             }
 
         # Hack to make other appear last, by default the order will be 0, you can set it to -1 for it to appear at the top.
@@ -2034,6 +2039,7 @@ class FiltersScene(BaseScene):
             'attr',
             # 'status',
             'genres',
+            # 'architecture',
             'porters',
             ]
 
@@ -2121,6 +2127,35 @@ class FiltersScene(BaseScene):
                         if add_blank:
                             self.tags['filter_list'].add_option(None, "")
                         self.tags['filter_list'].add_option(None, _("Attributes:"))
+                        first_add = False
+
+                    self.tags['filter_list'].add_option(hm_genre, text)
+
+                    if selected_option == hm_genre:
+                        selected_offset = len(self.tags['filter_list'].options) - 1
+
+            elif display_order == 'architecture':
+                for hm_genre in ['armhf', 'aarch64', 'x86_64']:
+                    if hm_genre in self.locked_genres:
+                        continue
+
+                    if hm_genre in self.list_scene.options['skip_genres']:
+                        continue
+
+                    if hm_genre in genres:
+                        ports = total_ports
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+                    else:
+                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
+
+                    if ports == 0:
+                        continue
+
+                    if first_add:
+                        if add_blank:
+                            self.tags['filter_list'].add_option(None, "")
+                        self.tags['filter_list'].add_option(None, _("Architecture:"))
                         first_add = False
 
                     self.tags['filter_list'].add_option(hm_genre, text)

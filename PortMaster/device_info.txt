@@ -109,7 +109,7 @@ elif [ -f "$HOME/.config/.OS_ARCH" ]; then
 elif [  -f "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
     DEVICE_NAME="RetroDECK"
 elif [ -f "/boot/boot/batocera.board" ]; then
-    DEVICE_NAME=$(cat /boot/boot/batocera.board)
+    DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 
