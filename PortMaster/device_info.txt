@@ -60,10 +60,10 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     unset CFW_INFO
     unset CFW_FFS
 
-elif [ -f "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
+elif [ -f "/app/bin/retrodeck.sh" ]; then
     # RetroDeck
     CFW_NAME="RetroDECK"
-    CFW_VERSION=$(grep 'version' "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
+    CFW_VERSION=$(grep 'version' "/var/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
 elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
@@ -106,7 +106,7 @@ elif [ -f "$HOME/.config/.DEVICE" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.DEVICE")
 elif [ -f "$HOME/.config/.OS_ARCH" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.OS_ARCH")
-elif [  -f "$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]; then
+elif [  -f "/app/bin/retrodeck.sh" ]; then
     DEVICE_NAME="RetroDECK"
 elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
