@@ -5,7 +5,7 @@ XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 controlfolder="$XDG_DATA_HOME/PortMaster"
 
 if [ -d "/app/bin/retrodeck.sh" ]; then
-  source /app/libexec/global.sh # loading the RetroDECK frontend that even give access to variables such as roms_folder
+  source /app/libexec/global.sh # loading the RetroDECK framework that even give access to variables such as roms_folder
   directory="$roms_folder/portmaster"
   cp retrodeck/control.txt $controlfolder
 fi
