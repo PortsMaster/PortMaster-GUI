@@ -4,8 +4,9 @@ XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
 controlfolder="$XDG_DATA_HOME/PortMaster"
 
-if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
-  mkdir -p $controlfolder
+if [ -d "/app/bin/retrodeck.sh" ]; then
+  source /app/libexec/global.sh # loading the RetroDECK frontend that even give access to variables such as roms_folder
+  directory="$roms_folder/portmaster"
   cp retrodeck/control.txt $controlfolder
 fi
 
@@ -23,7 +24,7 @@ echo "Starting PortMaster."
 chmod -R +x .
 
 #check RetrodDECK installed and read location of roms folder
-if [[ -e "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" ]]; then
+if [[ -e "/app/bin/retrodeck.sh" ]]; then
   toolsfolderloc="${controlfolder/\/PortMaster/}"
 fi
 
@@ -107,4 +108,3 @@ unset LD_LIBRARY_PATH
 unset SDL_GAMECONTROLLERCONFIG
 
 printf "\033c"
-
