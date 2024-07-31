@@ -96,7 +96,7 @@ elif Path("/storage/roms/ports").is_dir():
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
 elif ("/var/app/bin/retrodeck.sh").is_file():
-    retrodeck_roms_path = retrodeck_roms_path = ("/var/config/retrodeck/retrodeck.cfg").read_text() # is it possible to read from the bash variable $roms_dir and elaborarte that as done in the .sh files?
+    retrodeck_roms_path = retrodeck_roms_path = ("/var/config/retrodeck/retrodeck.cfg").read_text()
     if retrodeck_roms_path != '':
         retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path)) + "/portmaster"
         HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path)
