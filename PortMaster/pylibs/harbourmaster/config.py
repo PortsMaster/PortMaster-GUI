@@ -30,6 +30,7 @@ HM_PERFTEST=False
 HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
 HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR   = Path("/roms/ports")
+retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
 
 if 'XDG_DATA_HOME' not in os.environ:
     os.environ['XDG_DATA_HOME'] = str(Path().home() / '.local' / 'share')
