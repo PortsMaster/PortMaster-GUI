@@ -258,7 +258,7 @@ def new_device_info():
     info = {}
 
    # Works on RetroDECK if flatplack deployed to $HOME folder.
-    retrodeck_version = safe_cat(Path.home() / '.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')
+    retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.cfg')
     if retrodeck_version != '':
         info['name'] = 'RetroDECK'
         info['version'] = retrodeck_version.join(re.findall(r'version=(.*)', retrodeck_version))

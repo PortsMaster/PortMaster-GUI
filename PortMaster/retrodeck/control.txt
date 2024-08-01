@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# Referenced by RetroDeck when the app is running. Might be needed at future point.
-#source /app/libexec/global.sh
-
-
-if [ -d "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/" ]; then
-  controlfolder=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')"/ports/PortMaster"
+if [ -d "/app/bin/retrodeck.sh" ]; then
+  source /app/libexec/global.sh # loading the RetroDECK framework that even give access to variables such as roms_folder
+  controlfolder="$XDG_DATA_HOME/PortMaster"
+  directory="$roms_folder/portmaster"
+  cp retrodeck/control.txt $controlfolder
 fi
-
-directory=$(grep 'roms_folder' "${HOME}/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg" | awk -F= '{print $2}')
-directory=${directory:1}
 
 export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 
