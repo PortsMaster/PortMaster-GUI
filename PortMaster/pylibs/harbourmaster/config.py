@@ -95,13 +95,23 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif ("/var/app/bin/retrodeck.sh").is_file():
-    retrodeck_roms_path = retrodeck_roms_path = ("/var/config/retrodeck/retrodeck.cfg").read_text()
-    if retrodeck_roms_path != '':
-        retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path)) + "/portmaster"
-        HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path)
-        HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path)
-        HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path)
+elif ('roms_dir' in os.environ) or ("/var/config/retrodeck/retrodeck.cfg").is_file():
+    if 'roms_dir' in os.environ:
+        retrodeck_roms_path = os.environ['roms_dir']
+
+    else:
+        with open(Path.home() / "/var/config/retrodeck/retrodeck.cfg", 'r') as fh:
+            for line in fh:
+                line = line.strip()
+
+                if not line.startswith('roms_folder='):
+                    continue
+
+                retrodeck_roms_path = line.split('=', 1)[-1]
+
+    HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path) / "ports"
+    HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path) / "ports"
+    HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path) / "ports"
 
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
