@@ -158,3 +158,10 @@ if [ -f "$controlfolder/cwtbe_flag" ]; then
 else
   GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
 fi
+
+# Set current virtual screen
+if [ "$CFW_NAME" == "muOS" ]; then
+  /opt/muos/extra/muxlog & CUR_TTY="/tmp/muxlog_info"
+else
+    CUR_TTY="/dev/tty0"
+fi
