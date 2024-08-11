@@ -30,6 +30,7 @@ HM_PERFTEST=False
 HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
 HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR   = Path("/roms/ports")
+retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
 
 if 'XDG_DATA_HOME' not in os.environ:
     os.environ['XDG_DATA_HOME'] = str(Path().home() / '.local' / 'share')
@@ -94,14 +95,24 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_PORTS_DIR   = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
-## Check if retrodeck.cfg exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
-    retrodeck_roms_path = retrodeck_roms_path = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").read_text()
-    if retrodeck_roms_path != '':
-        retrodeck_roms_path = retrodeck_roms_path.join(re.findall(r'roms_folder=(.*)', retrodeck_roms_path)) + "/ports"
-        HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path)
-        HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path)
-        HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path)
+## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
+elif ('roms_dir' in os.environ) or ("/var/config/retrodeck/retrodeck.cfg").is_file():
+    if 'roms_dir' in os.environ:
+        retrodeck_roms_path = os.environ['roms_dir']
+
+    else:
+        with open(Path.home() / "/var/config/retrodeck/retrodeck.cfg", 'r') as fh:
+            for line in fh:
+                line = line.strip()
+
+                if not line.startswith('roms_folder='):
+                    continue
+
+                retrodeck_roms_path = line.split('=', 1)[-1]
+
+    HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path) / "ports"
+    HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path) / "ports"
+    HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path) / "ports"
 
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
