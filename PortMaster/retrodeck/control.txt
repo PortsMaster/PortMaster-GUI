@@ -28,8 +28,9 @@ if [ -f "$controlfolder/xdelta3.x86_64" ]; then
   mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
 fi
 
-if [ -f "$controlfolder/cwtbe_flag" ]; then
-  GPTOKEYB="$controlfolder/gptokeyb2 $ESUDOKILL"
-else
-  GPTOKEYB="$controlfolder/gptokeyb $ESUDOKILL"
-fi
+export PM_CAN_MOUNT="N"
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+GPTOKEYB2="$ESUDO LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

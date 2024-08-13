@@ -223,7 +223,7 @@ def nice_device_to_device(raw_device):
         ('Anbernic RG351MP*', 'rg351mp'),
         ('Anbernic RG351V*',  'rg351v'),
         ('Anbernic RG351*',   'rg351p'),
-        ('Anbernic RG353MP*', 'rg353mp'),
+        ('Anbernic RG353M*',  'rg353m'),
         ('Anbernic RG353V*',  'rg353v'),
         ('Anbernic RG353P*',  'rg353p'),
         ('Anbernic RG552',    'rg552'),

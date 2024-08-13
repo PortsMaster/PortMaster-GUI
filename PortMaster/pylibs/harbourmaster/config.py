@@ -30,7 +30,6 @@ HM_PERFTEST=False
 HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
 HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR   = Path("/roms/ports")
-retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
 
 if 'XDG_DATA_HOME' not in os.environ:
     os.environ['XDG_DATA_HOME'] = str(Path().home() / '.local' / 'share')
@@ -96,12 +95,14 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif ('roms_dir' in os.environ) or ("/var/config/retrodeck/retrodeck.cfg").is_file():
+elif ('roms_dir' in os.environ) or Path("/var/config/retrodeck/retrodeck.cfg").is_file():
+    retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
+
     if 'roms_dir' in os.environ:
         retrodeck_roms_path = os.environ['roms_dir']
 
     else:
-        with open(Path.home() / "/var/config/retrodeck/retrodeck.cfg", 'r') as fh:
+        with open((Path.home() / ".var/config/retrodeck/retrodeck.cfg"), 'r') as fh:
             for line in fh:
                 line = line.strip()
 
