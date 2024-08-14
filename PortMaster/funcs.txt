@@ -88,10 +88,12 @@ pm_show_error() {
     $ESUDO "$controlfolder/sdl2imgshow.${DEVICE_ARCH}" -z "$PM_ERROR_THEME" -wY
 }
 
+
 pm_end_splash() {
     # Kills any splashscreen running.
     $ESUDO pkill -f "sdl2imgshow.${DEVICE_ARCH}"
 }
+
 
 pm_finish() {
     $ESUDO pkill -f gptokeyb

@@ -9,11 +9,15 @@ if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
 else
   export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/batocera/gamecontrollerdb.txt"
 fi
-# export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
+SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 get_controls() {
-  # DO NOTHING
-  printf ""
+  # TODO: figure out SDL_GAMECONTROLLERCONFIG
+  ANALOGSTICKS="2"
+  LOWRES="N"
 }
 
 source $controlfolder/device_info.txt

@@ -95,25 +95,41 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif ('roms_dir' in os.environ) or Path("/var/config/retrodeck/retrodeck.cfg").is_file():
-    retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
+elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/config/retrodeck/retrodeck.cfg").is_file():
+    rdconfig=Path("/var/config/retrodeck/retrodeck.cfg")
 
-    if 'roms_dir' in os.environ:
-        retrodeck_roms_path = os.environ['roms_dir']
+    if not rdconfig.is_file():
+        rdconfig=(Path.home() / ".var/config/retrodeck/retrodeck.cfg")
 
-    else:
-        with open((Path.home() / ".var/config/retrodeck/retrodeck.cfg"), 'r') as fh:
-            for line in fh:
-                line = line.strip()
+    rdhome=None
+    ports_folder=None
+    roms_folder=None
 
-                if not line.startswith('roms_folder='):
-                    continue
+    with open(rdconfig, 'r') as fh:
+        for line in fh:
+            line = line.strip()
 
-                retrodeck_roms_path = line.split('=', 1)[-1]
+            if line.startswith('rdhome='):
+                rdhome=Path(line.split('=', 1)[-1])
 
-    HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path) / "ports"
-    HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path) / "ports"
-    HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path) / "ports"
+            if line.startswith('ports_folder='):
+                ports_folder=Path(line.split('=', 1)[-1])
+
+            if line.startswith('roms_folder='):
+                roms_folder=Path(line.split('=', 1)[-1])
+
+    if rdhome is None:
+        raise Exception("Well something went wrong...")
+
+    if roms_folder is None:
+        roms_folder=rdhome / "roms"
+
+    if ports_folder is None:
+        ports_folder=rdhome / "PortMaster"
+
+    HM_DEFAULT_TOOLS_DIR   = Path(os.environ['XDG_DATA_HOME']) / "PortMaster"
+    HM_DEFAULT_PORTS_DIR   = Path(ports_folder) / "ports"
+    HM_DEFAULT_SCRIPTS_DIR = Path(roms_folder) / "portmaster"
 
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")
