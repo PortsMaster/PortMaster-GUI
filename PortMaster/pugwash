@@ -518,6 +518,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         logger.info(f"TTF DLL: {sdl2.sdlttf.get_dll_file()}, {nice_version(sdl2.sdlttf.TTF_Linked_Version()[0])}")
         logger.info(f"IMG DLL: {sdl2.sdlimage.get_dll_file()}, {nice_version(sdl2.sdlimage.IMG_Linked_Version()[0])}")
         logger.info(f"MIX DLL: {sdl2.sdlmixer.get_dll_file()}, {nice_version(sdl2.sdlmixer.Mix_Linked_Version()[0])}")
+        logger.info(f"HM_TESTING: {harbourmaster.HM_TESTING}")
 
         # Load controller.
         count = sdl2.SDL_NumJoysticks()

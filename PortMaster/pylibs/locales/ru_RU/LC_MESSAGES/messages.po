@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-16 19:46+0800\n"
-"PO-Revision-Date: 2024-07-16 11:47\n"
+"POT-Creation-Date: 2024-08-20 16:29+0800\n"
+"PO-Revision-Date: 2024-08-20 08:30\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -75,7 +75,7 @@ msgstr "Русский"
 
 #: PortMaster/pugwash:144
 msgid "Swedish"
-msgstr ""
+msgstr "Шведский"
 
 #: PortMaster/pugwash:145
 msgid "Ukrainian"
@@ -125,15 +125,15 @@ msgid "Not Installed"
 msgstr "Не установлен"
 
 #: PortMaster/pugwash:1127 PortMaster/pugwash:1501
-#: PortMaster/pylibs/pugscene.py:2296 PortMaster/pylibs/pugscene.py:2344
-#: PortMaster/pylibs/pugscene.py:2346
+#: PortMaster/pylibs/pugscene.py:2331 PortMaster/pylibs/pugscene.py:2379
+#: PortMaster/pylibs/pugscene.py:2381
 msgid "Okay"
 msgstr "Ок"
 
 #: PortMaster/pugwash:1130 PortMaster/pugwash:1502
 #: PortMaster/pylibs/pugscene.py:1448 PortMaster/pylibs/pugscene.py:1456
-#: PortMaster/pylibs/pugscene.py:2265 PortMaster/pylibs/pugscene.py:2299
-#: PortMaster/pylibs/pugscene.py:2344
+#: PortMaster/pylibs/pugscene.py:2300 PortMaster/pylibs/pugscene.py:2334
+#: PortMaster/pylibs/pugscene.py:2379
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -482,11 +482,11 @@ msgstr "Главное меню"
 
 #: PortMaster/pylibs/pugscene.py:405
 msgid "Disclaimer"
-msgstr ""
+msgstr "Отказ от ответственности"
 
 #: PortMaster/pylibs/pugscene.py:431
 msgid "Accept"
-msgstr ""
+msgstr "Принять"
 
 #: PortMaster/pylibs/pugscene.py:431 PortMaster/pylibs/pugscene.py:511
 msgid "Quit"
@@ -671,11 +671,11 @@ msgstr "Местоположение, в котором должны быть у
 
 #: PortMaster/pylibs/pugscene.py:645
 msgid "SD 1"
-msgstr ""
+msgstr "SD 1"
 
 #: PortMaster/pylibs/pugscene.py:645
 msgid "SD 2"
-msgstr ""
+msgstr "SD 2"
 
 #: PortMaster/pylibs/pugscene.py:648
 msgid "System"
@@ -703,7 +703,7 @@ msgstr "Обновить порты"
 
 #: PortMaster/pylibs/pugscene.py:663
 msgid "Fetch latest ports information."
-msgstr ""
+msgstr "Получить последнюю информацию о портах."
 
 #: PortMaster/pylibs/pugscene.py:667
 msgid "Update PortMaster"
@@ -834,18 +834,20 @@ msgstr "Вы уверены, что хотите переместить порт
 
 #: PortMaster/pylibs/pugscene.py:941
 msgid "SDCARD 1"
-msgstr ""
+msgstr "SDCARD 1"
 
 #: PortMaster/pylibs/pugscene.py:942
 msgid "SDCARD 2"
-msgstr ""
+msgstr "SDCARD 2"
 
 #: PortMaster/pylibs/pugscene.py:946
 #, python-brace-format
 msgid "Are you sure you want to manage and install ports on {to_loc}?\n\n"
 "Already installed ports will not be moved.\n"
 "PortMaster will restart for this to take effect."
-msgstr ""
+msgstr "Вы уверены, что хотите управлять и устанавливать порты на {to_loc}?\n\n"
+"Уже установленные порты не будут перемещены.\n"
+"PortMaster перезагрузится чтобы это вступило в силу."
 
 #: PortMaster/pylibs/pugscene.py:1010
 msgid "Deleting Runtimes:"
@@ -1090,7 +1092,7 @@ msgstr "Прочие"
 
 #: PortMaster/pylibs/pugscene.py:1995
 msgid "Experimental"
-msgstr ""
+msgstr "Экспериментально"
 
 #: PortMaster/pylibs/pugscene.py:1998
 msgid "Broken Ports"
@@ -1118,35 +1120,51 @@ msgstr "Необходимы платные внешние ресурсы."
 msgid "{runtime_name} Runtime"
 msgstr "{runtime_name} Запуск"
 
-#: PortMaster/pylibs/pugscene.py:2054
+#: PortMaster/pylibs/pugscene.py:2013
+msgid "ARM 32bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2014
+msgid "ARM 64bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2015
+msgid "x86 64bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2060
 msgid "Sort:"
 msgstr "Сортировка:"
 
-#: PortMaster/pylibs/pugscene.py:2069
+#: PortMaster/pylibs/pugscene.py:2075
 msgid "Clear Filters"
 msgstr "Очистить фильтры"
 
-#: PortMaster/pylibs/pugscene.py:2093
+#: PortMaster/pylibs/pugscene.py:2099
 msgid "Genres:"
 msgstr "Жанры:"
 
-#: PortMaster/pylibs/pugscene.py:2123
+#: PortMaster/pylibs/pugscene.py:2129
 msgid "Attributes:"
 msgstr "Атрибуты:"
 
-#: PortMaster/pylibs/pugscene.py:2152
+#: PortMaster/pylibs/pugscene.py:2158
+msgid "Architecture:"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2187
 msgid "Availability:"
 msgstr "Доступность:"
 
-#: PortMaster/pylibs/pugscene.py:2181
+#: PortMaster/pylibs/pugscene.py:2216
 msgid "Porters:"
 msgstr "Портеры:"
 
-#: PortMaster/pylibs/pugscene.py:2249
+#: PortMaster/pylibs/pugscene.py:2284
 msgid "Messages"
 msgstr "Сообщения"
 
-#: PortMaster/pylibs/pugscene.py:2284
+#: PortMaster/pylibs/pugscene.py:2319
 msgid "Are you sure you want to cancel?"
 msgstr "Прервать установку?"
 

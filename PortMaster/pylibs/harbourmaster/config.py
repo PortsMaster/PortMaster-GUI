@@ -95,11 +95,13 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/config/retrodeck/retrodeck.cfg").is_file():
+elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
     rdconfig=Path("/var/config/retrodeck/retrodeck.cfg")
+    HM_DEFAULT_TOOLS_DIR = Path("/var/data")
 
     if not rdconfig.is_file():
-        rdconfig=(Path.home() / ".var/config/retrodeck/retrodeck.cfg")
+        rdconfig = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
+        HM_DEFAULT_TOOLS_DIR  = (Path.home() / ".var/app/net.retrodeck.retrodeck/data")
 
     rdhome=None
     ports_folder=None
@@ -119,7 +121,8 @@ elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".v
                 roms_folder=Path(line.split('=', 1)[-1])
 
     if rdhome is None:
-        raise Exception("Well something went wrong...")
+        logger.error(f"Unable to find the rdhome variable in {rdconfig}.")
+        exit(255)
 
     if roms_folder is None:
         roms_folder=rdhome / "roms"
@@ -127,7 +130,6 @@ elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".v
     if ports_folder is None:
         ports_folder=rdhome / "PortMaster"
 
-    HM_DEFAULT_TOOLS_DIR   = Path(os.environ['XDG_DATA_HOME']) / "PortMaster"
     HM_DEFAULT_PORTS_DIR   = Path(ports_folder) / "ports"
     HM_DEFAULT_SCRIPTS_DIR = Path(roms_folder) / "portmaster"
 

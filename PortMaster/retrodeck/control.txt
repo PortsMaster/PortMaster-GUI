@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -d "/app/bin/retrodeck.sh" ]; then
+if [ -f "/app/bin/retrodeck.sh" ]; then
   # loading the RetroDECK framework that even give access to variables such as roms_folder
   source /app/libexec/global.sh
 
@@ -8,6 +8,7 @@ if [ -d "/app/bin/retrodeck.sh" ]; then
     ports_folder="$rdhome/PortMaster"
   fi
 
+  controlfolder="/var/data/PortMaster"
   directory="$ports_folder"
 elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
   # Fallback
@@ -19,6 +20,7 @@ elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
     ports_folder="$rdhome/PortMaster"
   fi
 
+  controlfolder="/var/data/PortMaster"
   directory="$ports_folder"
 else
   # Another Fallback
@@ -30,8 +32,12 @@ else
     ports_folder="$rdhome/PortMaster"
   fi
 
+  controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data/PortMaster"
   directory="$ports_folder"
 fi
+
+echo "\$controlfolder = $controlfolder"
+echo "\$directory = $directory"
 
 export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 

@@ -23,11 +23,6 @@ echo "Starting PortMaster."
 
 chmod -R +x .
 
-#check RetrodDECK installed and read location of roms folder
-if [[ -e "/app/bin/retrodeck.sh" ]]; then
-  toolsfolderloc="${controlfolder/\/PortMaster/}"
-fi
-
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
 AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
