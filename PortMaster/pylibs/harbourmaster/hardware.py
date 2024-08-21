@@ -161,19 +161,25 @@ CPU_INFO = {
 
 
 def cpu_info_v2(info):
-    if Path('/lib/ld-linux-armhf.so.3').is_file():
+    if Path('/lib/ld-linux-armhf.so.3').exists():
         info["capabilities"].append("armhf")
         info['primary_arch'] = "armhf"
 
-    if Path('/lib/ld-linux-aarch64.so.1').is_file():
+    if Path('/lib/ld-linux-aarch64.so.1').exists():
         info["capabilities"].append("aarch64")
         info['primary_arch'] = "aarch64"
 
-    if Path('/lib/ld-linux.so.2').is_file():
+    if Path('/lib/ld-linux.so.2').exists():
+        info["capabilities"].append("x86")
+        info['primary_arch'] = "x86"
+    elif Path('/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2').exists():
         info["capabilities"].append("x86")
         info['primary_arch'] = "x86"
 
-    if subprocess.getoutput('uname -m').strip() == 'x86_64':
+    if (
+            Path('/lib/ld-linux-x86-64.so.2').exists() or
+            Path('/lib64/ld-linux-x86-64.so.2').exists() or
+            Path('/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2').exists()):
         info["capabilities"].append("x86_64")
         info['primary_arch'] = "x86_64"
 
@@ -264,7 +270,7 @@ def new_device_info():
 
     if retrodeck_version != '':
         info['name'] = 'RetroDECK'
-        info['version'] = retrodeck_version.join(re.findall(r'version=(.*)', retrodeck_version))
+        info['version'] = ' '.join(re.findall(r'version=(.*)', retrodeck_version))
         info['device'] = 'retrodeck'
 
     ## Works on muOS (obviously)
@@ -331,6 +337,8 @@ def new_device_info():
 
     info.setdefault('name', 'Unknown')
     info.setdefault('version', '0.0.0')
+
+    logger.info(info)
 
     return info
 
@@ -435,7 +443,7 @@ def expand_info(info, override_resolution=None, override_ram=None, use_old_cpu_i
 
     else:
         if f"{info['cpu']}-{info['device']}" in CPU_INFO:
-            _merge_info(info, f"{info['cpu']}-{info['device']}")
+            _merge_info(info, CPU_INFO[f"{info['cpu']}-{info['device']}"])
 
         elif info['cpu'] in CPU_INFO:
             _merge_info(info, CPU_INFO[info['cpu']])
@@ -513,7 +521,7 @@ def device_info(override_device=None, override_resolution=None):
 
     expand_info(info, override_resolution, override_ram)
 
-    logger.debug(f"DEVICE INFO: {info}")
+    logger.info(f"DEVICE INFO: {info}")
     __root_info = info
     return info
 

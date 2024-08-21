@@ -425,7 +425,7 @@ class PlatformRetroDECK(PlatformBase):
     ES_NAME = 'es-de'
 
     def gamelist_file(self):
-        return self.hm.ports_dir / 'gamelist.xml'
+        return self.hm.scripts_dir / 'gamelist.xml'
 
     def first_run(self):
         self.portmaster_install()

@@ -24,7 +24,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.10"
+DEVICE_INFO_VERSION="0.1.11"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -154,12 +154,12 @@ if [ -f "/lib/ld-linux-aarch64.so.1" ]; then
     DEVICE_HAS_AARCH64="Y"
 fi
 
-if [ -f "/lib/ld-linux.so.2" ] || [ "$(uname -i)" = "i686" ]; then
+if [ -e "/lib/ld-linux.so.2" ] || [ -e "/usr/lib/ld-linux.so.2" ] || [ "$(uname -i)" = "i686" ]; then
     DEVICE_ARCH="x86"
     DEVICE_HAS_X86="Y"
 fi
 
-if [ -f "/lib/ld-linux-x86-64.so.2" ] || [ "$(uname -i)" = "x86_64" ]; then
+if [ -e "/lib/ld-linux-x86-64.so.2" ] || [ -e "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" ] || [ "$(uname -i)" = "x86_64" ]; then
     DEVICE_ARCH="x86_64"
     DEVICE_HAS_X86_64="Y"
 fi
