@@ -1,3 +1,13 @@
+#!/bin/bash
+
+## Modular - MUOS
+# 
+# A modular file that is sourced for specific script lines required by ports running on MUOS.
+#
+# usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
+
+# Set the virtual screen
+. /opt/muos/extra/muxlog & CUR_TTY="/tmp/muxlog_info"
 
 # Use for Godot 2
 GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
