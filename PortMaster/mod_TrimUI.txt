@@ -1,5 +1,14 @@
 #!/bin/bash
 
+## Modular - TRIMUI
+# 
+# A modular file that is sourced for specific script lines required by ports running on TRIMUI STOCK or CrossMix.
+#
+# usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
+
+# Set virtual screen
+CUR_TTY="/dev/fd/1"
+
 # Use for Godot 2
 GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 

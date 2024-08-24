@@ -2,7 +2,7 @@
 
 ## Modular - EmuELEC
 # 
-# A modular file that is sourced for specific script lines required by ports running on Batocera.
+# A modular file that is sourced for specific script lines required by ports running on EmuELEC.
 #
 # usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
 
