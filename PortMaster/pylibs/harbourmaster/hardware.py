@@ -84,6 +84,7 @@ HW_INFO = {
 
     # Anbernic RG35XX
     "rg40xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rg40xx-v":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-sp":   {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
@@ -172,9 +173,6 @@ def cpu_info_v2(info):
     if Path('/lib/ld-linux.so.2').exists():
         info["capabilities"].append("x86")
         info['primary_arch'] = "x86"
-    elif Path('/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2').exists():
-        info["capabilities"].append("x86")
-        info['primary_arch'] = "x86"
 
     if (
             Path('/lib/ld-linux-x86-64.so.2').exists() or
@@ -225,6 +223,16 @@ def nice_device_to_device(raw_device):
         ('Powkiddy RGB30',           'rgb30'),
         ('Powkiddy RK2023',          'rk2023'),
         ('Powkiddy x55',             'x55'),
+
+        ('Anbernic RG28XX*',      'rg28xx'),
+        ('Anbernic RG35XX H*',    'rg35xx-h'),
+        ('Anbernic RG35XX SP*',   'rg35xx-sp'),
+        ('Anbernic RG35XX PLUS*', 'rg35xx-plus'),
+        ('Anbernic RG40XX H*',    'rg40xx-h'),
+        ('Anbernic RG40XX V*',    'rg40xx-v'),
+
+        ('Anbernic RG40XX*',      'rg40xx-h'),
+        ('Anbernic RG35XX*',      'rg35xx-h'),
 
         ('Anbernic RG351MP*', 'rg351mp'),
         ('Anbernic RG351V*',  'rg351v'),
