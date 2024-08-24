@@ -1,11 +1,43 @@
 #!/bin/bash
 
-if [ -d "/app/bin/retrodeck.sh" ]; then
-  source /app/libexec/global.sh # loading the RetroDECK framework that even give access to variables such as roms_folder
-  controlfolder="$XDG_DATA_HOME/PortMaster"
-  directory="$roms_folder/portmaster"
-  cp retrodeck/control.txt $controlfolder
+if [ -f "/app/bin/retrodeck.sh" ]; then
+  # loading the RetroDECK framework that even give access to variables such as roms_folder
+  source /app/libexec/global.sh
+
+  if [ -z "$ports_folder" ]; then
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  controlfolder="/var/data/PortMaster"
+  directory="$ports_folder"
+elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
+  # Fallback
+  ports_folder="$(grep "ports_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+
+  if [ -z "$ports_folder" ]; then
+    rdhome="$(grep "rdhome" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  controlfolder="/var/data/PortMaster"
+  directory="$ports_folder"
+else
+  # Another Fallback
+  ports_folder="$(grep "ports_folder" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+
+  if [ -z "$ports_folder" ]; then
+    rdhome="$(grep "rdhome" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data/PortMaster"
+  directory="$ports_folder"
 fi
+
+echo "\$controlfolder = $controlfolder"
+echo "\$directory = $directory"
 
 export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 
@@ -28,8 +60,9 @@ if [ -f "$controlfolder/xdelta3.x86_64" ]; then
   mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
 fi
 
-if [ -f "$controlfolder/cwtbe_flag" ]; then
-  GPTOKEYB="$controlfolder/gptokeyb2 $ESUDOKILL"
-else
-  GPTOKEYB="$controlfolder/gptokeyb $ESUDOKILL"
-fi
+export PM_CAN_MOUNT="N"
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+GPTOKEYB2="$ESUDO LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

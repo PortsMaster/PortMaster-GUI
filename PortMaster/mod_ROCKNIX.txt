@@ -14,3 +14,9 @@ if [[ "$PORT_32BIT" == "Y" ]]; then
 fi
 
 export LIBGL_DRIVERS_PATH=/usr/lib32/dri:/usr/lib/dri
+
+pm_platform_helper() {
+    if [ -e "/usr/bin/portmaster_sway_fullscreen.sh" ]; then
+        /usr/bin/portmaster_sway_fullscreen.sh "$(basename "$1")"
+    fi
+}
