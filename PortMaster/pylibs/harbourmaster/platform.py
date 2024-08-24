@@ -503,8 +503,8 @@ class PlatformRetroDECK(PlatformBase):
         if rdconfig is None:
             return None
 
-        # IMG_DIR = rdconfig['rdhome'] / 'ES-DE' / 'downloaded_media' / 'portmaster' / 'miximages'
-        IMG_DIR = rdconfig['rdhome'] / 'downloaded_media' / 'portmaster' / 'miximages'
+        IMG_DIR = rdconfig['rdhome'] / 'ES-DE' / 'downloaded_media' / 'portmaster' / 'miximages'
+        # IMG_DIR = rdconfig['rdhome'] / 'downloaded_media' / 'portmaster' / 'miximages'
 
         IMG_DIR.mkdir(parents=True, exist_ok=True)
 
