@@ -30,7 +30,6 @@ HM_PERFTEST=False
 HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
 HM_DEFAULT_SCRIPTS_DIR = Path("/roms/ports")
 HM_DEFAULT_TOOLS_DIR   = Path("/roms/ports")
-retrodeck_roms_path    = str(Path().home() / 'retrodeck/roms/ports')
 
 if 'XDG_DATA_HOME' not in os.environ:
     os.environ['XDG_DATA_HOME'] = str(Path().home() / '.local' / 'share')
@@ -96,23 +95,43 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
 ## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
-elif ('roms_dir' in os.environ) or ("/var/config/retrodeck/retrodeck.cfg").is_file():
-    if 'roms_dir' in os.environ:
-        retrodeck_roms_path = os.environ['roms_dir']
+elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
+    rdconfig=Path("/var/config/retrodeck/retrodeck.cfg")
+    HM_DEFAULT_TOOLS_DIR = Path("/var/data")
 
-    else:
-        with open(Path.home() / "/var/config/retrodeck/retrodeck.cfg", 'r') as fh:
-            for line in fh:
-                line = line.strip()
+    if not rdconfig.is_file():
+        rdconfig = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
+        HM_DEFAULT_TOOLS_DIR  = (Path.home() / ".var/app/net.retrodeck.retrodeck/data")
 
-                if not line.startswith('roms_folder='):
-                    continue
+    rdhome=None
+    ports_folder=None
+    roms_folder=None
 
-                retrodeck_roms_path = line.split('=', 1)[-1]
+    with open(rdconfig, 'r') as fh:
+        for line in fh:
+            line = line.strip()
 
-    HM_DEFAULT_TOOLS_DIR   = Path(retrodeck_roms_path) / "ports"
-    HM_DEFAULT_PORTS_DIR   = Path(retrodeck_roms_path) / "ports"
-    HM_DEFAULT_SCRIPTS_DIR = Path(retrodeck_roms_path) / "ports"
+            if line.startswith('rdhome='):
+                rdhome=Path(line.split('=', 1)[-1])
+
+            if line.startswith('ports_folder='):
+                ports_folder=Path(line.split('=', 1)[-1])
+
+            if line.startswith('roms_folder='):
+                roms_folder=Path(line.split('=', 1)[-1])
+
+    if rdhome is None:
+        logger.error(f"Unable to find the rdhome variable in {rdconfig}.")
+        exit(255)
+
+    if roms_folder is None:
+        roms_folder=rdhome / "roms"
+
+    if ports_folder is None:
+        ports_folder=rdhome / "PortMaster"
+
+    HM_DEFAULT_PORTS_DIR   = Path(ports_folder) / "ports"
+    HM_DEFAULT_SCRIPTS_DIR = Path(roms_folder) / "portmaster"
 
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")

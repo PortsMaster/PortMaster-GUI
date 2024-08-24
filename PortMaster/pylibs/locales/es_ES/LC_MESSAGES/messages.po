@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-16 19:46+0800\n"
-"PO-Revision-Date: 2024-07-16 11:47\n"
+"POT-Creation-Date: 2024-08-20 16:29+0800\n"
+"PO-Revision-Date: 2024-08-20 08:30\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -125,15 +125,15 @@ msgid "Not Installed"
 msgstr "No Instalado"
 
 #: PortMaster/pugwash:1127 PortMaster/pugwash:1501
-#: PortMaster/pylibs/pugscene.py:2296 PortMaster/pylibs/pugscene.py:2344
-#: PortMaster/pylibs/pugscene.py:2346
+#: PortMaster/pylibs/pugscene.py:2331 PortMaster/pylibs/pugscene.py:2379
+#: PortMaster/pylibs/pugscene.py:2381
 msgid "Okay"
 msgstr "Aceptar"
 
 #: PortMaster/pugwash:1130 PortMaster/pugwash:1502
 #: PortMaster/pylibs/pugscene.py:1448 PortMaster/pylibs/pugscene.py:1456
-#: PortMaster/pylibs/pugscene.py:2265 PortMaster/pylibs/pugscene.py:2299
-#: PortMaster/pylibs/pugscene.py:2344
+#: PortMaster/pylibs/pugscene.py:2300 PortMaster/pylibs/pugscene.py:2334
+#: PortMaster/pylibs/pugscene.py:2379
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -1116,35 +1116,51 @@ msgstr "Se necesitan archivos externos pagos."
 msgid "{runtime_name} Runtime"
 msgstr "{runtime_name} Runtime"
 
-#: PortMaster/pylibs/pugscene.py:2054
+#: PortMaster/pylibs/pugscene.py:2013
+msgid "ARM 32bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2014
+msgid "ARM 64bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2015
+msgid "x86 64bit"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2060
 msgid "Sort:"
 msgstr "Ordenar:"
 
-#: PortMaster/pylibs/pugscene.py:2069
+#: PortMaster/pylibs/pugscene.py:2075
 msgid "Clear Filters"
 msgstr "Limpiar Filtros"
 
-#: PortMaster/pylibs/pugscene.py:2093
+#: PortMaster/pylibs/pugscene.py:2099
 msgid "Genres:"
 msgstr "Géneros:"
 
-#: PortMaster/pylibs/pugscene.py:2123
+#: PortMaster/pylibs/pugscene.py:2129
 msgid "Attributes:"
 msgstr "Atributos:"
 
-#: PortMaster/pylibs/pugscene.py:2152
+#: PortMaster/pylibs/pugscene.py:2158
+msgid "Architecture:"
+msgstr ""
+
+#: PortMaster/pylibs/pugscene.py:2187
 msgid "Availability:"
 msgstr "Disponibilidad:"
 
-#: PortMaster/pylibs/pugscene.py:2181
+#: PortMaster/pylibs/pugscene.py:2216
 msgid "Porters:"
 msgstr "Porters:"
 
-#: PortMaster/pylibs/pugscene.py:2249
+#: PortMaster/pylibs/pugscene.py:2284
 msgid "Messages"
 msgstr "Mensajes"
 
-#: PortMaster/pylibs/pugscene.py:2284
+#: PortMaster/pylibs/pugscene.py:2319
 msgid "Are you sure you want to cancel?"
 msgstr "¿Está seguro de que quiere cancelar?"
 

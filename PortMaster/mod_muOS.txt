@@ -14,3 +14,8 @@ GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
 # Use for Godot 3+
 GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+pm_platform_helper() {
+    # Help keep XongleBongles sanity below
+    printf "%s" "$(basename "$0")" > /run/muos/system/foreground_process
+}

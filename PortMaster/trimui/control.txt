@@ -5,7 +5,7 @@ directory="mnt/SDCARD/Data"
 
 source /mnt/SDCARD/System/etc/ex_config
 
-PM_SCRIPTNAME="$(basename ${PM_SCRIPTNAME:-$0})"
+PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 PM_PORTNAME="${PM_SCRIPTNAME%.sh}"
 
 if [ -z "$PM_PORTNAME" ]; then
@@ -29,8 +29,8 @@ get_controls() {
   pkill -f sdl2imgshow
 }
 
-if [ -f "$controlfolder/cwtbe_flag" ]; then
-  GPTOKEYB="$ESUDO $controlfolder/gptokeyb2 $ESUDOKILL"
-else
-  GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
-fi
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+GPTOKEYB2="$ESUDO LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

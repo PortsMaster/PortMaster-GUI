@@ -9,15 +9,19 @@ if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
 else
   export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/batocera/gamecontrollerdb.txt"
 fi
-# export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
+SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 get_controls() {
-  # DO NOTHING
-  printf ""
+  # TODO: figure out SDL_GAMECONTROLLERCONFIG
+  ANALOGSTICKS="2"
+  LOWRES="N"
 }
 
-if [ -f "$controlfolder/cwtbe_flag" ]; then
-  GPTOKEYB="$ESUDO $controlfolder/gptokeyb2 $ESUDOKILL"
-else
-  GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
-fi
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+GPTOKEYB2="$ESUDO LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
