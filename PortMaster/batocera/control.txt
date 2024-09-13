@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# TODO: check this
+CUR_TTY=/dev/tty0
+
 directory="userdata/roms"
 
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+
 if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
   export SDL_GAMECONTROLLERCONFIG_FILE="$HOME/.config/gamecontrollerdb.txt"
 else
@@ -19,6 +23,22 @@ get_controls() {
   ANALOGSTICKS="2"
   LOWRES="N"
 }
+
+if [ -e "/lib/ld-linux-x86-64.so.2" ]; then
+  # CRUSH KILL DESTROY
+  if [ -f "$controlfolder/gptokeyb.x86_64" ]; then
+    mv "$controlfolder/gptokeyb.x86_64" "$controlfolder/gptokeyb"
+  fi
+
+  if [ -f "$controlfolder/gptokeyb2.x86_64" ]; then
+    mv "$controlfolder/gptokeyb2.x86_64" "$controlfolder/gptokeyb2"
+  fi
+
+  # CRUSH KILL DESTROY
+  if [ -f "$controlfolder/xdelta3.x86_64" ]; then
+    mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
+  fi
+fi
 
 source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt

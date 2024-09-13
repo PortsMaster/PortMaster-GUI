@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: check this
+CUR_TTY=/dev/tty0
+
 controlfolder="/mnt/mmc/MUOS/PortMaster"
 
 directory=$(echo "$0" | sed 's|^\./||' | awk -F'/' '{print "/" $2 "/" $3}')

@@ -1793,6 +1793,8 @@ class PortInfoPopup(BaseScene):
 
             self.config['buttons'] = {
                 'DOWN': 'pop_scene',
+                'L_DOWN': 'pop_scene',
+                'R_DOWN': 'pop_scene',
                 }
 
         if 'installed' in self.parent_info_scene.port_attrs:
@@ -1863,14 +1865,27 @@ class PortInfoScene(BaseScene):
 
                 self.config['buttons'] = {
                     'UP': 'port_info_popup',
+                    'L_UP': 'port_info_popup',
+                    'R_UP': 'port_info_popup',
+
                     'LEFT': 'prev_port',
+                    'L_LEFT': 'prev_port',
+                    'R_LEFT': 'prev_port',
+
                     'RIGHT': 'next_port',
+                    'L_RIGHT': 'next_port',
+                    'R_RIGHT': 'next_port',
                     }
 
             else:
                 self.config['buttons'] = {
                     'UP': 'prev_port',
+                    'L_UP': 'prev_port',
+                    'R_UP': 'prev_port',
+
                     'DOWN': 'next_port',
+                    'L_DOWN': 'next_port',
+                    'R_DOWN': 'next_port',
                     }
 
         if 'installed' in self.port_attrs:
@@ -1992,6 +2007,7 @@ class FiltersScene(BaseScene):
 
             # Attrs.
             "rtr":              _("Ready to Run"),
+            "!rtr":             _("Files Required"),
             "exp":              _("Experimental"),
             "not installed":    _("Not Installed"),
             "update available": _("Update Available"),
@@ -2106,7 +2122,7 @@ class FiltersScene(BaseScene):
                         selected_offset = len(self.tags['filter_list'].options) - 1
 
             elif display_order == 'attr':
-                for hm_genre in ['rtr', 'mono', 'godot', 'solarus', 'rlvm', 'exp', 'not installed', 'update available', 'broken']:
+                for hm_genre in ['rtr', '!rtr', 'mono', 'godot', 'solarus', 'rlvm', 'exp', 'not installed', 'update available', 'broken']:
                     if hm_genre in self.locked_genres:
                         continue
 

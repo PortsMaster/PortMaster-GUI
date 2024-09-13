@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: check this
+CUR_TTY=/dev/tty0
+
 controlfolder="/mnt/SDCARD/Apps/PortMaster/PortMaster"
 directory="mnt/SDCARD/Data"
 
