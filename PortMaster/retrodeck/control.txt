@@ -39,6 +39,9 @@ fi
 echo "\$controlfolder = $controlfolder"
 echo "\$directory = $directory"
 
+ESUDO=""
+ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+
 export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 
 get_controls() {
