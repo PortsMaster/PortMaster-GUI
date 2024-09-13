@@ -136,7 +136,9 @@ sleep 2
 
 if [ ! -f "$HOME/no_es_restart" ]; then
   if [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
-    batocera-es-swissknife --restart
+    if [ ! -e "/lib/ld-linux-x86-64.so.2" ]; then
+      batocera-es-swissknife --restart
+    fi
   else
     $ESUDO systemctl restart $ES_NAME
   fi
