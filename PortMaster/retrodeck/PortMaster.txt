@@ -99,6 +99,13 @@ while true; do
   rm -f "${controlfolder}/.pugwash-reboot"
 done
 
+if [ -f "${controlfolder}/.es-de-refresh" ]; then
+  $ESUDO rm -f "${controlfolder}/.es-de-refresh"
+  if [ ! "$portmaster_reload_esde" = "false" ]; then
+    $ESUDO pkill -f es-de
+  fi
+fi
+
 unset LD_LIBRARY_PATH
 unset SDL_GAMECONTROLLERCONFIG
 

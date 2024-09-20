@@ -45,7 +45,17 @@ echo "\$directory = $directory"
 ESUDO=""
 ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 
+# TODO: might need to add other devices here.
+DEVICE="03000000de280000ff11000001000000"
+
 export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
+export sdl_controllerconfig="$(grep "$SDL_GAMECONTROLLERCONFIG_FILE" -e "${DEVICE}")"
+
+echo "\$sdl_controllerconfig = $sdl_controllerconfig"
+
+# Enable mount hack :D
+export PATH="$controlfolder/retrodeck:$PATH"
+export LD_LIBRARY_PATH="$controlfolder/retrodeck:$LD_LIBRARY_PATH"
 
 get_controls() {
   ANALOGSTICKS="2"
