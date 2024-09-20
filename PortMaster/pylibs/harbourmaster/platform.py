@@ -546,6 +546,10 @@ class PlatformRetroDECK(PlatformBase):
         shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {SC_DIR / "PortMaster.sh"}')
+        if (SC_DIR / "PortMaster.sh").is_symlink():
+            # XARGONNNNNNNN
+            (SC_DIR / "PortMaster.sh").unlink()
+
         shutil.copy(RD_DIR / "PortMaster.txt", SC_DIR / "PortMaster.sh")
 
         TASK_SET = Path(self.hm.tools_dir / "PortMaster" / "tasksetter")
