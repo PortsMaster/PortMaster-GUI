@@ -719,6 +719,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             if self.hm.platform.WANT_XBOX_FIX:
                 self.events.fix_xbox_mode()
 
+            if self.hm.platform_name in ('retrodeck', ):
+                self.events.fix_retrodeck_mode()
+
             self.SWAP_BUTTONS = self.hm.platform.WANT_SWAP_BUTTONS
 
         try:

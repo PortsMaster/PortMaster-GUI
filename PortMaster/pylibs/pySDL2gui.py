@@ -1455,6 +1455,9 @@ class EventManager:
             if sdl2.SDL_IsGameController(i) == sdl2.SDL_TRUE:
                 self.controller = sdl2.SDL_GameControllerOpen(i)
 
+    def fix_retrodeck_mode(self):
+        self.KEY_MAP[sdl2.SDLK_q] = 'START'
+
     def fix_xbox_mode(self):
         if self.XBOX_FIXED:
             return
@@ -1495,7 +1498,7 @@ class EventManager:
 
                 key = self.KEY_MAP.get(event.key.keysym.sym, None)
                 if key is not None:
-                    # logger.info(f'PRESSED {key}')
+                    logger.info(f'PRESSED {key}')
                     self.buttons[key] = True
 
                     if key in self.repeat:
@@ -1504,7 +1507,7 @@ class EventManager:
             elif event.type == sdl2.SDL_KEYUP:
                 key = self.KEY_MAP.get(event.key.keysym.sym, None)
                 if key is not None:
-                    # logger.info(f'RELEASED {key}')
+                    logger.info(f'RELEASED {key}')
                     self.buttons[key] = False
 
                     if key in self.repeat:
@@ -1513,7 +1516,7 @@ class EventManager:
             elif event.type == sdl2.SDL_CONTROLLERBUTTONDOWN:
                 key = self.BUTTON_MAP.get(event.cbutton.button, None)
                 if key is not None:
-                    # logger.info(f'PRESSED {key}')
+                    logger.info(f'PRESSED {key}')
                     self.buttons[key] = True
 
                     if key in self.repeat:
@@ -1522,7 +1525,7 @@ class EventManager:
             elif event.type == sdl2.SDL_CONTROLLERBUTTONUP:
                 key = self.BUTTON_MAP.get(event.cbutton.button, None)
                 if key is not None:
-                    # logger.info(f'RELEASED {key}')
+                    logger.info(f'RELEASED {key}')
                     self.buttons[key] = False
 
                     if key in self.repeat:
@@ -1539,19 +1542,19 @@ class EventManager:
 
                     if axis_key is not None:
                         if last_axis_key is None:
-                            # logger.info(f"PRESSED {axis_key}")
+                            logger.info(f"PRESSED {axis_key}")
                             self.buttons[axis_key] = True
 
                             if axis_key in self.repeat:
                                 self.repeat[axis_key] = ticks_now + self.REPEAT_DELAY
 
                         elif last_axis_key != axis_key:
-                            # logger.info(f"RELEASED {last_axis_key}")
+                            logger.info(f"RELEASED {last_axis_key}")
                             self.buttons[last_axis_key] = False
                             if last_axis_key in self.repeat:
                                 self.repeat[last_axis_key] = None
 
-                            # logger.info(f"PRESSED {axis_key}")
+                            logger.info(f"PRESSED {axis_key}")
                             self.buttons[axis_key] = True
 
                             if axis_key in self.repeat:
@@ -1559,7 +1562,7 @@ class EventManager:
 
                     else:
                         if last_axis_key is not None:
-                            # logger.info(f"RELEASED {last_axis_key}")
+                            logger.info(f"RELEASED {last_axis_key}")
                             self.buttons[last_axis_key] = False
                             if last_axis_key in self.repeat:
                                 self.repeat[last_axis_key] = None
@@ -1580,7 +1583,7 @@ class EventManager:
             if next_repeat is not None and next_repeat <= ticks_now:
                 # Trigger was_pressed state
                 self.last_buttons[key] = False
-                # print(f'REPEAT {key} {ticks_now - next_repeat}')
+                print(f'REPEAT {key} {ticks_now - next_repeat}')
                 self.repeat[key] = ticks_now + self.REPEAT_RATE
 
     def any_pressed(self):

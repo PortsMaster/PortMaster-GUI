@@ -75,7 +75,7 @@ if [ -n "$AUTOINSTALL" ]; then
     fi
   fi
 
-  touch "$controlfolder/.muos-refresh"
+  touch "$controlfolder/.es-de-refresh"
 
   PortMasterDialog "messages_end"
   if [ -z "$GW" ]; then
@@ -101,7 +101,7 @@ done
 
 if [ -f "${controlfolder}/.es-de-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.es-de-refresh"
-  if [ ! "$portmaster_reload_esde" = "false" ]; then
+  if [[ "$portmaster_reload_esde" != "false" ]]; then
     $ESUDO pkill -f es-de
   fi
 fi
