@@ -102,8 +102,10 @@ class HarbourMaster():
 
         if self.device['name'].lower() in HM_PLATFORMS:
             self.platform = HM_PLATFORMS[self.device['name'].lower()](self)
+            self.platform_name = self.device['name'].lower()
         else:
             self.platform = HM_PLATFORMS['default'](self)
+            self.platform_name = 'default'
 
         self.callback = callback
         self.ports = []
