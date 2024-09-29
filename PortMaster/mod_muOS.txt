@@ -6,6 +6,9 @@
 #
 # usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
 
+# Set the virtual screen
+CUR_TTY="/dev/null"
+
 # Use for Godot 2
 GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
