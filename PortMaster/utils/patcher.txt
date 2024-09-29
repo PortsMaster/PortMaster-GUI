@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Source PM info
-source $controlfolder/control.txt
-source $controlfolder/device_info.txt
-
 # Source love2d runtime
 source $controlfolder/runtimes/"love_11.5"/love.txt
 
