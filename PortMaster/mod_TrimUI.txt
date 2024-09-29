@@ -17,4 +17,5 @@ GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
 pm_platform_helper() {
     # DO SOMETHING HERE
+    printf ""
 }

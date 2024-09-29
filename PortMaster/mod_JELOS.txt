@@ -17,4 +17,5 @@ export LIBGL_DRIVERS_PATH=/usr/lib32/dri:/usr/lib/dri
 
 pm_platform_helper() {
     # DO SOMETHING HERE
+    printf ""
 }
