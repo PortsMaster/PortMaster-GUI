@@ -166,5 +166,5 @@ if [ ! -z "$ESUDO" ]; then
   $ESUDO chmod 666 /dev/uinput
 fi
 
-GPTOKEYB2="$ESUDO LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
