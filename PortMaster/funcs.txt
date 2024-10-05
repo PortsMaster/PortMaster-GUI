@@ -62,7 +62,7 @@ pm_begin_splash() {
     fi
 
     if [ ! -z "$PM_SPLASH_THEME" ]; then
-        PM_SPLASH_THEME="$PM_RESOURCE_DIR/error.ini"
+        PM_SPLASH_THEME="$PM_RESOURCE_DIR/splash.ini"
     fi
 
     $ESUDO "$controlfolder/sdl2imgshow.${DEVICE_ARCH}" -z "$PM_SPLASH_THEME" $PM_SPLASH_QUIT_MODE &
