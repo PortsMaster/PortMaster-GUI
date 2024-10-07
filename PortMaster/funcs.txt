@@ -17,6 +17,10 @@ export PM_CAN_MOUNT="${PM_CAN_MOUNT:-Y}"
 if [ -f "$controlfolder/pylibs/resources/NotoSans.tar.xz" ]; then
     # TODO: make sure this works on all CFW.
     $ESUDO tar -C "$controlfolder/pylibs/resources" -xf "$controlfolder/pylibs/resources/NotoSans.tar.xz"
+
+    if [ -f "$controlfolder/pylibs/resources/NotoSansJP-Regular.ttf" ]; then
+        $ESUDO rm -f "$controlfolder/pylibs/resources/NotoSans.tar.xz"
+    fi
 fi
 
 if [ -f "$PM_RESOURCE_DIR/do_init" ]; then
@@ -99,5 +103,9 @@ pm_finish() {
     $ESUDO pkill -f gptokeyb
     $ESUDO pkill -f gptokeyb2
 
-    $ESUDO systemctl restart oga_events & 2> /dev/null
+    $ESUDO systemctl restart oga_events 2> /dev/null &
+
+    if [ ! -z "$(echo "$CUR_TTY" | grep -e '^/dev/tty')" ]; then
+        printf "\033c" > "$CUR_TTY"
+    fi
 }
