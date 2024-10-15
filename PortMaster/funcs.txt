@@ -7,7 +7,7 @@ fi
 
 export PM_FUNCS_VERSION=1
 
-export PM_SCRIPTNAME="$(basename ${PM_SCRIPTNAME:-$0})"
+export PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 export PM_PORTNAME="${PM_PORTNAME:-${PM_SCRIPTNAME%.sh}}"
 export PM_VERSION="$(cat "$controlfolder/version")"
 export PM_RESOURCE_DIR="$controlfolder/resources"
