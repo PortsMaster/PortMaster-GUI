@@ -41,10 +41,12 @@ if [ $? != 0 ]; then
   echo "No sudo present."
   ESUDO=""
   ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+  ESUDOKILL2="-1"
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 else
   ESUDO="sudo --preserve-env=SDL_GAMECONTROLLERCONFIG_FILE,DEVICE,param_device,HOTKEY,ANALOGSTICKS,SDL_KMSDRM_ORIENTATION,SDL_KMSDRM_ROTATION"
   ESUDOKILL="-sudokill" # for ArkOS, RetroOZ, and TheRA use "-sudokill"
+  ESUDOKILL2="-Z"       # Doesnt need sudokill as the process is run with sudo.
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 fi
 
@@ -166,5 +168,5 @@ if [ ! -z "$ESUDO" ]; then
   $ESUDO chmod 666 /dev/uinput
 fi
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL2"
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
