@@ -39,7 +39,7 @@ bind_directories() {
     if [ "$PM_CAN_MOUNT" = "Y" ]; then
         [[ -L "$1" ]] && rm -f "$1"
         mkdir -p "$1"
-        $ESUDO umount -q "$1"
+        $ESUDO umount "$1"
         $ESUDO mount --bind "$2" "$1"
     else
         # RetroDECK cant use bind mount without root.
