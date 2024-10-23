@@ -31,7 +31,7 @@ fi
 
 
 bind_directories() {
-    # Usage: bind_directories $GAMEDIR/savedata ~/.config/StardewValley
+    # Usage: bind_directories ~/.config/StardewValley $GAMEDIR/savedata
     # 
     # Reason: some platforms (batocera) use exfat for the home directory, so we can't use symbolic links
     # We then instead use bind mount, however retrodeck cannot bind mount because it does not run in root.
@@ -43,8 +43,8 @@ bind_directories() {
         $ESUDO mount --bind "$2" "$1"
     else
         # RetroDECK cant use bind mount without root.
-        rm -rf "$2"
-        ln -sfv "$1" "$2"
+        rm -f "$1"
+        ln -sfv "$2" "$1"
     fi
 }
 
