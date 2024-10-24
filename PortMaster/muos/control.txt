@@ -39,6 +39,7 @@ get_controls() {
 
   if [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-SP" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG28XX" ]]; then
     ANALOGSTICKS=0
+    sed -i 's/leftx:a0,lefty:a1,leftstick:a2,//g' "/tmp/gamecontrollerdb.txt"
   fi
 
   sdl_controllerconfig="$(< "/tmp/gamecontrollerdb.txt")"
