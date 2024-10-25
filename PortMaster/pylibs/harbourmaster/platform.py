@@ -346,7 +346,7 @@ class PlatformJELOS(PlatformBase):
 
 
 class PlatformROCKNIX(PlatformJELOS):
-    ...
+    ES_NAME = 'weston'
 
 
 class PlatformBatocera(PlatformBase):

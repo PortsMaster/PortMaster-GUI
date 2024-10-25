@@ -119,6 +119,9 @@ printf "\033c" > $CUR_TTY
 if [ -f "${controlfolder}/.emustation-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.emustation-refresh"
   $ESUDO systemctl restart emustation
+elif [ -f "${controlfolder}/.weston-refresh" ]; then
+  $ESUDO rm -f "${controlfolder}/.weston-refresh"
+  $ESUDO systemctl restart ${UI_SERVICE}
 elif [ -f "${controlfolder}/.emulationstation-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.emulationstation-refresh"
   $ESUDO systemctl restart emulationstation
