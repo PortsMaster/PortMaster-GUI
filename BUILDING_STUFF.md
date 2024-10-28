@@ -42,3 +42,70 @@ LDFLAGS=-L/usr/local/lib/ CXXFLAGS=-I/usr/local/include ./configure --with-liblz
 make -j4
 strip xdelta3
 ```
+
+
+## Compile xmlstartlet statically
+
+```sh
+# Install system libxslt, this stops it erroring out below
+sudo apt install libxslt-dev
+
+# Make sure we generate static libraries
+export CFLAGS=-static
+export CPPFLAGS=-static
+export LDFLAGS=-static
+export BUILDIR="$PWD"
+
+# Static libxml2
+git clone https://github.com/GNOME/libxml2.git
+
+cd libxml2
+
+./autogen.sh --without-python --enable-static=on
+make
+
+cd ..
+
+# Static libxslt
+git clone https://gitlab.gnome.org/GNOME/libxslt.git
+cd libxslt
+
+./autogen.sh --without-python --enable-static=on
+make
+
+# Fix a link issue
+ln -s $PWD/libxslt/.libs/libxslt.a  libexslt/.libs/
+
+cd ..
+
+git clone git://git.code.sf.net/p/xmlstar/code --branch 1.6.1 --depth 1 xmlstar-code
+
+# Its go time
+cd xmlstar-code
+
+autoreconf -sif
+
+./configure \
+        --prefix=/usr \
+        --disable-build-docs \
+        --with-libxml-prefix=/usr \
+        --with-libxml-include-prefix=$BUILDIR/libxml2/include \
+        --with-libxml-libs-prefix=$BUILDIR/libxml2/.libs \
+        --with-libxslt-prefix=/usr \
+        --with-libxslt-include-prefix=$BUILDIR/libxslt \
+        --with-libxslt-libs-prefix=$BUILDIR/libxslt/libexslt/.libs \
+        --enable-static-libs \
+        LIBS="-lpthread"
+
+# This caused so many headaches.
+sed -i 's/ATTRIBUTE_UNUSED//g' "src/xml_pyx.c"
+
+make
+
+# DONE
+
+```
+
+It will error with `make[1]: *** No rule to make target 'doc/xmlstarlet.1', needed by 'all-am'.  Stop.` but it doesnt matter, the file we want is `xml`
+
+Guidelines to build taken from here: https://github.com/acjohnson/xmlstarlet-static-binary

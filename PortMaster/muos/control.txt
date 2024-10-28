@@ -58,6 +58,10 @@ if [ ! -d /lib32/ ]; then
   if [ -f "$controlfolder/xdelta3.armhf" ]; then
     mv "$controlfolder/xdelta3.armhf" "$controlfolder/xdelta3"
   fi
+
+  if [ -f "$controlfolder/xmlstarlet.armhf" ]; then
+    mv "$controlfolder/xmlstarlet.armhf" "$controlfolder/xmlstarlet"
+  fi
 else
   if [ -f "$controlfolder/muos/mount" ]; then
     rm -f "$controlfolder/muos/mount"

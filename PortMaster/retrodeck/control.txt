@@ -76,6 +76,10 @@ if [ -f "$controlfolder/xdelta3.x86_64" ]; then
   mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
 fi
 
+if [ -f "$controlfolder/xmlstarlet.x86_64" ]; then
+  mv "$controlfolder/xmlstarlet.x86_64" "$controlfolder/xmlstarlet"
+fi
+
 export PM_CAN_MOUNT="N"
 source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt
