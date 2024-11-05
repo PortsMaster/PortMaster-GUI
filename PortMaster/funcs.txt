@@ -108,7 +108,7 @@ pm_end_splash() {
 pm_message() {
     # Usage: pm_message "Some message here."
     if [[ "$CFW_NAME" == "muOS" ]]; then
-        /opt/muos/extra/muxstart 0 "$1"
+        /opt/muos/extra/muxstart "$1"
     else
         echo "$1" > $CUR_TTY
     fi
