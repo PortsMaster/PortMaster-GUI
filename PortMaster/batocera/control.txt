@@ -24,6 +24,21 @@ get_controls() {
   # TODO: figure out SDL_GAMECONTROLLERCONFIG
   ANALOGSTICKS="2"
   LOWRES="N"
+
+  export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
+
+  # Spit the controller of the device our heuristics found (if it did).
+  if [[ ! -z ${DEVICE} ]]; then
+    grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
+  else
+    echo "" > /tmp/gamecontrollerdb.txt
+  fi
+
+  if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
+    $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  fi
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
 
 if [ -e "/lib/ld-linux-x86-64.so.2" ]; then
@@ -36,9 +51,12 @@ if [ -e "/lib/ld-linux-x86-64.so.2" ]; then
     mv "$controlfolder/gptokeyb2.x86_64" "$controlfolder/gptokeyb2"
   fi
 
-  # CRUSH KILL DESTROY
   if [ -f "$controlfolder/xdelta3.x86_64" ]; then
     mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
+  fi
+
+  if [ -f "$controlfolder/xmlstarlet.x86_64" ]; then
+    mv "$controlfolder/xmlstarlet.x86_64" "$controlfolder/xmlstarlet"
   fi
 fi
 

@@ -5,13 +5,19 @@ if [ ! -z "$PM_FUNCS_VERSION" ]; then
     return
 fi
 
-export PM_FUNCS_VERSION=1
+export PM_FUNCS_VERSION=2
 
 export PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 export PM_PORTNAME="${PM_PORTNAME:-${PM_SCRIPTNAME%.sh}}"
 export PM_VERSION="$(cat "$controlfolder/version")"
 export PM_RESOURCE_DIR="$controlfolder/resources"
 export PM_CAN_MOUNT="${PM_CAN_MOUNT:-Y}"
+
+# muOS stuff.
+if [[ "$CFW_NAME" == "muOS" ]]; then
+    export LD_LIBRARY_PATH="/opt/muos/extra/lib:$LD_LIBRARY_PATH"
+fi
+
 
 # Extract the latest NotoSans.tar.xz
 if [ -f "$controlfolder/pylibs/resources/NotoSans.tar.xz" ]; then
@@ -99,9 +105,24 @@ pm_end_splash() {
 }
 
 
-pm_finish() {
+pm_message() {
+    # Usage: pm_message "Some message here."
+    if [[ "$CFW_NAME" == "muOS" ]]; then
+        /opt/muos/extra/muxstart 0 "$1"
+    else
+        echo "$1" > $CUR_TTY
+    fi
+}
+
+
+pm_gptokeyb_finish() {
     $ESUDO pkill -f gptokeyb
     $ESUDO pkill -f gptokeyb2
+}
+
+
+pm_finish() {
+    pm_gptokeyb_finish
 
     $ESUDO systemctl restart oga_events 2> /dev/null &
 

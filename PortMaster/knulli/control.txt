@@ -21,6 +21,21 @@ get_controls() {
   # TODO: figure out SDL_GAMECONTROLLERCONFIG
   ANALOGSTICKS="2"
   LOWRES="N"
+
+  export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
+
+  # Spit the controller of the device our heuristics found (if it did).
+  if [[ ! -z ${DEVICE} ]]; then
+    grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
+  else
+    echo "" > /tmp/gamecontrollerdb.txt
+  fi
+
+  if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
+    $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  fi
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
 
 source $controlfolder/device_info.txt
