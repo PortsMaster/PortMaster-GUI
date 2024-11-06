@@ -22,6 +22,8 @@ get_controls() {
   ANALOGSTICKS="2"
   LOWRES="N"
 
+  DEVICE="Deeplay-keys"
+
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 
   # Spit the controller of the device our heuristics found (if it did).
@@ -31,8 +33,10 @@ get_controls() {
     echo "" > /tmp/gamecontrollerdb.txt
   fi
 
-  if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
-    $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+  if [ -f "$controlfolder/cwtbe_flag" ]; then
+    if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
+      $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+    fi
   fi
 
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
