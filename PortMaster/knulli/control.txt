@@ -35,7 +35,7 @@ get_controls() {
 
   if [ -f "$controlfolder/cwtbe_flag" ]; then
     if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
-      $controlfolder/mapper.txt /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+      $controlfolder/mapper.py /tmp/gamecontrollerdb.txt > /dev/null 2>&1
     fi
   fi
 
