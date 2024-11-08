@@ -61,6 +61,10 @@ DEVICES = {
     # TrimUI
     "TrimUI Smart Pro": {"device": "trimui-smart-pro", "manufacturer": "TrimUI", "cfw": ["TrimUI"]},
 
+    # Retroid Pocket
+    "Retroid Pocket 5":    {"device": "rp5",    "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket Mini": {"device": "rpmini", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+
     # Generic
     "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
     "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
@@ -110,7 +114,11 @@ HW_INFO = {
 
     # Gameforce Chi / Ace
     "chi":       {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power"], "ram": 8192},
+    "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power", "ultra"], "ram": 8192},
+
+    # Retroid Pocket
+    "rpmini":    {"resolution": (1280,  960), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 6144},
+    "rp5":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
 
     # Generic
     "xu10":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -245,6 +253,9 @@ def nice_device_to_device(raw_device):
         ('GameForce ACE',     'ace'),
 
         ('MagicX XU10',       'xu10'),
+
+        ('retroid pocket 5',    'rp5'),
+        ('retroid pocket mini', 'rpmini'),
         )
 
     for pattern, device in pattern_to_device:
@@ -289,7 +300,7 @@ def new_device_info():
 
     muos_device = safe_cat('/opt/muos/config/device.txt')
     if muos_device != '':
-        info['device'] = muos_device.lower().replace(' ', '-')
+        info['device'] = muos_device.lower().replace(' ', '-').split('\n')[0]
 
     # Works on TrimUI Smart Pro
     if Path('/usr/trimui').is_dir():
@@ -300,6 +311,13 @@ def new_device_info():
     config_device = safe_cat('~/.config/.DEVICE')
     if config_device != '':
         info['device'] = config_device.strip().lower()
+
+    # Works on Batocera
+    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
+    if batocera_version != '':
+        info.setdefault('name', 'Batocera')
+        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
     # Works on ArkOS
     plymouth = safe_cat('/usr/share/plymouth/themes/text.plymouth')
@@ -330,13 +348,6 @@ def new_device_info():
                 value = nice_device_to_device(value)
 
             info.setdefault(key, value)
-
-    # Works on Batocera
-    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
-    if batocera_version != '':
-        info.setdefault('name', 'Batocera')
-        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
-        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
     if 'device' not in info:
         info['device'] = old_device_info()

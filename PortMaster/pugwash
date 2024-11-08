@@ -543,14 +543,14 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         capabilities = harbourmaster.device_info()
 
         if sdl2.video.SDL_GetCurrentDisplayMode(0, display_mode) != 0:
-            print("Failed to get display mode:", sdl2.SDL_GetError())
+            logger.error("Failed to get display mode:", sdl2.SDL_GetError())
             self.display_width, self.display_height = capabilities['resolution']
 
         else:
             self.display_width = display_mode.w
             self.display_height = display_mode.h
             # Print the display width and height
-            print(f"Display size: {self.display_width}x{self.display_height}")
+            logger.info(f"Display size: {self.display_width}x{self.display_height}")
 
         if harbourmaster.HM_TESTING:
             capabilities = harbourmaster.device_info()
