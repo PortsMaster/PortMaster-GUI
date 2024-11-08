@@ -151,7 +151,7 @@ get_controls() {
   fi
 
   if [ -f "${HOME}/.config/emulationstation/es_input.cfg" ]; then
-    $controlfolder/mapper.py /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+    $controlfolder/mapper.py -i "${HOME}/.config/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
   fi
 
   SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
