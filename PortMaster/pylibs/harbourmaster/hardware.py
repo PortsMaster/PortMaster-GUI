@@ -312,13 +312,6 @@ def new_device_info():
     if config_device != '':
         info['device'] = config_device.strip().lower()
 
-    # Works on Batocera
-    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
-    if batocera_version != '':
-        info.setdefault('name', 'Batocera')
-        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
-        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
-
     # Works on ArkOS
     plymouth = safe_cat('/usr/share/plymouth/themes/text.plymouth')
     if plymouth != '':
@@ -348,6 +341,13 @@ def new_device_info():
                 value = nice_device_to_device(value)
 
             info.setdefault(key, value)
+
+    # Works on Batocera
+    batocera_version = safe_cat('/usr/share/batocera/batocera.version')
+    if batocera_version != '':
+        info.setdefault('name', 'Batocera')
+        info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
     if 'device' not in info:
         info['device'] = old_device_info()
