@@ -127,7 +127,7 @@ elif [ -f "${controlfolder}/.emulationstation-refresh" ]; then
   $ESUDO systemctl restart emulationstation
 elif [ -f "${controlfolder}/.batocera-es-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.batocera-es-refresh"
-  if [ ! -e "/lib/ld-linux-x86-64.so.2" ]; then
-    batocera-es-swissknife --restart
-  fi
+  # BROKEN :(
+  # batocera-es-swissknife --restart
+  curl http://localhost:1234/reloadgames
 fi
