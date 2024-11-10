@@ -7,7 +7,7 @@ directory="userdata/roms"
 
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
-if [ -f "${HOME}/.config/gamecontrollerdb.txt" ]; then
+if [[ -f "${HOME}/.config/gamecontrollerdb.txt" ]]; then
   export SDL_GAMECONTROLLERCONFIG_FILE="$HOME/.config/gamecontrollerdb.txt"
 else
   export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/knulli/gamecontrollerdb.txt"
@@ -15,7 +15,7 @@ fi
 
 SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
 SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
-[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
+[[ ! -f "${SDLDBUSERFILE}" ]] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 get_controls() {
   # TODO: figure out SDL_GAMECONTROLLERCONFIG
@@ -41,10 +41,10 @@ get_controls() {
   fi
 
   # If there is a user es_input.cfg
-  if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
+  if [[ -f "${HOME}/configs/emulationstation/es_input.cfg" ]]; then
     $controlfolder/mapper.py -i "${HOME}/configs/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
   # Fallback to the default es_input.cfg
-  else if [ -f "/usr/share/emulationstation/es_input.cfg" ]; then
+  elif [[ -f "/usr/share/emulationstation/es_input.cfg" ]]; then
     $controlfolder/mapper.py -i "/usr/share/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
   fi
 

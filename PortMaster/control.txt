@@ -150,7 +150,7 @@ get_controls() {
     echo "" > /tmp/gamecontrollerdb.txt
   fi
 
-  if [ -f "${HOME}/.config/emulationstation/es_input.cfg" ]; then
+  if [[ -f "${HOME}/.config/emulationstation/es_input.cfg" ]]; then
     $controlfolder/mapper.py -i "${HOME}/.config/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
   fi
 
