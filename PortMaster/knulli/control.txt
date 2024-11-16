@@ -7,8 +7,26 @@ directory="userdata/roms"
 
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
-if [[ -f "${HOME}/.config/gamecontrollerdb.txt" ]]; then
+
+# Install our own shGenerator.py
+if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+  cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
+
+  if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+    # New style relative imports
+    cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+  else
+    # Old style absolute imports
+    cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+  fi
+
+  batocera-save-overlay
+fi
+
+if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
   export SDL_GAMECONTROLLERCONFIG_FILE="$HOME/.config/gamecontrollerdb.txt"
+elif [ -f "/tmp/gamecontrollerdb.txt" ]; then
+  export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 else
   export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/knulli/gamecontrollerdb.txt"
 fi
@@ -19,33 +37,24 @@ SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 
 get_controls() {
   # TODO: figure out SDL_GAMECONTROLLERCONFIG
-  ANALOGSTICKS="2"
+  ANALOGSTICKS="${ANALOG_STICKS:-2}"
   LOWRES="N"
 
-  RGDEFAULT="Deeplay-keys"
-  RG40XX_H="Anbernic RG40XX-H Controller"
-  RG40XX_V="Anbernic RG40XX-V Controller"
-  RG35XX_Plus="Anbernic RG35XX-Plus Controller"
-  RG35XX_SP="Anbernic RG35XX-SP Controller"
-  RG35XX_H="Anbernic RG35XX-H Controller"
-  RGCUBEXX="Anbernic RG CubeXX Controller"
-  RG28XX="Anbernic RG28XX Controller"
+  DEVICE="Deeplay-keys"
 
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 
   # Spit the controller of the device our heuristics found (if it did).
-  grep "${SDLDBUSERFILE}" -E "(${RGDEFAULT}|${RG40XX_H}|${RG40XX_V}|${RG35XX_Plus}|${RG35XX_SP}|${RG35XX_H}|${RGCUBEXX}|${RG28XX})" > "${SDL_GAMECONTROLLERCONFIG_FILE}"
-  if [[ ! $? -eq 0 ]]; then
-    # Start with an empty file
-    echo "" > "${SDL_GAMECONTROLLERCONFIG_FILE}"
+  if [[ ! -z ${DEVICE} ]]; then
+    grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
+  else
+    echo "" > /tmp/gamecontrollerdb.txt
   fi
 
-  # If there is a user es_input.cfg
-  if [[ -f "${HOME}/configs/emulationstation/es_input.cfg" ]]; then
-    $controlfolder/mapper.py -i "${HOME}/configs/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
-  # Fallback to the default es_input.cfg
-  elif [[ -f "/usr/share/emulationstation/es_input.cfg" ]]; then
-    $controlfolder/mapper.py -i "/usr/share/emulationstation/es_input.cfg" "/tmp/gamecontrollerdb.txt" > /dev/null 2>&1
+  if [ -f "$controlfolder/cwtbe_flag" ]; then
+    if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
+      $controlfolder/mapper.py /tmp/gamecontrollerdb.txt > /dev/null 2>&1
+    fi
   fi
 
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"

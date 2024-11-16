@@ -136,8 +136,23 @@ sleep 2
 
 if [ ! -f "$HOME/no_es_restart" ]; then
   if [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
-    if [ ! -e "/lib/ld-linux-x86-64.so.2" ]; then
-      batocera-es-swissknife --restart
+    ## Broken
+    # batocera-es-swissknife --restart
+    curl http://localhost:1234/reloadgames
+
+    # Install our own shGenerator.py
+    if [ ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py ]; then
+      cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
+
+      if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+        # New style relative imports
+        cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+      else
+        # Old style absolute imports
+        cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+      fi
+
+      batocera-save-overlay
     fi
   else
     $ESUDO systemctl restart $ES_NAME

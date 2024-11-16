@@ -24,7 +24,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.11"
+DEVICE_INFO_VERSION="0.1.12"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -121,13 +121,15 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     if [[ "${DEVICE_NAME}" == "RGB10" ]]; then
         # This one is tricky :D
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
-    fi
 
-    if [[ "${DEVICE_NAME}" == "" ]]; then
+    elif [[ "${DEVICE_NAME}" == "Pocket" ]]; then
+        # Retroid Pocket 5/Mini
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
-    fi
 
-    if [[ "$CFW_NAME" == "AmberELEC" ]] && [[ -f "/storage/.config/device" ]]; then
+    elif [[ "${DEVICE_NAME}" == "" ]]; then
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
+    elif [[ "$CFW_NAME" == "AmberELEC" ]] && [[ -f "/storage/.config/device" ]]; then
         DEVICE_NAME=$(cat /storage/.config/device)
     fi
 else
@@ -135,7 +137,7 @@ else
 fi
 
 ANALOG_STICKS=2
-DEVICE_CPU=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
+DEVICE_CPU=$(lscpu | grep '^Model name' | cut -f 2 -d ":" | awk 'NR==1{print $1}')
 DISPLAY_ORIENTATION=0
 
 DEVICE_ARCH="aarch64"
@@ -192,6 +194,20 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
                 DEVICE_NAME="RG353VS"
             fi
         fi
+        ;;
+
+    "rp5")
+        DEVICE_NAME="Retroid Pocket 5"
+        DEVICE_CPU="SD865"
+        ;;
+
+    "rpmini")
+        DEVICE_NAME="Retroid Pocket Mini"
+        DEVICE_CPU="SD865"
+        ;;
+
+    "retroid pocket 5"|"retroid pocket mini")
+        DEVICE_CPU="SD865"
         ;;
 
     "rk3326")
@@ -272,25 +288,57 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="a133plus"
         ;;
 
+    "rg-cubexx")
+        DEVICE_NAME="RGCUBEXX-H"
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg28xx")
+        ANALOG_STICKS=0
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg35xx-h")
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg35xx-plus")
+        ANALOG_STICKS=0
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg35xx-sp")
+        ANALOG_STICKS=0
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg40xx-h")
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg40xx-v")
+        ANALOG_STICKS=1
+        DEVICE_CPU="h700"
+        ;;
+
     "sun50iw9")
         if [ -f "/opt/muos/config/device.txt" ]; then
-            if [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]]; then
+            DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
+            if [[ "$DEVICE_NAME" == "RG35XX-2024" ]]; then
                 ANALOG_STICKS=0
-                DEVICE_NAME="RG35XX PLUS"
-            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-SP" ]]; then
+            elif [[ "$DEVICE_NAME" == "RG35XX-PLUS" ]]; then
                 ANALOG_STICKS=0
-                DEVICE_NAME="RG35XX SP"
-            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG28XX" ]]; then
+            elif [[ "$DEVICE_NAME" == "RG35XX-SP" ]]; then
                 ANALOG_STICKS=0
-                DEVICE_NAME="RG28XX"
+            elif [[ "$DEVICE_NAME" == "RG28XX" ]]; then
+                ANALOG_STICKS=0
                 DISPLAY_ORIENTATION=1
-            elif [[ "$(cat /opt/muos/config/device.txt)" == "RG40XX" ]]; then
-                DEVICE_NAME="RG40XX"
-            else
-                DEVICE_NAME="RG35XX H"
+            elif [[ "$DEVICE_NAME" == "RG40XX-V" ]]; then
+                DEVICE_NAME="RG40XX-V"
+                ANALOG_STICKS=1
             fi
         else
-            DEVICE_NAME="RG35XX H"
+            DEVICE_NAME="RG35XX-H"
         fi
 
         DEVICE_CPU="H700"
