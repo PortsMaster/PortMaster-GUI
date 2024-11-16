@@ -34,7 +34,7 @@ TR_MAP = {
     "rightanalogup" : "-righty",
     "rightanalogleft" : "-rightx",
     "rightanalogdown" : "+righty",
-    "rightanalogright" : "+righty"
+    "rightanalogright" : "+rightx"
 }
 
 # Mapping suffix for the Linux platform
