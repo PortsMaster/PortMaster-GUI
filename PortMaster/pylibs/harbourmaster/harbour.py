@@ -1331,7 +1331,7 @@ class HarbourMaster():
             logger.error(f"Failed to fix permissions: {err}")
             return
 
-    def _install_theme(self, download_file):
+    def _install_theme(self, download_file, do_delete=False):
         """
         Installs a theme file.
         """
@@ -1362,11 +1362,14 @@ class HarbourMaster():
         with open(theme_dir / "theme.md5", 'w') as fh:
             fh.write(hash_file(download_file))
 
+        if do_delete:
+            download_file.unlink()
+
         self.callback.message_box(_("Theme {download_name!r} installed successfully.").format(download_name=download_file.name))
 
         return 0
 
-    def _install_portmaster(self, download_file):
+    def _install_portmaster(self, download_file, do_delete=False):
         """
         Installs a new version of PortMaster
         """
@@ -1419,11 +1422,12 @@ class HarbourMaster():
             self._fix_permissions(self.tools_dir)
 
         finally:
-            ...
+            if do_delete:
+                download_file.unlink()
 
         return 0
 
-    def _install_port(self, download_info):
+    def _install_port(self, download_info, do_delete=False):
         """
         Installs a port.
 
@@ -1460,14 +1464,21 @@ class HarbourMaster():
                 self.callback.message(_("Installing {download_name}.").format(download_name=port_nice_name))
 
                 total_files = len(zf.infolist())
+
+                # Not naming any names, but this is necessary for ports with many files
+                count_skip = 1
+                if total_files > 400:
+                    count_skip = (total_files // 400)
+
                 for file_number, file_info in enumerate(zf.infolist()):
                     if file_info.file_size == 0:
                         compress_saving = 100
                     else:
                         compress_saving = file_info.compress_size / file_info.file_size * 100
 
-                    self.callback.progress(_("Installing"), file_number+1, total_files, '%')
-                    self.callback.message(f"- {file_info.filename}")
+                    if (file_number % count_skip) == 0 or (file_number + 1) == total_files:
+                        self.callback.progress(_("Installing"), file_number + 1, total_files, '%')
+                        self.callback.message(f"- {file_info.filename}")
 
                     is_script = (
                         file_info.filename.endswith('.sh') and
@@ -1538,9 +1549,6 @@ class HarbourMaster():
                 json.dump(port_info, fh, indent=4)
 
             # Remove the zip file if it is in the self.temp_dir
-            if str(download_info['zip_file']).startswith(str(self.temp_dir)):
-                download_info['zip_file'].unlink()
-
             is_successs = True
 
             self.platform.port_install(port_info['name'], port_info, undo_data)
@@ -1557,14 +1565,17 @@ class HarbourMaster():
             pass
 
         finally:
+            if do_delete:
+                download_info['zip_file'].unlink()
+
             if not is_successs:
                 if len(undo_data) > 0:
                     logger.error("Installation failed, removing installed files.")
                     self.callback.message(_("Installation failed, removing files..."))
 
                     for undo_file in undo_data[::-1]:
-                        logger.info(f"Removing {undo_file.relative_to(self.ports_dir)}")
-                        self.callback.message(f"- {str(undo_file.relative_to(self.ports_dir))}")
+                        logger.info(f"Removing {str(self._ports_dir_relative_to(undo_file))}")
+                        self.callback.message(f"- {str(self._ports_dir_relative_to(self.ports_dir))}")
 
                         if undo_file.is_file():
                             undo_file.unlink()
@@ -1803,13 +1814,13 @@ class HarbourMaster():
 
             with self.callback.enable_cancellable(False):
                 if name_cleaner(download_info['name']).endswith('.theme.zip'):
-                    return self._install_theme(download_info['zip_file'])
+                    return self._install_theme(download_info['zip_file'], do_delete=True)
 
                 elif name_cleaner(download_info['name']) == 'portmaster.zip':
-                    return self._install_portmaster(download_info['zip_file'])
+                    return self._install_portmaster(download_info['zip_file'], do_delete=True)
 
                 else:
-                    return self._install_port(download_info)
+                    return self._install_port(download_info, do_delete=True)
 
         # Special case for a local file.
         if port_name.startswith('./') or port_name.startswith('../') or port_name.startswith('/'):
@@ -1883,12 +1894,12 @@ class HarbourMaster():
             # print(f"Download Info: {download_info.to_dict()}")
             with self.callback.enable_cancellable(False):
                 if source.clean_name(port_name).endswith('.theme.zip'):
-                    return self._install_theme(download_info)
+                    return self._install_theme(download_info, do_delete=True)
 
                 elif source.clean_name(port_name) == 'portmaster.zip':
-                    return self._install_portmaster(download_info)
+                    return self._install_portmaster(download_info, do_delete=True)
 
-                return self._install_port(download_info)
+                return self._install_port(download_info, do_delete=True)
 
         self.callback.message_box(_("Unable to find a source for {port_name}").format(port_name=port_name))
 

@@ -375,6 +375,14 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
             if callback is not None:
                 callback.progress(_("Downloading file."), length, total_length, 'data')
 
+    except CancelEvent as err:
+        if file_name.is_file():
+            file_name.unlink()
+
+        logger.error(f"Requests error: {err}")
+
+        raise
+
     except requests.RequestException as err:
         if file_name.is_file():
             file_name.unlink()
