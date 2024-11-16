@@ -40,22 +40,7 @@ get_controls() {
   ANALOGSTICKS="${ANALOG_STICKS:-2}"
   LOWRES="N"
 
-  DEVICE="Deeplay-keys"
-
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
-
-  # Spit the controller of the device our heuristics found (if it did).
-  if [[ ! -z ${DEVICE} ]]; then
-    grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
-  else
-    echo "" > /tmp/gamecontrollerdb.txt
-  fi
-
-  if [ -f "$controlfolder/cwtbe_flag" ]; then
-    if [ -f "${HOME}/configs/emulationstation/es_input.cfg" ]; then
-      $controlfolder/mapper.py /tmp/gamecontrollerdb.txt > /dev/null 2>&1
-    fi
-  fi
 
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
