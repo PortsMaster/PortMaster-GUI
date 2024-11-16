@@ -25,6 +25,9 @@ HM_UPDATE_FREQUENCY=(60 * 60 * 1)  # Only check automatically once per hour.
 HM_TESTING=False
 HM_PERFTEST=False
 
+## Maximum temporary size is 100 mb, this can cause errors on TrimUI and muOS.
+HM_MAX_TEMP_SIZE = 1024 * 1024 * 100
+
 ################################################################################
 ## The following code is a simplification of the PortMaster toolsloc and whichsd code.
 HM_DEFAULT_PORTS_DIR   = Path("/roms/ports")
@@ -253,6 +256,7 @@ __all__ = (
     'HM_SCRIPTS_DIR',
     'HM_SORT_ORDER',
     'HM_SOURCE_DEFAULTS',
+    'HM_MAX_TEMP_SIZE',
     'HM_TESTING',
     'HM_TOOLS_DIR',
     'HM_UPDATE_FREQUENCY',
