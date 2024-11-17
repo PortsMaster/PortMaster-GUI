@@ -65,6 +65,9 @@ DEVICES = {
     "Retroid Pocket 5":    {"device": "rp5",    "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
     "Retroid Pocket Mini": {"device": "rpmini", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
 
+    # ZPG GKD
+    "GKD Bubble": {"device": "gkd-bubble", "manufacturer": "Game Kiddy", "cfw": ["EMUELEC"]},
+
     # Generic
     "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
     "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
@@ -128,6 +131,9 @@ HW_INFO = {
 
     # TrimUI
     "trimui-smart-pro": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "a133plus", "capabilities": ["power"], "ram": 1024},
+
+    # ZPG GKD
+    "gkd-bubble": {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3566",  "capabilities": ["power"], "ram": 1024},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -216,49 +222,50 @@ def file_exists(file_name):
 
 
 def nice_device_to_device(raw_device):
-    raw_device = raw_device.split('\0', 1)[0]
+    raw_device = raw_device.split('\0', 1)[0].lower()
 
     pattern_to_device = (
         ('sun50iw9',  'rg35xx-h'),
         ('sun50iw10', 'trimui-smart-pro'),
 
-        ('Hardkernel ODROID-GO-Ultra',  'ogu'),
-        ('ODROID-GO Advance*',          'oga'),
-        ('ODROID-GO Super*',            'ogs'),
+        ('hardkernel odroid-go-ultra',  'ogu'),
+        ('odroid-go advance*',          'oga'),
+        ('odroid-go super*',            'ogs'),
 
-        ('Powkiddy RGB10 MAX 3 Pro', 'rgb10max3pro'),
-        ('Powkiddy RGB10 MAX 3',     'rgb10max3'),
-        ('Powkiddy RGB30',           'rgb30'),
-        ('Powkiddy RK2023',          'rk2023'),
-        ('Powkiddy x55',             'x55'),
+        ('powkiddy rgb10 max 3 pro', 'rgb10max3pro'),
+        ('powkiddy rgb10 max 3',     'rgb10max3'),
+        ('powkiddy rgb30',           'rgb30'),
+        ('powkiddy rk2023',          'rk2023'),
+        ('powkiddy x55',             'x55'),
 
-        ('Anbernic RG28XX*',      'rg28xx'),
-        ('Anbernic RG35XX H*',    'rg35xx-h'),
-        ('Anbernic RG35XX SP*',   'rg35xx-sp'),
-        ('Anbernic RG35XX PLUS*', 'rg35xx-plus'),
-        ('Anbernic RG40XX H*',    'rg40xx-h'),
-        ('Anbernic RG40XX V*',    'rg40xx-v'),
+        ('anbernic rg28xx*',      'rg28xx'),
+        ('anbernic rg35xx h*',    'rg35xx-h'),
+        ('anbernic rg35xx sp*',   'rg35xx-sp'),
+        ('anbernic rg35xx plus*', 'rg35xx-plus'),
+        ('anbernic rg40xx h*',    'rg40xx-h'),
+        ('anbernic rg40xx v*',    'rg40xx-v'),
 
-        ('Anbernic RG40XX*',      'rg40xx-h'),
-        ('Anbernic RG35XX*',      'rg35xx-h'),
+        ('anbernic rg40xx*',      'rg40xx-h'),
+        ('anbernic rg35xx*',      'rg35xx-h'),
 
-        ('Anbernic RG351MP*', 'rg351mp'),
-        ('Anbernic RG351V*',  'rg351v'),
-        ('Anbernic RG351*',   'rg351p'),
-        ('Anbernic RG353M*',  'rg353m'),
-        ('Anbernic RG353V*',  'rg353v'),
-        ('Anbernic RG353P*',  'rg353p'),
-        ('Anbernic RG552',    'rg552'),
+        ('anbernic rg351mp*', 'rg351mp'),
+        ('anbernic rg351v*',  'rg351v'),
+        ('anbernic rg351*',   'rg351p'),
+        ('anbernic rg353m*',  'rg353m'),
+        ('anbernic rg353v*',  'rg353v'),
+        ('anbernic rg353p*',  'rg353p'),
+        ('anbernic rg552',    'rg552'),
 
-        ('GameForce ACE',     'ace'),
+        ('gameforce ace',     'ace'),
 
-        ('MagicX XU10',       'xu10'),
+        ('magicx xu10',       'xu10'),
 
         ('retroid pocket 5',    'rp5'),
         ('retroid pocket mini', 'rpmini'),
         )
 
     for pattern, device in pattern_to_device:
+        logger.debug(f'{raw_device} -> {pattern}')
         if fnmatch.fnmatch(raw_device, pattern):
             raw_device = device
             break
