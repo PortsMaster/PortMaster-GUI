@@ -28,12 +28,12 @@ if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
 elif [ -f "/tmp/gamecontrollerdb.txt" ]; then
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 else
-  export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/batocera/gamecontrollerdb.txt"
+  export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/knulli/gamecontrollerdb.txt"
 fi
 
 SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
 SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
-[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
+[[ ! -f "${SDLDBUSERFILE}" ]] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 get_controls() {
   # TODO: figure out SDL_GAMECONTROLLERCONFIG
