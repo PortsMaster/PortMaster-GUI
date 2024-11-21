@@ -76,10 +76,10 @@ def main(argv):
 
     pugwash_data = load_info("PortMaster/pugwash")
 
-    print(f"{pugwash_data["version"]} now {version_number}")
+    print(f"{pugwash_data['version']} now {version_number}")
 
     pugwash_data["all_data"][pugwash_data["version_line"]] = \
-        f"{pugwash_data["version_text"]} = '{version_number}'"
+        f"{pugwash_data['version_text']} = '{version_number}'"
 
     if pugwash_data["release"]:
         pugwash_data["all_data"][pugwash_data["release_line"]] = \
