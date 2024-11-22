@@ -36,11 +36,11 @@ msgid "Free Space: {system.free_space}\n\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Instruction: {port_info.instructions}"
 msgstr "Espace libre : {system.free_space}\n\n"
-"Porter : {port_info.porter}\n"
+"Porteur : {port_info.porter}\n"
 "Genres : {port_info.genres}\n"
 "Taille du téléchargement : {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
-"Instruction: {port_info.instructions}"
+"Instructions: {port_info.instructions}"
 
 #: Fallout.theme.zip/theme.json:726
 msgid "PM: {system.portmaster_version}\n"
@@ -48,7 +48,11 @@ msgid "PM: {system.portmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total\n"
 "Time: {system.time_24hr}\n"
 "Battery: {system.battery_level}"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"Espace disque: {system.free_space} disponible / {system.total_space} total\n"
+"Heure: {system.time_24hr}\n"
+"Batterie: {system.battery_level}"
 
 #: Fallout.theme.zip/theme.json:762, Stardew.theme.zip/theme.json:651, Zelda.theme.zip/theme.json:551, ff_VII.theme.zip/theme.json:523, Doom.theme.zip/theme.json:644
 #: default_theme/theme.json:499, default_theme/theme.json:625
@@ -60,7 +64,7 @@ msgstr "IP: {system.ip_address}"
 msgid "Creator: {theme_info.creator}\n"
 "Status: {theme_info.status}"
 msgstr "Créateur : {theme_info.creator}\n"
-"Status: {theme_info.status}"
+"Statut: {theme_info.status}"
 
 #: Stardew.theme.zip/theme.json:605, ff_VII.theme.zip/theme.json:480, default_theme/theme.json:441
 msgid "Time: {system.time_24hr}\n"
@@ -76,7 +80,9 @@ msgstr "Heure: {system.time_24hr}\n"
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"Espace disque: {system.free_space} disponible"
 
 #: Zelda.theme.zip/theme.json:326
 msgid "Filters: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
@@ -100,13 +106,15 @@ msgid "PM: {system.portmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
 msgstr "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
-"Espace : {system.free_space} free / {system.total_space} total"
+"Espace disque : {system.free_space} disponible / {system.total_space} total"
 
 #: hiviz.theme.zip/theme.json:267
 msgid "• Porter: {port_info.porter}\n"
 "• Genres: {port_info.genres}\n"
 "• Description: {port_info.description}"
-msgstr ""
+msgstr "• Porteur: {port_info.porter}\n"
+"• Genres: {port_info.genres}\n"
+"• Description: {port_info.description}"
 
 #: hiviz.theme.zip/theme.json:327
 msgid "• Genres: {port_info.genres}\n"
@@ -119,14 +127,17 @@ msgstr ""
 
 #: hiviz.theme.zip/theme.json:375
 msgid "PM: {system.portmaster_version}, HM: {system.harbourmaster_version}"
-msgstr ""
+msgstr "PM: {system.portmaster_version}, HM: {system.harbourmaster_version}"
 
 #: hiviz.theme.zip/theme.json:463
 msgid "• Creator: {theme_info.creator}\n"
 "• Status: {theme_info.status}\n"
 "• Description:\n"
 "{theme_info.description}"
-msgstr ""
+msgstr "• Createur: {theme_info.creator}\n"
+"• Statut: {theme_info.status}\n"
+"• Description:\n"
+"{theme_info.description}"
 
 #: hiviz.theme.zip/theme.json:526, default_theme/theme.json:616
 msgid "Name: {runtime_info.name}\n"
@@ -144,7 +155,9 @@ msgstr "Nom : {runtime_info.name}\n"
 msgid "Time: {system.time_24hr}\n"
 "Battery: {system.battery_level}\n"
 "Space: {system.free_space} free"
-msgstr ""
+msgstr "Heure : {system.time_24hr}\n"
+"Batterie : {system.battery_level}\n"
+"Espace disque : {system.free_space} free"
 
 #: basic_theme.theme.zip/theme.json:77
 msgid "Title: {port_info.title}\n"
