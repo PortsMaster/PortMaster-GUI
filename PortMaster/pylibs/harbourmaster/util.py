@@ -192,6 +192,9 @@ def load_pm_signature(file_name):
                 if 'PORTMASTER:' not in line:
                     continue
 
+                if ',' not in line.split(':', 1)[1]:
+                    continue
+
                 return [
                     item.strip()
                     for item in line.split(':', 1)[1].strip().split(',', 1)]
@@ -206,6 +209,7 @@ def load_pm_signature(file_name):
         return None
 
     return None
+
 
 def add_pm_signature(file_name, info):
     ## Adds the portmaster signature to a bash script.
@@ -471,6 +475,7 @@ def get_dict_list(base_dict, key):
 
     return result
 
+
 def remove_dict_list(base_dict, key, value):
     if key not in base_dict:
         return
@@ -490,6 +495,7 @@ def remove_dict_list(base_dict, key, value):
 
         elif len(result) == 1:
             base_dict[key] = result[0]
+
 
 def get_path_fs(path):
     """
