@@ -175,6 +175,7 @@ CPU_INFO = {
     "rk3399":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3566":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "h700-knulli":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "h700-batocera": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "h700-muos":     {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700":          {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
@@ -182,6 +183,17 @@ CPU_INFO = {
     "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":         {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "unknown":       {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    }
+
+
+GLIBC_INFO = {
+    "arkos-*":   "3.30",
+    "trimui-*":  "3.33",
+    "knulli-*":  "3.38",
+    "muos-*":    "3.38",
+    "rocknix-*": "3.40",
+
+    "default":   "3.30",
     }
 
 
@@ -209,6 +221,51 @@ def cpu_info_v2(info):
         info["capabilities"].append("armhf")
         info["capabilities"].append("aarch64")
         info['primary_arch'] = "aarch64"
+
+
+_GLIBC_VER=None
+def get_glibc_version():
+    global _GLIBC_VER
+
+    lib_paths = [
+        # Most likely
+        '/lib/',
+        '/lib64/',
+        '/lib/aarch64-linux-gnu/',
+        '/lib32/',
+        '/lib/arm-linux-gnueabihf/',
+        # Least likely
+        '/usr/lib/',
+        '/usr/lib64/',
+        '/usr/lib32/',
+        ]
+
+    if _GLIBC_VER is None:
+        for lib_path in lib_paths:
+            libc_path = Path(lib_path) / 'libc.so.6'
+
+            if not libc_path.is_file():
+                continue
+    
+            try:
+                result = subprocess.run(
+                    [str(libc_path), "--version"],
+                    capture_output=True, text=True, check=True)
+
+                # The first line contains the glibc version
+                _GLIBC_VER = result.stdout.splitlines()[0].strip().split(' ')[-1].rstrip('.')
+
+            except Exception as e:
+                logger.error(f"Error retrieving glibc version: {e}")
+                # Failsafe
+                _GLIBC_VER = GLIBC_INFO['default']
+
+            break
+
+        else:
+            _GLIBC_VER = GLIBC_INFO['default']
+
+    return _GLIBC_VER
 
 
 def safe_cat(file_name):
@@ -495,6 +552,23 @@ def expand_info(info, override_resolution=None, override_ram=None, use_old_cpu_i
 
     if override_ram is not None:
         info['ram'] = override_ram
+
+    if use_old_cpu_info:
+        _name, _device = info['name'].lower(), info['device'].lower()
+        if f"{_name}-{_device}" in GLIBC_INFO:
+            _merge_info(info, GLIBC_INFO[f"{_name}-{_device}"])
+
+        elif f"{_name}-*" in GLIBC_INFO:
+            _merge_info(info, GLIBC_INFO[f"{_name}-*"])
+
+        elif f"*-{_device}" in GLIBC_INFO:
+            _merge_info(info, GLIBC_INFO[f"*-{_device}"])
+
+        else:
+            _merge_info(info, GLIBC_INFO['default'])
+
+    else:
+        info['glibc'] = get_glibc_version()
 
     display_gcd = math.gcd(info['resolution'][0], info['resolution'][1])
     display_ratio = f"{info['resolution'][0] // display_gcd}:{info['resolution'][1] // display_gcd}"

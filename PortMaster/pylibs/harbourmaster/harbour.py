@@ -978,6 +978,12 @@ class HarbourMaster():
 
         runtime = port_info.get('attr', {}).get('runtime', None)
 
+        min_glibc = port_info.get('attr', {}).get('min_glibc', "")
+
+        if min_glibc not in ("", None) and isinstance(min_glibc, str):
+            if version_parse(min_glibc.strip()) < version_parse(self.device['glibc']):
+                return False
+
         if runtime is not None:
             if not runtime.endswith('.squashfs'):
                 runtime += '.squashfs'
