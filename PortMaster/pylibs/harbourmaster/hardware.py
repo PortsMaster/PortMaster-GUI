@@ -27,39 +27,42 @@ from .util import *
 # This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
 DEVICES = {
     # Anbernic
-    "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS"]},
-    "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "TheRA"]},
-    "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "JELOS", "ROCKNIX"]},
-    "Anbernic RG40XX H":    {"device": "rg40xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
-    "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
-    "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
-    "Anbernic RG35XX SP":   {"device": "rg35xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
-    "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Batocera", "ROCKNIX"]},
-    "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "JELOS", "ROCKNIX"]},
-    "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
+    "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
+    "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "ROCKNIX"]},
+    "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "TheRA"]},
+    "Anbernic RG503":       {"device": "rg503",       "manufacturer": "Anbernic",  "cfw": ["ArkOS", "ROCKNIX"]},
+    "Anbernic RG552":       {"device": "rg552",       "manufacturer": "Anbernic",  "cfw": ["AmberELEC", "ROCKNIX"]},
+    "Anbernic RGCUBEXX":    {"device": "rgcubexx",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG40XX H":    {"device": "rg40xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG40XX V":    {"device": "rg40xx-v",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG35XX SP":   {"device": "rg35xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "ROCKNIX"]},
+    "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
 
     # Powkiddy
-    "Powkiddy RGB10":         {"device": "rgb10",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
+    "Powkiddy RGB10":         {"device": "rgb10",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "ROCKNIX"]},
     "Powkiddy RGB20S":        {"device": "rgb20s",       "manufacturer": "Powkiddy",  "cfw": ["AmberELEC"]},
-    "Powkiddy RGB30":         {"device": "rgb30",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy RK2023":        {"device": "rk2023",       "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "JELOS", "ROCKNIX"]},
-    "Powkiddy X55":           {"device": "x55",          "manufacturer": "Powkiddy",  "cfw": ["JELOS"]},
-    "Powkiddy RGB10MAX3":     {"device": "rgb10max3",    "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
-    "Powkiddy RGB10MAX3 Pro": {"device": "rgb10max3pro", "manufacturer": "Powkiddy",  "cfw": ["JELOS", "ROCKNIX"]},
+    "Powkiddy RGB30":         {"device": "rgb30",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "ROCKNIX"]},
+    "Powkiddy RK2023":        {"device": "rk2023",       "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "ROCKNIX"]},
+    "Powkiddy X55":           {"device": "x55",          "manufacturer": "Powkiddy",  "cfw": ["ROCKNIX"]},
+    "Powkiddy RGB10MAX3":     {"device": "rgb10max3",    "manufacturer": "Powkiddy",  "cfw": ["ROCKNIX"]},
+    "Powkiddy RGB10MAX3 Pro": {"device": "rgb10max3pro", "manufacturer": "Powkiddy",  "cfw": ["ROCKNIX"]},
 
     # Hardkernel
-    "Hardkernel ODROID GO Advance": {"device": "oga", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "JELOS", "ROCKNIX"]},
-    "Hardkernel ODROID GO Super":   {"device": "ogs", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "JELOS", "ROCKNIX"]},
-    "Hardkernel ODROID GO Ultra":   {"device": "ogu", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "JELOS", "ROCKNIX"]},
+    "Hardkernel ODROID GO Advance": {"device": "oga", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "ROCKNIX"]},
+    "Hardkernel ODROID GO Super":   {"device": "ogs", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "ROCKNIX"]},
+    "Hardkernel ODROID GO Ultra":   {"device": "ogu", "manufacturer": "Hardkernel",  "cfw": ["ArkOS", "AmberELEC", "EmuELEC", "ROCKNIX"]},
 
     # Gameforce
-    "Gameforce Ace": {"device": "ace", "manufacturer": "Gameforce", "cfw": ["JELOS", "ROCKNIX"]},
+    "Gameforce Ace": {"device": "ace", "manufacturer": "Gameforce", "cfw": ["ROCKNIX"]},
     "Gameforce Chi": {"device": "chi", "manufacturer": "Gameforce", "cfw": ["ArkOS", "EmuELEC"]},
 
     # TrimUI
-    "TrimUI Smart Pro": {"device": "trimui-smart-pro", "manufacturer": "TrimUI", "cfw": ["TrimUI"]},
+    "TrimUI Smart Pro": {"device": "trimui-smart-pro", "manufacturer": "TrimUI", "cfw": ["TrimUI", "KNULLI"]},
+    "TrimUI Brick":     {"device": "trimui-brick",     "manufacturer": "TrimUI", "cfw": ["TrimUI", "KNULLI"]},
 
     # Retroid Pocket
     "Retroid Pocket 5":    {"device": "rp5",    "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
@@ -68,11 +71,14 @@ DEVICES = {
     # ZPG GKD
     "GKD Bubble": {"device": "gkd-bubble", "manufacturer": "Game Kiddy", "cfw": ["EMUELEC"]},
 
+    # Valve
+    "SteamDeck":  {"device": "steamdeck", "manufacturer": "Valve", "cfw": ["RetroDECK", "Batocera"]},
+
     # Generic
-    "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
-    "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
-    "R35S Retro Handheld": {"device": "r35s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
-    "R36S Retro Handheld": {"device": "r36s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "JELOS", "ROCKNIX"]},
+    "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
+    "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
+    "R35S Retro Handheld": {"device": "r35s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
+    "R36S Retro Handheld": {"device": "r36s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
     }
 
 
@@ -131,13 +137,17 @@ HW_INFO = {
 
     # TrimUI
     "trimui-smart-pro": {"resolution": (1280, 720), "analogsticks": 2, "cpu": "a133plus", "capabilities": ["power"], "ram": 1024},
+    "trimui-brick":     {"resolution": (1024, 768), "analogsticks": 0, "cpu": "a133plus", "capabilities": ["power"], "ram": 1024},
 
     # ZPG GKD
     "gkd-bubble": {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3566",  "capabilities": ["power"], "ram": 1024},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
-    "retrodeck": {"resolution": (1280, 800), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power"]},
+
+    # TODO: fix this.
+    "retrodeck": {"resolution": (1280, 800), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power", "ultra"], "ram": 16384},
+    "steamdeck": {"resolution": (1280, 800), "analogsticks": 2, "cpu": "x86_64", "capabilities": ["opengl", "power", "ultra"], "ram": 16384},
 
     # Default
     "default":   {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
