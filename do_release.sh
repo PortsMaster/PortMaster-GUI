@@ -132,6 +132,10 @@ if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
     rm -fRv pm_release
 fi
 
+if [[ ! -f "version.json" ]]; then
+    wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
+fi
+
 python3 tools/pm_version.py $*
 
 # Restore this file

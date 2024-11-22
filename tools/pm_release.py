@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import datetime
-import os
 import sys
 
 
@@ -64,11 +63,11 @@ def dump_info(main_file, info_data):
 def main(argv):
     if len(argv) == 1:
         release_type = "alpha"
-        version_number = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d-%H%M")
+        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H%M")
 
     elif len(argv) == 2:
         release_type = argv[1]
-        version_number = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d-%H%M")
+        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H%M")
 
     else:
         release_type = argv[1]
@@ -76,10 +75,10 @@ def main(argv):
 
     pugwash_data = load_info("PortMaster/pugwash")
 
-    print(f"{pugwash_data["version"]} now {version_number}")
+    print(f"{pugwash_data['version']} now {version_number}")
 
     pugwash_data["all_data"][pugwash_data["version_line"]] = \
-        f"{pugwash_data["version_text"]} = '{version_number}'"
+        f"{pugwash_data['version_text']} = '{version_number}'"
 
     if pugwash_data["release"]:
         pugwash_data["all_data"][pugwash_data["release_line"]] = \
