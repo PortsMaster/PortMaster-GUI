@@ -407,6 +407,10 @@ class PlatformBatocera(PlatformBase):
         TASK_SET.touch()
 
 
+class PlatformREGLinux(PlatformBatocera):
+    ...
+
+
 class PlatformKnulli(PlatformBatocera):
     WANT_XBOX_FIX = True
 
@@ -967,6 +971,7 @@ HM_PLATFORMS = {
     'jelos':     PlatformJELOS,
     'rocknix':   PlatformROCKNIX,
     'batocera':  PlatformBatocera,
+    'reglinux':  PlatformREGLinux,
     'knulli':    PlatformKnulli,
     'muos':      PlatformmuOS,
     'trimui':    PlatformTrimUI,

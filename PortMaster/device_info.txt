@@ -82,6 +82,9 @@ elif [ -e "$(which batocera-version)" ]; then
         CFW_NAME="$TMP_NAME"
     fi
     unset TMP_NAME
+elif [ -e "$(which system-version)" ]; then
+    CFW_NAME="REGLinux"
+    CFW_VERSION="$(system-version | cut -d' ' -f 1)"
 elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
@@ -115,6 +118,8 @@ elif [  -f "/app/bin/retrodeck.sh" ]; then
     DEVICE_NAME="RetroDECK"
 elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
+elif [ -f "/boot/boot/system.board" ]; then
+    DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/system.board)
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 
