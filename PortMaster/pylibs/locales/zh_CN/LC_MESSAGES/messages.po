@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-27 16:19+0800\n"
-"PO-Revision-Date: 2024-10-27 08:19\n"
+"POT-Creation-Date: 2024-11-23 17:29+0800\n"
+"PO-Revision-Date: 2024-11-23 09:30\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -69,115 +69,115 @@ msgstr "葡萄牙语(葡萄牙)"
 msgid "Portuguese (Brazil)"
 msgstr "葡萄牙语 (巴西)"
 
-#: PortMaster/pugwash:143
+#: PortMaster/pugwash:144
 msgid "Russian"
 msgstr "俄语"
 
-#: PortMaster/pugwash:144
+#: PortMaster/pugwash:145
 msgid "Swedish"
 msgstr "瑞典语"
 
-#: PortMaster/pugwash:145
+#: PortMaster/pugwash:146
 msgid "Ukrainian"
 msgstr "乌克兰语"
 
-#: PortMaster/pugwash:146
+#: PortMaster/pugwash:147
 msgid "Chinese Simplified"
 msgstr "简体中文"
 
-#: PortMaster/pugwash:663
+#: PortMaster/pugwash:664
 msgid "Unknown IP"
 msgstr "未知IP地址"
 
-#: PortMaster/pugwash:791 PortMaster/pugwash:932
+#: PortMaster/pugwash:793 PortMaster/pugwash:934
 msgid "N/A"
 msgstr "不适用"
 
-#: PortMaster/pugwash:900
+#: PortMaster/pugwash:902
 msgid "** NO PORT **"
 msgstr "** 无移植作品 **"
 
-#: PortMaster/pugwash:919 PortMaster/pylibs/pugscene.py:2009
+#: PortMaster/pugwash:921 PortMaster/pylibs/pugscene.py:2009
 msgid "Ready to Run"
 msgstr "可直接运行"
 
-#: PortMaster/pugwash:919
+#: PortMaster/pugwash:921
 msgid "Requires Files"
 msgstr "需要用户提供文件"
 
-#: PortMaster/pugwash:926 PortMaster/pugwash:953
+#: PortMaster/pugwash:928 PortMaster/pugwash:955
 #: PortMaster/pylibs/pugscene.py:1120
 msgid "Installed"
 msgstr "已安装"
 
-#: PortMaster/pugwash:928
+#: PortMaster/pugwash:930
 msgid "Missing"
 msgstr "缺失"
 
-#: PortMaster/pugwash:954 PortMaster/pylibs/harbourmaster/harbour.py:1642
+#: PortMaster/pugwash:956 PortMaster/pylibs/harbourmaster/harbour.py:1659
 #: PortMaster/pylibs/pugscene.py:2013
 msgid "Update Available"
 msgstr "有可用更新"
 
-#: PortMaster/pugwash:955 PortMaster/pylibs/harbourmaster/harbour.py:1641
+#: PortMaster/pugwash:957 PortMaster/pylibs/harbourmaster/harbour.py:1658
 #: PortMaster/pylibs/pugscene.py:1120 PortMaster/pylibs/pugscene.py:2012
 msgid "Not Installed"
 msgstr "未安装"
 
-#: PortMaster/pugwash:1131 PortMaster/pugwash:1505
+#: PortMaster/pugwash:1133 PortMaster/pugwash:1507
 #: PortMaster/pylibs/pugscene.py:2347 PortMaster/pylibs/pugscene.py:2395
 #: PortMaster/pylibs/pugscene.py:2397
 msgid "Okay"
 msgstr "确定"
 
-#: PortMaster/pugwash:1134 PortMaster/pugwash:1506
+#: PortMaster/pugwash:1136 PortMaster/pugwash:1508
 #: PortMaster/pylibs/pugscene.py:1448 PortMaster/pylibs/pugscene.py:1456
 #: PortMaster/pylibs/pugscene.py:2316 PortMaster/pylibs/pugscene.py:2350
 #: PortMaster/pylibs/pugscene.py:2395
 msgid "Cancel"
 msgstr "取消"
 
-#: PortMaster/pugwash:1357
+#: PortMaster/pugwash:1359
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr "正在获取最新的gameinfo.xml文件与封面。"
 
-#: PortMaster/pugwash:1378
+#: PortMaster/pugwash:1380
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr "正在下载{source_name}的gameinfo.xml文件。"
 
-#: PortMaster/pugwash:1411
+#: PortMaster/pugwash:1413
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "正在安装 {port_name}"
 
-#: PortMaster/pugwash:1420
+#: PortMaster/pugwash:1422
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "正在卸载 {port_name}"
 
-#: PortMaster/pugwash:1431
+#: PortMaster/pugwash:1433
 msgid "Updating all port sources:"
 msgstr "正在更新所有移植作品源："
 
-#: PortMaster/pugwash:1441
+#: PortMaster/pugwash:1443
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "正在检查 {runtime_name}"
 
-#: PortMaster/pugwash:1869
+#: PortMaster/pugwash:1871
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "正在从 {old_release_channel} 切换到 {new_release_channel} 版本。希望退回吗？"
 
-#: PortMaster/pugwash:1875
+#: PortMaster/pugwash:1877
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "PortMaster有新版本 ({portmaster_version}) 可用，希望升级吗？"
 
-#: PortMaster/pugwash:1880
+#: PortMaster/pugwash:1882
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
@@ -213,154 +213,154 @@ msgstr "正在加载资源。"
 msgid "Loading Ports."
 msgstr "正在加载移植作品。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1348
+#: PortMaster/pylibs/harbourmaster/harbour.py:1354
 #, python-brace-format
 msgid "Installing Theme {download_name}."
 msgstr "正在安装 {download_name} 主题。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1355
-#: PortMaster/pylibs/harbourmaster/harbour.py:1397
-#: PortMaster/pylibs/harbourmaster/harbour.py:1469
+#: PortMaster/pylibs/harbourmaster/harbour.py:1361
+#: PortMaster/pylibs/harbourmaster/harbour.py:1406
+#: PortMaster/pylibs/harbourmaster/harbour.py:1486
 msgid "Installing"
 msgstr "正在安装"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1365
+#: PortMaster/pylibs/harbourmaster/harbour.py:1374
 msgid "Theme {download_name!r} installed successfully."
 msgstr "主题 {download_name!r} 安装成功。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1388
-#: PortMaster/pylibs/harbourmaster/harbour.py:1460
+#: PortMaster/pylibs/harbourmaster/harbour.py:1397
+#: PortMaster/pylibs/harbourmaster/harbour.py:1470
 #, python-brace-format
 msgid "Installing {download_name}."
 msgstr "正在安装 {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1417
-#: PortMaster/pylibs/harbourmaster/harbour.py:1600
+#: PortMaster/pylibs/harbourmaster/harbour.py:1426
+#: PortMaster/pylibs/harbourmaster/harbour.py:1617
 msgid "Port {download_name!r} installed successfully."
 msgstr "已成功安装了移植作品 {download_name!r} 。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1563
+#: PortMaster/pylibs/harbourmaster/harbour.py:1580
 msgid "Installation failed, removing files..."
 msgstr "安装失败，正在移除文件..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1575
+#: PortMaster/pylibs/harbourmaster/harbour.py:1592
 #, python-brace-format
 msgid "Port {download_name} installed failed."
 msgstr "移植作品 {download_name} 安装失败。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1590
+#: PortMaster/pylibs/harbourmaster/harbour.py:1607
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
 msgstr "移植作品 {download_name!r} 和 {runtime_name!r} 安装成功。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1595
+#: PortMaster/pylibs/harbourmaster/harbour.py:1612
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
 msgstr "移植作品 {download_name!r} 安装成功，但 {runtime_name!r} 运行时安装失败！\n\n"
 "请尝试重新安装，或者查阅wiki以获得帮助。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1610
+#: PortMaster/pylibs/harbourmaster/harbour.py:1627
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
 msgstr "移植作品 {runtime} 包含了一个不适用的运行时，游戏可能无法正常运行。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1624
+#: PortMaster/pylibs/harbourmaster/harbour.py:1641
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
 msgstr "移植作品 {runtime} 包含了一个未知的运行时，游戏可能无法正常运行。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1643
+#: PortMaster/pylibs/harbourmaster/harbour.py:1660
 msgid "Verified"
 msgstr "已验证"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1644
+#: PortMaster/pylibs/harbourmaster/harbour.py:1661
 msgid "Unverified"
 msgstr "未验证"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1645
+#: PortMaster/pylibs/harbourmaster/harbour.py:1662
 msgid "Broken"
 msgstr "损坏"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1652
+#: PortMaster/pylibs/harbourmaster/harbour.py:1669
 msgid "Unable do download a runtime when in offline mode."
 msgstr "在离线模式下无法下载运行时。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1658
+#: PortMaster/pylibs/harbourmaster/harbour.py:1675
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
 msgstr "正在检查运行时 {runtime}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1667
-#: PortMaster/pylibs/harbourmaster/harbour.py:1670
+#: PortMaster/pylibs/harbourmaster/harbour.py:1684
+#: PortMaster/pylibs/harbourmaster/harbour.py:1687
 msgid "Verifying"
 msgstr "正在验证"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1695
+#: PortMaster/pylibs/harbourmaster/harbour.py:1712
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
 msgstr "无法找到 {runtime} 的下载链接。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1701
+#: PortMaster/pylibs/harbourmaster/harbour.py:1718
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
 msgstr "无法下载适用于 {device_arch} 的运行时 {runtime}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1722
+#: PortMaster/pylibs/harbourmaster/harbour.py:1739
 #, python-brace-format
 msgid "Verified {runtime} successfully."
 msgstr "{runtime} 验证通过。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1725
+#: PortMaster/pylibs/harbourmaster/harbour.py:1742
 #, python-brace-format
 msgid "Verified {runtime}."
 msgstr "已验证 {runtime}。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1731
+#: PortMaster/pylibs/harbourmaster/harbour.py:1748
 #, python-brace-format
 msgid "Updating {runtime}."
 msgstr "正在更新{runtime}..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1735
+#: PortMaster/pylibs/harbourmaster/harbour.py:1752
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
 msgstr "运行时{runtime} 损坏，正在重装。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1739
+#: PortMaster/pylibs/harbourmaster/harbour.py:1756
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
 msgstr "正在下载运行时{runtime}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1768
-#: PortMaster/pylibs/harbourmaster/harbour.py:1778
+#: PortMaster/pylibs/harbourmaster/harbour.py:1785
+#: PortMaster/pylibs/harbourmaster/harbour.py:1795
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
 msgstr "无法下载 {runtime}，游戏可能无法正常运行。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1787
+#: PortMaster/pylibs/harbourmaster/harbour.py:1804
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
 msgstr "成功下载 {runtime}。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1796
-#: PortMaster/pylibs/harbourmaster/harbour.py:1875
+#: PortMaster/pylibs/harbourmaster/harbour.py:1813
+#: PortMaster/pylibs/harbourmaster/harbour.py:1892
 msgid "Unable to download in offline mode."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1893
+#: PortMaster/pylibs/harbourmaster/harbour.py:1910
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
 msgstr "无法找到{port_name} 的下载资源。"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1907
+#: PortMaster/pylibs/harbourmaster/harbour.py:1924
 #, python-brace-format
 msgid "Unknown port {port_name}"
 msgstr "未知移植作品 {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1940
+#: PortMaster/pylibs/harbourmaster/harbour.py:1957
 #, python-brace-format
 msgid "Removing {port_name}"
 msgstr "正在移除{port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1981
+#: PortMaster/pylibs/harbourmaster/harbour.py:1998
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
 msgstr "成功卸载 {port_name}"
@@ -434,43 +434,43 @@ msgstr "{source_name}：正在获取最新的移植作品"
 msgid "Fetching info."
 msgstr "正在获取信息。"
 
-#: PortMaster/pylibs/harbourmaster/source.py:1068
+#: PortMaster/pylibs/harbourmaster/source.py:1073
 msgid "Unable to download verification file."
 msgstr "无法下载验证信息。"
 
-#: PortMaster/pylibs/harbourmaster/source.py:1079
+#: PortMaster/pylibs/harbourmaster/source.py:1084
 msgid "Unable to download non zip files."
 msgstr "无法下载非zip文件。"
 
-#: PortMaster/pylibs/harbourmaster/util.py:334
+#: PortMaster/pylibs/harbourmaster/util.py:338
 #, python-brace-format
 msgid "Unable to download file. [{status_code}]"
 msgstr "无法下载文件。错误代码 [{status_code}]"
 
-#: PortMaster/pylibs/harbourmaster/util.py:350
+#: PortMaster/pylibs/harbourmaster/util.py:354
 #, python-brace-format
 msgid "Downloading {file_url} - ({total_length_mb})"
 msgstr "正在从 {file_url} 下载 ({total_length_mb})"
 
-#: PortMaster/pylibs/harbourmaster/util.py:362
-#: PortMaster/pylibs/harbourmaster/util.py:376
+#: PortMaster/pylibs/harbourmaster/util.py:366
+#: PortMaster/pylibs/harbourmaster/util.py:380
 msgid "Downloading file."
 msgstr "下载文件中..."
 
-#: PortMaster/pylibs/harbourmaster/util.py:385
+#: PortMaster/pylibs/harbourmaster/util.py:397
 #, python-brace-format
 msgid "Download failed: {err}"
 msgstr "下载失败，{err}"
 
-#: PortMaster/pylibs/harbourmaster/util.py:397
+#: PortMaster/pylibs/harbourmaster/util.py:409
 msgid "Download validation failed."
 msgstr "下载验证失败。"
 
-#: PortMaster/pylibs/harbourmaster/util.py:403
+#: PortMaster/pylibs/harbourmaster/util.py:415
 msgid "Passed file validation."
 msgstr "已通过文件验证。"
 
-#: PortMaster/pylibs/harbourmaster/util.py:408
+#: PortMaster/pylibs/harbourmaster/util.py:420
 msgid "Unable to validate download."
 msgstr "无法验证下载。"
 
