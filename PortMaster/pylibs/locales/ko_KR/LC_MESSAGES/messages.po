@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-27 16:19+0800\n"
-"PO-Revision-Date: 2024-10-27 08:19\n"
+"POT-Creation-Date: 2024-11-23 17:29+0800\n"
+"PO-Revision-Date: 2024-11-23 09:30\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -69,117 +69,117 @@ msgstr "포르투갈어(포르투갈)"
 msgid "Portuguese (Brazil)"
 msgstr "포르투갈어 (브라질)"
 
-#: PortMaster/pugwash:143
+#: PortMaster/pugwash:144
 msgid "Russian"
 msgstr ""
 
-#: PortMaster/pugwash:144
+#: PortMaster/pugwash:145
 msgid "Swedish"
 msgstr ""
 
-#: PortMaster/pugwash:145
+#: PortMaster/pugwash:146
 msgid "Ukrainian"
 msgstr ""
 
-#: PortMaster/pugwash:146
+#: PortMaster/pugwash:147
 msgid "Chinese Simplified"
 msgstr "중국어 간체"
 
-#: PortMaster/pugwash:663
+#: PortMaster/pugwash:664
 msgid "Unknown IP"
 msgstr "알 수 없는 IP"
 
-#: PortMaster/pugwash:791 PortMaster/pugwash:932
+#: PortMaster/pugwash:793 PortMaster/pugwash:934
 msgid "N/A"
 msgstr "N/A"
 
-#: PortMaster/pugwash:900
+#: PortMaster/pugwash:902
 msgid "** NO PORT **"
 msgstr "** 포트 없음 **"
 
-#: PortMaster/pugwash:919 PortMaster/pylibs/pugscene.py:2009
+#: PortMaster/pugwash:921 PortMaster/pylibs/pugscene.py:2009
 msgid "Ready to Run"
 msgstr "실행 준비 완료"
 
-#: PortMaster/pugwash:919
+#: PortMaster/pugwash:921
 msgid "Requires Files"
 msgstr "필요한 파일"
 
-#: PortMaster/pugwash:926 PortMaster/pugwash:953
+#: PortMaster/pugwash:928 PortMaster/pugwash:955
 #: PortMaster/pylibs/pugscene.py:1120
 msgid "Installed"
 msgstr "설치 완료"
 
-#: PortMaster/pugwash:928
+#: PortMaster/pugwash:930
 msgid "Missing"
 msgstr "누락"
 
-#: PortMaster/pugwash:954 PortMaster/pylibs/harbourmaster/harbour.py:1642
+#: PortMaster/pugwash:956 PortMaster/pylibs/harbourmaster/harbour.py:1659
 #: PortMaster/pylibs/pugscene.py:2013
 msgid "Update Available"
 msgstr "업데이트 이용 가능"
 
-#: PortMaster/pugwash:955 PortMaster/pylibs/harbourmaster/harbour.py:1641
+#: PortMaster/pugwash:957 PortMaster/pylibs/harbourmaster/harbour.py:1658
 #: PortMaster/pylibs/pugscene.py:1120 PortMaster/pylibs/pugscene.py:2012
 msgid "Not Installed"
 msgstr "설치되지 않음"
 
-#: PortMaster/pugwash:1131 PortMaster/pugwash:1505
+#: PortMaster/pugwash:1133 PortMaster/pugwash:1507
 #: PortMaster/pylibs/pugscene.py:2347 PortMaster/pylibs/pugscene.py:2395
 #: PortMaster/pylibs/pugscene.py:2397
 msgid "Okay"
 msgstr "확인"
 
-#: PortMaster/pugwash:1134 PortMaster/pugwash:1506
+#: PortMaster/pugwash:1136 PortMaster/pugwash:1508
 #: PortMaster/pylibs/pugscene.py:1448 PortMaster/pylibs/pugscene.py:1456
 #: PortMaster/pylibs/pugscene.py:2316 PortMaster/pylibs/pugscene.py:2350
 #: PortMaster/pylibs/pugscene.py:2395
 msgid "Cancel"
 msgstr "취소"
 
-#: PortMaster/pugwash:1357
+#: PortMaster/pugwash:1359
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr "마지막의 gameinfo.xml 파일과 cover 이미지를 가져오는 중입니다."
 
-#: PortMaster/pugwash:1378
+#: PortMaster/pugwash:1380
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr "{source_name}의 gameinfo.xml을 다운로드 중입니다."
 
-#: PortMaster/pugwash:1411
+#: PortMaster/pugwash:1413
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "{port_name} 설치 중"
 
-#: PortMaster/pugwash:1420
+#: PortMaster/pugwash:1422
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "{port_name}  제거 중"
 
-#: PortMaster/pugwash:1431
+#: PortMaster/pugwash:1433
 msgid "Updating all port sources:"
 msgstr "모든 포트 소스 업데이트 중:"
 
-#: PortMaster/pugwash:1441
+#: PortMaster/pugwash:1443
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "{runtime_name} 확인 중"
 
-#: PortMaster/pugwash:1869
+#: PortMaster/pugwash:1871
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "{old_release_channel} 에서 {new_release_channel} 로 변경됩니다.\n\n"
 "다운그레이드 하겠습니까?"
 
-#: PortMaster/pugwash:1875
+#: PortMaster/pugwash:1877
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "포트마스터 새 버전({portmaster_version})이 있습니다.\n\n"
 "업그레이드 하겠습니까?"
 
-#: PortMaster/pugwash:1880
+#: PortMaster/pugwash:1882
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
@@ -215,154 +215,154 @@ msgstr "소스 불러오는 중"
 msgid "Loading Ports."
 msgstr "포트 불러오는 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1348
+#: PortMaster/pylibs/harbourmaster/harbour.py:1354
 #, python-brace-format
 msgid "Installing Theme {download_name}."
 msgstr "{download_name} 테마를 설치 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1355
-#: PortMaster/pylibs/harbourmaster/harbour.py:1397
-#: PortMaster/pylibs/harbourmaster/harbour.py:1469
+#: PortMaster/pylibs/harbourmaster/harbour.py:1361
+#: PortMaster/pylibs/harbourmaster/harbour.py:1406
+#: PortMaster/pylibs/harbourmaster/harbour.py:1486
 msgid "Installing"
 msgstr "설치 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1365
+#: PortMaster/pylibs/harbourmaster/harbour.py:1374
 msgid "Theme {download_name!r} installed successfully."
 msgstr "{download_name!r} 테마 설치에 성공했습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1388
-#: PortMaster/pylibs/harbourmaster/harbour.py:1460
+#: PortMaster/pylibs/harbourmaster/harbour.py:1397
+#: PortMaster/pylibs/harbourmaster/harbour.py:1470
 #, python-brace-format
 msgid "Installing {download_name}."
 msgstr "{download_name} 설치 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1417
-#: PortMaster/pylibs/harbourmaster/harbour.py:1600
+#: PortMaster/pylibs/harbourmaster/harbour.py:1426
+#: PortMaster/pylibs/harbourmaster/harbour.py:1617
 msgid "Port {download_name!r} installed successfully."
 msgstr "{download_name!r} 포트가 정상적으로 설치되었습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1563
+#: PortMaster/pylibs/harbourmaster/harbour.py:1580
 msgid "Installation failed, removing files..."
 msgstr "설치에 실패했습니다. 파일 삭제 중..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1575
+#: PortMaster/pylibs/harbourmaster/harbour.py:1592
 #, python-brace-format
 msgid "Port {download_name} installed failed."
 msgstr "{download_name} 포트 설치에 실패했습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1590
+#: PortMaster/pylibs/harbourmaster/harbour.py:1607
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
 msgstr "{download_name!r} 포트와 {runtime_name!r} 가 정상적으로 설치되었습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1595
+#: PortMaster/pylibs/harbourmaster/harbour.py:1612
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
 msgstr "{download_name!r} 포트는 정상적으로 설치되었으나, {runtime_name!r} 설치에 실패했습니다!\n\n"
 "재설치 후에 다시 시도하든지, 위키의 도움말을 확인해 주세요."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1610
+#: PortMaster/pylibs/harbourmaster/harbour.py:1627
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
 msgstr "{runtime} 포트에 비정상적인 런타임이 포함되어 있습니다. 게임이 올바르게 동작하지 않을 수 있습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1624
+#: PortMaster/pylibs/harbourmaster/harbour.py:1641
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
 msgstr "{runtime} 포트에 알 수 없는 런타임이 포함되어 있습니다. 게임이 올바르게 동작하지 않을 수 있습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1643
+#: PortMaster/pylibs/harbourmaster/harbour.py:1660
 msgid "Verified"
 msgstr "검증 완료"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1644
+#: PortMaster/pylibs/harbourmaster/harbour.py:1661
 msgid "Unverified"
 msgstr "미검증"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1645
+#: PortMaster/pylibs/harbourmaster/harbour.py:1662
 msgid "Broken"
 msgstr "파손"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1652
+#: PortMaster/pylibs/harbourmaster/harbour.py:1669
 msgid "Unable do download a runtime when in offline mode."
 msgstr "오프라인 모드에서는 런타임을 다운로드할 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1658
+#: PortMaster/pylibs/harbourmaster/harbour.py:1675
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
 msgstr "런타임 {runtime} 를 검증 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1667
-#: PortMaster/pylibs/harbourmaster/harbour.py:1670
+#: PortMaster/pylibs/harbourmaster/harbour.py:1684
+#: PortMaster/pylibs/harbourmaster/harbour.py:1687
 msgid "Verifying"
 msgstr "검증 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1695
+#: PortMaster/pylibs/harbourmaster/harbour.py:1712
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
 msgstr "{runtime} 다운로드를 찾을 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1701
+#: PortMaster/pylibs/harbourmaster/harbour.py:1718
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
 msgstr "{device_arch} 에 {runtime} 을 다운로드 할 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1722
+#: PortMaster/pylibs/harbourmaster/harbour.py:1739
 #, python-brace-format
 msgid "Verified {runtime} successfully."
 msgstr "{runtime} 검증 성공"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1725
+#: PortMaster/pylibs/harbourmaster/harbour.py:1742
 #, python-brace-format
 msgid "Verified {runtime}."
 msgstr "{runtime} 검증 완료"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1731
+#: PortMaster/pylibs/harbourmaster/harbour.py:1748
 #, python-brace-format
 msgid "Updating {runtime}."
 msgstr "{runtime} 업데이트 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1735
+#: PortMaster/pylibs/harbourmaster/harbour.py:1752
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
 msgstr "런타임 {runtime} 가 파손되어 있어 다시 설치합니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1739
+#: PortMaster/pylibs/harbourmaster/harbour.py:1756
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
 msgstr "런타임 {runtime} 다운로드 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1768
-#: PortMaster/pylibs/harbourmaster/harbour.py:1778
+#: PortMaster/pylibs/harbourmaster/harbour.py:1785
+#: PortMaster/pylibs/harbourmaster/harbour.py:1795
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
 msgstr "{runtime} 를 다운로드할 수 없습니다. 게임이 올바르게 동작하지 않을 수 있습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1787
+#: PortMaster/pylibs/harbourmaster/harbour.py:1804
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
 msgstr "{runtime} 다운로드 성공"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1796
-#: PortMaster/pylibs/harbourmaster/harbour.py:1875
+#: PortMaster/pylibs/harbourmaster/harbour.py:1813
+#: PortMaster/pylibs/harbourmaster/harbour.py:1892
 msgid "Unable to download in offline mode."
 msgstr ""
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1893
+#: PortMaster/pylibs/harbourmaster/harbour.py:1910
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
 msgstr "{port_name} 소스를 찾을 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1907
+#: PortMaster/pylibs/harbourmaster/harbour.py:1924
 #, python-brace-format
 msgid "Unknown port {port_name}"
 msgstr "알 수 없는 포트 {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1940
+#: PortMaster/pylibs/harbourmaster/harbour.py:1957
 #, python-brace-format
 msgid "Removing {port_name}"
 msgstr "{port_name} 제거 중"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1981
+#: PortMaster/pylibs/harbourmaster/harbour.py:1998
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
 msgstr "{port_name} 설치 성공"
@@ -436,43 +436,43 @@ msgstr "{source_name}: 최신 포트 가져오는 중"
 msgid "Fetching info."
 msgstr "정보 가져오는 중"
 
-#: PortMaster/pylibs/harbourmaster/source.py:1068
+#: PortMaster/pylibs/harbourmaster/source.py:1073
 msgid "Unable to download verification file."
 msgstr "검증 파일을 다운로드할 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/source.py:1079
+#: PortMaster/pylibs/harbourmaster/source.py:1084
 msgid "Unable to download non zip files."
 msgstr "zip이 아닌 파일을 다운로드할 수 없습니다."
 
-#: PortMaster/pylibs/harbourmaster/util.py:334
+#: PortMaster/pylibs/harbourmaster/util.py:338
 #, python-brace-format
 msgid "Unable to download file. [{status_code}]"
 msgstr "파일을 다운로드할 수 없습니다. [{status_code}]"
 
-#: PortMaster/pylibs/harbourmaster/util.py:350
+#: PortMaster/pylibs/harbourmaster/util.py:354
 #, python-brace-format
 msgid "Downloading {file_url} - ({total_length_mb})"
 msgstr "{file_url} - ({total_length_mb}) 다운로드 중"
 
-#: PortMaster/pylibs/harbourmaster/util.py:362
-#: PortMaster/pylibs/harbourmaster/util.py:376
+#: PortMaster/pylibs/harbourmaster/util.py:366
+#: PortMaster/pylibs/harbourmaster/util.py:380
 msgid "Downloading file."
 msgstr "파일 다운로드 중"
 
-#: PortMaster/pylibs/harbourmaster/util.py:385
+#: PortMaster/pylibs/harbourmaster/util.py:397
 #, python-brace-format
 msgid "Download failed: {err}"
 msgstr "다운로드 실패: {err}"
 
-#: PortMaster/pylibs/harbourmaster/util.py:397
+#: PortMaster/pylibs/harbourmaster/util.py:409
 msgid "Download validation failed."
 msgstr "다운로드 검증에 실패했습니다."
 
-#: PortMaster/pylibs/harbourmaster/util.py:403
+#: PortMaster/pylibs/harbourmaster/util.py:415
 msgid "Passed file validation."
 msgstr "파일 검증을 완료했습니다."
 
-#: PortMaster/pylibs/harbourmaster/util.py:408
+#: PortMaster/pylibs/harbourmaster/util.py:420
 msgid "Unable to validate download."
 msgstr "다운로드를 검증할 수 없습니다."
 

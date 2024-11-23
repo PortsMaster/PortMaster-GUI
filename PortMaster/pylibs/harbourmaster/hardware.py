@@ -423,6 +423,13 @@ def new_device_info():
         info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
         info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
+    # REG Linux
+    reglinux_version = safe_cat('/usr/share/reglinux/system.version')
+    if reglinux_version != '':
+        info.setdefault('name', 'REGLinux')
+        info['version'] = subprocess.getoutput('system-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/system.board').strip()
+
     if 'device' not in info:
         info['device'] = old_device_info()
 
