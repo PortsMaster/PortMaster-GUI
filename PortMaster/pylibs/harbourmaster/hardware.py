@@ -187,13 +187,14 @@ CPU_INFO = {
 
 
 GLIBC_INFO = {
-    "arkos-*":   "3.30",
-    "trimui-*":  "3.33",
-    "knulli-*":  "3.38",
-    "muos-*":    "3.38",
-    "rocknix-*": "3.40",
+    "arkos-*":     "2.30",
+    "trimui-*":    "2.33",
+    "knulli-*":    "2.38",
+    "muos-*":      "2.38",
+    "amberelec-*": "2.38",
+    "rocknix-*":   "2.40",
 
-    "default":   "3.30",
+    "default":     "2.30",
     }
 
 
