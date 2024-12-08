@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# SPDX-License-Identifier: MIT
+#
 
 # So we can check the version
 if [ ! -z "$PM_FUNCS_VERSION" ]; then

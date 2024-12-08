@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+#
+# SPDX-License-Identifier: MIT
+#
 
 ## -- BEGIN PORTMASTER INFO --
-PORTMASTER_VERSION = '2024.10.02-0069'
-PORTMASTER_RELEASE_CHANNEL = 'beta'
+PORTMASTER_VERSION = '2023-01-07-1007'
+PORTMASTER_RELEASE_CHANNEL = 'developer'
 ## -- END PORTMASTER INFO --
 
-PORTMASTER_MIN_VERSION = '2024-04-14-0000'
+PORTMASTER_MIN_VERSION = '2024-12-01-0000'
 PORTMASTER_RELEASE_URL = 'https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/'
 PORTMASTER_RELEASE_VALUES = ('stable', 'beta', 'alpha')
 
@@ -24,6 +27,7 @@ import math
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tarfile
 import textwrap
@@ -247,6 +251,17 @@ gettext.textdomain('messages')
 
 ################################################################################
 ## Code starts here.
+def is_process_running(process_name):
+    """
+    Check if a process with the given name is running using pgrep.
+    """
+
+    try:
+        output = subprocess.check_output(['pgrep', '-f', process_name], stderr=subprocess.DEVNULL)
+        return bool(output.strip())  # If output exists, the process is running
+    except subprocess.CalledProcessError:
+        return False  # pgrep returns non-zero exit code if no process matches
+
 
 __IP_ADDRESS=None
 def get_ip_address(force_update=False):
@@ -599,6 +614,24 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             window_flags = None
         else:
             window_flags = sdl2.SDL_WINDOW_FULLSCREEN
+
+            touch_file = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "utils" / "pmsplash" / "stopsplash"
+
+            if touch_file.parent.is_dir():
+                touch_file.touch()
+
+            for i in range(10):
+                if not is_process_running(f"love.{capabilities['primary_arch']}"):
+                    break
+
+                sdl2.SDL_Delay(500)
+
+            if is_process_running(f"love.{capabilities['primary_arch']}"):
+                subprocess.check_output(["pkill", "-f", f"love.{capabilities['primary_arch']}"])
+
+                if touch_file.is_file():
+                    touch_file.unlink()
+
 
         self.window = sdl2.ext.Window("PortMaster", size=capabilities['resolution'], flags=window_flags)
         self.window.show()

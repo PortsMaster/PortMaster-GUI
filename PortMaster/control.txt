@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 # This file can and should be sourced by ports for various parameters to 
 # minimize script customizations and allow for easier future updates
 # like adding additional supported devices.

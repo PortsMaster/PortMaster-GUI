@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 # TODO: check this
 CUR_TTY=/dev/tty0
@@ -35,5 +38,5 @@ get_controls() {
 source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+GPTOKEYB2="$ESUDO env LD_PRELOAD=$PWD/libinterpose.aarch64.so $controlfolder/gptokeyb2 $ESUDOKILL"
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

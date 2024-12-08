@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 # Directory where .pot file is located
 POT_DIR="PortMaster/pylibs/locales"

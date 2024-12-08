@@ -1,3 +1,6 @@
+
+# SPDX-License-Identifier: MIT
+
 import functools
 import gettext
 import json

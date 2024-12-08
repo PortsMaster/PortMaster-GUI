@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+# Source love2d runtime
+source $controlfolder/runtimes/"love_11.5"/love.txt
+
+# Run the splash
+$LOVE_RUN "$controlfolder/utils/pmsplash" &
+
+# So it can be waited.
+export PMSPLASH_PID=$!
+
+# SO IT CAN BE STOPPED, MUAHAHAHAHAHA
+export PMSPLASH_STOP="$controlfolder/utils/pmsplash/stopsplash"
