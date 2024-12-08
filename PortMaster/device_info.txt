@@ -93,6 +93,11 @@ elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
     CFW_VERSION="$(cat /etc/version)"
+elif lsusb | grep -q "1eaf:0024"; then
+    # uConsole
+    CFW_NAME="Debian GNU/Linux"
+    CFW_VERSION=$(grep -a '^VERSION_ID=' /etc/os-release | cut -d'"' -f 2)
+    DEVICE_NAME="uConsole"	
 else
     # AmberELEC / EmuELEC
     CFW_NAME=$(grep -a '^NAME=".*"' /etc/os-release | cut -d'"' -f 2)
