@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 ## New Device Info
 #
@@ -7,6 +10,7 @@
 # - DISPLAY_ORIENTATION
 # - CFW_NAME
 # - CFW_VERSION
+# - CFW_GLIBC
 # - DEVICE_NAME
 # - DEVICE_CPU
 # - DEVICE_RAM
@@ -24,7 +28,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.12"
+DEVICE_INFO_VERSION="0.1.13"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -351,6 +355,21 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
 
 esac
 
+# GLIBC
+
+CFW_GLIBC="230"
+
+for path in '/lib /lib64 /lib/aarch64-linux-gnu /lib32 /lib/arm-linux-gnueabihf /usr/lib /usr/lib64 /usr/lib32'; do
+    libc="$path/libc.so.6"
+    if [ -x "$libc" ]; then
+        CFW_GLIBC=$("$libc" 2>&1 | head -n 1 | awk '{print $NF}' | tr -d '.')
+        break
+    fi
+done
+
+unset libc
+unset path
+
 # get current resolution
 
 RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
@@ -395,6 +414,7 @@ DEVICE_INFO_VERSION=${DEVICE_INFO_VERSION}
 PM_VERSION=${PM_VERSION:-Unknown}
 CFW_NAME=${CFW_NAME}
 CFW_VERSION=${CFW_VERSION}
+CFW_GLIBC=${CFW_GLIBC}
 DEVICE_NAME=${DEVICE_NAME}
 DEVICE_CPU=${DEVICE_CPU}
 DEVICE_ARCH=${DEVICE_ARCH}

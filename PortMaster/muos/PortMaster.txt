@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 controlfolder="/mnt/mmc/MUOS/PortMaster"
 
@@ -16,12 +19,17 @@ ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k"
 export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
 
+source "$controlfolder/device_info.txt"
+[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
 CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
 exec > >(tee "$controlfolder/log.txt") 2>&1
+
+source "$controlfolder/utils/pmsplash.txt"
 
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
@@ -107,12 +115,12 @@ fi
 
 
 export TERM=linux
-$ESUDO chmod 666 $CUR_TTY
-printf "\033c" > $CUR_TTY
+# $ESUDO chmod 666 $CUR_TTY
+# printf "\033c" > $CUR_TTY
 
-# Do it twice, it's just as nice!
-cat /dev/zero > /dev/fb0 2>/dev/null
-cat /dev/zero > /dev/fb0 2>/dev/null
+# # Do it twice, it's just as nice!
+# cat /dev/zero > /dev/fb0 2>/dev/null
+# cat /dev/zero > /dev/fb0 2>/dev/null
 
 echo "Starting PortMaster." > $CUR_TTY
 

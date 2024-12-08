@@ -3,6 +3,9 @@
 # 
 # Provided under the MIT license for the PortMaster packaging system
 # See LICENSE for more details. This is free software.
+#
+# SPDX-License-Identifier: MIT
+#
 
 # Docs:
 #   This script provides the $TASKSET variable when taskset is present, and all

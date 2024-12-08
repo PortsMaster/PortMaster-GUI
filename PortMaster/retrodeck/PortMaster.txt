@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
@@ -11,6 +14,7 @@ if [ -d "/app/bin/retrodeck.sh" ]; then
 fi
 
 source $controlfolder/control.txt
+[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
 get_controls
 
@@ -22,6 +26,9 @@ cd "$controlfolder"
 echo "Starting PortMaster."
 
 chmod -R +x .
+
+exec > >(tee "$controlfolder/log.txt") 2>&1
+source "$controlfolder/utils/pmsplash.txt"
 
 ## Autoinstallation Code
 # This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
@@ -90,7 +97,7 @@ fi
 
 rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
-  ./pugwash $PORTMASTER_CMDS 2>&1 | tee -a ./log.txt
+  ./pugwash $PORTMASTER_CMDS
 
   if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
     break;

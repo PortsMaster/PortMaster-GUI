@@ -1,4 +1,7 @@
 
+# SPDX-License-Identifier: MIT
+
+
 # System imports
 import pathlib
 import platform

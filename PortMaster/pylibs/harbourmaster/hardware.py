@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 # System imports
 import copy
 import datetime
@@ -333,7 +335,7 @@ def nice_device_to_device(raw_device):
         )
 
     for pattern, device in pattern_to_device:
-        logger.debug(f'{raw_device} -> {pattern}')
+        # logger.debug(f'{raw_device} -> {pattern}')
         if fnmatch.fnmatch(raw_device, pattern):
             raw_device = device
             break

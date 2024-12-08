@@ -17,6 +17,8 @@ fi
 
 source $controlfolder/control.txt
 
+[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+
 get_controls
 
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
@@ -29,6 +31,8 @@ exec > >(tee "$controlfolder/log.txt") 2>&1
 export TERM=linux
 $ESUDO chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
+
+source "$controlfolder/utils/pmsplash.txt"
 
 echo "Starting PortMaster." > $CUR_TTY
 

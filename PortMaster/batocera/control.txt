@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 # TODO: check this
 CUR_TTY=/dev/tty0
@@ -57,10 +60,6 @@ if [ -e "/lib/ld-linux-x86-64.so.2" ]; then
 
   if [ -f "$controlfolder/xdelta3.x86_64" ]; then
     mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
-  fi
-
-  if [ -f "$controlfolder/xmlstarlet.x86_64" ]; then
-    mv "$controlfolder/xmlstarlet.x86_64" "$controlfolder/xmlstarlet"
   fi
 fi
 

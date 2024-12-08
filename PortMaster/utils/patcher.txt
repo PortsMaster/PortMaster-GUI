@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 # Source love2d runtime
 source $controlfolder/runtimes/"love_11.5"/love.txt

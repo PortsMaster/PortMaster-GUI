@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 import contextlib
 import datetime
 import functools

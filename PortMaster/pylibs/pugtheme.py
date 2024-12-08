@@ -1,3 +1,6 @@
+
+# SPDX-License-Identifier: MIT
+
 import copy
 import functools
 import gettext
