@@ -34,6 +34,7 @@ class PlatformBase():
     MOVE_PM_BASH = False
     MOVE_PM_BASH_DIR = None
     ES_NAME = None
+    ROMS_REFRESH_TEXT = ""
 
     XML_ELEMENT_MAP = {
         'path': 'path',
@@ -461,8 +462,9 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
-    ES_NAME = 'es-de'
+    ES_NAME = 'show-refresh'
     RD_CONFIG = None
+    ROMS_REFRESH_TEXT = _("\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory")
 
     XML_ELEMENT_MAP = {
         'path': 'path',
