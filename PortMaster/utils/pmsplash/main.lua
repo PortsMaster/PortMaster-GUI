@@ -173,9 +173,10 @@ end
 
 -- Initialize text with zoom-in effect but keep it visible until signal
 local function initializeText()
+    local fontSize = 32 * scaleFactor  -- Scale font size dynamically based on scaleFactor
     text = {
         content = "Your Ultimate Handheld Linux Port Manager",
-        font = love.graphics.newFont("assets/Aero Matics Regular.ttf", 30),  -- Load the custom font
+        font = love.graphics.newFont("assets/Aero Matics Regular.ttf", fontSize),  -- Use scaled font size
         color = {0, 0, 0},  -- Default text color
         x = 0.5,  -- Horizontal position as percentage of screen width (centered)
         y = 0.9,  -- Vertical position as percentage of screen height (below the logo)
@@ -184,14 +185,15 @@ local function initializeText()
 
     -- Zoom in the text over 1.2 seconds
     Timer.after(1.8, function()
-        Timer.tween(0.5, text, {scale = 1 * scaleFactor}, 'out-back')
+        Timer.tween(0.5, text, {scale = 1}, 'out-back')  -- Only scale position, font size is pre-scaled
     end)
 end
+
 
 function love.load()
     local desktopWidth, desktopHeight = love.window.getDesktopDimensions()
     love.window.setMode(desktopWidth, desktopHeight, {fullscreen = true, fullscreentype = "desktop"})
-
+    love.graphics.setDefaultFilter("nearest", "nearest")
     initializeScreen()
     initializeSun()
     initializeBoat()
