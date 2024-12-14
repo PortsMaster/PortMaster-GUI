@@ -102,6 +102,7 @@ echo "Starting PortMaster." > $CUR_TTY
 chmod -R +x .
 
 rm -f "$controlfolder/.pugwash-reboot"
+printf "\033c" > $CUR_TTY
 
 while true; do
   ./pugwash --debug
