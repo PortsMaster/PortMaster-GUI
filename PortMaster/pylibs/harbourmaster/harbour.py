@@ -1416,7 +1416,7 @@ class HarbourMaster():
                     if move_bash and dest_file.name.lower().endswith('.sh'):
                         move_bash_dir = self.platform.MOVE_PM_BASH_DIR
                         if move_bash_dir is None or not move_bash_dir.is_dir():
-                            move_bash_dir = self.ports_dir
+                            move_bash_dir = self.tools_dir
 
                         self.callback.message(f"- moving {dest_file} to {move_bash_dir / dest_file.name}")
                         shutil.move(dest_file, move_bash_dir / dest_file.name)

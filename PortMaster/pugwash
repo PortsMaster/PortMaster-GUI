@@ -624,7 +624,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 if not is_process_running(f"love.{capabilities['primary_arch']}"):
                     break
 
-                sdl2.SDL_Delay(500)
+                sdl2.SDL_Delay(100)
 
             if is_process_running(f"love.{capabilities['primary_arch']}"):
                 subprocess.check_output(["pkill", "-f", f"love.{capabilities['primary_arch']}"])
@@ -640,6 +640,10 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         renderer = sdl2.ext.Renderer(self.window, flags=sdl2.SDL_RENDERER_ACCELERATED)
 
         sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, b"2")
+
+        # Quickly present something, helps on ArkOS.
+        renderer.clear()
+        renderer.present()
 
         self.text_data = {}
         self.changed_keys = set()
