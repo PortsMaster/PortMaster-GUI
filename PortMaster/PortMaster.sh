@@ -26,7 +26,7 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
-exec > >(tee "$controlfolder/log.txt") 2>&1
+> "$controlfolder/log.txt" && exec > >(tee "$controlfolder/log.txt") 2>&1
 
 export TERM=linux
 $ESUDO chmod 666 $CUR_TTY
