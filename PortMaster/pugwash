@@ -624,7 +624,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 if not is_process_running(f"love.{capabilities['primary_arch']}"):
                     break
 
-                sdl2.SDL_Delay(100)
+                sdl2.SDL_Delay(500)
 
             if is_process_running(f"love.{capabilities['primary_arch']}"):
                 subprocess.check_output(["pkill", "-f", f"love.{capabilities['primary_arch']}"])
