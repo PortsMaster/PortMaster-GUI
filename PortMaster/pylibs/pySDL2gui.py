@@ -1206,6 +1206,7 @@ class ImageManager():
     def _clean(self):
         'Remove old images when max_images is reached'
         for filename in self.cache[self.max_images:]:
+            logger.debug(f"Unloaded: {filename}")
             texture = self.textures.pop(filename)
             image = self.images.pop(filename)
             # image.destroy()

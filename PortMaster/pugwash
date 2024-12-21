@@ -793,6 +793,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             if PORTMASTER_DEBUG:
                 print(f"UPS: {self.draw_counter} / {self.update_counter}")
 
+            ## Unload extra images.
+            self.images._clean()
+
             self.update_counter = 0
             self.draw_counter = 0
             self.updated = True
