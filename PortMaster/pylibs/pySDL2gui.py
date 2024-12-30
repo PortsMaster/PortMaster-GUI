@@ -997,7 +997,9 @@ class ImageManager():
     '''
     The ImageManager class loads images into Textures and caches them for later use
     '''
-    MAX_IMAGES = 100 # maximum number of images to cache
+
+    MAX_IMAGES = 30 # maximum number of images to cache
+
     def __init__(self, gui, max_images=None):
         '''
         Create a new Image manager that can load images into textures
