@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 20:58+0800\n"
-"PO-Revision-Date: 2024-12-09 12:58\n"
+"POT-Creation-Date: 2024-12-31 11:05+0800\n"
+"PO-Revision-Date: 2024-12-31 03:06\n"
 "Last-Translator: \n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -85,108 +85,108 @@ msgstr "Ukrainska"
 msgid "Chinese Simplified"
 msgstr "Kinesiska, förenklad"
 
-#: PortMaster/pugwash:697
+#: PortMaster/pugwash:701
 msgid "Unknown IP"
 msgstr "Okänt IP"
 
-#: PortMaster/pugwash:826 PortMaster/pugwash:967
+#: PortMaster/pugwash:833 PortMaster/pugwash:974
 msgid "N/A"
 msgstr "N/A"
 
-#: PortMaster/pugwash:935
+#: PortMaster/pugwash:942
 msgid "** NO PORT **"
 msgstr "** INGEN PORT **"
 
-#: PortMaster/pugwash:954 PortMaster/pylibs/pugscene.py:2012
+#: PortMaster/pugwash:961 PortMaster/pylibs/pugscene.py:2012
 msgid "Ready to Run"
 msgstr "Redo att köras"
 
-#: PortMaster/pugwash:954
+#: PortMaster/pugwash:961
 msgid "Requires Files"
 msgstr "Kräver filer"
 
-#: PortMaster/pugwash:961 PortMaster/pugwash:988
+#: PortMaster/pugwash:968 PortMaster/pugwash:995
 #: PortMaster/pylibs/pugscene.py:1123
 msgid "Installed"
 msgstr "Installerad"
 
-#: PortMaster/pugwash:963
+#: PortMaster/pugwash:970
 msgid "Missing"
 msgstr "Saknas"
 
-#: PortMaster/pugwash:989 PortMaster/pylibs/harbourmaster/harbour.py:1661
+#: PortMaster/pugwash:996 PortMaster/pylibs/harbourmaster/harbour.py:1661
 #: PortMaster/pylibs/pugscene.py:2016
 msgid "Update Available"
 msgstr "Uppdatering tillgänglig"
 
-#: PortMaster/pugwash:990 PortMaster/pylibs/harbourmaster/harbour.py:1660
+#: PortMaster/pugwash:997 PortMaster/pylibs/harbourmaster/harbour.py:1660
 #: PortMaster/pylibs/pugscene.py:1123 PortMaster/pylibs/pugscene.py:2015
 msgid "Not Installed"
 msgstr "Ej installerad"
 
-#: PortMaster/pugwash:1166 PortMaster/pugwash:1540
+#: PortMaster/pugwash:1173 PortMaster/pugwash:1547
 #: PortMaster/pylibs/pugscene.py:2350 PortMaster/pylibs/pugscene.py:2398
 #: PortMaster/pylibs/pugscene.py:2400
 msgid "Okay"
 msgstr "Okej"
 
-#: PortMaster/pugwash:1169 PortMaster/pugwash:1541
+#: PortMaster/pugwash:1176 PortMaster/pugwash:1548
 #: PortMaster/pylibs/pugscene.py:1451 PortMaster/pylibs/pugscene.py:1459
 #: PortMaster/pylibs/pugscene.py:2319 PortMaster/pylibs/pugscene.py:2353
 #: PortMaster/pylibs/pugscene.py:2398
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: PortMaster/pugwash:1392
+#: PortMaster/pugwash:1399
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr "Hämtar senaste gameinfo.xml-filer och omslagsbilder."
 
-#: PortMaster/pugwash:1413
+#: PortMaster/pugwash:1420
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr "Hämtar gameinfo.xml för {source_name}"
 
-#: PortMaster/pugwash:1446
+#: PortMaster/pugwash:1453
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "Installerar {port_name}"
 
-#: PortMaster/pugwash:1455
+#: PortMaster/pugwash:1462
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "Avinstallerar {port_name}"
 
-#: PortMaster/pugwash:1466
+#: PortMaster/pugwash:1473
 msgid "Updating all port sources:"
 msgstr "Uppdaterar alla portkällor:"
 
-#: PortMaster/pugwash:1476
+#: PortMaster/pugwash:1483
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "Kontrollerar {runtime_name}"
 
-#: PortMaster/pugwash:1904
+#: PortMaster/pugwash:1911
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "Du kommer byta från {old_release_channel} till {new_release_channel}.\n\n"
 "Vill du nedgradera?"
 
-#: PortMaster/pugwash:1910
+#: PortMaster/pugwash:1917
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "Det finns en ny version av PortMaster ({portmaster_version})\n\n"
 "Vill du uppgradera?"
 
-#: PortMaster/pugwash:1915
+#: PortMaster/pugwash:1922
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
 msgstr "Vill du ominstallera PortMaster?\n\n"
 "Detta kommer ominstallera {portmaster_version} från {release_channel}-kanalen."
 
-#: PortMaster/pugwash:2054
+#: PortMaster/pugwash:2061
 msgid "Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones."
 msgstr ""
 
@@ -371,7 +371,7 @@ msgstr "Raderar {port_name}"
 msgid "Successfully uninstalled {port_name}"
 msgstr "Avinstallerat {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/platform.py:467
+#: PortMaster/pylibs/harbourmaster/platform.py:490
 msgid "\n\n"
 "In order to do so:\n"
 "MENU -> UTILITIES -> Rescan Rom Directory"
