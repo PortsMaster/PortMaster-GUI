@@ -5,6 +5,9 @@
 
 ## New Device Info
 #
+# - DEVICE_INFO_VERSION
+# - PM_VERSION
+# - DISPLAY_ORIENTATION
 # - DISPLAY_WIDTH
 # - DISPLAY_HEIGHT
 # - DISPLAY_ORIENTATION
@@ -19,6 +22,8 @@
 # - DEVICE_HAS_AARCH64
 # - DEVICE_HAS_X86
 # - DEVICE_HAS_X86_64
+# - ASPECT_X
+# - ASPECT_Y
 # - ANALOG_STICKS
 #
 # usage `source <path_to>/device_info.txt`
@@ -350,7 +355,7 @@ esac
 
 CFW_GLIBC="230"
 
-for path in '/lib /lib64 /lib/aarch64-linux-gnu /lib32 /lib/arm-linux-gnueabihf /usr/lib /usr/lib64 /usr/lib32'; do
+for path in /lib /lib64 /lib/aarch64-linux-gnu /lib32 /lib/arm-linux-gnueabihf /usr/lib /usr/lib64 /usr/lib32; do
     libc="$path/libc.so.6"
     if [ -x "$libc" ]; then
         CFW_GLIBC=$("$libc" 2>&1 | head -n 1 | awk '{print $NF}' | tr -d '.')
@@ -427,9 +432,9 @@ DEVICE_HAS_X86="${DEVICE_HAS_X86}"
 DEVICE_HAS_X86_64="${DEVICE_HAS_X86_64}"
 DISPLAY_WIDTH=${DISPLAY_WIDTH}
 DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
+DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
 ASPECT_X=${ASPECT_X}
 ASPECT_Y=${ASPECT_Y}
-DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
 ANALOG_STICKS=${ANALOG_STICKS}
 \`\`\`
 __INFO_DUMP__
