@@ -8,7 +8,7 @@ CUR_TTY=/dev/tty0
 
 controlfolder="/mnt/mmc/MUOS/PortMaster"
 
-directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print "/" $2 "/" $3}')
+directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print $2 "/" $3}')
 
 export PATH="/opt/python/bin:$controlfolder/muos:$controlfolder/muos:$PATH"
 
