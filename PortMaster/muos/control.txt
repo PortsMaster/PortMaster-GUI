@@ -63,7 +63,7 @@ source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt
 
 # HACKY MC HACK FACE, 2.0
-if [ "$DEVICE_HAS_AARCH64" == "Y" ]; then
+if [ "$DEVICE_HAS_AARCH64" == "N" ]; then
   # CRUSH KILL DESTROY
   if [ -f "$controlfolder/gptokeyb.armhf" ]; then
     mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
