@@ -6,6 +6,12 @@
 # TODO: check this
 CUR_TTY=/dev/tty0
 
+. /opt/muos/script/var/func.sh
+
+# Grab Device Name
+DEVICE_NAME="$(GET_VAR "device" "board/name")"
+ANALOG_STICKS=$(GET_VAR "device" "board/stick")
+
 controlfolder="/mnt/mmc/MUOS/PortMaster"
 
 directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print $2 "/" $3}')
@@ -27,7 +33,16 @@ SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
 SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 [ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
-export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay-keys" "$SDL_GAMECONTROLLERCONFIG_FILE")
+case "$DEVICE_NAME" in
+  rg*)
+    SDL_CTRL_NAME="deeplay-keys"
+  ;;
+  teaspoon|brick)
+    SDL_CTRL_NAME="muOS-Keys"
+  ;;
+esac
+
+export SDL_GAMECONTROLLERCONFIG=$(grep "$SDL_CTRL_NAME" "$SDL_GAMECONTROLLERCONFIG_FILE")
 
 get_controls() {
   # Clear the framebuffer :D
@@ -35,20 +50,20 @@ get_controls() {
   cat /dev/zero > /dev/fb0 2>/dev/null
   cat /dev/zero > /dev/fb0 2>/dev/null
 
-  grep "${SDLDBUSERFILE}" -e "Deeplay-keys" > /tmp/gamecontrollerdb.txt
+  grep "${SDLDBUSERFILE}" -e "$SDL_CTRL_NAME" > /tmp/gamecontrollerdb.txt
 
-  ANALOGSTICKS=2
   LOWRES="N"
 
-  if [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-PLUS" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG35XX-SP" ]] || [[ "$(cat /opt/muos/config/device.txt)" == "RG28XX" ]]; then
-    ANALOGSTICKS=0
-  fi
+  ANALOGSTICKS=$ANALOG_STICKS
 
   sdl_controllerconfig="$(< "/tmp/gamecontrollerdb.txt")"
 }
 
-# HACKY MC HACK FACE
-if [ ! -d /lib32/ ]; then
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+# HACKY MC HACK FACE, 2.0
+if [ "$DEVICE_HAS_AARCH64" == "N" ]; then
   # CRUSH KILL DESTROY
   if [ -f "$controlfolder/gptokeyb.armhf" ]; then
     mv "$controlfolder/gptokeyb.armhf" "$controlfolder/gptokeyb"
@@ -66,9 +81,6 @@ else
     rm -f "$controlfolder/muos/mount"
   fi
 fi
-
-source $controlfolder/device_info.txt
-source $controlfolder/funcs.txt
 
 GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
 GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
