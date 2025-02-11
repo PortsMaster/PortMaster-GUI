@@ -961,10 +961,15 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         self.set_data("port_info.ready_to_run", port_info['attr']['rtr'] and _("Ready to Run") or _("Requires Files"))
         # self.set_data("port_info.image", port_image)
 
-        runtime = port_info['attr']['runtime']
-        if runtime is not None and runtime != "None":
-            self.set_data("port_info.runtime", harbourmaster.runtime_nicename(runtime))
-            if (self.hm.libs_dir / runtime).is_file():
+        runtimes = port_info['attr']['runtime']
+        if len(runtimes) > 0:
+            self.set_data("port_info.runtime", harbourmaster.runtime_nicename(runtimes))
+            installed_runtimes = 0
+            for runtime in runtimes:
+                if (self.hm.libs_dir / runtime).is_file():
+                    installed_runtimes += 1
+
+            if len(runtimes) == installed_runtimes:
                 self.set_data("port_info.runtime_status", _("Installed"))
             else:
                 self.set_data("port_info.runtime_status", _("Missing"))

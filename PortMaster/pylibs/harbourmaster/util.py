@@ -308,6 +308,11 @@ def hash_file(file_name):
 
 
 def runtime_nicename(runtime):
+    if isinstance(runtime, list):
+        return oc_join([
+            runtime_nicename(_runtime)
+            for _runtime in runtime])
+
     if runtime.startswith("frt"):
         return ("Godot/FRT {version}").format(version=runtime.split('_', 1)[1].rsplit('.', 1)[0])
 
@@ -317,8 +322,23 @@ def runtime_nicename(runtime):
     if runtime.startswith("mono"):
         return ("Mono {version}").format(version=runtime.split('-', 1)[1].rsplit('-', 1)[0])
 
+    if runtime.startswith("rlvm"):
+        return "RLVM"
+
+    if runtime.startswith("pyxel"):
+        return ("Pyxel {version}").format(version=runtime.split('_')[1])
+
+    if runtime.startswith("weston"):
+        return ("Weston {version}").format(version=runtime.rsplit('_', 1)[-11])
+
+    if runtime.startswith("mesa"):
+        return ("Mesa {version}").format(version=runtime.rsplit('_', 1)[-11])
+
     if "jdk" in runtime and runtime.startswith("zulu11"):
         return ("JDK {version}").format(version=runtime.split('-')[2][3:])
+
+    if "jre" in runtime and runtime.startswith("zulu11"):
+        return ("JRE {version}").format(version=runtime.split('-')[2][3:])
 
     return runtime
 

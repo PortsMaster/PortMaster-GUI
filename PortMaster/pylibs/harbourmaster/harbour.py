@@ -912,11 +912,14 @@ class HarbourMaster():
             'rlvm': 'rlvm',
             'solarus': 'solarus',
             'jdk11': 'jre',
+            'jre': 'jre',
+            'weston': 'weston',
+            'mesa': 'mesa',
             }
 
         attrs = []
-        runtime = port_info.get('attr', {}).get('runtime', None)
-        if runtime is not None:
+        runtime = port_info.get('attr', {}).get('runtime', [])
+        if len(runtime) > 0:
             for runtime_key, runtime_attr in runtime_fix.items():
                 if runtime_key in runtime:
                     add_list_unique(attrs, runtime_attr)
@@ -982,7 +985,7 @@ class HarbourMaster():
         else:
             requirements = []
 
-        runtime = port_info.get('attr', {}).get('runtime', None)
+        runtimes = port_info.get('attr', {}).get('runtime', [])
 
         min_glibc = port_info.get('attr', {}).get('min_glibc', "")
 
@@ -990,12 +993,13 @@ class HarbourMaster():
             if version_parse(min_glibc.strip()) > version_parse(self.device['glibc']):
                 return False
 
-        if runtime is not None:
-            if not runtime.endswith('.squashfs'):
-                runtime += '.squashfs'
+        if len(runtimes) > 0:
+            for runtime in runtimes:
+                if not runtime.endswith('.squashfs'):
+                    runtime += '.squashfs'
 
-            requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
-            show = True
+                requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
+                show = True
 
         else:
             arch = port_info.get('attr', {}).get('arch', [])
