@@ -912,11 +912,14 @@ class HarbourMaster():
             'rlvm': 'rlvm',
             'solarus': 'solarus',
             'jdk11': 'jre',
+            'jre': 'jre',
+            'weston': 'weston',
+            'mesa': 'mesa',
             }
 
         attrs = []
-        runtime = port_info.get('attr', {}).get('runtime', None)
-        if runtime is not None:
+        runtime = port_info.get('attr', {}).get('runtime', [])
+        if len(runtime) > 0:
             for runtime_key, runtime_attr in runtime_fix.items():
                 if runtime_key in runtime:
                     add_list_unique(attrs, runtime_attr)
@@ -982,7 +985,7 @@ class HarbourMaster():
         else:
             requirements = []
 
-        runtime = port_info.get('attr', {}).get('runtime', None)
+        runtimes = port_info.get('attr', {}).get('runtime', [])
 
         min_glibc = port_info.get('attr', {}).get('min_glibc', "")
 
@@ -990,12 +993,13 @@ class HarbourMaster():
             if version_parse(min_glibc.strip()) > version_parse(self.device['glibc']):
                 return False
 
-        if runtime is not None:
-            if not runtime.endswith('.squashfs'):
-                runtime += '.squashfs'
+        if len(runtimes) > 0:
+            for runtime in runtimes:
+                if not runtime.endswith('.squashfs'):
+                    runtime += '.squashfs'
 
-            requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
-            show = True
+                requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
+                show = True
 
         else:
             arch = port_info.get('attr', {}).get('arch', [])
@@ -1604,11 +1608,14 @@ class HarbourMaster():
             self._fix_permissions(self.scripts_dir)
 
         # logger.debug(port_info)
-        if port_info['attr'].get('runtime', None) is not None:
+        if len(port_info['attr'].get('runtime', [])) > 0:
             runtime_name = runtime_nicename(port_info['attr']['runtime'])
 
-            self.callback.progress(None, None, None)
-            result = self.check_runtime(port_info['attr']['runtime'], in_install=True)
+            result = 0
+            for runtime in port_info['attr']['runtime']:
+                self.callback.progress(None, None, None)
+                result += self.check_runtime(runtime, in_install=True)
+
             if result == 0:
                 self.callback.message_box(_("Port {download_name!r} and {runtime_name!r} installed successfully.").format(
                     download_name=port_nice_name,
