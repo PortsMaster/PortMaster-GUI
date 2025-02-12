@@ -259,12 +259,11 @@ class GitHubRawReleaseV1(BaseSource):
         if check_runtime and port_name in getattr(self, '_info', {}):
             port_info = self._info[port_name]
 
-            if port_info['attr'].get('runtime', None) is not None:
-                runtime = port_info['attr']['runtime']
-
-                runtime_file = (self.hm.libs_dir / runtime)
-                if not runtime_file.exists():
-                    size += self.hm.port_download_size(runtime)
+            if len(port_info['attr'].get('runtime', [])) > 0:
+                for runtime in port_info['attr']['runtime']:
+                    runtime_file = (self.hm.libs_dir / runtime)
+                    if not runtime_file.exists():
+                        size += self.hm.port_download_size(runtime)
 
         return size
 
@@ -1035,12 +1034,11 @@ class PortMasterV3(BaseSource):
         if check_runtime and port_name in getattr(self, '_info', {}):
             port_info = self._info[port_name]
 
-            if port_info['attr'].get('runtime', None) is not None:
-                runtime = port_info['attr']['runtime']
-
-                runtime_file = (self.hm.libs_dir / runtime)
-                if not runtime_file.exists():
-                    size += self.hm.port_download_size(runtime)
+            if len(port_info['attr'].get('runtime', [])) > 0:
+                for runtime in port_info['attr']['runtime']:
+                    runtime_file = (self.hm.libs_dir / runtime)
+                    if not runtime_file.exists():
+                        size += self.hm.port_download_size(runtime)
 
         return size
 

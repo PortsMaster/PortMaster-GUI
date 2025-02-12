@@ -1608,11 +1608,14 @@ class HarbourMaster():
             self._fix_permissions(self.scripts_dir)
 
         # logger.debug(port_info)
-        if port_info['attr'].get('runtime', None) is not None:
+        if len(port_info['attr'].get('runtime', [])) > 0:
             runtime_name = runtime_nicename(port_info['attr']['runtime'])
 
-            self.callback.progress(None, None, None)
-            result = self.check_runtime(port_info['attr']['runtime'], in_install=True)
+            result = 0
+            for runtime in port_info['attr']['runtime']:
+                self.callback.progress(None, None, None)
+                result += self.check_runtime(runtime, in_install=True)
+
             if result == 0:
                 self.callback.message_box(_("Port {download_name!r} and {runtime_name!r} installed successfully.").format(
                     download_name=port_nice_name,

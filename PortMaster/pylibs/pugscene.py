@@ -1108,8 +1108,9 @@ class RuntimesScene(BaseScene):
             self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
 
         for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
-            if port_info['attr']['runtime'] in self.runtimes:
-                self.runtimes[port_info['attr']['runtime']]['ports'].append(port_info['attr']['title'])
+            for runtime in port_info['attr']['runtime']:
+                if runtime in self.runtimes:
+                    self.runtimes[runtime]['ports'].append(port_info['attr']['title'])
 
         self.last_select = self.tags['runtime_list'].selected_option()
         self.last_verified = None

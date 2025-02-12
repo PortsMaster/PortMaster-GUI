@@ -329,10 +329,10 @@ def runtime_nicename(runtime):
         return ("Pyxel {version}").format(version=runtime.split('_')[1])
 
     if runtime.startswith("weston"):
-        return ("Weston {version}").format(version=runtime.rsplit('_', 1)[-11])
+        return ("Weston {version}").format(version=runtime.rsplit('_', 1)[-1])
 
     if runtime.startswith("mesa"):
-        return ("Mesa {version}").format(version=runtime.rsplit('_', 1)[-11])
+        return ("Mesa {version}").format(version=runtime.rsplit('_', 1)[-1])
 
     if "jdk" in runtime and runtime.startswith("zulu11"):
         return ("JDK {version}").format(version=runtime.split('-')[2][3:])
