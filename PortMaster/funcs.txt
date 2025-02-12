@@ -139,6 +139,8 @@ pm_message() {
     # Usage: pm_message "Some message here."
     if [[ "$CFW_NAME" == "muOS" ]]; then
         /opt/muos/extra/muxstart "$1"
+    elif [[ "$CFW_NAME" == "ROCKNIX" ]]; then
+        foot -F /bin/bash -c "echo \"$1\"; sleep 5" & 
     else
         echo "$1" > $CUR_TTY
     fi
