@@ -105,6 +105,14 @@ def port_info_load(raw_info, source_name=None, do_default=False):
         else:
             return None
 
+    if 'version' in info and info['version'] > PORT_INFO_ROOT_ATTRS['version']:
+        logger.error(f'Unable to load port_info with newer version from {source_name!r}: {info}')
+
+        if do_default:
+            info = {}
+        else:
+            return None
+
     if info.get('version', None) == 1:
         # Update older json version to the newer one.
         info = info.copy()
@@ -140,10 +148,16 @@ def port_info_load(raw_info, source_name=None, do_default=False):
     # Version 3 to 4
     if info.get('version', None) == 3:
         info['version'] = 4
-        if info['attr']['runtime'] == None:
+
+        if info['attr']['runtime'] is None:
             info['attr']['runtime'] = []
-        else:
+
+        elif isinstance(info['attr']['runtime'], str):
             info['attr']['runtime'] = [ info['attr']['runtime'] ]
+
+    # Catch errors because who fucking uses version numbers.
+    if info.get('attr', {}).get('runtime', []) == None:
+        info['attr']['runtime'] = []
 
     if isinstance(info.get('attr', {}).get('runtime', []), str):
         info['attr']['runtime'] = [ info['attr']['runtime'] ]

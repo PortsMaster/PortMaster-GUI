@@ -907,6 +907,11 @@ class PortMasterV3(BaseSource):
 
         ## Load data from the assets.
         for key, asset in data['ports'].items():
+            asset = port_info_load(asset)
+            if asset is None:
+                ## Skip bad items.
+                continue
+
             result = {
                 'name': asset['name'],
                 'size': asset['source']['size'],
