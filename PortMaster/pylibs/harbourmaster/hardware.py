@@ -186,6 +186,7 @@ CPU_INFO = {
     "a133plus":      {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":         {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
+    "sd865":         {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "unknown":       {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
 
@@ -573,16 +574,16 @@ def expand_info(info, override_resolution=None, override_ram=None, use_old_cpu_i
     if use_old_cpu_info:
         _name, _device = info['name'].lower(), info['device'].lower()
         if f"{_name}-{_device}" in GLIBC_INFO:
-            _merge_info(info, GLIBC_INFO[f"{_name}-{_device}"])
+            info['glibc'] = GLIBC_INFO[f"{_name}-{_device}"]
 
         elif f"{_name}-*" in GLIBC_INFO:
-            _merge_info(info, GLIBC_INFO[f"{_name}-*"])
+            info['glibc'] = GLIBC_INFO[f"{_name}-*"]
 
         elif f"*-{_device}" in GLIBC_INFO:
-            _merge_info(info, GLIBC_INFO[f"*-{_device}"])
+            info['glibc'] = GLIBC_INFO[f"*-{_device}"]
 
         else:
-            _merge_info(info, GLIBC_INFO['default'])
+            info['glibc'] = GLIBC_INFO['default']
 
     else:
         info['glibc'] = get_glibc_version()
