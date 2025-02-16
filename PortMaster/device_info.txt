@@ -98,6 +98,9 @@ elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
     CFW_VERSION="$(cat /etc/version)"
+elif [ -f "/usr/miyoo/version" ]; then
+    CFW_NAME="Miyoo"
+    CFW_VERSION=$(cat /usr/miyoo/version)
 elif lsusb | grep -q "1eaf:0024"; then
     # uConsole
     CFW_NAME="Debian GNU/Linux"
@@ -136,6 +139,8 @@ elif [ -f "/boot/boot/system.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/system.board)
 elif [ -f "/opt/muos/config/device.txt" ]; then
     DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
+elif [ -f "/usr/miyoo/version" ]; then
+    DEVICE_NAME="Miyoo Flip"
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 

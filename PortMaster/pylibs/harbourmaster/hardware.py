@@ -125,6 +125,9 @@ HW_INFO = {
     "rk2023":       {"resolution": ( 640, 480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
     "rk2020":       {"resolution": ( 480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
 
+    # Miyoo
+    "miyoo-flip":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+
     # Gameforce Chi / Ace
     "chi":       {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
     "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power", "ultra"], "ram": 8192},
@@ -177,6 +180,7 @@ CFW_INFO = {
 CPU_INFO = {
     "rk3326":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3399":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3566-miyoo":  {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "rk3566":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700-knulli":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
@@ -198,6 +202,7 @@ GLIBC_INFO = {
     "muos-*":      "2.38",
     "amberelec-*": "2.38",
     "rocknix-*":   "2.40",
+    "miyoo-*":     "2.36",
 
     "default":     "2.30",
     }
@@ -322,6 +327,8 @@ def nice_device_to_device(raw_device):
         ('anbernic rg40xx*',      'rg40xx-h'),
         ('anbernic rg35xx*',      'rg35xx-h'),
 
+        ('miyoo rk3566 355 v10*', 'miyoo-flip'),
+
         ('anbernic rg351mp*', 'rg351mp'),
         ('anbernic rg351v*',  'rg351v'),
         ('anbernic rg351*',   'rg351p'),
@@ -399,6 +406,12 @@ def new_device_info():
         for result in re.findall(r'^title=(.*?) \(([^\)]+)\)', plymouth, re.I | re.M):
             info['name'] = result[0].split(' ', 1)[0]
             info['version'] = result[1]
+
+    # Miyoo!
+    miyoo_version = safe_cat('/usr/miyoo/version')
+    if miyoo_version != '':
+        info['name'] = 'Miyoo'
+        info['version'] = miyoo_version
 
     # Works on uOS / JELOS / AmberELEC / muOS / ROCKNIX
     sfdbm = safe_cat('/sys/firmware/devicetree/base/model')

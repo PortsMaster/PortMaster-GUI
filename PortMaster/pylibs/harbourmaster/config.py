@@ -50,6 +50,12 @@ if (Path().cwd() / '.git').is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
 
+elif Path("/mnt/SDCARD/MIYOO_EX/PortMaster").is_dir():
+    ## TrimUI Smart Pro
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/MIYOO_EX/PortMaster")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/MIYOO_EX/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/MIYOO_EX/ports")
+
 elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
     ## TrimUI Smart Pro
     HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Apps/PortMaster")
