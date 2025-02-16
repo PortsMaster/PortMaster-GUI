@@ -982,6 +982,10 @@ class PlatformTrimUI(PlatformBase):
                         shutil.copy(image_file, target_file)
 
 
+class PlatformMiyoo(PlatformBase):
+    ...
+
+
 class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
     WANT_SWAP_BUTTONS = True
@@ -1001,6 +1005,7 @@ HM_PLATFORMS = {
     'reglinux':  PlatformREGLinux,
     'knulli':    PlatformKnulli,
     'muos':      PlatformmuOS,
+    'miyoo':     PlatformMiyoo,
     'trimui':    PlatformTrimUI,
     'retrodeck': PlatformRetroDECK,
     'darwin':    PlatformTesting,
