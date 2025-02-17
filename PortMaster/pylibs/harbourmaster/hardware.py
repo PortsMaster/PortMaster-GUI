@@ -411,7 +411,7 @@ def new_device_info():
     miyoo_version = safe_cat('/usr/miyoo/version')
     if miyoo_version != '':
         info['name'] = 'Miyoo'
-        info['version'] = miyoo_version
+        info['version'] = miyoo_version.strip()
 
     # Works on uOS / JELOS / AmberELEC / muOS / ROCKNIX
     sfdbm = safe_cat('/sys/firmware/devicetree/base/model')
