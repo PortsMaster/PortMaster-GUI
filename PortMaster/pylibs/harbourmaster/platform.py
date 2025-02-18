@@ -983,12 +983,39 @@ class PlatformTrimUI(PlatformBase):
 
 
 class PlatformMiyoo(PlatformBase):
-    ...
+    WANT_XBOX_FIX = True
+
+    def first_run(self):
+        self.portmaster_install()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+
+        MY_DIR = self.hm.tools_dir / "PortMaster" / "miyoo"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {MY_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(MY_DIR / "control.txt", PM_DIR / "control.txt")
+
+        # ACTIVATE THE PORTMASTER
+        logger.debug(f'Copy {MY_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(MY_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        # CONTROL HACK
+        CONTROL_HACK = Path("/root/.local/share/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        logger.debug(f'Copy {MY_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(MY_DIR / "control.txt", CONTROL_HACK)
 
 
 class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
-    WANT_SWAP_BUTTONS = True
+    WANT_SWAP_BUTTONS = False
 
     def gamelist_file(self):
         return self.hm.scripts_dir / 'gamelist.xml'

@@ -3,11 +3,13 @@
 # SPDX-License-Identifier: MIT
 #
 
+## HRMMM
+export HOME="/root"
+export LD_PRELOAD=""
+
 controlfolder="/mnt/sdcard/MIYOO_EX/PortMaster"
 
-if [ ! -z "$(df | grep '/mnt/sdcard')" ]; then
-  directory="/mnt/sdcard/MIYOO_EX"
-fi
+directory="/mnt/sdcard/MIYOO_EX"
 
 ## Python 3 runtime.
 mkdir -p $HOME/python3
