@@ -105,6 +105,10 @@ def port_info_load(raw_info, source_name=None, do_default=False):
         else:
             return None
 
+    # This is a bizzare one, it turns out some versions are strings?!
+    if isinstance(info.get('version', None), str):
+        info['version'] = int(info['version'])
+
     if 'version' in info and info['version'] > PORT_INFO_ROOT_ATTRS['version']:
         logger.error(f'Unable to load port_info with newer version from {source_name!r}: {info}')
 
@@ -112,10 +116,6 @@ def port_info_load(raw_info, source_name=None, do_default=False):
             info = {}
         else:
             return None
-
-    # This is a bizzare one, it turns out some versions are strings?!
-    if isinstance(info.get('version', None), str):
-        info['version'] = int(info['version'])
 
     if info.get('version', None) == 1:
         # Update older json version to the newer one.
