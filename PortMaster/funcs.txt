@@ -101,7 +101,7 @@ pm_begin_splash() {
         PM_SPLASH_QUIT_MODE=""
     fi
 
-    if [ ! -z "$PM_SPLASH_THEME" ]; then
+    if [ -z "$PM_SPLASH_THEME" ]; then
         PM_SPLASH_THEME="$PM_RESOURCE_DIR/splash.ini"
     fi
 
