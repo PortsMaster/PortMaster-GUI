@@ -824,8 +824,10 @@ class PortMasterV3(BaseSource):
         self.hm.callback.message("  - {}".format(_("Fetching info")))
 
         ## Download latest images.zip if needed.
-        if 'images.000.zip' in self._data:
-            return self._update2()
+
+        ## DISABLE FOR NOW, REENABLE LATER.
+        # if 'images.000.zip' in self._data:
+        #     return self._update2()
 
         if 'images.zip' not in self._data:
             return
