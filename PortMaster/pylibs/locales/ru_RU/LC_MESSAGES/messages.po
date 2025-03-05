@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-04 18:50+0800\n"
-"PO-Revision-Date: 2025-03-04 10:51\n"
+"PO-Revision-Date: 2025-03-05 09:46\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -188,7 +188,7 @@ msgstr "Вы хотите переустановить PortMaster?\n\n"
 
 #: PortMaster/pugwash:2066
 msgid "Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones."
-msgstr ""
+msgstr "Порты были добавлены или удалены, обновите список игр, чтобы увидеть новые игры или удалить удаленные."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:122
 msgid "Loading..."
@@ -349,7 +349,7 @@ msgstr "{runtime} Успешно загружено."
 #: PortMaster/pylibs/harbourmaster/harbour.py:1826
 #: PortMaster/pylibs/harbourmaster/harbour.py:1905
 msgid "Unable to download in offline mode."
-msgstr ""
+msgstr "Невозможно загрузить среду выполнения в автономном режиме."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1923
 #, python-brace-format
@@ -375,7 +375,9 @@ msgstr "{port_name} Успешно удален"
 msgid "\n\n"
 "In order to do so:\n"
 "MENU -> UTILITIES -> Rescan Rom Directory"
-msgstr ""
+msgstr "\n\n"
+"Чтобы сделать это:\n"
+"МЕНЮ -> ПРОГРАММЫ -> Повторить поиск каталога"
 
 #: PortMaster/pylibs/harbourmaster/source.py:48
 msgid "Cache out of date."
@@ -1102,7 +1104,7 @@ msgstr "Прочие"
 
 #: PortMaster/pylibs/pugscene.py:2014
 msgid "Files Required"
-msgstr ""
+msgstr "Необходимые файлы"
 
 #: PortMaster/pylibs/pugscene.py:2015
 msgid "Experimental"
@@ -1136,15 +1138,15 @@ msgstr "{runtime_name} Запуск"
 
 #: PortMaster/pylibs/pugscene.py:2033
 msgid "ARM 32bit"
-msgstr ""
+msgstr "ARM 32bit"
 
 #: PortMaster/pylibs/pugscene.py:2034
 msgid "ARM 64bit"
-msgstr ""
+msgstr "ARM 64bit"
 
 #: PortMaster/pylibs/pugscene.py:2035
 msgid "x86 64bit"
-msgstr ""
+msgstr "x86 64bit"
 
 #: PortMaster/pylibs/pugscene.py:2080
 msgid "Sort:"
@@ -1164,7 +1166,7 @@ msgstr "Атрибуты:"
 
 #: PortMaster/pylibs/pugscene.py:2178
 msgid "Architecture:"
-msgstr ""
+msgstr "Архитектура:"
 
 #: PortMaster/pylibs/pugscene.py:2207
 msgid "Availability:"
