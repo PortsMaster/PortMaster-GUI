@@ -417,6 +417,11 @@ class PlatformREGLinux(PlatformBatocera):
 class PlatformKnulli(PlatformBatocera):
     WANT_XBOX_FIX = True
 
+    def loaded(self):
+        self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
+        if self.WANT_SWAP_BUTTONS:
+            self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
+
     def portmaster_install(self):
         """
         Move files into place.
