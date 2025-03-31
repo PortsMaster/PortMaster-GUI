@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the correct innoextract binary
-INNOEXTRACT="./PortMaster/utils/innoextract_$DEVICE_ARCH"
+INNOEXTRACT="$controlfolder/utils/innoextract_$DEVICE_ARCH"
 
 # Check if the binary exists
 if [ ! -f "$INNOEXTRACT" ]; then
@@ -10,7 +10,7 @@ if [ ! -f "$INNOEXTRACT" ]; then
 fi
 
 # Set LD_LIBRARY_PATH
-export LD_LIBRARY_PATH="./PortMaster/utils/libs.$DEVICE_ARCH:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$controlfolder/utils/libs.$DEVICE_ARCH:$LD_LIBRARY_PATH"
 
 # Run innoextract with provided arguments
 $INNOEXTRACT "$@"
