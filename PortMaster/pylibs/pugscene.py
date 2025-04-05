@@ -756,6 +756,8 @@ class OptionScene(BaseScene):
                 self.gui.hm.cfg_data['show_all'] = not self.gui.hm.cfg_data.get('show_all', False)
                 self.gui.hm.save_config()
 
+                self.gui.hm._port_attrs_updated = True
+
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
                     _("All Ports: ") + (self.gui.hm.cfg_data.get('show_all', False) and _("Enabled") or _("Disabled")))
@@ -765,6 +767,8 @@ class OptionScene(BaseScene):
             if selected_option == 'toggle-experimental':
                 self.gui.hm.cfg_data['show_experimental'] = not self.gui.hm.cfg_data.get('show_experimental', False)
                 self.gui.hm.save_config()
+
+                self.gui.hm._port_attrs_updated = True
 
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
@@ -1107,7 +1111,7 @@ class RuntimesScene(BaseScene):
 
             self.tags['runtime_list'].add_option(runtime, self.runtimes[runtime]['name'])
 
-        for port_name, port_info in self.gui.hm.list_ports(filters=['installed']).items():
+        for port_name, port_info in self.gui.hm.list_ports_new(filters=['installed']).items():
             for runtime in port_info['attr']['runtime']:
                 if runtime in self.runtimes:
                     self.runtimes[runtime]['ports'].append(port_info['attr']['title'])
@@ -1568,9 +1572,9 @@ class PortListBaseScene():
             return
 
         if not self.ready:
-            self.gui.set_data('ports_list.total_ports', str(len(self.gui.hm.list_ports(filters=(self.options['base_filters'])))))
+            self.gui.set_data('ports_list.total_ports', str(len(self.gui.hm.list_ports_names_new(self.options['base_filters']))))
 
-        self.all_ports = self.gui.hm.list_ports(
+        self.all_ports = self.gui.hm.list_ports_new(
             filters=(self.options['base_filters'] + self.options['filters']),
             sort_by=self.options['sort_by'])
         self.port_list = list(self.all_ports.keys())
@@ -2027,7 +2031,10 @@ class FiltersScene(BaseScene):
             "godot":            _("{runtime_name} Runtime").format(runtime_name="Godot/FRT"),
             "mono":             _("{runtime_name} Runtime").format(runtime_name="Mono"),
             "rlvm":             _("{runtime_name} Runtime").format(runtime_name="RLVM"),
+            "jre":              _("{runtime_name} Runtime").format(runtime_name="Java"),
             "solarus":          _("{runtime_name} Runtime").format(runtime_name="Solarus"),
+            "weston":           _("{runtime_name} Runtime").format(runtime_name="Weston"),
+            "mesa":             _("{runtime_name} Runtime").format(runtime_name="Mesa"),
 
             # Architecture
             "armhf":            _("ARM 32bit"),
@@ -2041,7 +2048,7 @@ class FiltersScene(BaseScene):
             }
 
         genres = self.locked_genres + self.selected_genres
-        total_ports = len(self.gui.hm.list_ports(genres))
+        total_ports = len(self.gui.hm.list_ports_names_new(genres))
 
         self.tags['filter_list'].bar_select_mode = 'full'
 
@@ -2106,7 +2113,7 @@ class FiltersScene(BaseScene):
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
                     else:
-                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        ports = len(self.gui.hm.list_ports_names_new(genres + [hm_genre]))
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports} "]
 
                     if ports == 0:
@@ -2137,7 +2144,7 @@ class FiltersScene(BaseScene):
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
                     else:
-                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        ports = len(self.gui.hm.list_ports_names_new(genres + [hm_genre]))
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
 
                     if ports == 0:
@@ -2166,7 +2173,7 @@ class FiltersScene(BaseScene):
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
                     else:
-                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        ports = len(self.gui.hm.list_ports_names_new(genres + [hm_genre]))
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
 
                     if ports == 0:
@@ -2195,7 +2202,7 @@ class FiltersScene(BaseScene):
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
                     else:
-                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        ports = len(self.gui.hm.list_ports_names_new(genres + [hm_genre]))
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
 
                     if ports == 0:
@@ -2224,7 +2231,7 @@ class FiltersScene(BaseScene):
                         ports = total_ports
                         text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
                     else:
-                        ports = len(self.gui.hm.list_ports(genres + [hm_genre]))
+                        ports = len(self.gui.hm.list_ports_names_new(genres + [hm_genre]))
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_genre, hm_genre)}", None, "    ", f"  {ports}"]
 
                     if ports == 0:
