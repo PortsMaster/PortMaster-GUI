@@ -163,7 +163,19 @@ def version_parse(version):
     return tuple(result)
 
 
-@functools.lru_cache(maxsize=512)
+# Custom Decorator function
+def list_to_tuple(function):
+    # https://stackoverflow.com/a/60980685
+    def wrapper(*args):
+        args = [tuple(x) if isinstance(x, list) else x for x in args]
+        result = function(*args)
+        result = tuple(result) if isinstance(result, list) else result
+        return result
+
+    return wrapper
+
+
+@functools.lru_cache(maxsize=1024)
 def name_cleaner(text):
     temp = re.sub(r'[^a-zA-Z0-9 _\-\.]+', '', text.strip().lower())
     return re.sub(r'[ \.]+', '.', temp)
@@ -704,6 +716,7 @@ __all__ = (
     'hash_file',
     'json_safe_load',
     'json_safe_loads',
+    'list_to_tuple',
     'load_pm_signature',
     'make_temp_directory',
     'match_requirements',
