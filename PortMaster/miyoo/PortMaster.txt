@@ -4,12 +4,28 @@
 #
 
 ## HRMMM
-export HOME="/root"
-export LD_PRELOAD=""
+if [ -d "/mnt/sdcard/spruce" ]; then
+  export HOME="/mnt/sdcard"
+  export PATH="/mnt/sdcard/Roms/.portmaster/bin/:$PATH"
+  export LD_LIBRARY_PATH="/mnt/sdcard/Roms/.portmaster/lib:$LD_LIBRARY_PATH"
+  export LD_PRELOAD=""
+  export PYSDL2_DLL_PATH="/mnt/sdcard/Roms/.portmaster/site-packages/sdl2dll/dll"
+  controlfolder="/mnt/sdcard/Roms/.portmaster/PortMaster"
+  directory="/mnt/sdcard/Roms/PORTS64/"
+  export PYSDL2_DLL_PATH="/mnt/sdcard/Roms/.portmaster/lib/"
+else
+  export HOME="/root"
+  export LD_PRELOAD=""
+  controlfolder="/mnt/sdcard/MIYOO_EX/PortMaster"
+  directory="/mnt/sdcard/MIYOO_EX"
+  
+  # MIYOO_EXtra shit i need.
+  export PATH="/mnt/sdcard/MIYOO_EX/bin:$PATH"
+  export LD_LIBRARY_PATH="/mnt/sdcard/MIYOO_EX/lib:$LD_LIBRARY_PATH"
+  export PYSDL2_DLL_PATH="/mnt/sdcard/MIYOO_EX/lib/"
+fi
 
-controlfolder="/mnt/sdcard/MIYOO_EX/PortMaster"
 
-directory="/mnt/sdcard/MIYOO_EX"
 
 ## Python 3 runtime.
 mkdir -p $HOME/python3
@@ -20,10 +36,6 @@ fi
 
 mount /mnt/sdcard/MIYOO_EX/python_3.11.squashfs $HOME/python3
 source $HOME/python3/bin/activate
-
-# MIYOO_EXtra shit i need.
-export PATH="/mnt/sdcard/MIYOO_EX/bin:$PATH"
-export LD_LIBRARY_PATH="/mnt/sdcard/MIYOO_EX/lib:$LD_LIBRARY_PATH"
 
 ESUDO=""
 ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
@@ -133,7 +145,6 @@ pm_message "Starting PortMaster."
 
 $ESUDO chmod -R +x .
 
-export PYSDL2_DLL_PATH="/mnt/sdcard/MIYOO_EX/lib/"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
   $ESUDO ./pugwash
