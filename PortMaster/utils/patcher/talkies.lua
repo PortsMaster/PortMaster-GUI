@@ -393,7 +393,7 @@ end
   end
 
   -- Next message/continue indicator
-  if Talkies.showIndicator then
+  if Talkies.showIndicator and not currentDialog:showOptions() then
     love.graphics.print(currentDialog.indicatorCharacter, boxX+boxW-(2.5*currentDialog.padding), boxY+boxH-currentDialog.fontHeight)
   end
 
