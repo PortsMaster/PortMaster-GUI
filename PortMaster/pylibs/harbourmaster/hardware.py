@@ -174,7 +174,6 @@ CFW_INFO = {
     "rocknix-x55":        {"capabilities": []},
     "rocknix-rgb10max3":  {"capabilities": []},
     "rocknix-rgb30":      {"capabilities": []},
-    "rocknix-gkd-pixel2": {"capabilities": []},
     "rocknix":            {"capabilities": ["opengl"]},
     }
 
