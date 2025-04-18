@@ -152,6 +152,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         # Retroid Pocket 5/Mini
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
+    elif [[ "${DEVICE_NAME}" == "GKD" ]]; then
+        #GKD pixel
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
     elif [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
@@ -415,6 +419,14 @@ if [[ "$DEVICE_NAME" = "TrimUI Smart Pro" ]]; then
         DEVICE_NAME="TrimUI Brick"
         ANALOG_STICKS=0
     fi
+fi
+
+# GKD Pixel 2. :[
+
+if [[ "$DEVICE_NAME" = "GameKiddy GKD Pixel2" ]]; then
+    DEVICE_NAME="GKD_PIXEL2"
+    DEVICE_CPU="RK3326"
+    ANALOG_STICKS=0
 fi
 
 # Dump info
