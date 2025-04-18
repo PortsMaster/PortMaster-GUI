@@ -423,8 +423,6 @@ fi
 
 # GKD Pixel 2. :[
 
-DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
-
 if [[ "$DEVICE_NAME" = "GameKiddy GKD Pixel2" ]]; then
     DEVICE_NAME="GKD_PIXEL2"
     DEVICE_CPU="RK3326"
