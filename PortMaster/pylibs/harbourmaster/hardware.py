@@ -29,6 +29,8 @@ from .util import *
 # This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
 DEVICES = {
     # Anbernic
+    "Anbernic RG ARC-D":    {"device": "rg-arc-d",    "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
+    "Anbernic RG ARC-S":    {"device": "rg-arc-s",    "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
     "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
     "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "ROCKNIX"]},
     "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "TheRA"]},
@@ -87,16 +89,18 @@ DEVICES = {
 
 HW_INFO = {
     # Anbernic Devices
-    "rg552":   {"resolution": (1920, 1152), "analogsticks": 2, "cpu": "rk3399", "capabilities": ["power"], "ram": 4096},
-    "rg503":   {"resolution": ( 960,  544), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rg351mp": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg351p":  {"resolution": ( 480,  320), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg353v":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg353p":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg353m":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg351v":  {"resolution": ( 640,  480), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg353vs": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rg353ps": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg552":    {"resolution": (1920, 1152), "analogsticks": 2, "cpu": "rk3399", "capabilities": ["power"], "ram": 4096},
+    "rg503":    {"resolution": ( 960,  544), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg351mp":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg351p":   {"resolution": ( 480,  320), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353v":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353p":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353m":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg351v":   {"resolution": ( 640,  480), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353vs":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg353ps":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg-arc-d": {"resolution": ( 640,  480), "analogsticks": 0, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg-arc-s": {"resolution": ( 640,  480), "analogsticks": 0, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
 
     # Anbernic RG35XX
     "rg40xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
@@ -329,17 +333,21 @@ def nice_device_to_device(raw_device):
 
         ('miyoo rk3566 355 v10*', 'miyoo-flip'),
 
-        ('anbernic rg351mp*', 'rg351mp'),
-        ('anbernic rg351v*',  'rg351v'),
-        ('anbernic rg351*',   'rg351p'),
-        ('anbernic rg353m*',  'rg353m'),
-        ('anbernic rg353v*',  'rg353v'),
-        ('anbernic rg353p*',  'rg353p'),
-        ('anbernic rg552',    'rg552'),
+        ('anbernic rg arc-d*', 'rg-arc-d'),
+        # The RG ARC-S is currently identified as an "Anbernic RG ARC-D" on rocknix
+        # so this pattern is just future proofing.
+        ('anbernic rg arc-s*', 'rg-arc-s'),
+        ('anbernic rg351mp*',  'rg351mp'),
+        ('anbernic rg351v*',   'rg351v'),
+        ('anbernic rg351*',    'rg351p'),
+        ('anbernic rg353m*',   'rg353m'),
+        ('anbernic rg353v*',   'rg353v'),
+        ('anbernic rg353p*',   'rg353p'),
+        ('anbernic rg552',     'rg552'),
 
-        ('gameforce ace',     'ace'),
+        ('gameforce ace',      'ace'),
 
-        ('magicx xu10',       'xu10'),
+        ('magicx xu10',        'xu10'),
 
         ('retroid pocket 5',    'rp5'),
         ('retroid pocket mini', 'rpmini'),
@@ -659,6 +667,9 @@ def device_info(override_device=None, override_resolution=None):
 
     if info['device'] in ('rg353v', 'rg353p') and override_ram == 1024:
         info['device'] += 's'
+
+    if info['device'] == 'rg-arc-d' and override_ram == 1024:
+        info['device'] = 'rg-arc-s'
 
     expand_info(info, override_resolution, override_ram)
 

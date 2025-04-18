@@ -141,6 +141,8 @@ elif [ -f "/opt/muos/config/device.txt" ]; then
     DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
 elif [ -f "/usr/miyoo/version" ]; then
     DEVICE_NAME="Miyoo Flip"
+elif grep -qi "RG.\?ARC.\?[DS]" "/sys/firmware/devicetree/base/model"; then
+    DEVICE_NAME="rg-arc-d"
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 
@@ -253,6 +255,16 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         ;;
 
     # by actual device
+    "rg-arc-d")
+        ANALOG_STICKS=0
+        DEVICE_CPU="RK3566"
+        if [[ "$DEVICE_RAM" == "2" ]]; then
+            DEVICE_NAME="RG ARC-D"
+        else
+            DEVICE_NAME="RG ARC-S"
+        fi
+        ;;
+
     "rg353v"|"rg353p"|"rg353vs"|"rg353ps"|"rg353m")
         DEVICE_CPU="RK3566"
         ;;
