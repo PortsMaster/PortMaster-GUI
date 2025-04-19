@@ -139,6 +139,12 @@ get_controls() {
     DEVICE="190000004b4800000111000000010000"
     param_device="rg552"
     LOWRES="N"
+  elif [[ -e "/dev/input/by-path/platform-gamekiddy-joypad-event-joystick" ]]; then
+    DEVICE="19008d96010000000221000000010000"
+    param_device="gkd-pixel2"
+    export HOTKEY="guide"
+    LOWRES="N"
+    ANALOGSTICKS=0
   else
     DEVICE="${1}"
     param_device="${2}"
