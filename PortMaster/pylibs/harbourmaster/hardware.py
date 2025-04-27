@@ -29,6 +29,8 @@ from .util import *
 # This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
 DEVICES = {
     # Anbernic
+    "Anbernic RG ARC-D":    {"device": "rg-arc-d",    "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
+    "Anbernic RG ARC-S":    {"device": "rg-arc-s",    "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
     "Anbernic RG353 M/V/P": {"device": "rg353m",      "manufacturer": "Anbernic",  "cfw": ["ArkOS"]},
     "Anbernic RG353 VS/PS": {"device": "rg353ps",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "ROCKNIX"]},
     "Anbernic RG351MP":     {"device": "rg351mp",     "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "TheRA"]},
@@ -68,8 +70,12 @@ DEVICES = {
     "TrimUI Brick":     {"device": "trimui-brick",     "manufacturer": "TrimUI", "cfw": ["TrimUI", "KNULLI"]},
 
     # Retroid Pocket
-    "Retroid Pocket 5":    {"device": "rp5",    "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
-    "Retroid Pocket Mini": {"device": "rpmini", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket 5":      {"device": "rp5",     "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket Mini":   {"device": "rpmini",  "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket Flip 2": {"device": "rpflip2", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+
+    # AYN Odin 2
+    "AYN Odin 2 Pro/Mini/Portal": {"device": "odin-2", "manufacturer": "AYN", "cfw": ["ROCKNIX"]},
 
     # ZPG GKD
     "GKD Bubble": {"device": "gkd-bubble", "manufacturer": "Game Kiddy", "cfw": ["EMUELEC"]},
@@ -88,16 +94,18 @@ DEVICES = {
 
 HW_INFO = {
     # Anbernic Devices
-    "rg552":   {"resolution": (1920, 1152), "analogsticks": 2, "cpu": "rk3399", "capabilities": ["power"], "ram": 4096},
-    "rg503":   {"resolution": ( 960,  544), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rg351mp": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg351p":  {"resolution": ( 480,  320), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg353v":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg353p":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg353m":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
-    "rg351v":  {"resolution": ( 640,  480), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
-    "rg353vs": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
-    "rg353ps": {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg552":    {"resolution": (1920, 1152), "analogsticks": 2, "cpu": "rk3399", "capabilities": ["power"], "ram": 4096},
+    "rg503":    {"resolution": ( 960,  544), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg351mp":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg351p":   {"resolution": ( 480,  320), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353v":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353p":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg353m":   {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg351v":   {"resolution": ( 640,  480), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
+    "rg353vs":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg353ps":  {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
+    "rg-arc-d": {"resolution": ( 640,  480), "analogsticks": 0, "cpu": "rk3566", "capabilities": ["power"], "ram": 2048},
+    "rg-arc-s": {"resolution": ( 640,  480), "analogsticks": 0, "cpu": "rk3566", "capabilities": ["power"], "ram": 1024},
 
     # Anbernic RG35XX
     "rg40xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
@@ -134,8 +142,12 @@ HW_INFO = {
     "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power", "ultra"], "ram": 8192},
 
     # Retroid Pocket
-    "rpmini":    {"resolution": (1280,  960), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 6144},
-    "rp5":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+    "rpmini":  {"resolution": (1280,  960), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 6144},
+    "rp5":     {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+    "rpflip2": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+
+    # AYN Odin 2 Pro/Mini/Portal
+    "odin-2":  {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sm8550", "capabilities": ["power", "ultra"], "ram": 8192},
 
     # Generic
     "xu10":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -331,23 +343,31 @@ def nice_device_to_device(raw_device):
 
         ('miyoo rk3566 355 v10*', 'miyoo-flip'),
 
-        ('anbernic rg351mp*', 'rg351mp'),
-        ('anbernic rg351v*',  'rg351v'),
-        ('anbernic rg351*',   'rg351p'),
-        ('anbernic rg353m*',  'rg353m'),
-        ('anbernic rg353v*',  'rg353v'),
-        ('anbernic rg353p*',  'rg353p'),
-        ('anbernic rg552',    'rg552'),
+        ('anbernic rg arc-d*', 'rg-arc-d'),
+        # The RG ARC-S is currently identified as an "Anbernic RG ARC-D" on rocknix
+        # so this pattern is just future proofing.
+        ('anbernic rg arc-s*', 'rg-arc-s'),
+        ('anbernic rg351mp*',  'rg351mp'),
+        ('anbernic rg351v*',   'rg351v'),
+        ('anbernic rg351*',    'rg351p'),
+        ('anbernic rg353m*',   'rg353m'),
+        ('anbernic rg353v*',   'rg353v'),
+        ('anbernic rg353p*',   'rg353p'),
+        ('anbernic rg552',     'rg552'),
 
-        ('gameforce ace',     'ace'),
+        ('gameforce ace',      'ace'),
 
-        ('magicx xu10',       'xu10'),
+        ('magicx xu10',        'xu10'),
 
-        ('retroid pocket 5',    'rp5'),
-        ('retroid pocket mini', 'rpmini'),
-		
+        # All the various flavours can be rolled into one tbh
+        ('ayn odin 2*',        'odin-2'),
+
         ('gamekiddy gkd bubble', 'gkd-bubble'),
         ('gamekiddy gkd pixel2', 'gkd-pixel2'),
+
+        ('retroid pocket 5',     'rp5'),
+        ('retroid pocket mini',  'rpmini'),
+        ('retroid pocket flip*', 'rpflip2'),
         )
 
     for pattern, device in pattern_to_device:
@@ -375,7 +395,7 @@ def new_device_info():
 
     info = {}
 
-   # Works on RetroDECK if flatplack deployed to $HOME folder.
+    # Works on RetroDECK if flatplack deployed to $HOME folder.
     retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.cfg')
     if retrodeck_version == '':
         retrodeck_version = safe_cat('~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')
@@ -664,6 +684,9 @@ def device_info(override_device=None, override_resolution=None):
 
     if info['device'] in ('rg353v', 'rg353p') and override_ram == 1024:
         info['device'] += 's'
+
+    if info['device'] == 'rg-arc-d' and override_ram == 1024:
+        info['device'] = 'rg-arc-s'
 
     expand_info(info, override_resolution, override_ram)
 

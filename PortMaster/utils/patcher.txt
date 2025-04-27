@@ -6,8 +6,14 @@
 # Source love2d runtime
 source $controlfolder/runtimes/"love_11.5"/love.txt
 
+# Check if we need to add news
+NEWS_FLAG=""
+if [ "$PATCHER_NEWS" = true ]; then
+  NEWS_FLAG="-n"
+fi
+
 # Run the patcher with exported args
 $GPTOKEYB "$LOVE_GPTK" &
-$LOVE_RUN "$controlfolder/utils/patcher" -f "$PATCHER_FILE" -g "$PATCHER_GAME" -t "$PATCHER_TIME"
+$LOVE_RUN "$controlfolder/utils/patcher" -f "$PATCHER_FILE" -g "$PATCHER_GAME" -t "$PATCHER_TIME" "$NEWS_FLAG"
 
 pm_gptokeyb_finish
