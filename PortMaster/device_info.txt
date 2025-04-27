@@ -155,6 +155,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         # Retroid Pocket 5/Mini
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
+    elif [[ "${DEVICE_NAME}" == "GKD" ]]; then
+        #GKD pixel
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
     elif [[ "${DEVICE_NAME}" == "Odin" ]]; then
         # AYN Odin 2 and friends
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
@@ -388,6 +392,12 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
     "trimui brick"|"trimui-brick")
         DEVICE_CPU="a133plus"
         DEVICE_NAME="TrimUI Brick"
+        ANALOG_STICKS=0
+        ;;
+
+    "gamekiddy gkd pixel2")
+        DEVICE_NAME="GKD PIXEL2"
+        DEVICE_CPU="RK3326"
         ANALOG_STICKS=0
         ;;
 

@@ -79,6 +79,7 @@ DEVICES = {
 
     # ZPG GKD
     "GKD Bubble": {"device": "gkd-bubble", "manufacturer": "Game Kiddy", "cfw": ["EMUELEC"]},
+    "GKD Pixel 2": {"device": "gkd-pixel2", "manufacturer": "Game Kiddy", "cfw": ["ROCKNIX"]},
 
     # Valve
     "SteamDeck":  {"device": "steamdeck", "manufacturer": "Valve", "cfw": ["RetroDECK", "Batocera"]},
@@ -160,6 +161,7 @@ HW_INFO = {
 
     # ZPG GKD
     "gkd-bubble": {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3566",  "capabilities": ["power"], "ram": 1024},
+    "gkd-pixel2": {"resolution": (640, 480), "analogsticks": 0, "cpu": "rk3326",  "capabilities": [], "ram": 1024},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -181,10 +183,10 @@ CFW_INFO = {
     "jelos":           {"capabilities": ["opengl"]},
 
     ## For ROCKNIX, should match JELOS for now. :)
-    "rocknix-x55":       {"capabilities": []},
-    "rocknix-rgb10max3": {"capabilities": []},
-    "rocknix-rgb30":     {"capabilities": []},
-    "rocknix":           {"capabilities": ["opengl"]},
+    "rocknix-x55":        {"capabilities": []},
+    "rocknix-rgb10max3":  {"capabilities": []},
+    "rocknix-rgb30":      {"capabilities": []},
+    "rocknix":            {"capabilities": ["opengl"]},
     }
 
 
@@ -359,6 +361,9 @@ def nice_device_to_device(raw_device):
 
         # All the various flavours can be rolled into one tbh
         ('ayn odin 2*',        'odin-2'),
+
+        ('gamekiddy gkd bubble', 'gkd-bubble'),
+        ('gamekiddy gkd pixel2', 'gkd-pixel2'),
 
         ('retroid pocket 5',     'rp5'),
         ('retroid pocket mini',  'rpmini'),
