@@ -70,8 +70,12 @@ DEVICES = {
     "TrimUI Brick":     {"device": "trimui-brick",     "manufacturer": "TrimUI", "cfw": ["TrimUI", "KNULLI"]},
 
     # Retroid Pocket
-    "Retroid Pocket 5":    {"device": "rp5",    "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
-    "Retroid Pocket Mini": {"device": "rpmini", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket 5":      {"device": "rp5",     "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket Mini":   {"device": "rpmini",  "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+    "Retroid Pocket Flip 2": {"device": "rpflip2", "manufacturer": "Retroid Pocket", "cfw": ["ROCKNIX", "Batocera"]},
+
+    # AYN Odin 2
+    "AYN Odin 2 Pro/Mini/Portal": {"device": "odin-2", "manufacturer": "AYN", "cfw": ["ROCKNIX"]},
 
     # ZPG GKD
     "GKD Bubble": {"device": "gkd-bubble", "manufacturer": "Game Kiddy", "cfw": ["EMUELEC"]},
@@ -137,8 +141,12 @@ HW_INFO = {
     "ace":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3588", "capabilities": ["power", "ultra"], "ram": 8192},
 
     # Retroid Pocket
-    "rpmini":    {"resolution": (1280,  960), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 6144},
-    "rp5":       {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+    "rpmini":  {"resolution": (1280,  960), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 6144},
+    "rp5":     {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+    "rpflip2": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd865", "capabilities": ["power", "ultra"], "ram": 8192},
+
+    # AYN Odin 2 Pro/Mini/Portal
+    "odin-2":  {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sm8550", "capabilities": ["power", "ultra"], "ram": 8192},
 
     # Generic
     "xu10":      {"resolution": ( 640,  480), "analogsticks": 2, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -349,8 +357,12 @@ def nice_device_to_device(raw_device):
 
         ('magicx xu10',        'xu10'),
 
-        ('retroid pocket 5',    'rp5'),
-        ('retroid pocket mini', 'rpmini'),
+        # All the various flavours can be rolled into one tbh
+        ('ayn odin 2*',        'odin-2'),
+
+        ('retroid pocket 5',     'rp5'),
+        ('retroid pocket mini',  'rpmini'),
+        ('retroid pocket flip*', 'rpflip2'),
         )
 
     for pattern, device in pattern_to_device:
@@ -378,7 +390,7 @@ def new_device_info():
 
     info = {}
 
-   # Works on RetroDECK if flatplack deployed to $HOME folder.
+    # Works on RetroDECK if flatplack deployed to $HOME folder.
     retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.cfg')
     if retrodeck_version == '':
         retrodeck_version = safe_cat('~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')

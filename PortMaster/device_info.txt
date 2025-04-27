@@ -45,6 +45,7 @@ if [ -z "$PM_VERSION" ] && [ -f  "$SCRIPT_DIR/version" ]; then
     PM_VERSION="$(cat "$SCRIPT_DIR/version")"
 fi
 
+## Get CFW Name / Verson
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
 
@@ -120,7 +121,7 @@ fi
 
 DEVICE_RAM=$(free | awk '/Mem:/ { printf("%.0f", ($2 / 1024 / 1024)) }')
 
-# Get DEVICE_NAME
+## Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
     DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
 elif [[ "$CFW_NAME" == "TrimUI" ]]; then
@@ -154,6 +155,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         # Retroid Pocket 5/Mini
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
+    elif [[ "${DEVICE_NAME}" == "Odin" ]]; then
+        # AYN Odin 2 and friends
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
     elif [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
@@ -164,6 +169,45 @@ else
     DEVICE_NAME="Unknown"
 fi
 
+## Get current resolution
+# Moved this up to allow some fixes that rely on it.
+
+RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+
+unset SCRIPT_DIR
+
+# Check if the values are not empty, otherwise, set default resolution
+if [ -z "$RESOLUTION" ]; then
+    DISPLAY_WIDTH=640
+    DISPLAY_HEIGHT=480
+else
+    DISPLAY_WIDTH=$(echo "$RESOLUTION" | cut -d'x' -f 1)
+    DISPLAY_HEIGHT=$(echo "$RESOLUTION" | cut -d'x' -f 2)
+fi
+
+unset RESOLUTION
+
+# Calculate greatest common divisor (GCD) to simplify aspect ratio
+gcd() {
+  dividend=$1
+  divisor=$2
+  remainder=1
+  until [ "$remainder" -eq 0 ]; do
+    remainder=$((dividend % divisor))
+    dividend=$divisor
+    divisor=$remainder
+  done
+  echo $dividend
+}
+
+# Calculate greatest common divisor of width and height
+GCD=$(gcd $DISPLAY_WIDTH $DISPLAY_HEIGHT)
+
+# Calculate simplified aspect ratio
+ASPECT_X=$((DISPLAY_WIDTH / GCD))
+ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
+
+## Some more info here.
 ANALOG_STICKS=2
 DEVICE_CPU=$(lscpu | grep '^Model name' | cut -f 2 -d ":" | awk 'NR==1{print $1}')
 DISPLAY_ORIENTATION=0
@@ -234,8 +278,17 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="SD865"
         ;;
 
-    "retroid pocket 5"|"retroid pocket mini")
+    "rpflip"*)
+        DEVICE_NAME="Retroid Pocket Flip 2"
         DEVICE_CPU="SD865"
+        ;;
+
+    "retroid pocket"*)
+        DEVICE_CPU="SD865"
+        ;;
+
+    "ayn odin 2"*)
+        DEVICE_CPU="SM8550"
         ;;
 
     "rk3326")
@@ -324,10 +377,17 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
 
     "trimui smart pro"|"trimui-smart-pro")
         DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+
+        if [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "1024x768" ]]; then
+            DEVICE_NAME="TrimUI Brick"
+            ANALOG_STICKS=0
+        fi
         ;;
 
     "trimui brick"|"trimui-brick")
         DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Brick"
         ANALOG_STICKS=0
         ;;
 
@@ -382,52 +442,6 @@ done
 
 unset libc
 unset path
-
-# get current resolution
-
-RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
-
-unset SCRIPT_DIR
-
-# Check if the values are not empty, otherwise, set default resolution
-if [ -z "$RESOLUTION" ]; then
-    DISPLAY_WIDTH=640
-    DISPLAY_HEIGHT=480
-else
-    DISPLAY_WIDTH=$(echo "$RESOLUTION" | cut -d'x' -f 1)
-    DISPLAY_HEIGHT=$(echo "$RESOLUTION" | cut -d'x' -f 2)
-fi
-
-unset RESOLUTION
-
-# Calculate greatest common divisor (GCD) to simplify aspect ratio
-gcd() {
-  dividend=$1
-  divisor=$2
-  remainder=1
-  until [ "$remainder" -eq 0 ]; do
-    remainder=$((dividend % divisor))
-    dividend=$divisor
-    divisor=$remainder
-  done
-  echo $dividend
-}
-
-# Calculate greatest common divisor of width and height
-GCD=$(gcd $DISPLAY_WIDTH $DISPLAY_HEIGHT)
-
-# Calculate simplified aspect ratio
-ASPECT_X=$((DISPLAY_WIDTH / GCD))
-ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
-
-# TrimUI Hack. :[
-
-if [[ "$DEVICE_NAME" = "TrimUI Smart Pro" ]]; then
-    if [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "1024x768" ]]; then
-        DEVICE_NAME="TrimUI Brick"
-        ANALOG_STICKS=0
-    fi
-fi
 
 # Dump info
 
