@@ -1917,8 +1917,9 @@ class HarbourMaster():
             runtime_status = {
                 'Verified': 'Update Available',
                 'Unverified': 'Broken',
+                'Broken': 'Broken',
                 'Not Installed': 'Not Installed',
-                }[runtime_status]
+                }.get(runtime_status, runtime_status)
 
         if runtime_status == 'Verified':
             if not in_install:
