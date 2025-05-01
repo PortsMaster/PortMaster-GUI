@@ -173,6 +173,33 @@ else
     DEVICE_NAME="Unknown"
 fi
 
+## Get the system architecture
+DEVICE_ARCH="aarch64"
+DEVICE_HAS_ARMHF="N"
+DEVICE_HAS_AARCH64="N"
+DEVICE_HAS_X86="N"
+DEVICE_HAS_X86_64="N"
+
+if [ -f "/lib/ld-linux-armhf.so.3" ]; then
+    DEVICE_ARCH="armhf"
+    DEVICE_HAS_ARMHF="Y"
+fi
+
+if [ -f "/lib/ld-linux-aarch64.so.1" ]; then
+    DEVICE_ARCH="aarch64"
+    DEVICE_HAS_AARCH64="Y"
+fi
+
+if [ -e "/lib/ld-linux.so.2" ] || [ -e "/usr/lib/ld-linux.so.2" ] || [ "$(uname -i)" = "i686" ]; then
+    DEVICE_ARCH="x86"
+    DEVICE_HAS_X86="Y"
+fi
+
+if [ -e "/lib/ld-linux-x86-64.so.2" ] || [ -e "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" ] || [ "$(uname -i)" = "x86_64" ]; then
+    DEVICE_ARCH="x86_64"
+    DEVICE_HAS_X86_64="Y"
+fi
+
 ## Get current resolution
 # Moved this up to allow some fixes that rely on it.
 
@@ -215,32 +242,6 @@ ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
 ANALOG_STICKS=2
 DEVICE_CPU=$(lscpu | grep '^Model name' | cut -f 2 -d ":" | awk 'NR==1{print $1}')
 DISPLAY_ORIENTATION=0
-
-DEVICE_ARCH="aarch64"
-DEVICE_HAS_ARMHF="N"
-DEVICE_HAS_AARCH64="N"
-DEVICE_HAS_X86="N"
-DEVICE_HAS_X86_64="N"
-
-if [ -f "/lib/ld-linux-armhf.so.3" ]; then
-    DEVICE_ARCH="armhf"
-    DEVICE_HAS_ARMHF="Y"
-fi
-
-if [ -f "/lib/ld-linux-aarch64.so.1" ]; then
-    DEVICE_ARCH="aarch64"
-    DEVICE_HAS_AARCH64="Y"
-fi
-
-if [ -e "/lib/ld-linux.so.2" ] || [ -e "/usr/lib/ld-linux.so.2" ] || [ "$(uname -i)" = "i686" ]; then
-    DEVICE_ARCH="x86"
-    DEVICE_HAS_X86="Y"
-fi
-
-if [ -e "/lib/ld-linux-x86-64.so.2" ] || [ -e "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2" ] || [ "$(uname -i)" = "x86_64" ]; then
-    DEVICE_ARCH="x86_64"
-    DEVICE_HAS_X86_64="Y"
-fi
 
 ## FIXES
 # Here is where we can add custome rules to fill out extra info on the device.
