@@ -389,6 +389,17 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         fi
         ;;
 
+    "tui-spoon")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+        ;;
+
+    "tui-brick")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Brick"
+        ANALOG_STICKS=0
+        ;;
+
     "trimui brick"|"trimui-brick")
         DEVICE_CPU="a133plus"
         DEVICE_NAME="TrimUI Brick"

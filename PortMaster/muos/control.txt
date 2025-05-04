@@ -34,11 +34,11 @@ SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 [ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 case "$DEVICE_NAME" in
-  rg*)
-    SDL_CTRL_NAME="deeplay-keys"
-  ;;
-  teaspoon|brick)
+  tui*)
     SDL_CTRL_NAME="muOS-Keys"
+  ;;
+  *)
+    SDL_CTRL_NAME="Deeplay-keys"
   ;;
 esac
 
