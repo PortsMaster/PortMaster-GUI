@@ -415,6 +415,11 @@ def new_device_info():
     if muos_device != '':
         info['device'] = muos_device.lower().replace(' ', '-').split('\n')[0]
 
+        if info['device'] == 'tui-brick':
+            info['device'] = 'trimui-brick'
+        elif info['device'] == 'tui-spoon':
+            info['device'] = 'trimui-smart-pro'
+
     # Works on TrimUI Smart Pro
     if Path('/usr/trimui').is_dir():
         info['name'] = 'TrimUI'
