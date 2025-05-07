@@ -364,6 +364,7 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
 
     "advance")
         DEVICE_NAME="ODROID-GO Advance"
+        ANALOG_STICKS=1
         DEVICE_CPU="RK3326"
         ;;
 
