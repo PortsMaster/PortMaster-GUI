@@ -317,7 +317,7 @@ function love.update(dt)
                 if patchState == "complete" then
                     PatchComplete()
                 elseif patchState == "failed" then
-                    patchFailed()
+                    PatchFailed()
                 elseif patchState == "cancelled" then
                     PatchCancelled()
                 end
