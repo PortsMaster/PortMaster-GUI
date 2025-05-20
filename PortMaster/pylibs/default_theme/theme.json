@@ -157,6 +157,10 @@
 
 
     },
+    "#animations": {
+        "simple": {"max-frames": 10},
+        "complex": {"start": 0, "max-frames": 101, "skip-frames": 5}
+    },
     "#base": {
         "font": "DejaVuSans.ttf",
         "font[zh_TW]": "NotoSansTC-Regular.ttf",
@@ -474,6 +478,7 @@
             "font-size": 25,
             "no-select-color": "list_unselectable",
             "inactive-select-color": "list_unselectable",
+            "list-section-add-blank": true,
             "pointer": "pointenfedde.png",
             "pointer-align": [ "midright", "midleft" ],
             "pointer-size": [ 51, 26 ],
