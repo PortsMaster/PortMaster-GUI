@@ -115,10 +115,15 @@ class GUI:
         self.images = ImageManager(self)
         self.sounds = SoundManager(self)
         self.events = EventManager(self)
+        self.animations = AnimationManager(self)
         self.override = {}
         self.pallet = {}
         self.default_rects = NamedRects([0, 0, *self.renderer.logical_size])
         self.formatter = formatter
+
+    def set_data(self, key, value):
+        # This needs to be handled by the gui parent class
+        pass
 
     def new_rects(self):
         return self.default_rects.copy()
@@ -680,6 +685,89 @@ class Timer:
         Reset all timers
         """
         self._register.clear()
+
+
+class AnimationManager:
+    def __init__(self, gui):
+        self._gui = gui
+        self._animations = {}
+
+    def add_animation(self, animation_name, options):
+        animation = {
+            # Options
+            'start': 0,              # start frame
+            'max-frames': 1,         # how many frames we have
+            'skip-frames': 1,        # how many frames we skip forward
+            'update': 100,           # how many ms between frames
+            'loop': True,            # do we run forever?
+            'reset-on-scene': True,  # reset on scene change
+            # Running variables
+            'frame': 0,
+            'last-update': None,
+            'done': False,
+            }
+
+        if 'max-frames' in options and isinstance(options['max-frames'], int):
+            if options['max-frames'] > 0:
+                animation['max-frames'] = options['max-frames']
+
+        if 'skip-frames' in options and isinstance(options['skip-frames'], int):
+            if options['skip-frames'] > 0 and options['skip-frames'] < animation['max-frames']:
+                animation['skip-frames'] = options['skip-frames']
+
+        if 'start' in options and isinstance(options['start'], int):
+            if options['start'] >= 0 and options['start'] < animation['max-frames']:
+                animation['start'] = options['start']
+
+        if 'update' in options and isinstance(options['update'], int):
+            if options['update'] >= 100:
+                animation['update'] = options['update']
+
+        if 'loop' in options and isinstance(options['loop'], bool):
+            animation['loop'] = options['loop']
+
+        if 'reset-on-scene' in options and isinstance(options['reset-on-scene'], bool):
+            animation['reset-on-scene'] = options['reset-on-scene']
+
+        self._animations[animation_name] = animation
+        self._gui.set_data(f"animation.{animation_name}", f"{animation['frame']:03d}")
+
+    def update_animations(self):
+        time = sdl2.SDL_GetTicks64()
+        for animation_name, animation in self._animations.items():
+            if animation['last-update'] is None:
+                animation['frame'] = animation['start']
+                animation['last-update'] = time
+                animation['done'] = False
+                self._gui.set_data(f"animation.{animation_name}", f"{animation['frame']:03d}")
+                continue
+
+            if animation['done']:
+                continue
+
+            # logger.debug(f"{animation_name}: {(animation['last-update'] - time)} >= {animation['update']}")
+            if (time - animation['last-update']) >= animation['update']:
+                animation['frame'] += animation['skip-frames']
+
+                if animation['frame'] >= animation['max-frames']:
+                    if animation['loop']:
+                        animation['frame'] = animation['start']
+                    else:
+                        animation['frame'] = animation['max-frames'] - 1
+                        animation['done'] = True
+
+                animation['last-update'] = time
+                self._gui.set_data(f"animation.{animation_name}", f"{animation['frame']:03d}")
+                continue
+
+    def change_scene(self):
+        time = sdl2.SDL_GetTicks64()
+        for animation_name, animation in self._animations.items():
+            if animation['reset-on-scene']:
+                animation['last-update'] = None
+                animation['frame'] = animation['start']
+                animation['done'] = False
+                self._gui.set_data(f"animation.{animation_name}", f"{animation['frame']:03d}")
 
 
 class Texture:
@@ -2052,6 +2140,8 @@ class Region:
         self.list_header = self._verify_text('list-header', optional=True)
         self.list_header_add_blank = self._verify_bool('list-header-add-blank', False, optional=True)
 
+        self.list_section_add_blank = self._verify_bool('list-section-add-blank', False, optional=True)
+
         if self._text and self.list:
             raise GUIThemeError('Cannot define text and a list')
 
@@ -2472,7 +2562,7 @@ class Region:
 
         self.gui.updated = True
 
-    def add_option(self, option, text, index=0, description=None):
+    def add_option(self, option, text, index=0, description=None, in_section=False):
         if self.list is None:
             self.list = []
             self.options = []
@@ -2496,6 +2586,10 @@ class Region:
 
         while len(self._list_selected) < len(self.list):
             self._list_selected.append(0)
+
+        if not in_section and option is None and text is not None and len(self.options) > 0 and self.list_section_add_blank:
+            # We add a blank before a "section" in the list.
+            self.add_option(None, "", in_section=True)
 
         self.gui.updated = True
         self.descriptions.append(description)

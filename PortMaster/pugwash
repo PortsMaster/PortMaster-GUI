@@ -832,6 +832,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             else:
                 self.set_data("system.battery_level", _("N/A"))
 
+        # Animations.
+        self.animations.update_animations()
+
         # Events get handled in reversed order.
         for scene in reversed(self.scenes[-1][1]):
             if scene.do_update(self.events):

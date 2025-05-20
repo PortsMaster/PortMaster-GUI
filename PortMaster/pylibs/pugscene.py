@@ -159,6 +159,7 @@ class BaseScene:
 
     def scene_activate(self):
         if not self.active:
+            self.gui.animations.change_scene()
             self.active = True
             self.gui.sounds.easy_music(self.music, volume=max(0, min(self.music_volume, 128)))
             self.gui.set_data("scene.title", self.scene_title)
