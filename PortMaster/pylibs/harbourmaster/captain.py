@@ -90,7 +90,7 @@ def check_port(port_name, zip_file, extra_info=None):
             raise BadPort()
 
         if port_info_file is not None:
-            port_info_data = json.loads(zf.read(port_info_file).decode('utf-8'))
+            port_info_data = json_safe_loads(zf.read(port_info_file).decode('utf-8'))
 
             if not isinstance(port_info_data, dict):
                 logger.error(f"Unable to load port.json file from {port_info_file}")
