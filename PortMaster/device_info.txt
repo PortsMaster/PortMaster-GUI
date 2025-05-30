@@ -441,7 +441,7 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="h700"
         ;;
 
-    "rg35xx-h"|"rg40xx-h")
+    "rg35xx-h"|"rg40xx-h"|"rg34xx-sp")
         DEVICE_CPU="h700"
         ;;
 

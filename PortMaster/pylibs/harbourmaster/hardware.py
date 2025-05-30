@@ -42,6 +42,7 @@ DEVICES = {
     "Anbernic RG35XX PLUS": {"device": "rg35xx-plus", "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG35XX H":    {"device": "rg35xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG35XX SP":   {"device": "rg35xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RG34XX SP":   {"device": "rg34xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG34XX":      {"device": "rg34xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "ROCKNIX"]},
@@ -113,6 +114,7 @@ HW_INFO = {
     "rg35xx-h":    {"resolution": (640, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-plus": {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx-sp":   {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rg34xx-sp":   {"resolution": (720, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 2048},
     "rg34xx-h":    {"resolution": (720, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg28xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
@@ -331,7 +333,7 @@ def nice_device_to_device(raw_device):
         ('powkiddy x55',             'x55'),
 
         ('anbernic rg28xx*',      'rg28xx'),
-        ('anbernic rg34xx*',      'rg34xx-h'),
+        ('anbernic rg34xx-sp*',   'rg34xx-sp'),
         ('anbernic rg35xx h*',    'rg35xx-h'),
         ('anbernic rg35xx sp*',   'rg35xx-sp'),
         ('anbernic rg35xx plus*', 'rg35xx-plus'),
@@ -340,6 +342,7 @@ def nice_device_to_device(raw_device):
 
         ('anbernic rg40xx*',      'rg40xx-h'),
         ('anbernic rg35xx*',      'rg35xx-h'),
+        ('anbernic rg34xx*',      'rg34xx-h'),
 
         ('miyoo rk3566 355 v10*', 'miyoo-flip'),
 
