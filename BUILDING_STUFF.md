@@ -43,6 +43,35 @@ make -j4
 strip xdelta3
 ```
 
+## Compile innoextract statically.
+
+This requires the static liblzma above to have been built and installed.
+
+```sh
+git clone "https://github.com/dscharrer/innoextract.git"
+
+cd innoextract
+mkdir build
+cd build
+
+cmake .. -DBZip2_USE_STATIC_LIBS=ON -DBoost_USE_STATIC_LIBS=ON -DLZMA_USE_STATIC_LIBS=ON -DUSE_LZMA=ON -DUSE_STATIC_LIBS=ON -DZLIB_USE_STATIC_LIBS=ON -Diconv_USE_STATIC_LIBS=ON
+
+```
+
+Even with all of the above the stupid thing wants to dynamically link to liblzma.so, so instead we manually edit `CMakeCache.txt`.
+
+Find the following and edit so they match:
+
+- `LZMA_INCLUDE_DIR:PATH=/usr/local/include`
+- `LZMA_LIBRARY:FILEPATH=/usr/local/libliblzma.a`
+
+Compile as normal:
+
+```sh
+make -j4
+strip innoextract
+```
+
 
 ## Compile xmlstartlet statically
 
