@@ -410,11 +410,17 @@ def new_device_info():
 
     ## Works on muOS (obviously)
     muos_version = safe_cat('/opt/muos/config/version.txt')
+    if muos_version == '':
+        muos_version = safe_cat('/opt/muos/config/system/version')
+
     if muos_version != '':
         info['name'] = 'muOS'
         info['version'] = muos_version.strip().split('\n')[0]
 
     muos_device = safe_cat('/opt/muos/config/device.txt')
+    if muos_device == '':
+        muos_device = safe_cat('/opt/muos/device/config/board/name')
+
     if muos_device != '':
         info['device'] = muos_device.lower().replace(' ', '-').split('\n')[0]
 

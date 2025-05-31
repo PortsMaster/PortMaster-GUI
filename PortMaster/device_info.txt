@@ -83,6 +83,9 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
     CFW_VERSION=$(head -n1 "/opt/muos/config/version.txt")
+elif [ -f "/opt/muos/config/system/version" ]; then
+    CFW_NAME="muOS"
+    CFW_VERSION=$(<"/opt/muos/config/system/version")
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
@@ -140,6 +143,8 @@ elif [ -f "/boot/boot/system.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/system.board)
 elif [ -f "/opt/muos/config/device.txt" ]; then
     DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
+elif [ -f "/opt/muos/device/config/board/name" ]; then
+    DEVICE_NAME=$(tr '[:lower:]' '[:upper:]' <"/opt/muos/device/config/board/name")
 elif [ -f "/usr/miyoo/version" ]; then
     DEVICE_NAME="Miyoo Flip"
 elif grep -qi "RG.\?ARC.\?[DS]" "/sys/firmware/devicetree/base/model"; then

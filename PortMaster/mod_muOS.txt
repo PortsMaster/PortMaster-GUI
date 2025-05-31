@@ -21,4 +21,5 @@ GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 pm_platform_helper() {
     # Help keep XongleBongles sanity below
     printf "%s" "$(basename "$1")" > /run/muos/system/foreground_process
+    printf "%s" "$(basename "$1")" > /opt/muos/config/system/foreground_process
 }
