@@ -325,10 +325,11 @@ class GMIFFDdata(IFFdata):
         offset_start = self.fileout.tell()
         self.fileout.seek(offset_start)                 # Can't find out why, but if I don't do this
                                                         # it writes with -4 bytes offset...
-
-        oggenc_process = Popen(["oggenc","-Q", *self._get_oggenc_options(), "-o", "-", "-"],stdin=PIPE, stdout=self.fileout, stderr=DEVNULL )
         
-        vgmstream_process = Popen(["vgmstream-cli",f"{self.audo[audo_entry]['txtp']}", "-p"], stdout=oggenc_process.stdin, stderr=DEVNULL )
+        DEVICE_ARCH = os.environ.get("DEVICE_ARCH", "aarch64")
+        oggenc_process = Popen([f"oggenc.{DEVICE_ARCH}", "-Q", *self._get_oggenc_options(), "-o", "-", "-"], stdin=PIPE, stdout=self.fileout, stderr=DEVNULL )
+        
+        vgmstream_process = Popen([f"vgmstream-cli.{DEVICE_ARCH}",f"{self.audo[audo_entry]['txtp']}", "-p"], stdout=oggenc_process.stdin, stderr=DEVNULL )
 
         oggenc_process.communicate()
 
