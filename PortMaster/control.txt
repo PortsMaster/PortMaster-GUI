@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 # This file can and should be sourced by ports for various parameters to 
 # minimize script customizations and allow for easier future updates
 # like adding additional supported devices.
@@ -136,6 +139,11 @@ get_controls() {
     DEVICE="190000004b4800000111000000010000"
     param_device="rg552"
     LOWRES="N"
+  elif [[ -e "/dev/input/by-path/platform-gamekiddy-joypad-event-joystick" ]]; then
+    DEVICE="19008d96010000000221000000010000"
+    param_device="gkd-pixel2"
+    LOWRES="N"
+    ANALOGSTICKS=0
   else
     DEVICE="${1}"
     param_device="${2}"

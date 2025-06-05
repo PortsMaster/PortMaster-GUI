@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+#
+# SPDX-License-Identifier: MIT
+#
+
 import xml.etree.ElementTree as ET
 import argparse
 from pathlib import Path

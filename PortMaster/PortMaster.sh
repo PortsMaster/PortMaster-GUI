@@ -17,6 +17,8 @@ fi
 
 source $controlfolder/control.txt
 
+[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+
 get_controls
 
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
@@ -24,11 +26,13 @@ CUR_TTY=/dev/tty0
 
 cd "$controlfolder"
 
-exec > >(tee "$controlfolder/log.txt") 2>&1
+> "$controlfolder/log.txt" && exec > >(tee "$controlfolder/log.txt") 2>&1
 
 export TERM=linux
 $ESUDO chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
+
+source "$controlfolder/utils/pmsplash.txt"
 
 echo "Starting PortMaster." > $CUR_TTY
 
@@ -97,7 +101,9 @@ if [ -n "$AUTOINSTALL" ]; then
   fi
 fi
 
-# PORTMASTER_CMDS=${PORTMASTER_CMDS:---debug}
+## To help with testing.
+# export PORTMASTER_CMDS="--debug"
+# export HM_PERFTEST="Y"
 
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"

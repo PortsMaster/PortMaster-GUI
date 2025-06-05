@@ -1,3 +1,6 @@
+
+# SPDX-License-Identifier: MIT
+
 import copy
 import functools
 import gettext
@@ -280,6 +283,11 @@ def theme_load(gui, theme_file, color_scheme=None):
                 logger.debug("- loading override:")
                 for override_name, override_value in section_data.items():
                     gui.override[override_name] = override_value
+
+            elif section_name == "#animations":
+                logger.debug("- defining animations")
+                for animation_name, animation_options in section_data.items():
+                    gui.animations.add_animation(animation_name, animation_options)
 
         else:
             section_name, requirements = extract_requirements(section_name, strict=True)

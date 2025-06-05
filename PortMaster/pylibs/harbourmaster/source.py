@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 # System imports
 import datetime
 import json
@@ -257,12 +259,11 @@ class GitHubRawReleaseV1(BaseSource):
         if check_runtime and port_name in getattr(self, '_info', {}):
             port_info = self._info[port_name]
 
-            if port_info['attr'].get('runtime', None) is not None:
-                runtime = port_info['attr']['runtime']
-
-                runtime_file = (self.hm.libs_dir / runtime)
-                if not runtime_file.exists():
-                    size += self.hm.port_download_size(runtime)
+            if len(port_info['attr'].get('runtime', [])) > 0:
+                for runtime in port_info['attr']['runtime']:
+                    runtime_file = (self.hm.libs_dir / runtime)
+                    if not runtime_file.exists():
+                        size += self.hm.port_download_size(runtime)
 
         return size
 
@@ -698,6 +699,9 @@ class GitHubRepoV1(GitHubRawReleaseV1):
 class PortMasterV3(BaseSource):
     VERSION = 2
 
+    # A safe number, at this point its better to just download the full zip again.
+    MAX_IMAGES_XXX_ZIP = 4
+
     def load(self):
         self._data = self._config.setdefault('data', {}).setdefault('data', {})
         self.ports = self._config.setdefault('data', {}).setdefault('ports', [])
@@ -745,13 +749,37 @@ class PortMasterV3(BaseSource):
                 images_data = json_safe_load(fh)
 
         if images_data is None:
-            images_data = {}
+            return False
+
+        if "images.zip" not in images_data:
+            # It's an older version without the `images.zip` md5sum recorded.
+            return False
 
         # Find all the current images.
         images_to_delete = [
             file_name
             for file_name in self._images_dir.iterdir()
             if file_name.suffix in ('.png', '.jpg')]
+
+        # See how many images.xxx.zip files need updating.
+        images_zip_threshold = 0
+        for img_id in range(1000):
+            zip_xxx_name = f'images.{img_id:03d}.zip'
+
+            if zip_xxx_name not in self._data:
+                break
+
+            images_zip_md5 = self._data[zip_xxx_name]['md5']
+
+            # Has this zip been updated?
+            images_local_md5 = images_data.get(zip_xxx_name, {}).get('md5', None)
+
+            if images_local_md5 != images_zip_md5:
+                images_zip_threshold -= 1
+
+        if images_zip_threshold > self.MAX_IMAGES_XXX_ZIP:
+            # Yeah lets just download the big zip again.
+            return False
 
         for img_id in range(1000):
             zip_xxx_name = f'images.{img_id:03d}.zip'
@@ -769,7 +797,8 @@ class PortMasterV3(BaseSource):
                 for image_name in images_data[zip_xxx_name]['images']:
                     file_name = (self._images_dir / image_name)
 
-                    images_to_delete.remove(file_name)
+                    if file_name in images_to_delete:
+                        images_to_delete.remove(file_name)
 
                 continue
 
@@ -778,8 +807,9 @@ class PortMasterV3(BaseSource):
             # fetch the new archive
             images_zip = download(self.hm.temp_dir / zip_xxx_name, images_zip_url, images_zip_md5, callback=self.hm.callback)
             if images_zip is None:
+                # Abort, lets just fallback to tried and true images.zip
                 logger.debug(f"Unable to download {images_zip_url}")
-                return
+                return False
 
             images_data[zip_xxx_name] = {}
             images_data[zip_xxx_name]['md5'] = images_zip_md5
@@ -815,19 +845,39 @@ class PortMasterV3(BaseSource):
             logger.debug(f"removing {image_to_delete}")
             image_to_delete.unlink()
 
+        # We got here, update the images.zip entry in the images_data
+        images_data["images.zip"] = self._data['images.zip']['md5']
+
         with open(self._images_json_file, 'w') as fh:
             json.dump(images_data, fh, indent=4, sort_keys=True)
+
+        self._images_md5_file.write_text(self._data['images.zip']['md5'])
+        self._images_md5 = self._data['images.zip']['md5']
 
     def _update(self):
         # cprint(f"- <b>{self._config['name']}</b>: Fetching info")
         self.hm.callback.message("  - {}".format(_("Fetching info")))
 
         ## Download latest images.zip if needed.
-        if 'images.000.zip' in self._data:
-            return self._update2()
 
         if 'images.zip' not in self._data:
             return
+
+        if 'images.000.zip' in self._data:
+            if self._update2():
+                return
+
+            images_data = None
+
+            if self._images_json_file.is_file():
+                with open(self._images_json_file, 'r') as fh:
+                    images_data = json_safe_load(fh)
+
+            if images_data is None:
+                images_data = {}
+
+            # we use the md5 stored in the images.json instead.
+            self._images_md5 = images_data.get('images.zip', None)
 
         images_url_zip = self._data['images.zip']['url']
 
@@ -869,6 +919,27 @@ class PortMasterV3(BaseSource):
                 logger.debug(f"removing {image_to_delete}")
                 image_to_delete.unlink()
 
+            if 'images.000.zip' in self._data and 'images' in self._data['images.000.zip']:
+                # build up the images.json with the data we have
+                images_data = {}
+
+                for img_id in range(1000):
+                    zip_xxx_name = f'images.{img_id:03d}.zip'
+
+                    if zip_xxx_name not in self._data:
+                        break
+
+                    images_zip_md5 = self._data[zip_xxx_name]['md5']
+
+                    images_data[zip_xxx_name] = {}
+                    images_data[zip_xxx_name]['md5'] = images_zip_md5
+                    images_data[zip_xxx_name]['images'] = self._data[zip_xxx_name]['images'][:]
+
+                images_data['images.zip'] = images_md5
+
+                with open(self._images_json_file, 'w') as fh:
+                    json.dump(images_data, fh, indent=4, sort_keys=True)
+
             self._images_md5_file.write_text(images_md5)
             self._images_md5 = images_md5
 
@@ -906,6 +977,11 @@ class PortMasterV3(BaseSource):
 
         ## Load data from the assets.
         for key, asset in data['ports'].items():
+            asset = port_info_load(asset)
+            if asset is None:
+                ## Skip bad items.
+                continue
+
             result = {
                 'name': asset['name'],
                 'size': asset['source']['size'],
@@ -924,6 +1000,9 @@ class PortMasterV3(BaseSource):
                 'md5': asset['md5'],
                 'url': asset['url'],
                 }
+
+            if 'images' in asset:
+                result['images'] = asset['images']
 
             if key.endswith('.squashfs'):
                 if 'runtime_name' in asset:
@@ -1033,12 +1112,11 @@ class PortMasterV3(BaseSource):
         if check_runtime and port_name in getattr(self, '_info', {}):
             port_info = self._info[port_name]
 
-            if port_info['attr'].get('runtime', None) is not None:
-                runtime = port_info['attr']['runtime']
-
-                runtime_file = (self.hm.libs_dir / runtime)
-                if not runtime_file.exists():
-                    size += self.hm.port_download_size(runtime)
+            if len(port_info['attr'].get('runtime', [])) > 0:
+                for runtime in port_info['attr']['runtime']:
+                    runtime_file = (self.hm.libs_dir / runtime)
+                    if not runtime_file.exists():
+                        size += self.hm.port_download_size(runtime)
 
         return size
 

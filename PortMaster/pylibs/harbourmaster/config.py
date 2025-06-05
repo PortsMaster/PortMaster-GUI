@@ -1,4 +1,7 @@
 
+# SPDX-License-Identifier: MIT
+
+
 # System imports
 import pathlib
 import platform
@@ -46,6 +49,18 @@ if (Path().cwd() / '.git').is_dir():
     HM_DEFAULT_PORTS_DIR   = Path('ports/').absolute()
     HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
+    
+elif Path("/mnt/sdcard/spruce").is_dir():
+    ## Spruce (Miyoo Flip)
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Roms/.portmaster")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/Roms/PORTS64")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/PORTS64")
+
+elif Path("/mnt/SDCARD/MIYOO_EX/PortMaster").is_dir():
+    ## TrimUI Smart Pro
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/MIYOO_EX/PortMaster")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/MIYOO_EX/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/MIYOO_EX/ports")
 
 elif Path("/mnt/SDCARD/Apps/PortMaster").is_dir():
     ## TrimUI Smart Pro

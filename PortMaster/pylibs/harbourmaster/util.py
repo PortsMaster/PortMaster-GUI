@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 import contextlib
 import datetime
 import functools
@@ -161,7 +163,19 @@ def version_parse(version):
     return tuple(result)
 
 
-@functools.lru_cache(maxsize=512)
+# Custom Decorator function
+def list_to_tuple(function):
+    # https://stackoverflow.com/a/60980685
+    def wrapper(*args):
+        args = [tuple(x) if isinstance(x, list) else x for x in args]
+        result = function(*args)
+        result = tuple(result) if isinstance(result, list) else result
+        return result
+
+    return wrapper
+
+
+@functools.lru_cache(maxsize=1024)
 def name_cleaner(text):
     temp = re.sub(r'[^a-zA-Z0-9 _\-\.]+', '', text.strip().lower())
     return re.sub(r'[ \.]+', '.', temp)
@@ -306,6 +320,11 @@ def hash_file(file_name):
 
 
 def runtime_nicename(runtime):
+    if isinstance(runtime, list):
+        return oc_join([
+            runtime_nicename(_runtime)
+            for _runtime in runtime])
+
     if runtime.startswith("frt"):
         return ("Godot/FRT {version}").format(version=runtime.split('_', 1)[1].rsplit('.', 1)[0])
 
@@ -315,8 +334,23 @@ def runtime_nicename(runtime):
     if runtime.startswith("mono"):
         return ("Mono {version}").format(version=runtime.split('-', 1)[1].rsplit('-', 1)[0])
 
+    if runtime.startswith("rlvm"):
+        return "RLVM"
+
+    if runtime.startswith("pyxel"):
+        return ("Pyxel {version}").format(version=runtime.split('_')[1])
+
+    if runtime.startswith("weston"):
+        return ("Weston {version}").format(version=runtime.rsplit('_', 1)[-1])
+
+    if runtime.startswith("mesa"):
+        return ("Mesa {version}").format(version=runtime.rsplit('_', 1)[-1])
+
     if "jdk" in runtime and runtime.startswith("zulu11"):
         return ("JDK {version}").format(version=runtime.split('-')[2][3:])
+
+    if "jre" in runtime and runtime.startswith("zulu11"):
+        return ("JRE {version}").format(version=runtime.split('-')[2][3:])
 
     return runtime
 
@@ -682,6 +716,7 @@ __all__ = (
     'hash_file',
     'json_safe_load',
     'json_safe_loads',
+    'list_to_tuple',
     'load_pm_signature',
     'make_temp_directory',
     'match_requirements',

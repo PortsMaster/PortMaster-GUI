@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 # System imports
 import datetime
 import fnmatch
@@ -110,6 +112,8 @@ class HarbourMaster():
         self.callback = callback
         self.ports = []
         self.utils = []
+
+        self._port_attrs_updated = True
 
         self.ports_dir.mkdir(0o755, parents=True, exist_ok=True)
         self.scripts_dir.mkdir(0o755, parents=True, exist_ok=True)
@@ -326,6 +330,8 @@ class HarbourMaster():
     def load_sources(self):
         source_files = list(self.cfg_dir.glob('*.source.json'))
         source_files.sort()
+
+        self._port_attrs_updated = True
 
         self.callback.message("  - {}".format(_("Loading Sources.")))
 
@@ -905,19 +911,27 @@ class HarbourMaster():
 
     def port_info_attrs(self, port_info):
         runtime_fix = {
+            'godot': 'godot',
             'frt':  'godot',
             'mono': 'mono',
             'rlvm': 'rlvm',
             'solarus': 'solarus',
             'jdk11': 'jre',
+            'jre': 'jre',
+            'weston': 'weston',
+            'mesa': 'mesa',
             }
 
         attrs = []
-        runtime = port_info.get('attr', {}).get('runtime', None)
-        if runtime is not None:
+        runtimes = port_info.get('attr', {}).get('runtime', [])
+        if len(runtimes) > 0:
+            if isinstance(runtimes, str):
+                runtimes = [runtimes]
+
             for runtime_key, runtime_attr in runtime_fix.items():
-                if runtime_key in runtime:
-                    add_list_unique(attrs, runtime_attr)
+                for runtime in runtimes:
+                    if runtime_key in runtime:
+                        add_list_unique(attrs, runtime_attr)
 
         for genre in port_info.get('attr', {}).get('genres', []):
             add_list_unique(attrs, genre.casefold())
@@ -974,9 +988,13 @@ class HarbourMaster():
         show = False
         capabilities = self.device['capabilities']
 
-        requirements = port_info.get('attr', {}).get('reqs', [])[:]
+        requirements = port_info.get('attr', {}).get('reqs', [])
+        if requirements is not None:
+            requirements = requirements[:]
+        else:
+            requirements = []
 
-        runtime = port_info.get('attr', {}).get('runtime', None)
+        runtimes = port_info.get('attr', {}).get('runtime', [])
 
         min_glibc = port_info.get('attr', {}).get('min_glibc', "")
 
@@ -984,12 +1002,13 @@ class HarbourMaster():
             if version_parse(min_glibc.strip()) > version_parse(self.device['glibc']):
                 return False
 
-        if runtime is not None:
-            if not runtime.endswith('.squashfs'):
-                runtime += '.squashfs'
+        if len(runtimes) > 0:
+            for runtime in runtimes:
+                if not runtime.endswith('.squashfs'):
+                    runtime += '.squashfs'
 
-            requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
-            show = True
+                requirements.append('|'.join(self.runtimes_info.get(runtime, {}).get('remote', {}).keys()))
+                show = True
 
         else:
             arch = port_info.get('attr', {}).get('arch', [])
@@ -1008,7 +1027,97 @@ class HarbourMaster():
 
         return result
 
+    def build_port_attrs(self):
+        """
+        With this function we create a cache of source_port_attrs and installed_port_attrs.
+
+        These are a dict of each port attr, and a set of ports that match those attrs.
+
+        Instead of manually refreshing this info every time we filter the ports list we
+        can just do simple intersection of the current filters and it will give us the
+        availble list of ports.
+
+        As installed ports will have different filter set from source ports,
+        we keep them as a separate dict.
+
+        If something changes in the installed ports or ports available,
+        assign `self._port_attrs_updated` to True and this will cause a refresh.
+        """
+        self._source_port_attrs = {}
+        self._installed_port_attrs = {}
+        self._all_ports_set = set()
+
+        self._port_attrs_updated = False
+
+        installed_ports = set()
+
+        all_attrs = set()
+
+        for port_name in self.installed_ports:
+            port_name = name_cleaner(port_name)
+
+            new_port_info = self.port_info(port_name, installed=True)
+
+            new_port_attrs = self.port_info_attrs(new_port_info)
+
+            self._all_ports_set.add(port_name)
+            installed_ports.add(port_name)
+
+            for port_attr in new_port_attrs:
+                all_attrs.add(port_attr)
+                self._installed_port_attrs.setdefault(port_attr, set()).add(port_name)
+
+        for port_name, port_info in self.broken_ports.items():
+            port_name = name_cleaner(port_name)
+
+            if port_name in installed_ports:
+                continue
+
+            self._all_ports_set.add(port_name)
+
+            new_port_info = self.port_info(port_name, installed=True)
+
+            new_port_attrs = self.port_info_attrs(new_port_info)
+
+            installed_ports.add(port_name)
+
+            for port_attr in new_port_attrs:
+                all_attrs.add(port_attr)
+                self._installed_port_attrs.setdefault(port_attr, set()).add(port_name)
+
+        for source_prefix, source in self.sources.items():
+            for port_name in source.ports:
+                port_name = name_cleaner(port_name)
+
+                new_port_info = self.port_info(port_name, installed=False)
+
+                if not self.match_requirements(new_port_info):
+                    logger.debug(f"skip incompatible port {port_name}.")
+                    continue
+
+                new_port_attrs = self.port_info_attrs(new_port_info)
+
+                # Skip experimental ports if they are not enabled.
+                if not self.cfg_data.get('show_experimental', False) and 'exp' in new_port_attrs:
+                    if not self.cfg_data.get('show_all', False):
+                        logger.debug(f"skip experimental port {port_name}.")
+                        continue
+
+                # This needs be done after all the fucking filtering. -- Happy Jan?
+                self._all_ports_set.add(port_name)
+
+                for port_attr in new_port_attrs:
+                    all_attrs.add(port_attr)
+                    self._source_port_attrs.setdefault(port_attr, set()).add(port_name)
+
+                    if port_name not in installed_ports:
+                        self._installed_port_attrs.setdefault(port_attr, set()).add(port_name)
+
     def list_ports(self, filters=[], sort_by='alphabetical', reverse=False):
+        """
+        This is deprecated, and overall a really bad idea.
+        """
+
         ## Filters can be genre, runtime
         if sort_by not in HM_SORT_ORDER:
             sort_by = HM_SORT_ORDER[0]
@@ -1073,6 +1182,75 @@ class HarbourMaster():
             port_name: port_info
             for port_name, port_info in sorted(
                 tmp_ports.items(),
+                key=lambda x: (PORT_SORT_FUNCS[sort_by](x[1]), x[0].casefold()),
+                reverse=reverse)
+            }
+
+        return ports
+
+    def list_ports_names_new(self, filters=[], sort_by='alphabetical', reverse=False):
+
+        ## Filters can be genre, runtime
+        if sort_by not in HM_SORT_ORDER:
+            sort_by = HM_SORT_ORDER[0]
+
+        ## Rebuild the port attribute sets.
+        if self._port_attrs_updated:
+            self.build_port_attrs()
+
+        tmp_ports = self._all_ports_set.copy()
+
+        not_installed = 'not installed' in filters
+        if not_installed:
+            filters = list(filters)
+            filters.remove('not installed')
+
+            if 'installed' not in filters:
+                tmp_ports.difference_update(self._source_port_attrs.get('installed', set()))
+            else:
+                # sigh...
+                tmp_ports = set()
+
+        if 'installed' in filters:
+            for filter_attr in filters:
+                tmp_ports.intersection_update(self._source_port_attrs.get(filter_attr.casefold(), set()))
+
+        else:
+            for filter_attr in filters:
+                tmp_ports.intersection_update(self._source_port_attrs.get(filter_attr.casefold(), set()))
+
+        return list(tmp_ports)
+
+    def list_ports_new(self, filters=[], sort_by='alphabetical', reverse=False):
+
+        tmp_ports = self.list_ports_names_new(filters, sort_by, reverse)
+
+        ports_list = {}
+
+        installed_status = 'installed' in filters
+
+        sort_by_reverse_order = ('recently_added', 'recently_updated')
+        if sort_by in sort_by_reverse_order:
+            reverse = not reverse
+
+        for port_name in tmp_ports:
+            port_info = self.port_info(port_name, installed=installed_status)
+
+            if port_info is None:
+                port_info = self.port_info(port_name, installed=False)
+
+            if port_info is None:
+                port_info = self.port_info(port_name, installed=True)
+
+            # if port_info is None:
+            #     continue
+
+            ports_list[port_name] = port_info            
+
+        ports = {
+            port_name: port_info
+            for port_name, port_info in sorted(
+                ports_list.items(),
                 key=lambda x: (PORT_SORT_FUNCS[sort_by](x[1]), x[0].casefold()),
                 reverse=reverse)
             }
@@ -1414,7 +1592,7 @@ class HarbourMaster():
                     if move_bash and dest_file.name.lower().endswith('.sh'):
                         move_bash_dir = self.platform.MOVE_PM_BASH_DIR
                         if move_bash_dir is None or not move_bash_dir.is_dir():
-                            move_bash_dir = self.ports_dir
+                            move_bash_dir = self.tools_dir
 
                         self.callback.message(f"- moving {dest_file} to {move_bash_dir / dest_file.name}")
                         shutil.move(dest_file, move_bash_dir / dest_file.name)
@@ -1566,6 +1744,8 @@ class HarbourMaster():
                     if gameinfo_xml.is_file():
                         self.platform.gamelist_add(gameinfo_xml)
 
+            self._port_attrs_updated = True
+
         except HarbourException as err:
             is_successs = False
             pass
@@ -1590,6 +1770,9 @@ class HarbourMaster():
                             shutil.rmtree(undo_file)
 
                 self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
+
+                self._port_attrs_updated = True
+
                 return 255
 
         self._fix_permissions()
@@ -1598,11 +1781,14 @@ class HarbourMaster():
             self._fix_permissions(self.scripts_dir)
 
         # logger.debug(port_info)
-        if port_info['attr'].get('runtime', None) is not None:
+        if len(port_info['attr'].get('runtime', [])) > 0:
             runtime_name = runtime_nicename(port_info['attr']['runtime'])
 
-            self.callback.progress(None, None, None)
-            result = self.check_runtime(port_info['attr']['runtime'], in_install=True)
+            result = 0
+            for runtime in port_info['attr']['runtime']:
+                self.callback.progress(None, None, None)
+                result += self.check_runtime(runtime, in_install=True)
+
             if result == 0:
                 self.callback.message_box(_("Port {download_name!r} and {runtime_name!r} installed successfully.").format(
                     download_name=port_nice_name,
@@ -1731,8 +1917,9 @@ class HarbourMaster():
             runtime_status = {
                 'Verified': 'Update Available',
                 'Unverified': 'Broken',
+                'Broken': 'Broken',
                 'Not Installed': 'Not Installed',
-                }[runtime_status]
+                }.get(runtime_status, runtime_status)
 
         if runtime_status == 'Verified':
             if not in_install:
@@ -1928,6 +2115,8 @@ class HarbourMaster():
         port_info_name = port_info.get("attr", {}).get("title", port_name)
 
         all_items = {}
+
+        self._port_attrs_updated = True
 
         # We need to build up a list of all associated files
         # so we only delete the ones that will no longer be associaed with any ports.

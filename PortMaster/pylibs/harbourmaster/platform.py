@@ -1,4 +1,6 @@
 
+# SPDX-License-Identifier: MIT
+
 # System imports
 import contextlib
 import datetime
@@ -32,6 +34,7 @@ class PlatformBase():
     MOVE_PM_BASH = False
     MOVE_PM_BASH_DIR = None
     ES_NAME = None
+    ROMS_REFRESH_TEXT = ""
 
     XML_ELEMENT_MAP = {
         'path': 'path',
@@ -414,6 +417,11 @@ class PlatformREGLinux(PlatformBatocera):
 class PlatformKnulli(PlatformBatocera):
     WANT_XBOX_FIX = True
 
+    def loaded(self):
+        self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
+        if self.WANT_SWAP_BUTTONS:
+            self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
+
     def portmaster_install(self):
         """
         Move files into place.
@@ -435,6 +443,29 @@ class PlatformKnulli(PlatformBatocera):
 class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = 'emulationstation'
+
+    def __init__(self, hm):
+        super().__init__(hm)
+
+        # Fix a whoopsie :D
+        BAD_SCRIPT  = self.hm.ports_dir / "PortMaster.sh"
+        GOOD_SCRIPT = self.hm.tools_dir / "PortMaster.sh"
+
+        if not BAD_SCRIPT.is_file():
+            return
+
+        if not GOOD_SCRIPT.is_file():
+            logger.info(f"MV: {BAD_SCRIPT} -> {GOOD_SCRIPT}")
+            shutil.move(BAD_SCRIPT, GOOD_SCRIPT)
+            return
+
+        if "pmsplash" not in GOOD_SCRIPT.read_text():
+            logger.info(f"MV: {BAD_SCRIPT} -> {GOOD_SCRIPT}")
+            shutil.move(BAD_SCRIPT, GOOD_SCRIPT)
+            return
+
+        logger.info(f"RM: {BAD_SCRIPT}")
+        BAD_SCRIPT.unlink()
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
@@ -459,8 +490,9 @@ class PlatformEmuELEC(PlatformGCD_PortMaster, PlatformBase):
 
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
-    ES_NAME = 'es-de'
+    ES_NAME = 'show-refresh'
     RD_CONFIG = None
+    ROMS_REFRESH_TEXT = _("\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory")
 
     XML_ELEMENT_MAP = {
         'path': 'path',
@@ -955,9 +987,40 @@ class PlatformTrimUI(PlatformBase):
                         shutil.copy(image_file, target_file)
 
 
+class PlatformMiyoo(PlatformBase):
+    WANT_XBOX_FIX = True
+
+    def first_run(self):
+        self.portmaster_install()
+
+    def portmaster_install(self):
+        """
+        Move files into place.
+        """
+
+        MY_DIR = self.hm.tools_dir / "PortMaster" / "miyoo"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {MY_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(MY_DIR / "control.txt", PM_DIR / "control.txt")
+
+        # ACTIVATE THE PORTMASTER
+        logger.debug(f'Copy {MY_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(MY_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        # CONTROL HACK
+        CONTROL_HACK = Path("/root/.local/share/PortMaster/control.txt")
+        if not CONTROL_HACK.parent.is_dir():
+            CONTROL_HACK.parent.mkdir(parents=True)
+
+        logger.debug(f'Copy {MY_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(MY_DIR / "control.txt", CONTROL_HACK)
+
+
 class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
-    WANT_SWAP_BUTTONS = True
+    WANT_SWAP_BUTTONS = False
 
     def gamelist_file(self):
         return self.hm.scripts_dir / 'gamelist.xml'
@@ -974,6 +1037,7 @@ HM_PLATFORMS = {
     'reglinux':  PlatformREGLinux,
     'knulli':    PlatformKnulli,
     'muos':      PlatformmuOS,
+    'miyoo':     PlatformMiyoo,
     'trimui':    PlatformTrimUI,
     'retrodeck': PlatformRetroDECK,
     'darwin':    PlatformTesting,

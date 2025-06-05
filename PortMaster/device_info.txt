@@ -1,12 +1,19 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 ## New Device Info
 #
+# - DEVICE_INFO_VERSION
+# - PM_VERSION
+# - DISPLAY_ORIENTATION
 # - DISPLAY_WIDTH
 # - DISPLAY_HEIGHT
 # - DISPLAY_ORIENTATION
 # - CFW_NAME
 # - CFW_VERSION
+# - CFW_GLIBC
 # - DEVICE_NAME
 # - DEVICE_CPU
 # - DEVICE_RAM
@@ -15,6 +22,8 @@
 # - DEVICE_HAS_AARCH64
 # - DEVICE_HAS_X86
 # - DEVICE_HAS_X86_64
+# - ASPECT_X
+# - ASPECT_Y
 # - ANALOG_STICKS
 #
 # usage `source <path_to>/device_info.txt`
@@ -24,7 +33,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.12"
+DEVICE_INFO_VERSION="0.1.13"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -36,6 +45,7 @@ if [ -z "$PM_VERSION" ] && [ -f  "$SCRIPT_DIR/version" ]; then
     PM_VERSION="$(cat "$SCRIPT_DIR/version")"
 fi
 
+## Get CFW Name / Verson
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
 
@@ -73,6 +83,9 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
     # muOS - RG35XX Plus/H
     CFW_NAME="muOS"
     CFW_VERSION=$(head -n1 "/opt/muos/config/version.txt")
+elif [ -f "/opt/muos/config/system/version" ]; then
+    CFW_NAME="muOS"
+    CFW_VERSION=$(<"/opt/muos/config/system/version")
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
@@ -89,6 +102,14 @@ elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
     CFW_VERSION="$(cat /etc/version)"
+elif [ -f "/usr/miyoo/version" ]; then
+    CFW_NAME="Miyoo"
+    CFW_VERSION=$(cat /usr/miyoo/version)
+elif lsusb | grep -q "1eaf:0024"; then
+    # uConsole
+    CFW_NAME="Debian GNU/Linux"
+    CFW_VERSION=$(grep -a '^VERSION_ID=' /etc/os-release | cut -d'"' -f 2)
+    DEVICE_NAME="uConsole"	
 else
     # AmberELEC / EmuELEC
     CFW_NAME=$(grep -a '^NAME=".*"' /etc/os-release | cut -d'"' -f 2)
@@ -103,7 +124,7 @@ fi
 
 DEVICE_RAM=$(free | awk '/Mem:/ { printf("%.0f", ($2 / 1024 / 1024)) }')
 
-# Get DEVICE_NAME
+## Get DEVICE_NAME
 if [[ "$CFW_NAME" == "EmuELEC" ]]; then
     DEVICE_NAME=$(grep -a '^COREELEC_DEVICE=".*"' /etc/os-release | cut -d'"' -f 2)
 elif [[ "$CFW_NAME" == "TrimUI" ]]; then
@@ -120,6 +141,14 @@ elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
 elif [ -f "/boot/boot/system.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/system.board)
+elif [ -f "/opt/muos/config/device.txt" ]; then
+    DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
+elif [ -f "/opt/muos/device/config/board/name" ]; then
+    DEVICE_NAME=$(tr '[:lower:]' '[:upper:]' <"/opt/muos/device/config/board/name")
+elif [ -f "/usr/miyoo/version" ]; then
+    DEVICE_NAME="Miyoo Flip"
+elif grep -qi "RG.\?ARC.\?[DS]" "/sys/firmware/devicetree/base/model"; then
+    DEVICE_NAME="rg-arc-d"
 elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2)
 
@@ -129,6 +158,14 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
 
     elif [[ "${DEVICE_NAME}" == "Pocket" ]]; then
         # Retroid Pocket 5/Mini
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
+    elif [[ "${DEVICE_NAME}" == "GKD" ]]; then
+        #GKD pixel
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
+
+    elif [[ "${DEVICE_NAME}" == "Odin" ]]; then
+        # AYN Odin 2 and friends
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
     elif [[ "${DEVICE_NAME}" == "" ]]; then
@@ -141,10 +178,7 @@ else
     DEVICE_NAME="Unknown"
 fi
 
-ANALOG_STICKS=2
-DEVICE_CPU=$(lscpu | grep '^Model name' | cut -f 2 -d ":" | awk 'NR==1{print $1}')
-DISPLAY_ORIENTATION=0
-
+## Get the system architecture
 DEVICE_ARCH="aarch64"
 DEVICE_HAS_ARMHF="N"
 DEVICE_HAS_AARCH64="N"
@@ -170,6 +204,49 @@ if [ -e "/lib/ld-linux-x86-64.so.2" ] || [ -e "/usr/lib/x86_64-linux-gnu/ld-linu
     DEVICE_ARCH="x86_64"
     DEVICE_HAS_X86_64="Y"
 fi
+
+## Get current resolution
+# Moved this up to allow some fixes that rely on it.
+
+RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+
+unset SCRIPT_DIR
+
+# Check if the values are not empty, otherwise, set default resolution
+if [ -z "$RESOLUTION" ]; then
+    DISPLAY_WIDTH=640
+    DISPLAY_HEIGHT=480
+else
+    DISPLAY_WIDTH=$(echo "$RESOLUTION" | cut -d'x' -f 1)
+    DISPLAY_HEIGHT=$(echo "$RESOLUTION" | cut -d'x' -f 2)
+fi
+
+unset RESOLUTION
+
+# Calculate greatest common divisor (GCD) to simplify aspect ratio
+gcd() {
+  dividend=$1
+  divisor=$2
+  remainder=1
+  until [ "$remainder" -eq 0 ]; do
+    remainder=$((dividend % divisor))
+    dividend=$divisor
+    divisor=$remainder
+  done
+  echo $dividend
+}
+
+# Calculate greatest common divisor of width and height
+GCD=$(gcd $DISPLAY_WIDTH $DISPLAY_HEIGHT)
+
+# Calculate simplified aspect ratio
+ASPECT_X=$((DISPLAY_WIDTH / GCD))
+ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
+
+## Some more info here.
+ANALOG_STICKS=2
+DEVICE_CPU=$(lscpu | grep '^Model name' | cut -f 2 -d ":" | awk 'NR==1{print $1}')
+DISPLAY_ORIENTATION=0
 
 ## FIXES
 # Here is where we can add custome rules to fill out extra info on the device.
@@ -211,8 +288,17 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="SD865"
         ;;
 
-    "retroid pocket 5"|"retroid pocket mini")
+    "rpflip"*)
+        DEVICE_NAME="Retroid Pocket Flip 2"
         DEVICE_CPU="SD865"
+        ;;
+
+    "retroid pocket"*)
+        DEVICE_CPU="SD865"
+        ;;
+
+    "ayn odin 2"*)
+        DEVICE_CPU="SM8550"
         ;;
 
     "rk3326")
@@ -232,6 +318,16 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         ;;
 
     # by actual device
+    "rg-arc-d")
+        ANALOG_STICKS=0
+        DEVICE_CPU="RK3566"
+        if [[ "$DEVICE_RAM" == "2" ]]; then
+            DEVICE_NAME="RG ARC-D"
+        else
+            DEVICE_NAME="RG ARC-S"
+        fi
+        ;;
+
     "rg353v"|"rg353p"|"rg353vs"|"rg353ps"|"rg353m")
         DEVICE_CPU="RK3566"
         ;;
@@ -273,6 +369,7 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
 
     "advance")
         DEVICE_NAME="ODROID-GO Advance"
+        ANALOG_STICKS=1
         DEVICE_CPU="RK3326"
         ;;
 
@@ -289,8 +386,37 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="x86_64"
         ;;
 
-    "trimui smart pro")
+    "trimui smart pro"|"trimui-smart-pro")
         DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+
+        if [[ "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}" == "1024x768" ]]; then
+            DEVICE_NAME="TrimUI Brick"
+            ANALOG_STICKS=0
+        fi
+        ;;
+
+    "tui-spoon")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Smart Pro"
+        ;;
+
+    "tui-brick")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Brick"
+        ANALOG_STICKS=0
+        ;;
+
+    "trimui brick"|"trimui-brick")
+        DEVICE_CPU="a133plus"
+        DEVICE_NAME="TrimUI Brick"
+        ANALOG_STICKS=0
+        ;;
+
+    "gamekiddy gkd pixel2")
+        DEVICE_NAME="GKD PIXEL2"
+        DEVICE_CPU="RK3326"
+        ANALOG_STICKS=0
         ;;
 
     "rg-cubexx")
@@ -298,26 +424,29 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         DEVICE_CPU="h700"
         ;;
 
+    "rgcubexx-h")
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg28xx-h")
+        ANALOG_STICKS=0
+        DISPLAY_ORIENTATION=1
+        DEVICE_CPU="h700"
+        ;;
+
     "rg28xx")
+        DEVICE_NAME="RG28XX-H"
+        ANALOG_STICKS=0
+        DISPLAY_ORIENTATION=1
+        DEVICE_CPU="h700"
+        ;;
+
+    "rg34xx"|"rg34xx-h"|"rg35xx-plus"|"rg35xx-sp"|"rg35xx-2024")
         ANALOG_STICKS=0
         DEVICE_CPU="h700"
         ;;
 
-    "rg35xx-h")
-        DEVICE_CPU="h700"
-        ;;
-
-    "rg35xx-plus")
-        ANALOG_STICKS=0
-        DEVICE_CPU="h700"
-        ;;
-
-    "rg35xx-sp")
-        ANALOG_STICKS=0
-        DEVICE_CPU="h700"
-        ;;
-
-    "rg40xx-h")
+    "rg35xx-h"|"rg40xx-h"|"rg34xx-sp")
         DEVICE_CPU="h700"
         ;;
 
@@ -325,68 +454,24 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         ANALOG_STICKS=1
         DEVICE_CPU="h700"
         ;;
-
-    "sun50iw9")
-        if [ -f "/opt/muos/config/device.txt" ]; then
-            DEVICE_NAME="$(cat /opt/muos/config/device.txt | tr '[:lower:]' '[:upper:]')"
-            if [[ "$DEVICE_NAME" == "RG35XX-2024" ]]; then
-                ANALOG_STICKS=0
-            elif [[ "$DEVICE_NAME" == "RG35XX-PLUS" ]]; then
-                ANALOG_STICKS=0
-            elif [[ "$DEVICE_NAME" == "RG35XX-SP" ]]; then
-                ANALOG_STICKS=0
-            elif [[ "$DEVICE_NAME" == "RG28XX" ]]; then
-                ANALOG_STICKS=0
-                DISPLAY_ORIENTATION=1
-            elif [[ "$DEVICE_NAME" == "RG40XX-V" ]]; then
-                DEVICE_NAME="RG40XX-V"
-                ANALOG_STICKS=1
-            fi
-        else
-            DEVICE_NAME="RG35XX-H"
-        fi
-
-        DEVICE_CPU="H700"
-        ;;
-
 esac
 
-# get current resolution
+# GLIBC
 
-RESOLUTION=$("$SCRIPT_DIR/sdl_resolution.$DEVICE_ARCH" 2> /dev/null | grep -a 'Current' | awk -F ': ' '{print $2}')
+CFW_GLIBC="230"
 
-unset SCRIPT_DIR
+for path in /lib /lib64 /lib/aarch64-linux-gnu /lib32 /lib/arm-linux-gnueabihf /usr/lib /usr/lib64 /usr/lib32; do
+    libc="$path/libc.so.6"
+    if [ -x "$libc" ]; then
+        CFW_GLIBC=$("$libc" 2>&1 | head -n 1 | awk '{print $NF}' | tr -d '.')
+        break
+    fi
+done
 
-# Check if the values are not empty, otherwise, set default resolution
-if [ -z "$RESOLUTION" ]; then
-    DISPLAY_WIDTH=640
-    DISPLAY_HEIGHT=480
-else
-    DISPLAY_WIDTH=$(echo "$RESOLUTION" | cut -d'x' -f 1)
-    DISPLAY_HEIGHT=$(echo "$RESOLUTION" | cut -d'x' -f 2)
-fi
+unset libc
+unset path
 
-unset RESOLUTION
-
-# Calculate greatest common divisor (GCD) to simplify aspect ratio
-gcd() {
-  dividend=$1
-  divisor=$2
-  remainder=1
-  until [ "$remainder" -eq 0 ]; do
-    remainder=$((dividend % divisor))
-    dividend=$divisor
-    divisor=$remainder
-  done
-  echo $dividend
-}
-
-# Calculate greatest common divisor of width and height
-GCD=$(gcd $DISPLAY_WIDTH $DISPLAY_HEIGHT)
-
-# Calculate simplified aspect ratio
-ASPECT_X=$((DISPLAY_WIDTH / GCD))
-ASPECT_Y=$((DISPLAY_HEIGHT / GCD))
+# Dump info
 
 cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"
 # ${DEVICE_NAME} - ${CFW_NAME}
@@ -395,6 +480,7 @@ DEVICE_INFO_VERSION=${DEVICE_INFO_VERSION}
 PM_VERSION=${PM_VERSION:-Unknown}
 CFW_NAME=${CFW_NAME}
 CFW_VERSION=${CFW_VERSION}
+CFW_GLIBC=${CFW_GLIBC}
 DEVICE_NAME=${DEVICE_NAME}
 DEVICE_CPU=${DEVICE_CPU}
 DEVICE_ARCH=${DEVICE_ARCH}
@@ -405,9 +491,9 @@ DEVICE_HAS_X86="${DEVICE_HAS_X86}"
 DEVICE_HAS_X86_64="${DEVICE_HAS_X86_64}"
 DISPLAY_WIDTH=${DISPLAY_WIDTH}
 DISPLAY_HEIGHT=${DISPLAY_HEIGHT}
+DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
 ASPECT_X=${ASPECT_X}
 ASPECT_Y=${ASPECT_Y}
-DISPLAY_ORIENTATION=${DISPLAY_ORIENTATION}
 ANALOG_STICKS=${ANALOG_STICKS}
 \`\`\`
 __INFO_DUMP__

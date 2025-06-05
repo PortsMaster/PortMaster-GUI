@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# SPDX-License-Identifier: MIT
+#
 # TRIMUI EDITION
 
 if [ -f "/mnt/SDCARD/System/bin/gm" ]; then

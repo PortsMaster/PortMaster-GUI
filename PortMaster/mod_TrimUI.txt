@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 ## Modular - TRIMUI
 # 
@@ -14,6 +17,10 @@ GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
 # Use for Godot 3+
 GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+# Fix squashfs runtime mounts
+[ ! -d "/mnt/SDCARD/Data/home" ] && mkdir "/mnt/SDCARD/Data/home"
+export HOME="/mnt/SDCARD/Data/home"
 
 pm_platform_helper() {
     # DO SOMETHING HERE

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
 
 ## Modular - MUOS
 # 
@@ -17,5 +20,6 @@ GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
 pm_platform_helper() {
     # Help keep XongleBongles sanity below
-    printf "%s" "$(basename "$0")" > /run/muos/system/foreground_process
+    printf "%s" "$(basename "$1")" > /run/muos/system/foreground_process
+    printf "%s" "$(basename "$1")" > /opt/muos/config/system/foreground_process
 }
