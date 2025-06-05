@@ -6,6 +6,7 @@ from struct import pack,unpack
 from time import sleep
 import sys
 
+DEVICE_ARCH = os.environ.get("DEVICE_ARCH", "aarch64")
 MIN_SIZE = 1024*1024 # 1 MB
 
 class IFFdata:
@@ -326,10 +327,18 @@ class GMIFFDdata(IFFdata):
         self.fileout.seek(offset_start)                 # Can't find out why, but if I don't do this
                                                         # it writes with -4 bytes offset...
         
-        DEVICE_ARCH = os.environ.get("DEVICE_ARCH", "aarch64")
-        oggenc_process = Popen([f"oggenc.{DEVICE_ARCH}", "-Q", *self._get_oggenc_options(), "-o", "-", "-"], stdin=PIPE, stdout=self.fileout, stderr=DEVNULL )
+        oggenc_process = Popen(
+            [f"oggenc.{DEVICE_ARCH}", "-Q", *self._get_oggenc_options(), "-o", "-", "-"],
+            stdin=PIPE,
+            stdout=self.fileout,
+            stderr=DEVNULL
+        )
         
-        vgmstream_process = Popen([f"vgmstream-cli.{DEVICE_ARCH}",f"{self.audo[audo_entry]['txtp']}", "-p"], stdout=oggenc_process.stdin, stderr=DEVNULL )
+        vgmstream_process = Popen(
+            [f"vgmstream-cli.{DEVICE_ARCH}",f"{self.audo[audo_entry]['txtp']}", "-p"],
+            stdout=oggenc_process.stdin,
+            stderr=DEVNULL
+        )
 
         oggenc_process.communicate()
 
@@ -346,11 +355,21 @@ class GMIFFDdata(IFFdata):
 
         self.filein.seek(4 + self.audo[audo_entry]["offset"])
 
-        oggenc_process = Popen(["oggenc", "-Q", *self._get_oggenc_options(), "-o", "-", "-"], stdin=PIPE, stdout=self.fileout, stderr=DEVNULL)
+        oggenc_process = Popen(
+            [f"oggenc.{DEVICE_ARCH}", "-Q", *self._get_oggenc_options(), "-o", "-", "-"],
+            stdin=PIPE,
+            stdout=self.fileout,
+            stderr=DEVNULL
+        )
 
         if compress > 1:
             # audio is already compressed, we need to uncompress it before can compress it
-            oggdec_process = Popen(["oggdec", "-Q", "-o", "-", "-"], stdin=PIPE, stdout=PIPE, stderr=DEVNULL)
+            oggdec_process = Popen(
+                [f"oggdec.{DEVICE_ARCH}", "-Q", "-o", "-", "-"],
+                stdin=PIPE,
+                stdout=PIPE,
+                stderr=DEVNULL
+            )
             wavdata, _ = oggdec_process.communicate(self.filein.read(self.audo[audo_entry]["size"]))
             oggenc_process.communicate(wavdata)
             oggdec_process.terminate()
