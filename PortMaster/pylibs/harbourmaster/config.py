@@ -261,6 +261,17 @@ HM_SORT_ORDER = [
     ]
 
 
+HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES = [
+    'cover.jpg',
+    'cover.png',
+    'gameinfo.xml',
+    'port.json',
+    'readme.md',
+    'screenshot.jpg',
+    'screenshot.png',
+    ]
+
+
 __all__ = (
     'HM_DEFAULT_PORTS_DIR',
     'HM_DEFAULT_TOOLS_DIR',
@@ -275,4 +286,5 @@ __all__ = (
     'HM_TESTING',
     'HM_TOOLS_DIR',
     'HM_UPDATE_FREQUENCY',
+    'HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES',
     )

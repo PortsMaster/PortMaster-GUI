@@ -1213,7 +1213,7 @@ class HarbourMaster():
 
         if 'installed' in filters:
             for filter_attr in filters:
-                tmp_ports.intersection_update(self._source_port_attrs.get(filter_attr.casefold(), set()))
+                tmp_ports.intersection_update(self._installed_port_attrs.get(filter_attr.casefold(), set()))
 
         else:
             for filter_attr in filters:
@@ -1617,11 +1617,13 @@ class HarbourMaster():
 
         We collect a list of top level scripts/directories, this is added to the port.json file.
         """
-
         undo_data = []
         is_successs = False
 
         port_nice_name = download_info.get('attr', {}).get('title', download_info['name'])
+        if port_nice_name == '':
+            port_nice_name = download_info['zip_file'].name
+
         port_info = {}
         logger.info(f"Installing {port_nice_name}")
 
@@ -1664,12 +1666,16 @@ class HarbourMaster():
                         self.callback.progress(_("Installing"), file_number + 1, total_files, '%')
                         self.callback.message(f"- {file_info.filename}")
 
-                    is_script = (
-                        file_info.filename.endswith('.sh') and
-                        file_info.filename.count('/') == 0)
+                    is_script = False
+                    fix_path = ""
 
-                    dest_file = path = self._ports_dir_file(file_info.filename, is_script)
-                    dest_dir = (is_script and self.scripts_dir or self.ports_dir)
+                    if file_info.filename.count('/') == 0:
+                        is_script = file_info.filename.lower().endswith('.sh')
+                        if not is_script and file_info.filename.lower() in HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES:
+                            fix_path = f"{extra_info['port_dir']}/"
+
+                    dest_file = path = self._ports_dir_file(f"{fix_path}{file_info.filename}", is_script)
+                    dest_dir = (is_script and self.scripts_dir or self.ports_dir) / fix_path
 
                     if dest_file == port_info_file_old:
                         dest_file = port_info_file
@@ -1685,7 +1691,7 @@ class HarbourMaster():
                     if not dest_file.exists():
                         add_list_unique(undo_data, dest_file)
 
-                    # cprint(f"- <b>{file_info.filename!r}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
+                    # cprint(f"- <b>{file_info.filename!r}</b> as <b>{fix_path}{file_info.filename}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
                     zf.extract(file_info, path=dest_dir)
 
             # print(f"Port Info: {port_info}")
