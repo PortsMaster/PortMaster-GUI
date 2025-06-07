@@ -378,6 +378,36 @@ class PlatformBatocera(PlatformBase):
 
         return False  # Return False if not found 
 
+    def batocera_settings_get(self, key, default=None, config_file='/userdata/system/batocera.conf'):
+        """
+        This parses the batocera_settings files.
+        """
+        with open(config_file, 'r') as fh:
+            for line in fh:
+                line = line.strip()
+
+                # Blank lines
+                if line == '':
+                    continue
+
+                # Comments
+                if line.startswith('#'):
+                    continue
+
+                # I dunno, lets just skip it.
+                if '=' not in line:
+                    continue
+
+                line_key, line_value = line.split('=', 1)
+                if key != line_key.strip():
+                    continue
+
+                logger.debug(f"{key}={line_value}")
+                return line_value.strip()
+
+        logger.debug(f"{key}={default} (default)")
+        return default
+
     def loaded(self):
         self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
         # if self.WANT_SWAP_BUTTONS:
@@ -418,9 +448,20 @@ class PlatformKnulli(PlatformBatocera):
     WANT_XBOX_FIX = True
 
     def loaded(self):
-        self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
-        if self.WANT_SWAP_BUTTONS:
-            self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
+        want_swap = self.batocera_settings_get('ports["PortMaster.sh"].xbox_layout', None)
+
+        if want_swap is None:
+            want_swap = self.batocera_settings_get('ports.xbox_layout', None)
+
+        if want_swap is not None:
+            self.WANT_XBOX_FIX = False
+            self.WANT_SWAP_BUTTONS = want_swap == "0"
+
+        else:
+            self.WANT_SWAP_BUTTONS = not self.get_invert_buttons_value()
+
+            if self.WANT_SWAP_BUTTONS:
+                self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
 
     def portmaster_install(self):
         """
