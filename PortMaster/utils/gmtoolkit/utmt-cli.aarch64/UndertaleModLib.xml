@@ -4,138 +4,797 @@
         <name>UndertaleModLib</name>
     </assembly>
     <members>
+        <member name="T:UndertaleModLib.Compiler.VariableInfo">
+            <summary>
+            Record of builtin variable information.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.VariableInfo.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Record of builtin variable information.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.FunctionInfo">
+            <summary>
+            Record of builtin function information.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.FunctionInfo.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.FunctionInfo.MinArguments">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.FunctionInfo.MaxArguments">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.FunctionInfo.Classification">
+            <summary>
+            Classification of function.
+            </summary>
+        </member>
         <member name="T:UndertaleModLib.Compiler.BuiltinList">
             <summary>
-            A really long list of known Game Maker: Studio constants and variables, taken from code analysis. <br/>
-            Will likely need to be updated on every new Game Maker version with new features.
+            A long list of known built-in GameMaker constants, functions, and variables. Used for compilation.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.DecompileContext">
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.LookupBuiltinFunction(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.LookupBuiltinVariable(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.LookupConstantDouble(System.String,System.Double@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.DefineFunction(System.String)">
             <summary>
-            The DecompileContext is bound to the currently decompiled code block
+            Helper function to define a builtin function with any number of arguments.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.DecompileContext.TempVarMap">
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.DefineFunction(System.String,System.Int32)">
             <summary>
-            Maps a temp var to a place where it was created
+            Helper function to define a builtin function with a specific number of arguments.
             </summary>
         </member>
-        <member name="P:UndertaleModLib.Decompiler.DecompileContext.TempVarId">
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.DefineFunction(System.String,System.Int32,UndertaleModLib.Models.UndertaleGeneralInfo.FunctionClassification)">
             <summary>
-            If used for auto-naming temp vars
+            Helper function to define a builtin function with a specific number of arguments, and a function classification.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.DecompileContext.AlreadyProcessed">
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.LoadFunctionsFromData(UndertaleModLib.UndertaleData)">
             <summary>
-            Set containing already-decompiled child code entries.
-            Used to prevent decompiling the same child entry multiple times.
-            Only applies to function entries, struct and constructors are unaffected.
+            Loads builtin functions purely based on functions used by game data already.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.DecompileContext.assetTypes">
+        <member name="M:UndertaleModLib.Compiler.BuiltinList.InitializeMain(UndertaleModLib.UndertaleData)">
             <summary>
-            Contains the resolved asset type for every variable
+            Initializes the main builtin data (that is, what the tool intrinsically knows about).
             </summary>
         </member>
-        <member name="P:UndertaleModLib.Decompiler.DecompileContext.Statements">
+        <member name="T:UndertaleModLib.Compiler.CodeBuilder">
             <summary>
-            Contains the result of decompiling this code block.
-            This is a map from an entry point address to a list of statements.
-            Needs to be here to access it in ToString for inline function definitions.
+            Code builder, used to generate instructions during compilation.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.DecompileContext.DisableAnonymousFunctionNameResolution">
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.MapOpcode(Underanalyzer.IGMInstruction.Opcode)">
             <summary>
-            Allows to disable the anonymous code name resolution to prevent recursion
+            Maps an opcode from Underanalyzer to an UndertaleInstruction opcode.
+            Also handles bytecode 14 mappings.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.AssignmentStatement">
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,System.Int16,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,System.Int32,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,System.Int64,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,System.Double,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.Opcode,Underanalyzer.IGMInstruction.ComparisonType,Underanalyzer.IGMInstruction.DataType,Underanalyzer.IGMInstruction.DataType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.ExtendedOpcode)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateInstruction(System.Int32,Underanalyzer.IGMInstruction.ExtendedOpcode,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateDuplicateInstruction(System.Int32,Underanalyzer.IGMInstruction.DataType,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateDupSwapInstruction(System.Int32,Underanalyzer.IGMInstruction.DataType,System.Byte,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreatePopSwapInstruction(System.Int32,System.Byte)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateWithExitInstruction(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateCallInstruction(System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.CreateCallVariableInstruction(System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.PatchInstruction(Underanalyzer.IGMInstruction,System.String,Underanalyzer.IGMInstruction.InstanceType,Underanalyzer.IGMInstruction.InstanceType,Underanalyzer.IGMInstruction.VariableType,System.Boolean,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.PatchInstruction(Underanalyzer.IGMInstruction,Underanalyzer.Compiler.FunctionScope,System.String,Underanalyzer.Compiler.IBuiltinFunction)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.PatchInstruction(Underanalyzer.IGMInstruction,Underanalyzer.Compiler.Bytecode.FunctionEntry)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.PatchInstruction(Underanalyzer.IGMInstruction,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.PatchInstruction(Underanalyzer.IGMInstruction,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.IsGlobalFunctionName(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.GenerateTryVariableID(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.GenerateArrayOwnerID(System.String,System.Int64,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeBuilder.OnParseNameIdentifier(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CodeImportGroup">
             <summary>
-            Represents a high-level assignment statement.
+            Context for managing groups of GML code import operations. Higher level than <see cref="T:UndertaleModLib.Compiler.CompileGroup"/>.
+            </summary>
+            <remarks>
+            This is mainly provided for basic scripting convenience. More complex operations may require more manual work.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.Data">
+            <summary>
+            Associated game data for this import code context.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.Decompiler.AssignmentStatement.Destination">
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.GlobalContext">
             <summary>
-            The variable that will get something assigned to.
+            Associated global decompile context for this import code context.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.Decompiler.AssignmentStatement.Value">
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.DecompileSettings">
             <summary>
-            The value that will be assigned.
+            Decompile settings to be used for any operations requiring decompilation.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.Decompiler.AssignmentStatement.IsLocalVariable">
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.AutoCreateAssets">
             <summary>
-            Whether the destination variable is a local variable.
+            Whether this group will automatically create assets based on new code entry names, when necessary.
+            </summary>
+            <remarks>
+            If a new code entry is created, and assets fail to be created due to ambiguity (particularly for
+            object collision events), then an exception may be thrown. In those cases, code entries should 
+            be manually resolved first, instead.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.ThrowOnNoOpFindReplace">
+            <summary>
+            Whether an exception will be thrown if a find and replace operation is a no-op.
+            </summary>
+            <remarks>
+            <see langword="false"/> by default.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.CompileGroup">
+            <summary>
+            Compile group being used by this context, if not null.
             </summary>
         </member>
-        <member name="P:UndertaleModLib.Decompiler.Decompiler.AssignmentStatement.IsStructDefinition">
+        <member name="P:UndertaleModLib.Compiler.CodeImportGroup.CompileQueuedCodeEntries">
             <summary>
-            Whether the destination variable is a struct.
+            Set of code entries currently queued for compile on <see cref="P:UndertaleModLib.Compiler.CodeImportGroup.CompileGroup"/>.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.Block">
+        <member name="F:UndertaleModLib.Compiler.CodeImportGroup._queuedOperations">
             <summary>
-            Represents a block node of instructions from GML bytecode (for control flow). 
+            List of operations queued for import.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.CommentStatement">
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.#ctor(UndertaleModLib.UndertaleData,UndertaleModLib.Decompiler.GlobalDecompileContext,Underanalyzer.Decompiler.IDecompileSettings)">
             <summary>
-            Represents a code comment, for debugging use (or minor error reporting). 
+            Initializes a new code import context.
+            </summary>
+            <remarks>
+            If <paramref name="globalContext"/> is not provided, a new global context will be created.
+            If <paramref name="decompileSettings"/> is not provided, default settings will be used.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.LinkEvent(UndertaleModLib.Models.UndertaleGameObject,UndertaleModLib.Models.UndertaleCode,UndertaleModLib.Models.EventType,System.UInt32)">
+            <summary>
+            Helper to link an existing code entry to a specific object event, creating event/action structures as necessary.
+            </summary>
+            <param name="obj">Object to link to.</param>
+            <param name="code">Code entry to link.</param>
+            <param name="type">Main event type to link to.</param>
+            <param name="subtype">Event subtype to link to.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.FindOrCreateCodeEntry(System.String)">
+            <summary>
+            Finds or creates a code entry, given a code entry name.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.Decompiler.CommentStatement.Message">
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.DecompileExistingCode(UndertaleModLib.Models.UndertaleCode)">
             <summary>
-            The code comment.
+            Decompiles an existing code entry to a string.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.Expression">
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueReplace(UndertaleModLib.Models.UndertaleCode,System.String)">
             <summary>
-            Represents all expressions.
+            Queues a code replace operation on this code import context.
+            </summary>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="gmlCode">GML source code to compile as replacement code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueAppend(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Queues a code append operation on this code import context.
+            </summary>
+            <remarks>
+            Upon importing, the original code entry will first be decompiled, 
+            and then the code string will be appended (with a newline in between).
+            </remarks>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="gmlCode">GML source code to append to a decompiled string of the original code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueuePrepend(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Queues a code prepend operation on this code import context.
+            </summary>
+            <remarks>
+            Upon importing, the original code entry will first be decompiled, 
+            and then the code string will be prepended (with a newline in between).
+            </remarks>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="gmlCode">GML source code to prepend to a decompiled string of the original code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueFindReplace(UndertaleModLib.Models.UndertaleCode,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a find and replace operation on this code import context.
+            </summary>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="search">Code to search for in decompilation.</param>
+            <param name="replacement">String to replace all occurrences of <paramref name="search"/> with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueTrimmedLinesFindReplace(UndertaleModLib.Models.UndertaleCode,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a find and replace operation on this code import context, where string contents are compared on a line-by-line basis, 
+            trimming whitespace at the beginning and end of each.
+            </summary>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="search">Code to search for in decompilation.</param>
+            <param name="replacement">String to replace all occurrences of <paramref name="search"/> with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueRegexFindReplace(UndertaleModLib.Models.UndertaleCode,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a regex find and replace operation on this code import context.
+            </summary>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="search">Pattern to match against in decompilation.</param>
+            <param name="replacement">String to replace all matches with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueReplace(System.String,System.String)">
+            <summary>
+            Queues a replace operation on this code import context.
+            </summary>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="gmlCode">GML source code to compile as replacement code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueAppend(System.String,System.String)">
+            <summary>
+            Queues a code append operation on this code import context.
+            </summary>
+            <remarks>
+            Upon importing, the original code entry will first be decompiled, 
+            and then the code string will be appended (with a newline in between).
+            </remarks>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="gmlCode">GML source code to append to a decompiled string of the original code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueuePrepend(System.String,System.String)">
+            <summary>
+            Queues a code prepend operation on this code import context.
+            </summary>
+            <remarks>
+            Upon importing, the original code entry will first be decompiled, 
+            and then the code string will be prepended (with a newline in between).
+            </remarks>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="gmlCode">GML source code to prepend to a decompiled string of the original code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueFindReplace(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a find and replace operation on this code import context.
+            </summary>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="search">Code to search for in decompilation.</param>
+            <param name="replacement">String to replace all occurrences of <paramref name="search"/> with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueTrimmedLinesFindReplace(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a find and replace operation on this code import context, where string contents are compared on a line-by-line basis, 
+            trimming whitespace at the beginning and end of each.
+            </summary>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="search">Code to search for in decompilation.</param>
+            <param name="replacement">String to replace all occurrences of <paramref name="search"/> with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.QueueRegexFindReplace(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Queues a regex find and replace operation on this code import context.
+            </summary>
+            <param name="codeEntryName">Code entry that either already exists, or will be automatically created.</param>
+            <param name="search">Pattern to match against in decompilation.</param>
+            <param name="replacement">String to replace all matches with.</param>
+            <param name="caseSensitive">Whether the search should be case sensitive or not.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeImportGroup.Import(System.Boolean)">
+            <summary>
+            Performs all queued import operations, in order.
+            </summary>
+            <param name="throwOnFailedCompile">Whether to throw an exception on a failed compile.</param>
+            <returns>Result from compilation.</returns>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CompileGroup">
+            <summary>
+            Context for managing groups of GML code compilation operations.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.Decompiler.Expression.Type">
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.Data">
             <summary>
-            What type this expression evaluates to.
+            Associated game data for this compile context.
             </summary>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.Statement">
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.GlobalContext">
             <summary>
-            Represents all kinds of high-level decompilation results, to be stringified at the end. 
+            Associated global decompile context for this compile context.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Decompiler.Decompiler.Statement.ToString(UndertaleModLib.Decompiler.DecompileContext)">
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.MainThreadAction">
             <summary>
-            Creates a string representation of the statement.
+            This action will be called when main-thread operations should occur, and can be changed.
             </summary>
-            <param name="context">The decompile context of the current code entry.</param>
-            <returns>A string representation of the statement.</returns>
         </member>
-        <member name="T:UndertaleModLib.Decompiler.Decompiler.TempVar">
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.PersistLinkingLookups">
             <summary>
-            Represents an unnamed value that gets passed around the stack.
-            Theoretically, these should be cleaned up and removed by the end of decompilation.
+            Whether certain linking lookups (for strings, assets, etc.) should persist between multiple compiles.
+            This should not be preferred: generally, multiple code operations should be queued instead.
+            </summary>
+            <remarks>
+            This should be used with care. When enabled, no game data should be modified between each compile; otherwise,
+            string or asset duplication may occur, which can corrupt the data permanently.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.CurrentCodeEntryNameHash">
+            <summary>
+            Hash code of the name of the current code entry being compiled.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileGroup.NextTryVariableIndex">
+            <summary>
+            During main compile (not linking), this is the next try variable index that should be used.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CompileGroup.QueuedOperation">
+            <summary>
+            Stores a code entry and corresponding GML code to be compiled during an operation.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.QueuedOperation.#ctor(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Stores a code entry and corresponding GML code to be compiled during an operation.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CompileGroup.ChildCodeEntryData">
+            <summary>
+            Stores a code entry, script, and function for a newly-created child code entry during linking.
+            </summary>
+            <remarks>
+            Each component (code, script, and function) may individually be <see langword="null"/>.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.ChildCodeEntryData.#ctor(System.String,Underanalyzer.Compiler.Bytecode.FunctionEntry,UndertaleModLib.Models.UndertaleCode,UndertaleModLib.Models.UndertaleScript,UndertaleModLib.Models.UndertaleFunction,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Stores a code entry, script, and function for a newly-created child code entry during linking.
+            </summary>
+            <remarks>
+            Each component (code, script, and function) may individually be <see langword="null"/>.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.#ctor(UndertaleModLib.UndertaleData,UndertaleModLib.Decompiler.GlobalDecompileContext)">
+            <summary>
+            Initializes a new compile context.
+            </summary>
+            <remarks>
+            If <paramref name="globalContext"/> is not provided, a new global context will be created.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.QueueCodeReplace(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Queues a code replace operation on this compile context.
+            </summary>
+            <param name="codeToModify">Existing (root) code entry to modify.</param>
+            <param name="gmlCode">GML source code to compile as replacement code.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.LookupStringId(System.String,System.Int32@)">
+            <summary>
+            Looks up a string ID during linking.
+            </summary>
+            <returns><see langword="true"/> if an ID was successfully found; <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.MakeString(System.String)">
+            <summary>
+            Looks up a string, or creates one, during linking.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.MakeString(System.String,System.Int32@)">
+            <summary>
+            Looks up a string, or creates one, during linking. Also outputs the ID of the string.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.RegisterNonLocalVariable(System.String)">
+            <summary>
+            Registers a non-local variable during linking.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.RegisterLocalVariable(UndertaleModLib.Models.UndertaleInstruction,System.String)">
+            <summary>
+            Registers a local variable during linking, queuing the reference to be patched later.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.RegisterName(System.String)">
+            <summary>
+            Registers a name token during initial main compile/parse, and returns its ID.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.DefineCodeLocal(UndertaleModLib.Models.UndertaleCodeLocals,System.Boolean,System.String,System.UInt32)">
+            <summary>
+            Defines a single code local variable.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.SimilarCodeEntryNames(System.String,System.String)">
+            <summary>
+            Returns whether the two code entry names are similar (that is, the original code entry
+            name is identical aside from some numbers that the new name does not exactly match).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.FindOriginalShortName(System.String,System.String)">
+            <summary>
+            After verifying that an original code entry name and a new code entry name are similar,
+            this method can be used to find the original short name from the original code entry name,
+            being supplied the new short name without numbers.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.Compile">
+            <summary>
+            Performs all compilation operations that have been queued on this context.
+            </summary>
+            <remarks>
+            Code replacement operations will be performed first, followed by code append operations.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.InitializeLinkingLookups">
+            <summary>
+            Initializes linking lookup structures, if they have not already been.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.UnreferenceLinkingLookups">
+            <summary>
+            Dereferences all internal linking structures to reduce potential memory usage.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileGroup.GuessScriptKindFromName(System.String)">
+            <summary>
+            Guesses the type of a script from a code entry's name.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CompileError">
+            <summary>
+            An error that occurred during compilation.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileError.Code">
+            <summary>
+            Code entry the error occurred in.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileError.BaseMessage">
+            <summary>
+            Base, but possibly uninformative, error message.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileError.GenerateDetailedMessage">
+            <summary>
+            Generates a more detailed error message than <see cref="P:UndertaleModLib.Compiler.CompileError.BaseMessage"/> (e.g., with more context).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileError.#ctor(UndertaleModLib.Models.UndertaleCode,Underanalyzer.Compiler.Errors.ICompileError)">
+            <summary>
+            Creates a compile error struct with the given code entry and source error from the inner compiler.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileError.#ctor(UndertaleModLib.Models.UndertaleCode,System.Exception)">
+            <summary>
+            Creates a compile error struct with the given code entry and exception.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CompileResult">
+            <summary>
+            Result of a compilation.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileResult.Successful">
+            <summary>
+            Whether all compilation operations were successful.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.CompileResult.Errors">
+            <summary>
+            List of errors generated during compilation.
+            </summary>
+            <remarks>
+            If <see cref="P:UndertaleModLib.Compiler.CompileResult.Successful"/> is <see langword="true"/>, this is <see langword="null"/>.
+            </remarks>
+        </member>
+        <member name="F:UndertaleModLib.Compiler.CompileResult.SuccessfulResult">
+            <summary>
+            A standard successful result instance.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.Compiler.CompileResult.UnsuccessfulResult">
+            <summary>
+            A standard unsuccessful result instance, with no errors.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileResult.#ctor(System.Boolean,System.Collections.Generic.List{UndertaleModLib.Compiler.CompileError})">
+            <summary>
+            Creates a compile result struct with the given information.
+            </summary>
+            <param name="successful">Whether compilation was successful.</param>
+            <param name="errors">If compilation was unsuccessful, the list of errors produced; otherwise, <see langword="null"/>.</param>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileResult.CombineWith(UndertaleModLib.Compiler.CompileResult)">
+            <summary>
+            Combines two compile results together, including any potential errors.
+            </summary>
+            <param name="otherResult">Other compile result to combine with.</param>
+            <returns>A new combined compile result.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CompileResult.PrintAllErrors(System.Boolean)">
+            <summary>
+            Helper method to print all errors into a single string, delimited by newlines.
+            </summary>
+            <param name="codeEntryNames">Whether to print code entry names along with each error.</param>
+            <returns>String with all error messages.</returns>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.ICodeImportOperation">
+            <summary>
+            Interface for different types of code import operations.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Compiler.ICodeImportOperation.CodeEntry">
+            <summary>
+            Code entry to be imported to, for this operation.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.ICodeImportOperation.Import(UndertaleModLib.Compiler.CodeImportGroup)">
+            <summary>
+            Perform this import operation.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CodeReplaceOperation">
+            <summary>
+            Represents a code replace operation.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeReplaceOperation.#ctor(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Represents a code replace operation.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeReplaceOperation.Import(UndertaleModLib.Compiler.CodeImportGroup)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CodeAppendOperation">
+            <summary>
+            Represents a code append operation (by decompiling existing code, and appending the code string to the end).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeAppendOperation.#ctor(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Represents a code append operation (by decompiling existing code, and appending the code string to the end).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeAppendOperation.Import(UndertaleModLib.Compiler.CodeImportGroup)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CodePrependOperation">
+            <summary>
+            Represents a code prepend operation (by decompiling existing code, and prepending the code string to the start).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodePrependOperation.#ctor(UndertaleModLib.Models.UndertaleCode,System.String)">
+            <summary>
+            Represents a code prepend operation (by decompiling existing code, and prepending the code string to the start).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodePrependOperation.Import(UndertaleModLib.Compiler.CodeImportGroup)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Compiler.CodeFindReplaceOperation">
+            <summary>
+            Represents a code find and replace operation (by decompiling existing code, and performing find/replace on that string).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeFindReplaceOperation.#ctor(UndertaleModLib.Models.UndertaleCode,System.String,System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Represents a code find and replace operation (by decompiling existing code, and performing find/replace on that string).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeFindReplaceOperation.SplitByTrimmedLines(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Returns a list of ranges, representing trimmed lines from the given string.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeFindReplaceOperation.ReplaceTrimmedLines(System.ReadOnlySpan{System.Char},System.StringComparison)">
+            <summary>
+            Replaces Search with Replacement on the given string, processing on a line-by-line basis, trimming each line's whitespace.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Compiler.CodeFindReplaceOperation.Import(UndertaleModLib.Compiler.CodeImportGroup)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Decompiler.GameSpecificResolver">
+            <summary>
+            Class that helps load game-specific data, which tailor some features (such as the decompiler) to specific games.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.BaseDirectory">
+            <summary>
+            Base app directory used for locating the "GameSpecificData" directory, which should be immediately inside.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificCondition.ConditionKind">
+            <summary>
+            Represents the kind of condition to be evaluated.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificCondition.Value">
+            <summary>
+            Value to be used during evaluation of condition, if applicable.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificDefinition.LoadOrder">
+            <summary>
+            Integer representing the order this definition should be evaluated/loaded in.
+            The lower this number is, the earlier this definition will be evaluated and loaded.
+            </summary>
+            <remarks>
+            Built-in definitions currently use values 0 (for GameMaker builtins) and 1 (for games).
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificDefinition.Conditions">
+            <summary>
+            List of conditions that will be evaluated sequentially, to match this game-specific definition.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificDefinition.UnderanalyzerFilename">
+            <summary>
+            Filename to be loaded as an Underanalyzer game-specific config, when this definition successfully matches.
+            If empty, null, or the file is otherwise nonexistent, this will be ignored.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificDefinition.Evaluate(UndertaleModLib.UndertaleData)">
+            <summary>
+            Evaluates this game-specific definition against the given game data, returning whether this definition should be loaded.
+            </summary>
+            <returns>True if this definition should be loaded; false otherwise.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GameSpecificResolver.GameSpecificDefinition.Load(UndertaleModLib.UndertaleData)">
+            <summary>
+            Loads this game-specific definition.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GameSpecificResolver.ReloadDefinitions">
+            <summary>
+            Forces a full reload of all game-specific definition files.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GameSpecificResolver.LoadDefinitions">
+            <summary>
+            Loads game-specific definitions, if not loaded already. Call <see cref="M:UndertaleModLib.Decompiler.GameSpecificResolver.ReloadDefinitions"/> to force a full reload.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GameSpecificResolver.Initialize(UndertaleModLib.UndertaleData)">
+            <summary>
+            Initializes the registry of game-specific data for the given game.
             </summary>
         </member>
         <member name="T:UndertaleModLib.Decompiler.GlobalDecompileContext">
             <summary>
-            The DecompileContext is global for the entire decompilation run, or possibly multiple runs. It caches the decompilation results which don't change often
-            to speedup decompilation.
+            A global game context to track data used by GML decompilation and compilation.
+            </summary>
+            <remarks>
+            Can be used for multiple runs of both the Underanalyzer decompiler and compiler, and is generally thread-safe after initialization.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Decompiler.GlobalDecompileContext.Data">
+            <summary>
+            Associated game data for this decompile context.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.GlobalDecompileContext.ScriptArgsCache">
+        <member name="P:UndertaleModLib.Decompiler.GlobalDecompileContext.CurrentCompileGroup">
             <summary>
-            A cache of resolved function argument types. This is kept here because decompiling is slow, and there is no need to do it every time
-            unless the code has changed.
+            The current compile group being used for main compile, and for linking.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Decompiler.GlobalDecompileContext.AnonymousFunctionNameCache">
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.#ctor(UndertaleModLib.UndertaleData)">
             <summary>
-            A cache of function to actual name mapping. GMS2.3+ sometimes (usually when dealing with global scripts) calls method functions
-            using the legacy call operator, passing the anonymous function directly. This dictionary contains a map from UndertaleFunction
-            to its actual name, obtained by decompiling the parent CodeObject and looking for the assignment to global variable with function
-            name.
+            Instantiates and initializes a global decompile context for the given <see cref="T:UndertaleModLib.UndertaleData"/>.
             </summary>
+            <remarks>
+            Note: This will recalculate the global functions belonging to the given <see cref="T:UndertaleModLib.UndertaleData"/>,
+            mutating its state. Therefore, this initialization operation is not thread-safe on its own.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.BuildGlobalFunctionCache(UndertaleModLib.UndertaleData)">
+            <summary>
+            Builds the GlobalFunctions cache, required for Underanalyzer's decompiler to recognize function names in global scope.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.PrepareForCompilation(System.Boolean)">
+            <summary>
+            Prepares a global decompile context for compilation.
+            </summary>
+            <param name="forceReloadAssets">Whether asset lookups should be forced to be re-created.</param>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.AddAssetsFromList``1(System.Collections.Generic.Dictionary{System.String,System.Int32},System.Collections.Generic.IList{``0},UndertaleModLib.Util.AssetReferenceTypes.RefType)">
+            <summary>
+            Adds all assets from the supplied asset list to the destination lookup dictionary, encoding the supplied reference type if required.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.GetAssetName(Underanalyzer.AssetType,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.GetAssetId(System.String,System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.GetRoomInstanceId(System.String,System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.GetScriptId(System.String,System.Int32@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Decompiler.GlobalDecompileContext.GetScriptIdByFunctionName(System.String,System.Int32@)">
+            <inheritdoc/>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleAnimationCurve">
             <summary>
@@ -316,6 +975,14 @@
             </summary>
             <remarks>This is how the audio group is referenced from code.</remarks>
         </member>
+        <member name="P:UndertaleModLib.Models.UndertaleAudioGroup.Path">
+            <summary>
+            Relative path (from the main data file) to the audio group file, in GameMaker 2024.14 and above.
+            </summary>
+            <remarks>
+            Prior to 2024.14, audio groups were all numerically assigned filenames and all in the root directory.
+            </remarks>
+        </member>
         <member name="M:UndertaleModLib.Models.UndertaleAudioGroup.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
@@ -332,7 +999,7 @@
             <summary>
             A background or tileset entry in a data file.
             </summary>
-            <remarks>For Game Maker Studio: 2, this will only ever be a tileset. For Game Maker Studio: 1, this is usually a background,
+            <remarks>For GameMaker Studio 2, this will only ever be a tileset. For GameMaker: Studio 1, this is usually a background,
             but is sometimes repurposed as use for a tileset as well.</remarks>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleBackground.TileID">
@@ -469,29 +1136,30 @@
             <returns>The instruction type of the supplied opcode.</returns>
             <exception cref="T:System.IO.IOException">For unknown opcodes.</exception>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ConvertInstructionKind(System.Byte)">
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ConvertOldKindToNewKind(System.Byte)">
             <summary>
             Converts from bytecode 14 instruction opcodes to modern opcodes.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.Reference`1.Serialize(UndertaleModLib.UndertaleWriter)">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.Reference`1.Unserialize(UndertaleModLib.UndertaleReader)">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.Reference`1.ToString">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.Reference`1.SerializeReferenceChain(UndertaleModLib.UndertaleWriter,System.Collections.Generic.IList{UndertaleModLib.Models.UndertaleCode},System.Collections.Generic.IList{`0})">
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ConvertNewKindToOldKind(System.Byte,UndertaleModLib.Models.UndertaleInstruction.ComparisonType)">
             <summary>
-             Serialize the reference chain. This functions assumes that the Reference objects have already been written to file (i.e. the CODE chunk was before FUNC/VARI,
-             which is normally always the case)
+            Converts from modern instruction opcodes to bytecode 14 opcodes.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.Reference`1.ParseReferenceChain(UndertaleModLib.UndertaleReader,`0)">
+        <member name="T:UndertaleModLib.Models.UndertaleInstruction.IReferencedObject">
             <summary>
-             Parse the reference chain. This function assumes that all of the object data was read already, it only fills in the "Target" field of Reference objects
+            Objects (functions and variables) that can be referenced as part of a reference chain, in instructions.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ParseReferenceChain``1(UndertaleModLib.UndertaleReader,``0)">
+            <summary>
+            Parse a reference chain. This function assumes that all of the object data was read already, it only fills in ValueVariable/ValueFunction on instructions.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.SerializeReferenceChain``1(UndertaleModLib.UndertaleWriter,System.Collections.Generic.IList{UndertaleModLib.Models.UndertaleCode},System.Collections.Generic.IList{``0})">
+            <summary>
+            Serializes a reference chain. 
+            This functions assumes that instructions have already been written to file (i.e. the CODE chunk was before FUNC/VARI, which is normally always the case).
             </summary>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleInstruction.Serialize(UndertaleModLib.UndertaleWriter)">
@@ -503,28 +1171,51 @@
         <member name="M:UndertaleModLib.Models.UndertaleInstruction.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.PrintVariableReference(UndertaleModLib.Util.StringBuilderHelper@,System.Text.StringBuilder)">
+            <summary>
+            Helper to print a variable reference to a StringBuilder.
+            </summary>
+        </member>
         <member name="M:UndertaleModLib.Models.UndertaleInstruction.ToString">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.Collections.Generic.List{System.UInt32})">
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.UInt32,System.Collections.Generic.Dictionary{System.UInt32,System.UInt32})">
             <summary>
             <inheritdoc cref="M:UndertaleModLib.Models.UndertaleInstruction.ToString"/>
             </summary>
-            <param name="code">The <see cref="T:UndertaleModLib.Models.UndertaleCode"/> code entry for which these instructions belong to.</param>
-            <param name="blocks">A list of block addresses for the code entry for which these instructions belong to.</param>
+            <param name="code">The <see cref="T:UndertaleModLib.Models.UndertaleCode"/> code entry for which the instruction belongs.</param>
+            <param name="address">Address of the instruction within its code entry.</param>
+            <param name="blocks">A lookup of block addresses to block indices for the code entry for which the instruction belongs.</param>
             <returns></returns>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ToString(System.Text.StringBuilder,UndertaleModLib.Models.UndertaleCode,System.Collections.Generic.List{System.UInt32},System.Nullable{System.Int32})">
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.ToString(System.Text.StringBuilder,UndertaleModLib.Models.UndertaleCode,System.UInt32,System.Collections.Generic.Dictionary{System.UInt32,System.UInt32},System.Int32)">
             <summary>
             Inserts a string representation of this object at a specified index in a <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="stringBuilder">The <see cref="T:System.Text.StringBuilder"/> instance on where to insert the string representation.</param>
-            <param name="code"><inheritdoc cref="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.Collections.Generic.List{System.UInt32})"/></param>
-            <param name="blocks"><inheritdoc cref="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.Collections.Generic.List{System.UInt32})"/></param>
-            <param name="index">The index on where to insert the string representation. If this is <see langword="null"/>
+            <param name="code"><inheritdoc cref="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.UInt32,System.Collections.Generic.Dictionary{System.UInt32,System.UInt32})"/></param>
+            <param name="address">Address of the instruction within its code entry.</param>
+            <param name="blocks"><inheritdoc cref="M:UndertaleModLib.Models.UndertaleInstruction.ToString(UndertaleModLib.Models.UndertaleCode,System.UInt32,System.Collections.Generic.Dictionary{System.UInt32,System.UInt32})"/></param>
+            <param name="index">The index on where to insert the string representation. If this is -1,
             it will use <paramref name="stringBuilder.Length.Length"/> as the index instead.</param>
             <remarks>Note that performance of this function can be drastically different, depending on <paramref name="index"/>.
-            For best results, it's recommended to leave it at <see langword="null"/>.</remarks>
+            For best results, it's recommended to leave it at -1.</remarks>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.AdaptAssetType(UndertaleModLib.UndertaleData,System.Int32)">
+            <summary>
+            Adapts asset type IDs to the <see cref="T:Underanalyzer.AssetType"/> enum, across versions.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.AdaptAssetTypeId(UndertaleModLib.UndertaleData,Underanalyzer.AssetType)">
+            <summary>
+            Adapts the <see cref="T:Underanalyzer.AssetType"/> enum to asset type IDs, across versions.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleInstruction.CheckIfAssetTypeIs2024_4(UndertaleModLib.UndertaleData,System.Int32,System.Int32)">
+            <summary>
+            Checks whether the given pair of ID/type is guaranteed to be 2024.4+.
+            That is, it does not exist in the game data when using old IDs.
+            </summary>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleCode">
             <summary>
@@ -536,21 +1227,73 @@
             The name of the code entry.
             </summary>
         </member>
+        <member name="P:UndertaleModLib.Models.UndertaleCode.Length">
+            <summary>
+            Length of the code entry, in bytes.
+            </summary>
+        </member>
         <member name="P:UndertaleModLib.Models.UndertaleCode.LocalsCount">
             <summary>
-            The amount of local variables this code entry has. <br/>
-            Warning: This is actually a ushort internally, it's an uint here for compatibility.
+            The amount of local variables this code entry has.
             </summary>
+            <remarks>
+            Warning: This is actually a ushort internally, but it's an uint here for compatibility.
+            </remarks>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleCode.ArgumentsCount">
             <summary>
             The amount of arguments this code entry accepts.
             </summary>
         </member>
+        <member name="P:UndertaleModLib.Models.UndertaleCode.Offset">
+            <summary>
+            Offset, in bytes, where code should begin executing from within the bytecode of this code entry.
+            </summary>
+            <remarks>
+            Should be 0 for root-level (parent) code entries, and nonzero for child code entries.
+            </remarks>
+        </member>
         <member name="P:UndertaleModLib.Models.UndertaleCode.Instructions">
             <summary>
             A list of bytecode instructions this code entry has.
             </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleCode.WeirdLocalFlag">
+            <summary>
+            A flag set on certain code entries, which usually don't have locals attached to them.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleCode.ParentEntry">
+            <summary>
+            Parent entry of this code entry, if this is a child entry; <see langword="null"/> otherwise.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleCode.ChildEntries">
+            <summary>
+            Child entries of this code entry, if a root-level (parent) entry; empty if a child entry.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCode.CreateEmptyEntry(UndertaleModLib.UndertaleData,System.String)">
+            <summary>
+            Creates an empty root code entry with the given name, along with an empty code locals entry (when necessary).
+            </summary>
+            <remarks>
+            The code entry (and possibly code locals entry) will be immediately added to the data.
+            </remarks>
+            <param name="data">Data to add the new code to.</param>
+            <param name="name">Name of the new code entry to create.</param>
+            <returns>The new code entry.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCode.CreateEmptyEntry(UndertaleModLib.UndertaleData,UndertaleModLib.Models.UndertaleString)">
+            <summary>
+            Creates an empty root code entry with the given name, along with an empty code locals entry (when necessary).
+            </summary>
+            <param name="data">Data to add the new code to.</param>
+            <param name="name">Name of the new code entry to create.</param>
+            <returns>The new code entry.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCode.SerializeBlobBefore(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc />
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleCode.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
@@ -561,45 +1304,39 @@
         <member name="M:UndertaleModLib.Models.UndertaleCode.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCode.UpdateLength">
+            <summary>
+            Recalculates this code entry's length, based on the size of all instructions contained within.
+            </summary>
+        </member>
         <member name="M:UndertaleModLib.Models.UndertaleCode.FindReferencedVars">
             <summary>
-            Finds and returns a list of all variables this code entry references.
+            Finds and returns a set of all variables this code entry references.
             </summary>
-            <returns>A list of all variables this code entry references.</returns>
+            <returns>A set of all variables this code entry references.</returns>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleCode.FindReferencedLocalVars">
             <summary>
             Finds and returns a list of all local variables this code entry references.
             </summary>
-            <returns>A list of all local variables this code entry references.</returns>
+            <returns>A set of all local variables this code entry references.</returns>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleCode.Append(System.Collections.Generic.IList{UndertaleModLib.Models.UndertaleInstruction})">
+        <member name="M:UndertaleModLib.Models.UndertaleCode.FindFirstTryLocalIndex">
+            <summary>
+            Finds and returns the index of the first try variable used, or -1 if none is found.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCode.Append(System.Collections.Generic.IEnumerable{UndertaleModLib.Models.UndertaleInstruction})">
             <summary>
             Append instructions at the end of this code entry.
             </summary>
             <param name="instructions">The instructions to append.</param>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleCode.Replace(System.Collections.Generic.IList{UndertaleModLib.Models.UndertaleInstruction})">
+        <member name="M:UndertaleModLib.Models.UndertaleCode.Replace(System.Collections.Generic.IEnumerable{UndertaleModLib.Models.UndertaleInstruction})">
             <summary>
             Replaces <b>all</b> instructions currently existing in this code entry with another set of instructions.
             </summary>
             <param name="instructions">The new instructions for this code entry.</param>
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleCode.AppendGML(System.String,UndertaleModLib.UndertaleData)">
-            <summary>
-            Append GML instructions at the end of this code entry.
-            </summary>
-            <param name="gmlCode">The GML code to append.</param>
-            <param name="data">From which data file the GML code is coming from.</param>
-            <exception cref="T:System.Exception"> if the GML code does not compile or if there's an error writing the code to the profile entry.</exception>
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleCode.ReplaceGML(System.String,UndertaleModLib.UndertaleData)">
-            <summary>
-            Replaces <b>all</b> instructions currently existing in this code entry with another set of GML instructions.
-            </summary>
-            <param name="gmlCode">The new GML code for this code entry.</param>
-            <param name="data">From which data file the GML code is coming from.</param>
-            <exception cref="T:System.Exception">If the GML code does not compile or if there's an error writing the code to the profile entry.</exception>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleCode.ToString">
             <inheritdoc />
@@ -1270,7 +2007,7 @@
         <member name="P:UndertaleModLib.Models.UndertaleFont.AntiAliasing">
             <summary>
             The level of anti-aliasing that is applied. 0 for none, Game Maker: Studio 2 has 1 for <c>on</c>, while
-            Game Maker Studio: 1 and earlier have values 1-3 for different anti-aliasing levels.
+            GameMaker: Studio 1 and earlier have values 1-3 for different anti-aliasing levels.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleFont.RangeEnd">
@@ -1374,6 +2111,14 @@
             The kerning for each glyph.
             </summary>
         </member>
+        <member name="P:UndertaleModLib.Models.UndertaleFont.Glyph.UnknownAlwaysZero">
+            <summary>
+            Purpose unknown, always 0.
+            </summary>
+            <remarks>
+            Was introduced in GM 2024.11.
+            </remarks>
+        </member>
         <member name="M:UndertaleModLib.Models.UndertaleFont.Glyph.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
@@ -1465,11 +2210,6 @@
             The first instruction in this function.
             </summary>
         </member>
-        <member name="P:UndertaleModLib.Models.UndertaleFunction.Autogenerated">
-            <summary>
-            TODO: some kind of helper variable for something in gms2.3
-            </summary>
-        </member>
         <member name="M:UndertaleModLib.Models.UndertaleFunction.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
@@ -1491,6 +2231,14 @@
             <summary>
             A collection of local variables.
             </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleCodeLocals.CreateEmptyEntry(UndertaleModLib.UndertaleData,UndertaleModLib.Models.UndertaleString)">
+            <summary>
+            Creates an empty code locals entry with the given name.
+            </summary>
+            <param name="data">Data to add the new code to.</param>
+            <param name="name">Name of the new code locals entry to create.</param>
+            <returns>The new code locals entry.</returns>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleCodeLocals.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
@@ -1608,7 +2356,7 @@
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGameObject.UsesPhysics">
             <summary>
-            Whether this object uses Game Maker physics.
+            Whether this object uses GameMaker physics.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGameObject.IsSensor">
@@ -1693,6 +2441,68 @@
         <member name="M:UndertaleModLib.Models.UndertaleGameObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,System.UInt32,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given event type and subtype, on this object.
+            </summary>
+            <param name="type">Main event type for the event.</param>
+            <param name="subtype">Subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given main event type (no subtype), on this object.
+            </summary>
+            <param name="type">Main event type for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.Models.EventSubtypeKey,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given keyboard event type and subtype, on this object.
+            </summary>
+            <param name="type">Main keyboard event type for the event.</param>
+            <param name="subtype">Keyboard subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.Models.EventSubtypeStep,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given step event type and subtype, on this object.
+            </summary>
+            <param name="type">Main step event type for the event.</param>
+            <param name="subtype">Step subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.Models.EventSubtypeMouse,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given mouse event type and subtype, on this object.
+            </summary>
+            <param name="type">Main mouse event type for the event.</param>
+            <param name="subtype">Mouse subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.Models.EventSubtypeOther,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given "other" event type and subtype, on this object.
+            </summary>
+            <param name="type">Main "other" event type for the event.</param>
+            <param name="subtype">"Other" subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleGameObject.EventHandlerFor(UndertaleModLib.Models.EventType,UndertaleModLib.Models.EventSubtypeDraw,UndertaleModLib.UndertaleData)">
+            <summary>
+            Finds or creates a code entry for the given draw event type and subtype, on this object.
+            </summary>
+            <param name="type">Main draw event type for the event.</param>
+            <param name="subtype">Draw subtype for the event.</param>
+            <param name="data">Data that this object belongs to.</param>
+            <returns>New or existing code entry corresponding to the event.</returns>
+        </member>
         <member name="M:UndertaleModLib.Models.UndertaleGameObject.ToString">
             <inheritdoc />
         </member>
@@ -1708,7 +2518,7 @@
             <summary>
             The subtype of this event.
             </summary>
-            <remarks>Game Maker suffixes the action names with this id.</remarks>
+            <remarks>GameMaker suffixes the action names with this ID.</remarks>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGameObject.Event.Actions">
             <summary>
@@ -1843,7 +2653,7 @@
         </member>
         <member name="F:UndertaleModLib.Models.EventType.Trigger">
             <summary>
-            A trigger event type. Only used in Pre- Game Maker: Studio.
+            A trigger event type. Only used in Pre- GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventType.CleanUp">
@@ -1858,7 +2668,7 @@
         </member>
         <member name="F:UndertaleModLib.Models.EventType.PreCreate">
             <summary>
-            A pre-create event type. Unknown subtype. TODO?
+            A pre-create event type. Has no subtypes, always 0.
             </summary>
         </member>
         <member name="T:UndertaleModLib.Models.EventSubtypeStep">
@@ -2463,122 +3273,122 @@
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Left">
             <summary>
-            The Joystick1 left event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 left event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Right">
             <summary>
-            The Joystick1 right event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 right event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Up">
             <summary>
-            The Joystick1 up event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 up event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Down">
             <summary>
-            The Joystick1 down event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 down event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button1">
             <summary>
-            The Joystick1 button1 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button1 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button2">
             <summary>
-            The Joystick1 button2 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button2 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button3">
             <summary>
-            The Joystick1 button3 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button3 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button4">
             <summary>
-            The Joystick1 button4 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button4 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button5">
             <summary>
-            The Joystick1 button5 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button5 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button6">
             <summary>
-            The Joystick1 button6 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button6 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button7">
             <summary>
-            The Joystick1 button7 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button7 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick1Button8">
             <summary>
-            The Joystick1 button8 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick1 button8 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Left">
             <summary>
-            The Joystick2 left event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 left event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Right">
             <summary>
-            The Joystick2 right event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 right event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Up">
             <summary>
-            The Joystick2 up event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 up event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Down">
             <summary>
-            The Joystick2 down event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 down event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button1">
             <summary>
-            The Joystick2 button1 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button1 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button2">
             <summary>
-            The Joystick2 button2 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button2 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button3">
             <summary>
-            The Joystick2 button3 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button3 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button4">
             <summary>
-            The Joystick2 button4 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button4 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button5">
             <summary>
-            The Joystick2 button5 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button5 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button6">
             <summary>
-            The Joystick2 button6 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button6 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button7">
             <summary>
-            The Joystick2 button7 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button7 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.Joystick2Button8">
             <summary>
-            The Joystick2 button8 event. Is only used in Pre-Game Maker: Studio.
+            The Joystick2 button8 event. Is only used in Pre-GameMaker Studio.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeMouse.GlobLeftButton">
@@ -2673,7 +3483,7 @@
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeOther.NoMoreLives">
             <summary>
-            The "No More Lives" event. Only used in Game Maker Studio: 1 and earlier.
+            The "No More Lives" event. Only used in GameMaker: Studio 1 and earlier.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeOther.AnimationEnd">
@@ -2688,7 +3498,7 @@
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeOther.NoMoreHealth">
             <summary>
-            The "No More Health" event. Only used in Game Maker Studio: 1 and earlier.
+            The "No More Health" event. Only used in GameMaker: Studio 1 and earlier.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.EventSubtypeOther.User0">
@@ -3290,12 +4100,12 @@
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGeneralInfo.GMS2FPS">
             <summary>
-            The FPS of the data file. Game Maker Studio: 2 only.
+            The FPS of the data file. GameMaker Studio 2 only.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGeneralInfo.GMS2AllowStatistics">
             <summary>
-            Whether the data file allows statistics. Game Maker Studio: 2 only.
+            Whether the data file allows statistics. GameMaker Studio 2 only.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleGeneralInfo.GMS2GameGUID">
@@ -3672,12 +4482,17 @@
         </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.RoomEntryFlags.IsGMS2">
             <summary>
-            Whether the room was made in Game Maker: Studio 2.
+            Whether the room was made in GameMaker Studio 2 or above.
             </summary>
         </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.RoomEntryFlags.IsGMS2_3">
             <summary>
-            Whether the room was made in Game Maker: Studio 2.3.
+            Whether the room was made in GameMaker Studio 2.3 or above.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.Models.UndertaleRoom.RoomEntryFlags.IsGM2024_13">
+            <summary>
+            Whether the room was made in GameMaker 2024.13 or above.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleRoom.Name">
@@ -3781,9 +4596,14 @@
             The list of tiles this room uses.
             </summary>
         </member>
+        <member name="P:UndertaleModLib.Models.UndertaleRoom.InstanceCreationOrderIDs">
+            <summary>
+            List of instance creation order IDs, used for the first room in the room order only, in GameMaker 2024.13 and above.
+            </summary>
+        </member>
         <member name="P:UndertaleModLib.Models.UndertaleRoom.Layers">
             <summary>
-            The list of layers this room uses. Used in Game Maker Studio: 2 only, as <see cref="P:UndertaleModLib.Models.UndertaleRoom.Backgrounds"/> and <see cref="P:UndertaleModLib.Models.UndertaleRoom.Tiles"/> are empty there.
+            The list of layers this room uses. Used in GameMaker Studio 2 only, as <see cref="P:UndertaleModLib.Models.UndertaleRoom.Backgrounds"/> and <see cref="P:UndertaleModLib.Models.UndertaleRoom.Tiles"/> are empty there.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleRoom.Sequences">
@@ -4098,9 +4918,6 @@
             A game object with properties as it's used in a room.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.Models.UndertaleRoom.GameObject.ChildObjectCount">
-            <inheritdoc cref="F:UndertaleModLib.IStaticChildObjCount.ChildObjectCount" />
-        </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.GameObject.ChildObjectsSize">
             <inheritdoc cref="F:UndertaleModLib.IStaticChildObjectsSize.ChildObjectsSize" />
         </member>
@@ -4157,6 +4974,11 @@
         <member name="P:UndertaleModLib.Models.UndertaleRoom.GameObject.ImageIndex">
             <summary>
             The image index of this object. Game Maker: Studio 2 only.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleRoom.GameObject.Nonexistent">
+            <summary>
+            Whether this game object actually exists or not; <see langword="true"/> if it does not exist.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleRoom.GameObject.WrappedImageIndex">
@@ -4235,7 +5057,7 @@
         </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.Tile.spriteMode">
             <summary>
-            Whether this tile is from an asset layer.<br/>
+            Whether this tile represents a <see cref="T:UndertaleModLib.Models.UndertaleSprite"/> or a <see cref="T:UndertaleModLib.Models.UndertaleBackground"/>.<br/>
             <see langword="true"/> for GameMaker Studio: 2 games, otherwise <see langword="false"/>.
             </summary>
             <remarks>
@@ -4265,8 +5087,8 @@
         <member name="P:UndertaleModLib.Models.UndertaleRoom.Tile.ObjectDefinition">
             <summary>
             From which object this tile stems from.<br/>
-            Will return a <see cref="T:UndertaleModLib.Models.UndertaleBackground"/> if <see cref="F:UndertaleModLib.Models.UndertaleRoom.Tile.spriteMode"/> is <see langword="true"/>,
-            a <see cref="T:UndertaleModLib.Models.UndertaleSprite"/> if it's <see langword="false"/>.
+            Will return a <see cref="T:UndertaleModLib.Models.UndertaleSprite"/> if <see cref="F:UndertaleModLib.Models.UndertaleRoom.Tile.spriteMode"/> is <see langword="true"/>,
+            a <see cref="T:UndertaleModLib.Models.UndertaleBackground"/> if it's <see langword="false"/>.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleRoom.Tile.SourceX">
@@ -4370,6 +5192,11 @@
         <member name="F:UndertaleModLib.Models.UndertaleRoom.LayerType.Effect">
             <summary>
             The layer is an effects layer.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.Models.UndertaleRoom.LayerType.Path2">
+            <summary>
+            The layer is a path layer, in 2024.13+ only.
             </summary>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleRoom.Layer">
@@ -4521,9 +5348,6 @@
         <member name="M:UndertaleModLib.Models.UndertaleRoom.EffectProperty.Dispose">
             <inheritdoc/>
         </member>
-        <member name="F:UndertaleModLib.Models.UndertaleRoom.SpriteInstance.ChildObjectCount">
-            <inheritdoc cref="F:UndertaleModLib.IStaticChildObjCount.ChildObjectCount" />
-        </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.SpriteInstance.ChildObjectsSize">
             <inheritdoc cref="F:UndertaleModLib.IStaticChildObjectsSize.ChildObjectsSize" />
         </member>
@@ -4589,9 +5413,6 @@
         <member name="M:UndertaleModLib.Models.UndertaleRoom.SpriteInstance.Dispose">
             <inheritdoc/>
         </member>
-        <member name="F:UndertaleModLib.Models.UndertaleRoom.SequenceInstance.ChildObjectCount">
-            <inheritdoc cref="F:UndertaleModLib.IStaticChildObjCount.ChildObjectCount" />
-        </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.SequenceInstance.ChildObjectsSize">
             <inheritdoc cref="F:UndertaleModLib.IStaticChildObjectsSize.ChildObjectsSize" />
         </member>
@@ -4606,9 +5427,6 @@
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleRoom.SequenceInstance.Dispose">
             <inheritdoc/>
-        </member>
-        <member name="F:UndertaleModLib.Models.UndertaleRoom.ParticleSystemInstance.ChildObjectCount">
-            <inheritdoc cref="F:UndertaleModLib.IStaticChildObjCount.ChildObjectCount" />
         </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.ParticleSystemInstance.ChildObjectsSize">
             <inheritdoc cref="F:UndertaleModLib.IStaticChildObjectsSize.ChildObjectsSize" />
@@ -4638,9 +5456,6 @@
         <member name="M:UndertaleModLib.Models.UndertaleRoom.ParticleSystemInstance.Dispose">
             <inheritdoc/>
         </member>
-        <member name="F:UndertaleModLib.Models.UndertaleRoom.TextItemInstance.ChildObjectCount">
-            <inheritdoc cref="F:UndertaleModLib.IStaticChildObjCount.ChildObjectCount" />
-        </member>
         <member name="F:UndertaleModLib.Models.UndertaleRoom.TextItemInstance.ChildObjectsSize">
             <inheritdoc cref="F:UndertaleModLib.IStaticChildObjectsSize.ChildObjectsSize" />
         </member>
@@ -4660,6 +5475,11 @@
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleRoom.TextItemInstance.Dispose">
             <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleRoom.InstanceIDList">
+            <summary>
+            A simple list of instance IDs, as used in GameMaker 2024.13 and above.
+            </summary>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleScript">
             <summary>
@@ -5077,7 +5897,7 @@
             <summary>
             Whether this sound uses the "new audio system".
             </summary>
-            <remarks>This is default for everything post Game Maker: Studio.
+            <remarks>This is default for everything post GameMaker Studio.
             The legacy sound system was used in pre Game Maker 8.</remarks>
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleSound.Name">
@@ -5119,7 +5939,7 @@
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleSound.Effects">
             <summary>
-            A pre-Game Maker: Studio way of having certain effects on a sound effect.
+            A pre-GameMaker Studio way of having certain effects on a sound effect.
             </summary>
             <remarks>The exact way this works is unknown. But following values are possible:
             <c>Chorus</c>, <c>Echo</c>, <c>Flanger</c>, <c>Reverb</c>, <c>Gargle</c>, all possible to be combined with one another.</remarks>
@@ -5198,46 +6018,6 @@
             <inheritdoc />
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleSound.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.PageWidth">
-            <summary>
-            The width of the Spine atlas in pixels.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.PageHeight">
-            <summary>
-            The height of the Spine atlas in pixels.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TexBlob">
-            <summary>
-            The atlas as raw bytes, can be a GameMaker QOI texture or a PNG file. Null for versions >= 2023.1.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TextureEntryLength">
-            <summary>
-            The length of the corresponding sprite texture entry for versions >= 2023.1.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.IsQOI">
-            <summary>
-            Indicates whether <see cref="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TexBlob"/> contains a GameMaker QOI texture (the header is qoif reversed).
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Serialize(UndertaleModLib.UndertaleWriter)">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Unserialize(UndertaleModLib.UndertaleReader)">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
-            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.ToString">
-            <inheritdoc />
-        </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Dispose">
             <inheritdoc/>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleSprite">
@@ -5350,6 +6130,13 @@
         <member name="M:UndertaleModLib.Models.UndertaleSprite.Dispose">
             <inheritdoc/>
         </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSprite.NewMaskEntry(UndertaleModLib.UndertaleData)">
+            <summary>
+            Creates a new mask entry for this sprite.
+            </summary>
+            <param name="data">Data that this sprite is part of, for checking the GameMaker version.</param>
+            <returns>The new mask entry.</returns>
+        </member>
         <member name="T:UndertaleModLib.Models.UndertaleSprite.SpriteType">
             <summary>
             Different formats a sprite can have.
@@ -5368,6 +6155,11 @@
         <member name="F:UndertaleModLib.Models.UndertaleSprite.SpriteType.Spine">
             <summary>
             Spine format.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.Models.UndertaleSprite.SpriteType.Vector">
+            <summary>
+            Vector format (e.g., SVGs).
             </summary>
         </member>
         <member name="T:UndertaleModLib.Models.UndertaleSprite.SepMaskType">
@@ -5420,7 +6212,7 @@
             This method is used to calculate collision mask dimensions in GameMaker 2024.6 and above.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleSprite.CalculateFullMaskDimensions(System.UInt32,System.UInt32)">
+        <member name="M:UndertaleModLib.Models.UndertaleSprite.CalculateFullMaskDimensions(System.Int32,System.Int32)">
             <summary>
             Calculates the width and height of a collision mask from a given sprite's full width and height.
             This method is used to calculate collision mask dimensions prior to GameMaker 2024.6.
@@ -5444,18 +6236,45 @@
         <member name="M:UndertaleModLib.Models.UndertaleSprite.NineSlice.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="T:UndertaleModLib.Models.UndertaleYYSWFUtils">
+        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.PageWidth">
             <summary>
-            Some dirty hacks to make SWF work, they'll be removed later. TODO:
+            The width of the Spine atlas in pixels.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFUtils.ReadUndertaleObjectNoPool``1(UndertaleModLib.UndertaleReader)">
+        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.PageHeight">
             <summary>
-            Reads an <see cref="T:UndertaleModLib.UndertaleObject"/> ignoring the <paramref name="reader"/>s object pool.
+            The height of the Spine atlas in pixels.
             </summary>
-            <typeparam name="T"><see cref="T:UndertaleModLib.UndertaleObject"/>s child.</typeparam>
-            <param name="reader">An instance of <see cref="T:UndertaleModLib.UndertaleReader"/>.</param>
-            <returns>The object</returns>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TexBlob">
+            <summary>
+            The atlas as raw bytes, can be a GameMaker QOI texture or a PNG file. Null for versions >= 2023.1.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TextureEntryLength">
+            <summary>
+            The length of the corresponding sprite texture entry for versions >= 2023.1.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.IsQOI">
+            <summary>
+            Indicates whether <see cref="P:UndertaleModLib.Models.UndertaleSpineTextureEntry.TexBlob"/> contains a GameMaker QOI texture (the header is qoif reversed).
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleSpineTextureEntry.Dispose">
+            <inheritdoc/>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleYYSWFMatrixColor.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
@@ -5463,10 +6282,10 @@
         <member name="M:UndertaleModLib.Models.UndertaleYYSWFMatrixColor.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFMatrix33.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorMatrix33.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFMatrix33.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorMatrix33.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleYYSWFTimelineObject.Serialize(UndertaleModLib.UndertaleWriter)">
@@ -5487,19 +6306,19 @@
         <member name="M:UndertaleModLib.Models.UndertaleYYSWFCollisionMask.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSolidFillData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorSolidFillData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSolidFillData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorSolidFillData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFGradientRecord.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorGradientRecord.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFGradientRecord.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorGradientRecord.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="P:UndertaleModLib.Models.UndertaleYYSWFGradientFillData.TPEIndex">
+        <member name="P:UndertaleModLib.Models.UndertaleVectorGradientFillData.TPEIndex">
             <summary>
             Unknown purpose. Probably to accomodate for new texture formats.
             </summary>
@@ -5507,67 +6326,73 @@
             Presumably present in GM 2022.1+.
             </remarks>
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFGradientFillData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorGradientFillData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFGradientFillData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorGradientFillData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFBitmapFillData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorBitmapFillData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFBitmapFillData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorBitmapFillData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFFillData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorFillData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFFillData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorFillData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFLineStyleData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorLineStyleData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFLineStyleData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorLineStyleData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFLineStyleData.ToString">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorLineStyleData.ToString">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2.ToString">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2.ToString">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2F.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2F.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2F.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2F.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFVector2F.ToString">
+        <member name="M:UndertaleModLib.Models.UndertaleVector2F.ToString">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSubshapeData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSubShapeData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSubshapeData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleYYSWFSubShapeData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFShapeData.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorSubShapeData.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFShapeData.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleVectorSubShapeData.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFStyleGroup.Serialize(UndertaleModLib.UndertaleWriter)">
+        <member name="M:UndertaleModLib.Models.UndertaleShapeData`1.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
-        <member name="M:UndertaleModLib.Models.UndertaleYYSWFStyleGroup.Unserialize(UndertaleModLib.UndertaleReader)">
+        <member name="M:UndertaleModLib.Models.UndertaleShapeData`1.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleStyleGroup`1.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleStyleGroup`1.Unserialize(UndertaleModLib.UndertaleReader)">
             <inheritdoc />
         </member>
         <member name="P:UndertaleModLib.Models.UndertaleYYSWFBitmapData.TPEIndex">
@@ -5645,7 +6470,7 @@
             <summary>
             Returns a string that represents the current object.
             </summary>
-            <param name="isGMS2">Whether the string is from a Game Maker: Studio 2 data file or not.</param>
+            <param name="isGMS2">Whether the string is from a GameMaker Studio 2 data file or not.</param>
             <returns>A string that represents the current object.</returns>
         </member>
         <member name="M:UndertaleModLib.Models.UndertaleString.SearchMatches(System.String)">
@@ -5973,6 +6798,607 @@
         <member name="M:UndertaleModLib.Models.UndertaleTimeline.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleUINodeData">
+            <summary>
+            Interface for all UI layer node data.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUINode">
+            <summary>
+            Structure containing a UI node.
+            </summary>
+            <remarks>
+            This abstraction is required to work with UI node polymorphism correctly.
+            </remarks>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUINode.Node">
+            <summary>
+            Inner UI node for the node structure.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUINode.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUINode.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUINode.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIRootNode">
+            <summary>
+            Root structure containing a root-level UI node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIRootNode.Name">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleFlexValue">
+            <summary>
+            Represents a value used for UI flex nodes; a float corresponding with its unit.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleFlexValue.UnitKind">
+            <summary>
+            Units to be used for flex values.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleFlexValue.Value">
+            <summary>
+            Floating point value.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleFlexValue.Unit">
+            <summary>
+            Unit for the floating point value.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleFlexValue.#ctor(System.Single,UndertaleModLib.Models.UndertaleFlexValue.UnitKind)">
+            <summary>
+            Initializes a flex value.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleFlexValue.#ctor(UndertaleModLib.UndertaleReader)">
+            <summary>
+            Reads a flex value from the given reader.
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleFlexValue.Serialize(UndertaleModLib.UndertaleWriter)">
+            <summary>
+            Serializes a flex value to the given writer.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties">
+            <summary>
+            Interface for UI layout nodes that have flex properties.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties.AlignmentKind">
+            <summary>
+            Alignment types that can be used for aligning content in a flexbox.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties.FlexDirectionKind">
+            <summary>
+            Flex direction types that can be used in a flexbox.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties.WrapKind">
+            <summary>
+            Wrap types that can be used in a flexbox.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties.JustifyKind">
+            <summary>
+            Justification types that can be used in a flexbox.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexProperties.LayoutDirectionKind">
+            <summary>
+            Layout direction types that can be used in a flexbox.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.AlignItems">
+            <summary>
+            Alignment of child items within the container (along cross axis).
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.FlexDirection">
+            <summary>
+            Main direction that child items are laid out (affects direction of other properties).
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.FlexWrap">
+            <summary>
+            Wrapping type for the flexbox (when items exceed the bounds).
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.AlignContent">
+            <summary>
+            Alignment of lines within the container (along cross axis), when items are wrapped to multiple lines.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.GapRow">
+            <summary>
+            Gap between rows of items.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.GapColumn">
+            <summary>
+            Gap between columns of items.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.PaddingLeft">
+            <summary>
+            Left padding of the container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.PaddingRight">
+            <summary>
+            Right padding of the container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.PaddingTop">
+            <summary>
+            Top padding of the container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.PaddingBottom">
+            <summary>
+            Bottom padding of the container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.JustifyContent">
+            <summary>
+            Alignment of child items within the container (along main axis, i.e. main flex direction).
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexProperties.LayoutDirection">
+            <summary>
+            Layout direction of the container.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexProperties.Serialize(UndertaleModLib.UndertaleWriter,UndertaleModLib.Models.IUndertaleFlexProperties)">
+            <summary>
+            Serializes flex properties to the given writer.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexProperties.Unserialize(UndertaleModLib.UndertaleReader,UndertaleModLib.Models.IUndertaleFlexProperties)">
+            <summary>
+            Unserializes flex properties from the given reader.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexProperties.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.IUndertaleFlexInstanceProperties">
+            <summary>
+            Interface for UI node instances that have flex properties.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.Visible">
+            <summary>
+            Whether the instance is visible.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.Anchor">
+            <summary>
+            Anchor of the instance's (0, 0) position, based on container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.StretchWidth">
+            <summary>
+            Whether the width of the instance is stretched to fit its container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.StretchHeight">
+            <summary>
+            Whether the height of the instance is stretched to fit its container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.TileH">
+            <summary>
+            Whether the instance is tiled horizontally.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.TileV">
+            <summary>
+            Whether the instance is tiled vertically.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.KeepAspect">
+            <summary>
+            Whether aspect ratio should be maintained when stretching width/height.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.Serialize(UndertaleModLib.UndertaleWriter,UndertaleModLib.Models.IUndertaleFlexInstanceProperties)">
+            <summary>
+            Serializes flex instance properties to the given writer.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.Unserialize(UndertaleModLib.UndertaleReader,UndertaleModLib.Models.IUndertaleFlexInstanceProperties)">
+            <summary>
+            Unserializes flex instance properties from the given reader.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.IUndertaleFlexInstanceProperties.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIContainer">
+            <summary>
+            Base class of all UI container nodes.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.Children">
+            <summary>
+            Child nodes of the container.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.AlignItems">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.FlexDirection">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.FlexWrap">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.AlignContent">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.GapRow">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.GapColumn">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.PaddingLeft">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.PaddingRight">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.PaddingTop">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.PaddingBottom">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.JustifyContent">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIContainer.LayoutDirection">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIContainer.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIContainer.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUILayer">
+            <summary>
+            Represents a UI layer node.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUILayer.DrawSpaceKind">
+            <summary>
+            Coordinate spaces used for drawing UI layers.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUILayer.Name">
+            <summary>
+            Name of the UI layer node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUILayer.DrawSpace">
+            <summary>
+            Coordinate space used for drawing the UI layer node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUILayer.Visible">
+            <summary>
+            Whether the UI layer node is visible.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUILayer.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUILayer.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUILayer.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIFlexPanel">
+            <summary>
+            Represents a UI flex panel node.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIFlexPanel.PositionTypeKind">
+            <summary>
+            Position types for flex panels.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.Name">
+            <summary>
+            Name of the UI flex panel node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.Width">
+            <summary>
+            Width of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.Height">
+            <summary>
+            Height of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MinimumWidth">
+            <summary>
+            Minimum width of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MinimumHeight">
+            <summary>
+            Minimum height of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MaximumWidth">
+            <summary>
+            Maximum width of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MaximumHeight">
+            <summary>
+            Maximum height of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.OffsetLeft">
+            <summary>
+            Left offset of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.OffsetRight">
+            <summary>
+            Right offset of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.OffsetTop">
+            <summary>
+            Top offset of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.OffsetBottom">
+            <summary>
+            Bottom offset of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.ClipsContents">
+            <summary>
+            Whether the flex panel clips its contents.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.PositionType">
+            <summary>
+            Position type of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.AlignSelf">
+            <summary>
+            How the flex panel aligns itself.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MarginLeft">
+            <summary>
+            Left margin of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MarginRight">
+            <summary>
+            Right margin of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MarginTop">
+            <summary>
+            Top margin of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.MarginBottom">
+            <summary>
+            Bottom margin of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.FlexGrow">
+            <summary>
+            Flex grow property of the flex panel.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIFlexPanel.FlexShrink">
+            <summary>
+            Flex shrink property of the flex panel.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIFlexPanel.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIFlexPanel.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIFlexPanel.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIGameObject">
+            <summary>
+            Represents a UI game object node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.Anchor">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.StretchWidth">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.StretchHeight">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.TileH">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.TileV">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIGameObject.KeepAspect">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIGameObject.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIGameObject.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIGameObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUISequenceInstance">
+            <summary>
+            Represents a UI sequence instance node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.Anchor">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.StretchWidth">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.StretchHeight">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.TileH">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.TileV">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISequenceInstance.KeepAspect">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISequenceInstance.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISequenceInstance.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISequenceInstance.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUISpriteInstance">
+            <summary>
+            Represents a UI sprite instance node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.Anchor">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.StretchWidth">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.StretchHeight">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.TileH">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.TileV">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUISpriteInstance.KeepAspect">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISpriteInstance.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISpriteInstance.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUISpriteInstance.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUITextItemInstance">
+            <summary>
+            Represents a UI text item instance node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.Visible">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.Anchor">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.StretchWidth">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.StretchHeight">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.TileH">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.TileV">
+            <inheritdoc/>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUITextItemInstance.KeepAspect">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUITextItemInstance.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUITextItemInstance.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc/>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUITextItemInstance.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.Models.UndertaleUIEffectLayer">
+            <summary>
+            Represents a UI effect layer node.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIEffectLayer.Enabled">
+            <summary>
+            Whether the effect layer is enabled.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIEffectLayer.EffectType">
+            <summary>
+            Effect type for the effect layer.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.Models.UndertaleUIEffectLayer.Properties">
+            <summary>
+            List of effect properties for the effect layer.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIEffectLayer.Serialize(UndertaleModLib.UndertaleWriter)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIEffectLayer.Unserialize(UndertaleModLib.UndertaleReader)">
+            <inheritdoc />
+        </member>
+        <member name="M:UndertaleModLib.Models.UndertaleUIEffectLayer.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
+            <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
         <member name="T:UndertaleModLib.Models.UndertaleVariable">
             <summary>
             A variable entry in a GameMaker data file.
@@ -6081,7 +7507,7 @@
         </member>
         <member name="P:UndertaleModLib.Scripting.IScriptInterface.ScriptErrorMessage">
             <summary>
-            Error message of the last executed script. Will be <c>""</c> (<see cref="F:System.String.Empty"/>) if no error occured.
+            Error message of the last executed script. Will be <c>""</c> (<see cref="F:System.String.Empty"/>) if no error occurred.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Scripting.IScriptInterface.ExePath">
@@ -6093,11 +7519,6 @@
         <member name="P:UndertaleModLib.Scripting.IScriptInterface.ScriptErrorType">
             <summary>
             A string, detailing the type of the last encountered error.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.Scripting.IScriptInterface.GMLCacheEnabled">
-            <summary>
-            Indicates whether the user has enabled the setting to use decompiled code cache.
             </summary>
         </member>
         <member name="P:UndertaleModLib.Scripting.IScriptInterface.IsAppClosed">
@@ -6116,16 +7537,19 @@
             <summary>
             Creates a new Data file asynchronously.
             </summary>
-            <returns><see langword="true"/> if task was successful, <see langword="false"/> if not.</returns>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.Make_New_File">
-            <summary> Obsolete. Use <see cref="M:UndertaleModLib.Scripting.IScriptInterface.MakeNewDataFile"/>. </summary>
+            <returns><see langword="true"/> if successful, <see langword="false"/> if not.</returns>
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.ScriptMessage(System.String)">
             <summary>
-            Used in Scripts in order to show a message to the user.
+            Used in scripts in order to show a message to the user.
             </summary>
             <param name="message">The message to show.</param>
+        </member>
+        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ScriptWarning(System.String)">
+            <summary>
+            Used in scripts in order to show a warning message to the user.
+            </summary>
+            <param name="message">The warning message to show.</param>
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.SetUMTConsoleText(System.String)">
             <summary>
@@ -6142,7 +7566,7 @@
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.ScriptError(System.String,System.String,System.Boolean)">
             <summary>
-            Used in Scripts in order to show an error to the user.
+            Used in scripts in order to show an error to the user.
             </summary>
             <param name="error">The error message to show.</param>
             <param name="title">A short-descriptive title.</param>
@@ -6173,22 +7597,24 @@
             Initializes a Script Dialog with default values
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.GetDecompiledText(System.String,UndertaleModLib.Decompiler.GlobalDecompileContext)">
+        <member name="M:UndertaleModLib.Scripting.IScriptInterface.GetDecompiledText(System.String,UndertaleModLib.Decompiler.GlobalDecompileContext,Underanalyzer.Decompiler.IDecompileSettings)">
              <summary>
             Get the decompiled text from a code entry (like <c>gml_Script_moveTo</c>).
              </summary>
              <param name="codeName">The name of the code entry from which to get the decompiled code from.</param>
-             <param name="context">The GlobalDecompileContext</param>
+             <param name="context">The GlobalDecompileContext to use for decompilation.</param>
+             <param name="settings">The settings to use for decompilation, or <see langword="null"/> to use the default.</param>
              <returns>Decompiled text as a <see cref="T:System.String"/>.</returns>
              <remarks>This will return a string, even if the decompilation failed! Usually commented out and featuring
              <c>DECOMPILER FAILED!</c> .</remarks>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.GetDecompiledText(UndertaleModLib.Models.UndertaleCode,UndertaleModLib.Decompiler.GlobalDecompileContext)">
+        <member name="M:UndertaleModLib.Scripting.IScriptInterface.GetDecompiledText(UndertaleModLib.Models.UndertaleCode,UndertaleModLib.Decompiler.GlobalDecompileContext,Underanalyzer.Decompiler.IDecompileSettings)">
             <summary>
             Get the decompiled text from an <see cref="T:UndertaleModLib.Models.UndertaleCode"/> object.
             </summary>
             <param name="code">The object from which to get the decompiled code from.</param>
-            <param name="context">The GlobalDecompileContext</param>
+            <param name="context">The GlobalDecompileContext to use for decompilation.</param>
+            <param name="settings">The settings to use for decompilation, or <see langword="null"/> to use the default.</param>
             <returns>Decompiled text as a <see cref="T:System.String"/>.</returns>
             <remarks>This will return a string, even if the decompilation failed! Usually commented out and featuring
             <c>DECOMPILER FAILED!</c> .</remarks>
@@ -6332,11 +7758,6 @@
             Increments the variable holding a progress value by one.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.IncProgress">
-            <summary>
-            Obsolete.
-            </summary>
-        </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.AddProgressParallel(System.Int32)">
             <summary>
             Adds a certain amount to the variable holding a progress value in.
@@ -6344,20 +7765,10 @@
             </summary>
             <param name="amount">The amount to add.</param>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.AddProgressP(System.Int32)">
-            <summary>
-            Obsolete.
-            </summary>
-        </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.IncrementProgressParallel">
             <summary>
             Increments the variable holding a progress value by one.
             Used for parallel operations, as it is thread-safe.
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.IncProgressP">
-            <summary>
-            Obsolete.
             </summary>
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.GetProgress">
@@ -6395,20 +7806,9 @@
             Stops the synchronization of all previously enabled assets.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.SyncBinding(System.Boolean)">
-            <summary>
-            Obsolete
-            </summary>
-            <param name="enable"></param>
-        </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.StartProgressBarUpdater">
             <summary>
             Starts the task that updates a progress bar in parallel.
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.StartUpdater">
-            <summary>
-            Obsolete.
             </summary>
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.StopProgressBarUpdater">
@@ -6416,21 +7816,6 @@
             Stops the task that updates a progress bar in parallel.
             </summary>
             <returns>A task that represents the stopped progress updater.</returns>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.StopUpdater">
-            <summary>
-            Obsolete.
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.GenerateGMLCache(System.Threading.ThreadLocal{UndertaleModLib.Decompiler.GlobalDecompileContext},System.Object,System.Boolean)">
-            <summary>
-            Generates a decompiled code cache to accelerate operations that need to access code often.
-            </summary>
-            <param name="decompileContext">The GlobalDecompileContext.</param>
-            <param name="dialog">The dialog that should be shown. If <see langword="null"/> then a new dialog will be automatically created and shown.</param>
-            <param name="clearGMLEditedBefore">Whether to clear <see cref="P:UndertaleModLib.UndertaleData.GMLEditedBefore"/> from <see cref="P:UndertaleModLib.Scripting.IScriptInterface.Data"/>.</param>
-            <returns>Whether the decompiled GML cache was generated or not. <see langword="true"/> if it was successful,
-            <see langword="false"/> if it wasn't or <see cref="P:UndertaleModLib.Scripting.IScriptInterface.GMLCacheEnabled"/> is disabled.</returns>
         </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.ChangeSelection(System.Object,System.Boolean)">
             <summary>
@@ -6445,11 +7830,6 @@
             </summary>
             <returns>The directory selected by the user.</returns>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.PromptChooseDirectory(System.String)">
-            <summary>
-            Obsolete
-            </summary>
-        </member>
         <member name="M:UndertaleModLib.Scripting.IScriptInterface.PromptLoadFile(System.String,System.String)">
             <summary>
             Used to prompt the user for a file.
@@ -6458,99 +7838,13 @@
             <param name="filter">The filters used for the file select.</param>
             <returns>The file selected by the user.</returns>
         </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ImportGMLString(System.String,System.String,System.Boolean,System.Boolean)">
+        <member name="M:UndertaleModLib.Scripting.IScriptInterface.PromptSaveFile(System.String,System.String)">
             <summary>
-            Replaces/Imports all GML in a specific code entry with a specified string.
+            Used to prompt the user for a location to save a file.
             </summary>
-            <param name="codeName">The name of the code entry that shall get replaced. <br/>
-            <b> If the entry does not exist, it will be created!</b></param>
-            <param name="gmlCode">The new GML code that shall replace the current GML code of <paramref name="codeName"/>.</param>
-            <param name="doParse">Whether the code entry should get linked.
-            In other words, have special handling for scripts, globals and object code.</param>
-            <param name="checkDecompiler">If this is <see langword="false"/> an empty string
-            will be used for replacing the code entry in the case that anything fails.
-            If this is <see langword="true"/> then an error will be shown instead and the code entry will not get replaced.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ImportASMString(System.String,System.String,System.Boolean,System.Boolean,System.Boolean)">
-            <summary>
-            Replaces/Imports all GM-Bytecode ASM in a specific code entry with a specified string.
-            </summary>
-            <param name="codeName">The name of the code entry that shall get replaced. <br/>
-            <b> If the entry does not exist, it will be created!</b></param>
-            <param name="gmlCode">The new ASM code that shall replace the current GML code of <paramref name="codeName"/>.</param>
-            <param name="doParse">Whether the code entry should get linked.
-            In other words, have special handling for scripts, globals and object code.</param>
-            <param name="nukeProfile">Whether or not to nuke the profile entry for profile mode.</param>
-            <param name="checkDecompiler">If this is <see langword="false"/> an empty string
-            will be used for replacing the code entry in the case that anything fails.
-            If this is <see langword="true"/> then an error will be shown instead and the code entry will not get replaced.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ImportGMLFile(System.String,System.Boolean,System.Boolean,System.Boolean)">
-            <summary>
-            Replaces/Imports all GML in a specific code entry with a specified file.
-            </summary>
-            <param name="fileName">The path to the GML file. This file needs to
-            <b>A)</b> contain valid GML and <b>B)</b> the filename needs to be the name of the code entry that shall get replaced <br/>
-            <b> If the entry does not exist, it will be created!</b>
-            </param>
-            <param name="doParse">Whether the code entry should get linked.
-            In other words, have special handling for scripts, globals and object code.</param>
-            <param name="checkDecompiler">If this is <see langword="false"/> an empty string
-            will be used for replacing the code entry in the case that anything fails.</param>
-            <param name="throwOnError">Whether a <see cref="T:UndertaleModLib.Scripting.ScriptException"/> will be thrown on any errors.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ImportASMFile(System.String,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
-            <summary>
-            Replaces/Imports all GM-Bytecode ASM in a specific code entry with a specified file.
-            </summary>
-            <param name="fileName">The path to the ASM file. This file needs to
-            <b>A)</b> contain valid GM-Bytecode ASM and <b>B)</b> the filename needs to be the name of the code entry that shall get replaced <br/>
-            <b> If the entry does not exist, it will be created!</b></param>
-            <param name="doParse">Whether the code entry should get linked.
-            In other words, have special handling for scripts, globals and object code.</param>
-            <param name="nukeProfile">Whether or not to nuke the profile entry for profile mode.</param>
-            <param name="checkDecompiler">If this is <see langword="false"/> an empty string
-            will be used for replacing the code entry in the case that anything fails.</param>
-            <param name="throwOnError">Whether a <see cref="T:UndertaleModLib.Scripting.ScriptException"/> will be thrown on any errors.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ReplaceTextInGML(System.String,System.String,System.String,System.Boolean,System.Boolean,UndertaleModLib.Decompiler.GlobalDecompileContext)">
-            <summary>
-            Find a keyword in a GML code entry and replaces it with a replacement string.
-            </summary>
-            <param name="codeName">The name of the code entry that shall get replaced.</param>
-            <param name="keyword">The search term.</param>
-            <param name="replacement">The replacement term.</param>
-            <param name="caseSensitive">Whether the keyword search should be case-sensitive.</param>
-            <param name="isRegex">Whether <paramref name="keyword"/> should be treated as RegEx.</param>
-            <param name="context">The global decompile context.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.ReplaceTextInGML(UndertaleModLib.Models.UndertaleCode,System.String,System.String,System.Boolean,System.Boolean,UndertaleModLib.Decompiler.GlobalDecompileContext)">
-            <summary>
-            Find a keyword in a GML code entry and replaces it with a replacement string.
-            </summary>
-            <param name="code">The code entry that shall get replaced.</param>
-            <param name="keyword">The search term.</param>
-            <param name="replacement">The replacement term.</param>
-            <param name="caseSensitive">Whether the keyword search should be case-sensitive.</param>
-            <param name="isRegex">Whether <paramref name="keyword"/> should be treated as RegEx.</param>
-            <param name="context">The global decompile context.</param>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.DummyBool">
-            <summary>
-            Method returning a dummy boolean value.
-            </summary>
-            <returns>Returns a dummy boolean value</returns>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.DummyVoid">
-            <summary>
-            Method doing nothing.
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Scripting.IScriptInterface.DummyString">
-            <summary>
-            Method returning a dummy string value.
-            </summary>
-            <returns>Returns a dummy string value.</returns>
+            <param name="defaultExt">The default extension that should be used when saving the file.</param>
+            <param name="filter">The filters used to specify the file types in the dialog.</param>
+            <returns>The file path specified by the user for saving.</returns>
         </member>
         <member name="M:UndertaleModLib.UndertaleObject.Serialize(UndertaleModLib.UndertaleWriter)">
             <summary>
@@ -6570,6 +7864,12 @@
             </summary>
             <param name="reader">Where to deserialize from.</param>
             <returns>The object count.</returns>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObjectWithBlobs.SerializeBlobBefore(UndertaleModLib.UndertaleWriter)">
+            <summary>
+            TODO!
+            </summary>
+            <param name="writer">Where to serialize to.</param>
         </member>
         <member name="M:UndertaleModLib.PaddedObject.SerializePadding(UndertaleModLib.UndertaleWriter)">
             <summary>
@@ -6595,6 +7895,11 @@
             </summary>
             <param name="reader">Where to deserialize from.</param>
         </member>
+        <member name="P:UndertaleModLib.UndertaleNamedResource.Name">
+            <summary>
+            Name of the resource.
+            </summary>
+        </member>
         <member name="M:UndertaleModLib.ISearchable.SearchMatches(System.String)">
             <summary>
             Returns a value indicating whether a specified substring occurs within this object.
@@ -6615,9 +7920,29 @@
             Used for the object count unserialization.
             </summary>
         </member>
+        <member name="F:UndertaleModLib.UndertaleChunkFORM.Chunks">
+            <summary>
+            Lookup from a chunk name to its loaded instance.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.UndertaleChunkFORM.ChunksTypeDict">
+            <summary>
+            Lookup from a chunk type to its loaded instance.
+            </summary>
+        </member>
+        <member name="F:UndertaleModLib.UndertaleChunkFORM.ChunkConstructors">
+            <summary>
+            Constructors for all chunk types.
+            </summary>
+        </member>
+        <member name="P:UndertaleModLib.UndertaleChunkCODE.CodeCount">
+            <summary>
+            Code count as determined during object counting.
+            </summary>
+        </member>
         <member name="T:UndertaleModLib.UndertaleData">
             <summary>
-            An object representing a Game Maker: Studio data file.
+            An object representing a GameMaker Studio data file.
             </summary>
             <remarks>This is basically the heart of the data file, which is usually named <c>data.win</c>, <c>data.unx</c>,
             <c>data.ios</c> or <c>data.droid</c>, depending for which OS the game was compiled for.. <br/>
@@ -6861,6 +8186,11 @@
             Whether the data file has short circuiting enabled.
             </summary>
         </member>
+        <member name="F:UndertaleModLib.UndertaleData.ArrayCopyOnWrite">
+            <summary>
+            Whether the data file has array copy-on-write enabled.
+            </summary>
+        </member>
         <member name="F:UndertaleModLib.UndertaleData.ToolInfo">
             <summary>
             Some info for the editor to store data on.
@@ -6873,44 +8203,17 @@
         </member>
         <member name="F:UndertaleModLib.UndertaleData.BuiltinList">
             <summary>
-            A list of known Game Maker: Studio constants and variables.
+            A list of known GameMaker Studio constants and variables.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.UndertaleData.KnownSubFunctions">
+        <member name="F:UndertaleModLib.UndertaleData.GlobalFunctions">
             <summary>
-            Cache for known 2.3-style function names for compiler speedups. Can be re-built by setting this to null.
+            Cache for 2.3-style functions defined in global scripts. Can be re-built by setting this to null.
             </summary>
         </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLCache">
+        <member name="F:UndertaleModLib.UndertaleData.GameSpecificRegistry">
             <summary>
-            A <see cref="T:System.Collections.Generic.Dictionary`2"/> of cached decompiled code,
-            with the code name as the Key and the decompiled code text as the value.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLCacheFailed">
-            <summary>
-            A list of names of code entries which failed to compile or decompile.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLCacheChanged">
-            <summary>
-            A list of names of modified code entries.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLEditedBefore">
-            <summary>
-            A list of names of code entries that were edited before the "Use decompiled code cache" setting was enabled.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLCacheWasSaved">
-            <summary>
-            Whether the decompiled code cache has been saved to disk with no new cache changes happening since then.
-            </summary>
-        </member>
-        <member name="P:UndertaleModLib.UndertaleData.GMLCacheIsReady">
-            <summary>
-            Whether the decompiled code cache is generated. This will be <see langword="false"/> if it's currently generating and
-            <see langword="true"/> otherwise.
+            Registry for macro types, their resolvers, and other data specific to this game.
             </summary>
         </member>
         <member name="P:UndertaleModLib.UndertaleData.AllListProperties">
@@ -6933,7 +8236,7 @@
         </member>
         <member name="M:UndertaleModLib.UndertaleData.IndexOf(UndertaleModLib.UndertaleResource,System.Boolean)">
             <summary>
-            Reports the zero-based index of the first occurence of the specified <see cref="T:UndertaleModLib.UndertaleResource"/>.
+            Reports the zero-based index of the first occurrence of the specified <see cref="T:UndertaleModLib.UndertaleResource"/>.
             </summary>
             <param name="obj">The object to get the index of.</param>
             <param name="panicIfInvalid">Whether to throw if <paramref name="obj"/> is not a valid object.</param>
@@ -6943,7 +8246,7 @@
         </member>
         <member name="M:UndertaleModLib.UndertaleData.IsGameMaker2">
             <summary>
-            Reports whether the data file was build by Game Maker Studio 2.
+            Reports whether the data file was built by GameMaker Studio 2.
             </summary>
             <returns><see langword="true"/> if yes, <see langword="false"/> if not.</returns>
         </member>
@@ -6985,9 +8288,9 @@
         </member>
         <member name="M:UndertaleModLib.UndertaleData.GetBuiltinSoundGroupID">
             <summary>
-            TODO: needs to be documented on what this does.
+            Returns the ID of the builtin (i.e., embedded in the main data file) audio group. Varies depending on version.
             </summary>
-            <returns>TODO</returns>
+            <returns>ID of the builtin audio group; 0 or 1.</returns>
         </member>
         <member name="M:UndertaleModLib.UndertaleData.IsYYC">
             <summary>
@@ -7015,19 +8318,16 @@
             An info handle for an editor to store data on.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.ToolInfo.ProfileMode">
+        <member name="F:UndertaleModLib.ToolInfo.DecompilerSettings">
             <summary>
-            Whether profile mode is enabled.
+            Default settings to be used by the Underanalyzer decompiler,
+            for a tool and in any scripts that desire matching the same settings.
             </summary>
         </member>
-        <member name="F:UndertaleModLib.ToolInfo.AppDataProfiles">
+        <member name="F:UndertaleModLib.ToolInfo.InstanceIdPrefix">
             <summary>
-            The location of the profiles folder.
-            </summary>
-        </member>
-        <member name="F:UndertaleModLib.ToolInfo.CurrentMD5">
-            <summary>
-            The MD5 hash of the current file.
+            Function that returns the prefix to be used when 
+            resolving instance ID references in the compiler and decompiler.
             </summary>
         </member>
         <member name="T:UndertaleModLib.UndertaleDataExtensionMethods">
@@ -7037,14 +8337,47 @@
         </member>
         <member name="M:UndertaleModLib.UndertaleDataExtensionMethods.ByName``1(System.Collections.Generic.IList{``0},System.String,System.Boolean)">
             <summary>
-            An extension method, that returns the element in a <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s
+            An extension method, that returns the element in a <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s
             that has a specified <paramref name="name"/>.
             </summary>
-            <param name="list">The <see cref="T:System.Collections.Generic.List`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s to search in.</param>
+            <param name="list">The <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s to search in.</param>
             <param name="name">The name of the <see cref="T:UndertaleModLib.UndertaleNamedResource"/> to find.</param>
             <param name="ignoreCase">Whether casing should be ignored for searching.</param>
             <typeparam name="T">A type of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>.</typeparam>
             <returns>The element that has the specified name.</returns>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleDataExtensionMethods.IndexOfName``1(System.Collections.Generic.IList{``0},System.String,System.Boolean)">
+            <summary>
+            An extension method, that returns the index of an element in a <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s
+            that has a specified <paramref name="name"/>.
+            </summary>
+            <param name="list">The <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s to search in.</param>
+            <param name="name">The name of the <see cref="T:UndertaleModLib.UndertaleNamedResource"/> to find.</param>
+            <param name="ignoreCase">Whether casing should be ignored for searching.</param>
+            <typeparam name="T">A type of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>.</typeparam>
+            <returns>The index of the element that has the specified name, or -1 if none is found.</returns>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleDataExtensionMethods.ByName``1(System.Collections.Generic.IList{``0},System.ReadOnlySpan{System.Char},System.Boolean)">
+            <summary>
+            An extension method, that returns the element in a <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s
+            that has a specified <paramref name="name"/>.
+            </summary>
+            <param name="list">The <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s to search in.</param>
+            <param name="name">The name of the <see cref="T:UndertaleModLib.UndertaleNamedResource"/> to find.</param>
+            <param name="ignoreCase">Whether casing should be ignored for searching.</param>
+            <typeparam name="T">A type of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>.</typeparam>
+            <returns>The element that has the specified name.</returns>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleDataExtensionMethods.IndexOfName``1(System.Collections.Generic.IList{``0},System.ReadOnlySpan{System.Char},System.Boolean)">
+            <summary>
+            An extension method, that returns the index of an element in a <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s
+            that has a specified <paramref name="name"/>.
+            </summary>
+            <param name="list">The <see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>s to search in.</param>
+            <param name="name">The name of the <see cref="T:UndertaleModLib.UndertaleNamedResource"/> to find.</param>
+            <param name="ignoreCase">Whether casing should be ignored for searching.</param>
+            <typeparam name="T">A type of <see cref="T:UndertaleModLib.UndertaleNamedResource"/>.</typeparam>
+            <returns>The index of the element that has the specified name, or -1 if none is found.</returns>
         </member>
         <member name="M:UndertaleModLib.UndertaleDataExtensionMethods.MakeString(System.Collections.Generic.IList{UndertaleModLib.Models.UndertaleString},System.String,System.Boolean)">
             <summary>
@@ -7083,15 +8416,16 @@
         </member>
         <member name="T:UndertaleModLib.UndertaleReader.WarningHandlerDelegate">
             <summary>
-            function to delegate warning messages to
+            Function to delegate warning messages to.
             </summary>
-            <param name="warning"></param>
+            <param name="warning">Warning message.</param>
+            <param name="isImportant">Whether the warning is deemed important (that is, may risk data loss when re-saving).</param>
         </member>
         <member name="T:UndertaleModLib.UndertaleReader.MessageHandlerDelegate">
             <summary>
-            function to delegate informational messages to
+            Function to delegate informational messages to.
             </summary>
-            <param name="message"></param>
+            <param name="message">Informational message.</param>
         </member>
         <member name="P:UndertaleModLib.UndertaleReader.FilePath">
             <summary>
@@ -7105,11 +8439,51 @@
             Can also be manually changed.
             </summary>
         </member>
-        <member name="M:UndertaleModLib.UndertaleListBase`1.Serialize(UndertaleModLib.UndertaleWriter)">
-            <inheritdoc />
+        <member name="M:UndertaleModLib.UndertaleReader.ReadBoolean">
+            <summary>
+            Reads a boolean as 32 bits (0 or 1), maintaining alignment.
+            </summary>
         </member>
-        <member name="M:UndertaleModLib.UndertaleListBase`1.Unserialize(UndertaleModLib.UndertaleReader)">
-            <inheritdoc />
+        <member name="M:UndertaleModLib.UndertaleWriter.Write(System.Boolean)">
+            <summary>
+            Writes a boolean using 32 bits (0 or 1), maintaining alignment.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.UndertaleObservableList`1">
+            <summary>
+            Basic observable list type, usable for data models to be presented in graphical interfaces.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObservableList`1.#ctor">
+            <summary>
+            Creates a new observable list, which is empty and has default capacity.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObservableList`1.#ctor(System.Int32)">
+            <summary>
+            Creates a new observable list, which is empty and has the specified initial capacity.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObservableList`1.SetCapacity(System.Int32)">
+            <summary>
+            Sets the capacity of the internal list of this collection.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObservableList`1.SetCapacity(System.UInt32)">
+            <summary>
+            Sets the capacity of the internal list of this collection.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.UndertaleObservableList`1.InternalAdd(`0)">
+            <summary>
+            Adds an item to the internal list of this collection (that is, without notifying any observers).
+            </summary>
+            <param name="item">Item to add.</param>
+        </member>
+        <member name="T:UndertaleModLib.UndertaleSimpleList`1">
+            <summary>
+            Simple list object, serialized as a 32-bit count followed immediately by all objects in the list.
+            </summary>
         </member>
         <member name="M:UndertaleModLib.UndertaleSimpleList`1.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
@@ -7120,6 +8494,11 @@
         <member name="M:UndertaleModLib.UndertaleSimpleList`1.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="T:UndertaleModLib.UndertaleSimpleListString">
+            <summary>
+            Simple list object, specifically for strings, serialized as a count followed immediately by all strings in the list.
+            </summary>
+        </member>
         <member name="M:UndertaleModLib.UndertaleSimpleListString.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
@@ -7128,6 +8507,11 @@
         </member>
         <member name="M:UndertaleModLib.UndertaleSimpleListString.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.UndertaleSimpleListShort`1">
+            <summary>
+            Simple list object, serialized as a 16-bit count followed immediately by all objects in the list.
+            </summary>
         </member>
         <member name="M:UndertaleModLib.UndertaleSimpleListShort`1.Add(`0)">
             <inheritdoc cref="M:System.Collections.ObjectModel.Collection`1.Add(`0)"/>
@@ -7141,6 +8525,11 @@
         <member name="M:UndertaleModLib.UndertaleSimpleListShort`1.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
         </member>
+        <member name="T:UndertaleModLib.UndertalePointerList`1">
+            <summary>
+            List of objects that is preceded by an array of pointers, pointing to each object in order.
+            </summary>
+        </member>
         <member name="M:UndertaleModLib.UndertalePointerList`1.Serialize(UndertaleModLib.UndertaleWriter)">
             <inheritdoc />
         </member>
@@ -7149,6 +8538,82 @@
         </member>
         <member name="M:UndertaleModLib.UndertalePointerList`1.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)">
             <inheritdoc cref="M:UndertaleModLib.UndertaleObject.UnserializeChildObjectCount(UndertaleModLib.UndertaleReader)"/>
+        </member>
+        <member name="T:UndertaleModLib.UndertaleSimpleResourcesList`2">
+            <summary>
+            Shorthand for <see cref="T:UndertaleModLib.UndertaleSimpleList`1"/> containing <see cref="T:UndertaleModLib.UndertaleResourceById`2"/>.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Util.AssetReferenceTypes.RefType">
+            <summary>
+            Asset types as used in GML code references.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.AssetReferenceTypes.ConvertToRefType(UndertaleModLib.UndertaleData,System.Int32)">
+            <summary>
+            Converts an integer asset type to its <see cref="T:UndertaleModLib.Util.AssetReferenceTypes.RefType"/> equivalent, depending on GameMaker version.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.AssetReferenceTypes.ConvertFromRefType(UndertaleModLib.UndertaleData,UndertaleModLib.Util.AssetReferenceTypes.RefType)">
+            <summary>
+            Converts a <see cref="T:UndertaleModLib.Util.AssetReferenceTypes.RefType"/> to its integer equivalent, depending on GameMaker version.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Util.FloatAsInt">
+            <summary>
+            32-bit floating point or integer storage, explicitly defined with a backing type as an integer.
+            </summary>
+            <remarks>
+            This helps prevent issues with negative zero being inconsistently handled.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Util.FloatAsInt.#ctor(System.UInt32)">
+            <summary>
+            Constructs a float from the given 32-bit unsigned integer bit representation.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.FloatAsInt.#ctor(System.Single)">
+            <summary>
+            Constructs a float from the given float value.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.FloatAsInt.op_Explicit(System.Single)~UndertaleModLib.Util.FloatAsInt">
+            <summary>
+            Constructs a float from the given float value.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.FloatAsInt.AsFloat">
+            <summary>
+            Returns a float from the value.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.FloatAsInt.AsUInt">
+            <summary>
+            Returns a bit representation of the float as an unsigned 32-bit integer.
+            </summary>
+        </member>
+        <member name="T:UndertaleModLib.Util.InstructionPrimitiveType">
+            <summary>
+            Storage for int, long, and double, taking exactly the size of a long (64 bits).
+            </summary>
+            <remarks>
+            This is used to compact data sizes on <see cref="T:UndertaleModLib.Models.UndertaleInstruction"/>.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Util.InstructionPrimitiveType.#ctor(System.Int32)">
+            <summary>
+            Constructs from the given 32-bit integer.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.InstructionPrimitiveType.#ctor(System.Double)">
+            <summary>
+            Constructs from the given 64-bit integer.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.InstructionPrimitiveType.#ctor(System.Int64)">
+            <summary>
+            Constructs from the given 64-bit integer.
+            </summary>
         </member>
         <member name="M:UndertaleModLib.Util.DebugUtil.Assert(System.Boolean,System.String)">
             <summary>
@@ -7302,7 +8767,7 @@
             </summary>
             <param name="compressedData">Compressed BZ2 data, excluding the header.</param>
             <param name="width">Width of the image, as provided in BZ2 + QOI header.</param>
-            <param name="height">Height of the image, as provideed in BZ2 + QOI header.</param>
+            <param name="height">Height of the image, as provided in BZ2 + QOI header.</param>
             <param name="uncompressedLength">Length of BZ2 data when fully uncompressed.</param>
             <exception cref="T:System.IO.InvalidDataException">Invalid BZ2 + QOI data, or image is too large</exception>
         </member>
@@ -7388,22 +8853,37 @@
             This modifies the image format of the provided <see cref="T:ImageMagick.IMagickImage"/> to avoid unnecessary copies.
             </remarks>
         </member>
+        <member name="T:UndertaleModLib.Util.MurmurHash">
+            <summary>
+            32-bit implementation of MurmurHash, for deterministic (but non-cryptographic) hashing.
+            </summary>
+            <remarks>
+            Based on https://en.wikipedia.org/wiki/MurmurHash.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Util.MurmurHash.Hash(System.ReadOnlySpan{System.Char},System.UInt32)">
+            <summary>
+            Calculates a hash based on a span of characters.
+            </summary>
+            <remarks>
+            The characters will be re-encoded as a UTF-8 buffer before hashing.
+            </remarks>
+        </member>
+        <member name="M:UndertaleModLib.Util.MurmurHash.Hash(System.ReadOnlySpan{System.Byte},System.UInt32)">
+            <summary>
+            Calculates a hash based on a span of bytes.
+            </summary>
+        </member>
+        <member name="M:UndertaleModLib.Util.MurmurHash.Scramble(System.UInt32)">
+            <summary>
+            32-bit Murmur hash scramble operation.
+            </summary>
+        </member>
         <member name="T:UndertaleModLib.Util.QoiConverter">
             <summary>
             A class that converts to and from the GM-custom QOI format.
             </summary>
             <remarks>Ported over from DogScepter's QOI converter at <see href="https://github.com/colinator27/dog-scepter/"/>.</remarks>
-        </member>
-        <member name="M:UndertaleModLib.Util.QoiConverter.ClearSharedBuffer">
-            <summary>
-            Frees up <see cref="F:UndertaleModLib.Util.QoiConverter.sharedBuffer"/> from memory.
-            </summary>
-        </member>
-        <member name="M:UndertaleModLib.Util.QoiConverter.InitSharedBuffer(System.Int32)">
-            <summary>
-            Initializes <see cref="F:UndertaleModLib.Util.QoiConverter.sharedBuffer"/> with a specified size.
-            </summary>
-            <param name="size">Size of <see cref="F:UndertaleModLib.Util.QoiConverter.sharedBuffer"/> in bytes</param>
         </member>
         <member name="M:UndertaleModLib.Util.QoiConverter.GetImageFromStream(System.IO.Stream)">
             <summary>
@@ -7428,23 +8908,20 @@
             <returns><inheritdoc cref="M:UndertaleModLib.Util.QoiConverter.GetImageFromSpan(System.ReadOnlySpan{System.Byte})"/></returns>
             <exception cref="T:System.Exception"><inheritdoc cref="M:UndertaleModLib.Util.QoiConverter.GetImageFromSpan(System.ReadOnlySpan{System.Byte})"/></exception>
         </member>
-        <member name="M:UndertaleModLib.Util.QoiConverter.GetArrayFromImage(UndertaleModLib.Util.GMImage,System.Boolean)">
+        <member name="M:UndertaleModLib.Util.QoiConverter.GetArrayFromImage(UndertaleModLib.Util.GMImage)">
             <summary>
             Creates a QOI image as a byte array from a <see cref="T:UndertaleModLib.Util.GMImage"/>.
             </summary>
             <param name="img">The <see cref="T:UndertaleModLib.Util.GMImage"/> to create the QOI image from.</param>
-            <param name="useSharedBuffer">True if the QOI shared buffer should be used; false if a newly-allocated buffer should be used.</param>
             <returns>A QOI Image as a byte array.</returns>
             <exception cref="T:System.Exception">If there was an error with stride width.</exception>
         </member>
-        <member name="M:UndertaleModLib.Util.QoiConverter.GetSpanFromImage(UndertaleModLib.Util.GMImage,System.Boolean)">
+        <member name="M:UndertaleModLib.Util.QoiConverter.GetSpanFromImage(UndertaleModLib.Util.GMImage)">
             <summary>
             Creates a QOI image as a <see cref="T:System.Span`1"/> from a <see cref="T:UndertaleModLib.Util.GMImage"/>.
             </summary>
             <param name="img">The <see cref="T:UndertaleModLib.Util.GMImage"/> to create the QOI image from.</param>
-            <param name="useSharedBuffer">True if the QOI shared buffer should be used; false if a newly-allocated buffer should be used.</param>
-            <returns>A QOI Image as a byte array.</returns>
-            <exception cref="T:System.Exception">If there was an error with stride width.</exception>
+            <returns>A QOI image as a byte array.</returns>
         </member>
         <member name="T:UndertaleModLib.Util.StringBuilderHelper">
             <summary>
@@ -7500,6 +8977,13 @@
             </summary>
             <param name="sb">An instance on where a string should be appended to.</param>
             <param name="value"><inheritdoc cref="M:System.Text.StringBuilder.Append(System.String)"/></param>
+        </member>
+        <member name="M:UndertaleModLib.Util.StringBuilderHelper.Append(System.Text.StringBuilder,System.ReadOnlySpan{System.Char})">
+            <summary>
+            Appends a copy of the specified string to a <see cref="T:System.Text.StringBuilder"/> at <see cref="F:UndertaleModLib.Util.StringBuilderHelper.Position"/> and increases it afterwards.
+            </summary>
+            <param name="sb">An instance on where a string should be appended to.</param>
+            <param name="value"><inheritdoc cref="M:System.Text.StringBuilder.Append(System.ReadOnlySpan{System.Char})"/></param>
         </member>
         <member name="M:UndertaleModLib.Util.StringBuilderHelper.Append(System.Text.StringBuilder,System.Char)">
             <summary>
