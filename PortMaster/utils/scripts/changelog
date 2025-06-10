@@ -1,0 +1,103 @@
+#!/bin/sh
+
+# Environment setup
+GAMEDIR="$PWD"
+PORTDIR=`basename "$PWD"`
+CACHEFILE="$GAMEDIR/.cache"
+CHANGELOG_URL="https://raw.githubusercontent.com/PortsMaster/PortMaster-New/ports/$PORTDIR/$PORTDIR/changelog.md"
+MODE="$1"
+
+# Check dependencies
+for cmd in curl awk; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Error: $cmd is required." >&2
+        return 1
+    fi
+done
+
+# Init variables
+response=""
+
+# Fetch changelog
+fetch_changelog() {
+    response=`curl -s -f --connect-timeout 10 "$CHANGELOG_URL" 2>/dev/null`
+    if [ $? -ne 0 ] || [ -z "$response" ]; then
+        echo "Error: Failed to fetch changelog from $CHANGELOG_URL" >&2
+        return 1
+    fi
+}
+
+# Extract and validate timestamp
+get_timestamp() {
+    # Use the passed argument if set, else fallback to $response
+    local changelog="${1:-$response}"
+
+    timestamp=$(echo "$changelog" | awk '/^# [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ {print $2; exit}' | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+
+    if [ -z "$timestamp" ]; then
+        return 1  # fail if no timestamp found
+    fi
+    return 0
+}
+
+# Check cache and update logic
+check_cache() {
+    prev_time=""
+    if [ -s "$CACHEFILE" ]; then
+        prev_time=$(cat "$CACHEFILE")
+    fi
+
+    if ! fetch_changelog; then
+        CHANGELOG=false
+        return
+    fi
+
+    if ! get_timestamp "$response"; then
+        echo "Error: Could not extract timestamp from changelog" >&2
+        CHANGELOG=false
+        return
+    fi
+
+    if [ "$timestamp" != "$prev_time" ]; then
+        if ! echo "$timestamp" > "$CACHEFILE" || ! chmod 644 "$CACHEFILE"; then
+            echo "Error: Cannot write to $CACHEFILE" >&2
+            CHANGELOG=false
+            return
+        fi
+        CHANGELOG=true
+    else
+        CHANGELOG=false
+    fi
+}
+
+# Display changelog with delay
+display_changelog() {
+    if [ -z "$response" ]; then
+        fetch_changelog || return
+    fi
+
+    # Output with delay
+    echo "$response" | sed -e '$a\' | while IFS= read -r line; do
+        echo "$line"
+        sleep 1.5
+    done
+    
+    # Add a pause to give time to read the last of the content
+    i=0
+    while [ "$i" -lt 6 ]; do
+        echo
+        i=$((i + 1))
+        sleep 1
+    done
+}
+
+# Main logic
+check_cache
+export CHANGELOG
+
+# Exit early in check mode
+if [ "$MODE" = "check" ]; then
+    return
+fi
+
+display_changelog
