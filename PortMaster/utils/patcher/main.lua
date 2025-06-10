@@ -149,7 +149,7 @@ end
 -- Function to show the initial Talkies dialog with two messages
 function showInitialTalkiesDialog()
     if isNews then
-        Talkies.say("Cybion", "Hello! Cybion again! I found a new Steam news article for " .. gameName .. ".", {
+        Talkies.say("Cybion", "Hello! Cybion again! The port for " .. gameName .. " has an update!", {
             image = cybion,
             thickness = 2,
             oncomplete = function()
@@ -157,7 +157,7 @@ function showInitialTalkiesDialog()
                     image = cybion,
                     thickness = 2,
                     options = {
-                        {"View news", function() startPatchThread() end},
+                        {"View changelog", function() startPatchThread() end},
                         {"Continue", function() PatchCancelled() end}
                     }
                 })
@@ -182,7 +182,7 @@ end
 -- Function to show patch complete dialog
 function PatchComplete()
     if isNews then
-        Talkies.say("Cybion", "Thanks for reading! Now on to the game!", {
+        Talkies.say("Cybion", "Don't forget to update the port with the PortMaster App later. On with the game!", {
             thickness = 2,
             image = cybion,
             oncomplete = function()
@@ -218,7 +218,7 @@ function PatchCancelled()
         patchInProgress = false
         showOutput = false
     end
-    Talkies.say("Cybion", isNews and "News viewing canceled. On with the game!" or "Patching has been canceled. Please try again later.", {
+    Talkies.say("Cybion", isNews and "Don't forget to update the port with the PortMaster App later. On with the game!" or "Patching has been canceled. Please try again later.", {
         thickness = 2,
         image = cybion,
         oncomplete = function()
