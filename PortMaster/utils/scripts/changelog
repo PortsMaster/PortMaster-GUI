@@ -3,7 +3,7 @@
 # Environment setup
 GAMEDIR="$PWD"
 PORTDIR=`basename "$PWD"`
-CACHEFILE="$GAMEDIR/tools/cache"
+CACHEFILE="$GAMEDIR/.cache"
 CHANGELOG_URL="https://raw.githubusercontent.com/PortsMaster/PortMaster-New/ports/$PORTDIR/$PORTDIR/changelog.md"
 MODE="$1"
 
