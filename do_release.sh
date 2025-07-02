@@ -73,37 +73,15 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/harbourmaster.txt \
     -x '*.DS_Store'
 
-if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
-    echo "Creating Installers"
+if [ ! -f "runtimes.zip" ]; then
+    echo "Downloading Runtimes"
+    ./download_runtimes.sh   # This will create the runtimes folder and download files
 
-    if [ ! -f "runtimes.zip" ]; then
-        echo "Downloading Runtimes"
-        # Download the runtimes
-        mkdir -p runtimes
-        cd runtimes
-        for runtime_url in $(curl -s https://api.github.com/repos/PortsMaster/PortMaster-Runtime/releases/latest | grep browser_download_url | cut -d '"' -f 4); do
-            if [[ "$runtime_url" =~ /zulu11.*$ ]]; then
-                continue
-            fi
+    echo "Zipping runtimes"
+    zip -9r runtimes.zip runtimes
 
-            wget "$runtime_url"
-        done
+    rm -rf runtimes
 
-        # Validate them
-        for check_file in *.md5; do
-            runtime_file="${check_file/.md5/}"
-            if [[ $(md5sum "${runtime_file}" | cut -d ' ' -f 1) != $(cat "${check_file}" | cut -d ' ' -f 1) ]]; then
-                cd ..
-                rm -fRv runtimes
-                echo "Failed to validate runtime ${runtime_file}"
-                exit 255
-            fi
-        done
-
-        zip -9 ../runtimes.zip *
-        cd ..
-        rm -fRv runtimes
-    fi
 
     if [ ! -d "makeself-2.5.0" ]; then
         echo "Downloading makeself"
