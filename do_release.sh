@@ -73,14 +73,19 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/harbourmaster.txt \
     -x '*.DS_Store'
 
-if [ ! -f "runtimes.zip" ]; then
-    echo "Downloading Runtimes"
-    ./download_runtimes.sh   # This will create the runtimes folder and download files
+if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
+echo "Creating Installers"
 
-    echo "Zipping runtimes"
-    zip -9r runtimes.zip runtimes
 
-    rm -rf runtimes
+    if [ ! -f "runtimes.zip" ]; then
+        echo "Downloading Runtimes"
+        ./download_runtimes.sh   # This will create the runtimes folder and download files
+
+        echo "Zipping runtimes"
+        zip -9r runtimes.zip runtimes
+
+        rm -rf runtimes
+    fi
 
 
     if [ ! -d "makeself-2.5.0" ]; then
