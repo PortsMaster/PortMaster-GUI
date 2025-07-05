@@ -79,12 +79,12 @@ echo "Creating Installers"
 
     if [ ! -f "runtimes.zip" ]; then
         echo "Downloading Runtimes"
-        ./download_runtimes.sh   # This will create the runtimes folder and download files
-
-        echo "Zipping runtimes"
-        zip -9r runtimes.zip runtimes
-
-        rm -rf runtimes
+        mkdir -p runtimes
+        cd runtimes
+        ../tools/download_runtimes.sh
+        zip -9 ../runtimes.zip *
+        cd ..
+        rm -fRv runtimes
     fi
 
 
