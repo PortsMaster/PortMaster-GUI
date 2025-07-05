@@ -359,7 +359,7 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
         ;;
 
     "ace")
-        DEVICE_CPU="RK3388"
+        DEVICE_CPU="RK3588"
         ;;
 
     "amlogic-ng")
