@@ -16,7 +16,18 @@ CRCsum="$CRCsum"
 MD5="$MD5sum"
 SHA="$SHAsum"
 SIGNATURE="$Signature"
-TMPROOT=\${TMPDIR:=/tmp}
+
+# This is a modification so that we don't crash on various handhelds with a tiny /tmp directory.
+if [ -d "/roms2/ports/" ]; then
+  TMPROOT="/roms2/ports"
+elif [ -d "/userdata/roms/ports" ]; then
+  TMPROOT="/userdata/roms/ports"
+elif [ -d "/roms/ports/" ]; then
+  TMPROOT="/roms/ports"
+else
+  TMPROOT=\${TMPDIR:=/tmp}
+fi
+
 USER_PWD="\$PWD"
 export USER_PWD
 ARCHIVE_DIR=\`dirname "\$0"\`
