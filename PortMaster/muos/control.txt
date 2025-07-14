@@ -12,15 +12,15 @@ CUR_TTY=/dev/tty0
 DEVICE_NAME="$(GET_VAR "device" "board/name")"
 ANALOG_STICKS=$(GET_VAR "device" "board/stick")
 
-controlfolder="/mnt/mmc/MUOS/PortMaster"
+export controlfolder="/mnt/mmc/MUOS/PortMaster"
 
-directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print $2 "/" $3}')
+export directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print $2 "/" $3}')
 
 export PATH="/opt/python/bin:$controlfolder/muos:$controlfolder/muos:$PATH"
 
 export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
-ESUDO=""
-ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+export ESUDO=""
+export ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 
 if [ -d "/usr/lib32/" ]; then
   export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib32/gamecontrollerdb.txt"
@@ -82,5 +82,5 @@ else
   fi
 fi
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+export GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+export GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

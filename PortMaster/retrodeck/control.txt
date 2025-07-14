@@ -14,8 +14,8 @@ if [ -f "/app/bin/retrodeck.sh" ]; then
     ports_folder="$rdhome/PortMaster"
   fi
 
-  controlfolder="/var/data/PortMaster"
-  directory="$ports_folder"
+  export controlfolder="/var/data/PortMaster"
+  export directory="$ports_folder"
 elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
   # Fallback
   ports_folder="$(grep "ports_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
@@ -26,8 +26,8 @@ elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
     ports_folder="$rdhome/PortMaster"
   fi
 
-  controlfolder="/var/data/PortMaster"
-  directory="$ports_folder"
+  export controlfolder="/var/data/PortMaster"
+  export directory="$ports_folder"
 else
   # Another Fallback
   ports_folder="$(grep "ports_folder" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
@@ -38,15 +38,15 @@ else
     ports_folder="$rdhome/PortMaster"
   fi
 
-  controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data/PortMaster"
-  directory="$ports_folder"
+  export controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data/PortMaster"
+  export directory="$ports_folder"
 fi
 
 echo "\$controlfolder = $controlfolder"
 echo "\$directory = $directory"
 
-ESUDO=""
-ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+export ESUDO=""
+export ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 
 # TODO: might need to add other devices here.
 DEVICE="03000000de280000ff11000001000000"
@@ -83,5 +83,5 @@ export PM_CAN_MOUNT="N"
 source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+export GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL"
+export GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
