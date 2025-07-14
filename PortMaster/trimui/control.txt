@@ -6,8 +6,8 @@
 # TODO: check this
 CUR_TTY=/dev/tty0
 
-controlfolder="/mnt/SDCARD/Apps/PortMaster/PortMaster"
-directory="mnt/SDCARD/Data"
+export controlfolder="/mnt/SDCARD/Apps/PortMaster/PortMaster"
+export directory="mnt/SDCARD/Data"
 
 source /mnt/SDCARD/System/etc/ex_config
 
@@ -18,8 +18,8 @@ if [ -z "$PM_PORTNAME" ]; then
   PM_PORTNAME="Port"
 fi
 
-ESUDO=""
-ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+export ESUDO=""
+export ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/gamecontrollerdb.txt"
 # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
 
@@ -38,5 +38,5 @@ get_controls() {
 source $controlfolder/device_info.txt
 source $controlfolder/funcs.txt
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.aarch64.so $controlfolder/gptokeyb2 $ESUDOKILL"
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+export GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.aarch64.so $controlfolder/gptokeyb2 $ESUDOKILL"
+export GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

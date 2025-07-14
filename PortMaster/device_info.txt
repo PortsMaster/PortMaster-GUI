@@ -471,6 +471,27 @@ done
 unset libc
 unset path
 
+# So many exports it'll soon get a tariff
+export DEVICE_INFO_VERSION
+export PM_VERSION
+export CFW_NAME
+export CFW_VERSION
+export CFW_GLIBC
+export DEVICE_NAME
+export DEVICE_CPU
+export DEVICE_ARCH
+export DEVICE_RAM
+export DEVICE_HAS_ARMHF
+export DEVICE_HAS_AARCH64
+export DEVICE_HAS_X86
+export DEVICE_HAS_X86_64
+export DISPLAY_WIDTH
+export DISPLAY_HEIGHT
+export DISPLAY_ORIENTATION
+export ASPECT_X
+export ASPECT_Y
+export ANALOG_STICKS
+
 # Dump info
 
 cat << __INFO_DUMP__ | tee "$HOME/device_info_${CFW_NAME}_${DEVICE_NAME}.txt"

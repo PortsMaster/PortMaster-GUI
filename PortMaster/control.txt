@@ -17,12 +17,12 @@ CUR_TTY=/dev/tty0
 
 if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
   if [ ! -z "$(cat /etc/fstab | grep roms2 | tr -d '\0')" ]; then
-    directory="roms2"
+    export directory="roms2"
   else
-    directory="roms"
+    export directory="roms"
   fi
 else
-  directory="roms"
+  export directory="roms"
 fi
 
 if [ -f "/etc/os-release" ]; then
@@ -30,26 +30,26 @@ if [ -f "/etc/os-release" ]; then
 fi
 
 if [ -d "/PortMaster/" ]; then
-  controlfolder="/PortMaster"
+  export controlfolder="/PortMaster"
 elif [ -d "/opt/system/Tools/PortMaster/" ]; then
-  controlfolder="/opt/system/Tools/PortMaster"
+  export controlfolder="/opt/system/Tools/PortMaster"
 elif [ -d "/opt/tools/PortMaster/" ]; then
-  controlfolder="/opt/tools/PortMaster"
+  export controlfolder="/opt/tools/PortMaster"
 else
-  controlfolder="/$directory/ports/PortMaster"
+  export controlfolder="/$directory/ports/PortMaster"
 fi
 
 sudo echo "Testing for sudo..." > /dev/null 2>&1
 if [ $? != 0 ]; then
   echo "No sudo present."
-  ESUDO=""
-  ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
-  ESUDOKILL2="-1"
+  export ESUDO=""
+  export ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
+  export ESUDOKILL2="-1"
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 else
-  ESUDO="sudo --preserve-env=SDL_GAMECONTROLLERCONFIG_FILE,DEVICE,param_device,HOTKEY,ANALOGSTICKS,SDL_KMSDRM_ORIENTATION,SDL_KMSDRM_ROTATION"
-  ESUDOKILL="-sudokill" # for ArkOS, RetroOZ, and TheRA use "-sudokill"
-  ESUDOKILL2="-Z"       # Doesnt need sudokill as the process is run with sudo.
+  export ESUDO="sudo --preserve-env=SDL_GAMECONTROLLERCONFIG_FILE,DEVICE,param_device,HOTKEY,ANALOGSTICKS,SDL_KMSDRM_ORIENTATION,SDL_KMSDRM_ROTATION"
+  export ESUDOKILL="-sudokill" # for ArkOS, RetroOZ, and TheRA use "-sudokill"
+  export ESUDOKILL2="-Z"       # Doesnt need sudokill as the process is run with sudo.
   export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
 fi
 
@@ -176,5 +176,5 @@ if [ ! -z "$ESUDO" ]; then
   $ESUDO chmod 666 /dev/uinput
 fi
 
-GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL2"
-GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
+export GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL2"
+export GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"
