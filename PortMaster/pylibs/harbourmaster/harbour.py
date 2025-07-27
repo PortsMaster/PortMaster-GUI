@@ -696,9 +696,12 @@ class HarbourMaster():
                 # Ignore non bash files.
                 continue
 
-            if file_item.is_file() and b"PORTMASTER NO TOUCHY" in file_item.read_bytes():
-                logger.debug(f"NO TOUCHY {file_name}")
-                continue
+            if file_item.is_file():
+                with open(file_item, 'rb') as fh:
+                    file_header = fh.read(1024)
+                    if b"PORTMASTER NO TOUCHY" in file_header:
+                        logger.debug(f"NO TOUCHY {file_name}")
+                        continue
 
             port_owners = get_dict_list(all_items, file_name)
 
@@ -2165,35 +2168,40 @@ class HarbourMaster():
 
         self.platform.port_uninstall(port_name, port_info, all_port_items)
 
-        for item in uninstall_items:
-            item_path = self.ports_dir / item
+        try:
+            for item in uninstall_items:
+                item_path = self.ports_dir / item
 
-            if item_path.exists():
-                cprint(f"- removing {item}")
-                self.callback.message(f"- {item}")
+                if item_path.exists():
+                    cprint(f"- removing {item}")
+                    self.callback.message(f"- {item}")
 
-                if item_path.is_dir():
-                    shutil.rmtree(item_path)
+                    if item_path.is_dir():
+                        shutil.rmtree(item_path)
 
-                elif item_path.is_file():
-                    item_path.unlink()
+                    elif item_path.is_file():
+                        item_path.unlink()
 
-            item_path = self.scripts_dir / item
+                item_path = self.scripts_dir / item
 
-            if item_path.exists():
-                cprint(f"- removing {item}")
-                self.callback.message(f"- {item}")
+                if item_path.exists():
+                    cprint(f"- removing {item}")
+                    self.callback.message(f"- {item}")
 
-                if item_path.is_dir():
-                    shutil.rmtree(item_path)
+                    if item_path.is_dir():
+                        shutil.rmtree(item_path)
 
-                elif item_path.is_file():
-                    item_path.unlink()
+                    elif item_path.is_file():
+                        item_path.unlink()
 
-        self.callback.message_box(_("Successfully uninstalled {port_name}").format(port_name=port_info_name))
+        except OSError as err:
+            self.callback.message_box(_("Error uninstalling {port_name}\n\n{error}").format(port_name=port_info_name, error=str(err)))
+            del port_loc[port_name.casefold()]
+            return 1
 
-        del port_loc[port_name.casefold()]
-        return 0
+        finally:
+            self.callback.message_box(_("Successfully uninstalled {port_name}").format(port_name=port_info_name))
+            return 0
 
     def portmd(self, port_info):
         def nice_value(value):
