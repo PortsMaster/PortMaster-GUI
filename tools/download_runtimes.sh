@@ -5,7 +5,7 @@ if [ ! -f "ports.json" ]; then
   curl -L -o ports.json $(curl -s https://api.github.com/repos/PortsMaster/PortMaster-New/releases/latest | jq -r '.assets[] | select(.name=="ports.json") | .browser_download_url')
 fi
 
-mkdir -p runtimes
+RUNTIME_ARCH="${RUNTIME_ARCH:-aarch64}"
 
 # i still dont understand how this works
 jq -r '
@@ -14,11 +14,11 @@ jq -r '
   | map(select(
       ( .key | ascii_downcase | contains("images") | not ) and
       ( .key | ascii_downcase | contains("gameinfo") | not ) and
-      ( .value.runtime_arch == "aarch64" ) and
+      ( .value.runtime_arch == "'$RUNTIME_ARCH'" ) and
       ( .value.url != null )
     ))
   | .[]
-  | "\(.value.url) \(.key) \(.value.md5)"
+  | "\(.value.url) \(.value.runtime_name) \(.value.md5)"
 ' "ports.json" | while read -r url key md5; do
   filename="$key"
   wget -O "$filename" "$url"
@@ -32,3 +32,5 @@ jq -r '
     fi
   fi
 done
+
+rm -f ports.json

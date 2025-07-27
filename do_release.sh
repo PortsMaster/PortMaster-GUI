@@ -74,19 +74,21 @@ zip -9r PortMaster.zip PortMaster/ \
     -x '*.DS_Store'
 
 if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
-echo "Creating Installers"
+    echo "Creating Installers"
 
+    for arch in "aarch64" "x86_64"; do
+        export RUNTIME_ARCH="$arch"
 
-    if [ ! -f "runtimes.zip" ]; then
-        echo "Downloading Runtimes"
-        mkdir -p runtimes
-        cd runtimes
-        ../tools/download_runtimes.sh
-        zip -9 ../runtimes.zip *
-        cd ..
-        rm -fRv runtimes
-    fi
-
+        if [ ! -f "runtimes.${RUNTIME_ARCH}.zip" ]; then
+            echo "Downloading Runtimes for $RUNTIME_ARCH."
+            mkdir -p runtimes
+            cd runtimes
+            ../tools/download_runtimes.sh
+            zip -9 "../runtimes.${RUNTIME_ARCH}.zip" *
+            cd ..
+            rm -fRv runtimes
+        fi
+    done
 
     if [ ! -d "makeself-2.5.0" ]; then
         echo "Downloading makeself"
@@ -108,11 +110,21 @@ echo "Creating Installers"
     makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.PortMaster.sh" "PortMaster Installer" ./installer.sh
 
     if [ -z "$NO_FULL_INSTALL" ]; then
-        cd pm_release
-        cp ../runtimes.zip .
-        cd ..
+        for arch in "aarch64" "x86_64"; do
+            export RUNTIME_ARCH="$arch"
 
-        makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.Full.PortMaster.sh" "PortMaster Full Installer" ./installer.sh
+            if [ "$RUNTIME_ARCH" = "aarch64" ]; then
+                SCRIPT_NAME=""
+            else
+                SCRIPT_NAME=".${RUNTIME_ARCH}"
+            fi
+
+            cd pm_release
+            cp "../runtimes.${RUNTIME_ARCH}.zip" runtimes.zip
+            cd ..
+
+            makeself-2.5.0/makeself.sh --header "tools/makeself-header.sh" pm_release "Install.Full${SCRIPT_NAME}.PortMaster.sh" "PortMaster Full Installer" ./installer.sh
+        done
     fi
 
     rm -fRv pm_release

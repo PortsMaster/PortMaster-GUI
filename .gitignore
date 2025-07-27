@@ -186,6 +186,7 @@ do_test.sh
 # PortMaster Installer scripts.
 makeself*/
 makeself-*.run
-runtimes.zip
+runtimes*.zip
 Install*PortMaster.sh
 *.portmaster.zip
+pm_devices.cfg

@@ -5,31 +5,105 @@
 
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-if [ -d "/opt/system/Tools/" ]; then
-  controlfolder="/opt/system/Tools"
-elif [ -d "/opt/tools/" ]; then
-  controlfolder="/opt/tools"
-elif [ -d "/userdata/system" ]; then
-  controlfolder="$XDG_DATA_HOME"
-  mkdir -pv "$controlfolder/PortMaster"
-  OS_NAME="Batocera"
-else
-  controlfolder="/roms/ports"
-fi
+NO_SUDO="N"
+ESUDO=""
+CUR_TTY=/dev/tty0
 
-if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
-  if [ ! -z "$(cat /etc/fstab | grep roms2 | tr -d '\0')" ]; then
-    directory="roms2"
+# RetroDECK
+if [ -f "/app/bin/retrodeck.sh" ]; then
+  export LD_PRELOAD=""
+  # loading the RetroDECK framework that even give access to variables such as roms_folder
+  source /app/libexec/global.sh
+  CUR_TTY="/dev/null"
+
+  if [ -z "$ports_folder" ]; then
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  if [ -z "$roms_folder" ]; then
+    roms_folder="$rdhome/roms"
+  fi
+
+  export controlfolder="/var/data"
+  export directory="$ports_folder"
+  OS_NAME_OVERRIDE="retrodeck"
+  NO_SUDO="Y"
+  touch "$HOME/no_es_restart"
+elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
+  export LD_PRELOAD=""
+  # Fallback
+  ports_folder="$(grep "ports_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+  roms_folder="$(grep "roms_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+  rdhome="$(grep "rdhome" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+  CUR_TTY="/dev/null"
+
+  if [ -z "$ports_folder" ]; then
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  if [ -z "$roms_folder" ]; then
+    roms_folder="$rdhome/roms"
+  fi
+
+  export controlfolder="/var/data"
+  export directory="$ports_folder"
+  OS_NAME_OVERRIDE="retrodeck"
+  NO_SUDO="Y"
+  touch "$HOME/no_es_restart"
+elif [ -f ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg ]; then
+  export CUR_TTY="/dev/null"
+  LD_PRELOAD=""
+  # Another Fallback
+  ports_folder="$(grep "ports_folder" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+  roms_folder="$(grep "roms_folder" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+  rdhome="$(grep "rdhome" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
+
+  if [ -z "$ports_folder" ]; then
+    ports_folder="$rdhome/PortMaster"
+  fi
+
+  if [ -z "$roms_folder" ]; then
+    roms_folder="$rdhome/roms"
+  fi
+
+  export controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data"
+  export directory="$ports_folder"
+  OS_NAME_OVERRIDE="retrodeck"
+  NO_SUDO="Y"
+  touch "$HOME/no_es_restart"
+else
+  # Fallback to non RetroDECK settings
+  if [ -d "/opt/system/Tools/" ]; then
+    controlfolder="/opt/system/Tools"
+  elif [ -d "/mnt/mmc/MUOS" ]; then
+    controlfolder="/mnt/mmc/MUOS"
+    OS_NAME_OVERRIDE="muos"
+  elif [ -d "/opt/tools/" ]; then
+    controlfolder="/opt/tools"
+  elif [ -d "/userdata/system" ]; then
+    controlfolder="$XDG_DATA_HOME"
+    mkdir -pv "$controlfolder/PortMaster"
+    OS_NAME="batocera"
+  else
+    controlfolder="/roms/ports"
+  fi
+
+  if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
+    if [ ! -z "$(cat /etc/fstab | grep roms2 | tr -d '\0')" ]; then
+      directory="roms2"
+    else
+      directory="roms"
+    fi
+  elif [ -d "/mnt/sdcard/ROMS/Ports/" ]; then
+    directory="/mnt/sdcard/ROMS/"
+  elif [ -d "/mnt/mmc/ROMS/Ports/" ]; then
+    directory="/mnt/mmc/ROMS/"
+  elif [ -d "/userdata/roms/ports" ]; then
+    directory="userdata/roms"
   else
     directory="roms"
   fi
-elif [ -d "/userdata/roms/ports" ]; then
-  directory="userdata/roms"
-else
-  directory="roms"
 fi
-
-CUR_TTY=/dev/tty0
 
 TEMP_DIR=$(pwd)
 
@@ -37,13 +111,19 @@ if [ -f "/etc/os-release" ]; then
   source /etc/os-release
 fi
 
+if [ -n "$OS_NAME_OVERRIDE" ]; then
+  OS_NAME="$OS_NAME_OVERRIDE"
+fi
+
 echo "-- Installing on $OS_NAME --"
 
-sudo echo "Testing for sudo..." > /dev/null 2>&1
-if [ $? != 0 ]; then
-  ESUDO=""
-else
-  ESUDO="sudo"
+if [ "$NO_SUDO" = "N" ]; then
+  sudo echo "Testing for sudo..." > /dev/null 2>&1
+  if [ $? != 0 ]; then
+    ESUDO=""
+  else
+    ESUDO="sudo"
+  fi
 fi
 
 if [[ -e "/usr/share/plymouth/themes/text.plymouth" ]]; then
@@ -55,8 +135,8 @@ else
 fi
 
 RELOCATE_PM=""
-if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ] && [ "${OS_NAME}" != "ROCKNIX" ]; then
-  RELOCATE_PM="TRUE"
+if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ] && [ "${OS_NAME}" != "ROCKNIX" ] && [ "${OS_NAME}" != "muos" ] && [ "${OS_NAME}" != "retrodeck" ]; then
+  RELOCATE_PM="Y"
 fi
 
 $ESUDO chmod 666 $CUR_TTY
@@ -118,30 +198,50 @@ if [ ! -z "$RELOCATE_PM" ]; then
   fi
 fi
 
+if [ "$OS_NAME" = "retrodeck" ]; then
+    $ESUDO mv -vf PortMaster/PortMaster.sh "/${roms_folder}/portmaster/PortMaster.sh" | tee -a $CUR_TTY
+fi
+
+if [ "$OS_NAME" = "muos" ]; then
+  mkdir -p /roms/ports/PortMaster
+  cp -f "$controlfolder/PortMaster/control.txt" "/roms/ports/PortMaster/control.txt"
+fi
+
 $ESUDO mv temp_runtimes/*.squashfs PortMaster/libs/
 $ESUDO rm -fR temp_runtimes/
 
 if [ -f "$TEMP_DIR/runtimes.zip" ]; then
   cd PortMaster/libs/
-  $ESUDO unzip "$TEMP_DIR/runtimes.zip" | tee -a $CUR_TTY
+  $ESUDO unzip -o "$TEMP_DIR/runtimes.zip" | tee -a $CUR_TTY
 fi
 
-$ESUDO rm -vf /$directory/port_scripts/Install*PortMaster*.sh | tee -a $CUR_TTY
-$ESUDO rm -vf /$directory/port_scripts/Restore*PortMaster*.sh | tee -a $CUR_TTY
-$ESUDO rm -vf /$directory/ports/Install*PortMaster*.sh | tee -a $CUR_TTY
-$ESUDO rm -vf /$directory/ports/Restore*PortMaster*.sh | tee -a $CUR_TTY
+if [ "$OS_NAME" = "retrodeck" ]; then
+  $ESUDO rm -vf /$roms_folder/portmaster/Install*PortMaster*.sh | tee -a $CUR_TTY
+  $ESUDO rm -vf /$roms_folder/portmaster/Restore*PortMaster*.sh | tee -a $CUR_TTY
+else
+  $ESUDO rm -vf /$directory/port_scripts/Install*PortMaster*.sh | tee -a $CUR_TTY
+  $ESUDO rm -vf /$directory/port_scripts/Restore*PortMaster*.sh | tee -a $CUR_TTY
+  $ESUDO rm -vf /$directory/ports/Install*PortMaster*.sh | tee -a $CUR_TTY
+  $ESUDO rm -vf /$directory/ports/Restore*PortMaster*.sh | tee -a $CUR_TTY
+fi
 
 echo "Finished installing PortMaster" | tee -a $CUR_TTY
 sleep 2
 
 if [ ! -f "$HOME/no_es_restart" ]; then
-  if [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
+  if [ "$OS_NAME" = "muos" ]; then
+    # YEET
+    shutdown -r
+  elif [ "$OS_NAME" = "ROCKNIX" ]; then
+    ## This is for the best.
+    shutdown -r now
+  elif [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
     ## Broken
     # batocera-es-swissknife --restart
     curl http://localhost:1234/reloadgames
 
     # Install our own shGenerator.py
-    if [ ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py ]; then
+    if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
       cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
 
       if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then

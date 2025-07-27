@@ -209,6 +209,157 @@ Makeself version $MS_VERSION
 EOH
 }
 
+# This function extracts, DECOMPRESSES, executes, and cleans up the embedded framebuffer helper.
+MS_Extract_And_Run_FB_Helper()
+{
+    local message="\$1"
+
+    # This only works on aarch64 currently.
+    if [ ! -e /lib/ld-linux-aarch64.so.1 ] && [ ! -e /lib64/ld-linux-aarch64.so.1 ]; then
+        return 1
+    fi
+
+    # Use the TMPROOT defined at the start of the makeself script
+    local helper_dir="\$TMPROOT/makeself_helper_$$"
+    local helper_bin="\$helper_dir/fb_msg"
+    local temp_b64="\$helper_dir/data.b64" # Path for the temporary base64 file
+
+    mkdir -p "\$helper_dir"
+    if [ ! -d "\$helper_dir" ]; then
+        return 1
+    fi
+
+    # Use a trap to ensure cleanup even if the script exits
+    trap "rm -rf '\$helper_dir'" RETURN
+
+    # NOTE: The data is decompressed with gunzip after being decoded from base64.
+    (
+        # Embeded fb_msg program for aarch64
+        echo "H4sICPG7hWgCA2ZiX21zZwDtGm1wVNX1vH2bzSZZ1wQCrATkJSDCjiwbVIi4DckGjGhwkETbUTu7L8lbdmU/4u7CBIhLUH441R/ZEgWmgqjVgbQ/6AhTmLEl"
+        echo "oM0w1XFS0EinQENQoWIdHD5kW7Pbc9+7N7n7zBrttP1TbvL23HPu+b733XffvW/Tsob7DIIArIjwWyDYwUINr6H0rvIRFqRVQQH+lsFUMCFu5Pj08LqQDc0j"
+        echo "djS5KoOG62EZZEOBg3mQu+yflA2ZJPklvu6brlH3TReyYC+1e8yQLWegcr1UrpfxUzhIHRvUxWekVxPVp4dLIRsaKVz5abyV1PdPpHHoYCtkQyb3MMqZ4PuX"
+        echo "YgpXUXu58rKS+ssg64f5wUDz/GDrvGAgvLZ9nixHW/wL73LEIo5KzadS2sf1Dz0CfU/vO7Bsw6PvPTHzrSfti+r6HhefmWGkPgiUh42JfC77AmfvhxQRiuBY"
+        echo "/lj0KeCXsjWStE4YQ8fUHHQhB/1pvKQx6PV4VYxBJ7wlY9AX59D/aA76XTnoO3L4Y87Bb81Bn5eDvieH/iU5+G/PQYc2JRqNREFujkTjEArJbRCLR4NKGHxt"
+        echo "a+MxRFqRAQKRlngQQmvDhKElGIkpEGlTmaKBcNwHHk9Lu+zxBcJyMLBBQRSHZ4snFpejcU9IDoSB4GR4LoT6huXuOs8CR+Ui8CxvWuFB/crqQCyuRJtW1AUj"
+        echo "YaVJbg4SFatDkTBV4dFYx2QEOk8Y1LnCMPKXTRPwz8/dd9uSL5lISxSy7zuR3tD9RRo8qKN3UvqeGTq6lcrp6EDpJ3X0fjpRsfuB0Rm+j/ILRm3+Y+UgR+dv"
+        echo "sV6Obuboxzi6haMPcvTirBuDzrtGbT4YGbcc3cjPYxydfy7YODrvp8TRCzj6HI5eyNGdHL2Io1dxdD6uGo5+E0e/n6NbOfpKjn4zR/8JR+fnCS9H5++n4Y2H"
+        echo "9w6LkDwG0D288cieXtEzQOiXkN6F3VmSrk8VDy1JSoYZAzMk8SN2YVt/iaEmVWwAtU3FTYhXcHgh4m4OtyLezOETEH+Gwycj/hqHT0X8KIffivgQh1cQ+8Io"
+        echo "PpvY53A7sc/hDmKfwxcQ+xo+vPFXah4uNwp7rz5u2Pt1i7g3NRNS+MB5ymKApk7MRQXUpDCLXTBYnypfuTiJvZb6PJPZdid0rhoUJ9ovN9airBtl61C2JjW8"
+        echo "8SOWzy7oX5xcZKxJ1SLvEZS5IoIddVfKIjRtRd0qz5XFSXz+dcWG6lPdu1xJGfPbg7wEajruTb6JuBfxIXFKz1mxtOePFCd1nDO63AddyT/wMh/em9yB+MeZ"
+        echo "zJTrLUJy6FkhKfQ+d7wXaYPaY6ALOn+U7Ca4WGp/DeH7yDskGpMEr0XeA0i7jP7uTmfuHryz9tAnSL8WqTmUB53HZ2I8zXgNJMiSq/P4WXFyz06ia76au99s"
+        echo "xqWLasNWnTyPes9NbJiLcqsMeAlq3mw9H+DYG8R41qBc6scNc89h3QidEw48CQ+X3wwPEp4DCaFxSJxkL+8QGl9H/vKZpodfewBKSBvhJXS877taMP5fEH3z"
+        echo "SU4m9yRoXEGE29D+dPTxVrw+FQHzh3mcCcnPsN9J/8IX9alnEbZcqE9tQbjlw/rUYyin4KW2f1KfwvXp/p+iHtKv/P2A7f3QKyQx3v5yhPg8u9iLsSO+r/xk"
+        echo "fUpGuUui0AM41oisnh+Xye9VfLPpRK1l8/Pl39RuPYL8z6Cs+1J9qlmVNYzIEnvDG3+vjdciSOH46fcerb2nRoC7VT9P1acQ7ldt3FWTKkf/T+IlYb69R4V7"
+        echo "LheRsXl0Dx/DKYxps+H6IqO55tArIKyZi2PeQHALwQ1r9grQZLTVzc2Tag65wVRkOllzqByMRb/sEBvdHaaycrOxzIj3w+FOeApjbXrWX36Q6G92PXDC+0Tj"
+        echo "iZZpdSfc/rLGmjvALoJox/b262jTPw0mbIJbop9jfwzmd64yC51T1fHybnXyoijYvxAN9r+LRrvZYn4+H/vtS4zh5sDqqp8L+UUFWO8VCh4cnNs71SvCIhxY"
+        echo "JUvK0X4m03TeCMmMBF+9ms40ET/GksH+WXhOvMk+JE6wy0JB0aBY2HMY88T0HEmP6hGwzuZHNmd+hf4Pb3x7ZN64gr5eFsUeMn9cQ9+v4kXmka8xtusYQ4uh"
+        echo "5p53AO7m54nhje+qOjfNgadexbx126HkqjjZHjNB8grqP4tj/hPRhj6W2sk9cqACSt5CH0nuLqLeC2qO8uzn0fYD2B/zQCzyCPlrXkBdRO/fRLMdnxulBB4W"
+        echo "zGuCSMeYSr5WfdfiOCsW2EnM50QL2slHO0U9T6ONw0LBmju0XJYQnb8e5nMwGnc3jrnuoYVJEveLWD9wdGGy2zDpvWs4Z2jxCxi/oac7Xbe1NZ3ZFhfIa0nn"
+        echo "cTLuXt8Quz6E9zCJ9yzGN4ixe2HJwCuGiRdx3DaNlSsix/cD8+mRmLxaWSzdFpMqVigxgkjxiNQaiLUF5fUVhTC/VVk339fshDo5HI7EJbISlHxROaQ0r/X5"
+        echo "lKiE7YEWxSEt1UQC4dVEgbaUdBRCof0HlkKw29GdQmjyB2JSSF4vxeU1ihRT1ilROSiF8B0orsQc0sqgIscUqVmR2uR4QAnHHbCMrG6lqCK3Ei94JwNhXyQa"
+        echo "Qr5ImHLh2rZNz6WFQtwPKaFIdP3IAz+x+Y3Nv9uxOZHI/CXzzvlMIphOpzuqcClVXNWhVlQA/3ZxuXe88cYOt8vl3ozF7bLNwop7lo1BcPl8PpcNC1ZcufXY"
+        echo "XAkbKwmXDUYqFpvTRlZO+Gtzcgsum8WSRcipF42DDdALFQ+m8Y/QE7s7ChM2gL4+czG2VTU0+ZsaqsDp9Kp8qNtJDI/Y8bkyLqICvUKFVLnqQGLUGDaYkNvb"
+        echo "i2H3DXyGAduq1EAQJw0qnGZCumWaK5i2WCDh9XYQ3IWQJChhUi2TtKkJw59qk8mlKVcNq9BJrGiJSagOYJ1IanZATXtinRftkwrGh8rJP9K9Xi/qbQ9iRoLt"
+        echo "qn2vN0Ghl7SHiV2fKuYDrVcSYDWZTCo92N6GsuBVSwL6vkwP9PX1Qd9n1858gJB0N+EjxjR9Pt+6apOV4EQO9btIvLS3wUf5NWDD7ugbSH+J+vqCVUHUR0cP"
+        echo "pNW0psHlJMUFvSR6kwguCykuKJ6zlO/2DDazEWqq9lWDml6MH4gHaM+EVEytiicwT9MWOttJ3gGqSca17sD4bUA6EPnBYiJ+e72YAIxD7VYb6Zcv0gMDfQg1"
+        echo "ftAGvIZjBqg+K8FJPhDHBHRAcXFHcfEE0n8+6ocWPw7IgQF1hCKmDjif6g/2szp+LDZbmw373aYOAxsQBEmqXafF5eP3IMrEe4lB8j4y7Wom046L2SfwQdCO"
+        echo "+AsI8ZkB7yPcTdrxAfMuee9BeAphN8JLZB8qlcmUolw/wgaEDf/IZPYjfB/hBWH0nUzYsAqM7bcKZZYZKo0EcupaJuPk9pHuIPt7SHNxextk/28W+nA/IdRa"
+        echo "pZ3GXaJ7q+GhM6dPqK8/pXQPayXyGHX7UmpnIj3O6cN1PryMtF5CeMxavNOwS1h15rQV3FqdLID3k/cyjK9Ds1mz07wr373V1J1X96LxJbFum2G7cH/hmdMf"
+        echo "n/xo4MSHVqgl+ZtDOprYZHLLNX1uK5w+c59WX0HsEN0kfszNy5e1HKGNfsNO+665y7bO6b79xdkv3bZt1vaZOypWopE/Z1nB25jknLx05PRvGfGvcdQ9LRfP"
+        echo "ocyp69k5ulFulBvlRrlRbpQb5f+rsHMBdg7ATrP8FLK9aHb+xfagt9BN51t05w1lkH1uORWyzx2m6dqvpjMRArfT80C2595JFyjsrOAgbWd76UcpZHvobBE/"
+        echo "6VtndFq5MGP0/FVde9FASynO9vSnsPNpUzb9ubxsv81UvkBn/58ZLR7Gmqa4n8pnKM7yfInibtqeorjpv9Tf7Jy50/o9BazZ5zvjlcH8/w1k50r1dXWLpTlL"
+        echo "leaAHJYqnY4Fjsp5C+fSmrTAuaDSWVmJi2VHzB+LR+NyMzgC4bgSbQNHOBJXHKvDax3NawPB1nmBVkqqdS+fF5dXg9rml2N+cLSuD8fWhzQYj2ot65RojOy1"
+        echo "8IgH26JKUCaMtNYWjBOTAfyNK+3460ME2yKtclwGh+L3qNszHn9rdBTTJDxyNCqv1yRYHRXLoUALWo3E1R/NgKasORYDR0skFFLC8f/QeCmiY3XkvsnxXQXo"
+        echo "vqvgz8PzOXn9dwuzdPz695LZOvl2QzaUxpEn73H4Khlh8myeYZDNR3m6eYmVapoDg24eYvCYMDpPiZw8mw/uo3SDbl5j8Og4+XuIzhlMns0TDM7W+W/Qwcfp"
+        echo "HMRwNg8xyPJnorb18T9Jc2rQzYMj86Ewdv5Y/HEq79bNqwxWcfKTx5BPcN/a8M8hBkvH6f/1Onn9PHIpx3csrGzRybN5kMH9ed8t/zOdPHtuMlg8jv9duvuv"
+        echo "25oNp+d99/jZrpPP9f1PLvtv6uRtpdnwZeHb34PwZR99hIi6dQL7PsgMY8sz+DZo59iibh1x8HvKH+PuTf75x76/GhSy1xlmXT/+icbP5HfTdcTuGfQcfhz7"
+        echo "Azp5tg65QOU7x5H/q06ePff80nfHz8qnlMbk26h8Ww55/fj5nNL0G+hM/vYc8jwUx3iubKPyl8ex/y+i782JUCgAAA=="
+    ) > "\$temp_b64"
+
+    # Now, decode and decompress from the well-formed temporary file.
+    # We add an 'if !' check for better error handling.
+    if ! base64 -d < "\$temp_b64" | gunzip -c > "\$helper_bin"; then
+        echo "Error: Failed to decode/decompress embedded helper binary." >&2
+        return 1
+    fi
+
+    if [ -s "\$helper_bin" ]; then
+        chmod +x "\$helper_bin"
+        # Execute the helper in the background so it doesn't block the installer
+        "\$helper_bin" "\$message" >/dev/null 2>&1 &
+    else
+        echo "Failed to decode/decompress embedded helper binary." >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# This is the main display function. It calls the helper as a last resort.
+MS_Handheld_Display()
+{
+    local message="\$1"
+
+    # 1. Check if we are in an interactive shell (like SSH or serial)
+    if [ -t 1 ]; then
+        MS_Printf "\n\$message. Please be patient, this may take a while.\n"
+    fi
+
+    # 2. NEW: Check for Zenity (best for Retrodeck/desktop environments)
+    # The global variable ZPID must be declared outside this function.
+    if type zenity >/dev/null 2>&1; then
+        zenity --progress --pulsate \
+            --title="PortMaster Installer" \
+            --text="\$message" \
+            --info-text="Please be patient, this may take several minutes..." \
+            --no-cancel --auto-close --width=400 &
+        ZPID=\$! # Store the background process PID in our global variable
+        return 0
+    fi
+
+    # 3. Check for 'foot' terminal (for high-level Sway/Weston environments)
+    if type foot >/dev/null 2>&1; then
+        foot -F /bin/bash -c "printf '\n\n\n   %s\n\n   This may take a while.\n' \"\$message\"; while true; do sleep 1; done" &
+        ZPID=\$! # Store the background process PID in our global variable
+        return 0
+    fi
+
+    # 4. Check for a console that is a real text-mode display (KMS/DRM + fbcon).
+    # This now iterates through all reported active consoles (e.g., "ttyFIQ0 tty0")
+    # and writes to the first one that is available.
+    if [ -e "/dev/dri/card0" ] && [ -e /sys/class/tty/console/active ]; then
+        local displayed=0
+        for tty_name in \$(cat /sys/class/tty/console/active 2>/dev/null); do
+            # Check if this specific tty device exists and is writable
+            if [ -w "/dev/\$tty_name" ]; then
+                (
+                    printf "\033c" # ANSI reset/clear screen
+                    printf "\n\n************************************************\n"
+                    printf   "** %s\n" "\$message"
+                    printf   "** Please be patient, this may take a while.  \n"
+                    printf   "************************************************\n"
+                ) > "/dev/\$tty_name"
+                displayed=1
+                # We found a writable console, no need to check others.
+                break
+            fi
+        done
+
+        if [ "\$displayed" -eq 1 ];
+            then return 0;
+        fi
+    fi
+
+    # 5. LAST RESORT: For non-DRM systems with a framebuffer, run our binary.
+    if [ -w "/dev/fb0" ]; then
+        MS_Extract_And_Run_FB_Helper "\$message"
+        return 0
+    fi
+
+    # Oh well.
+    return 1
+}
+
 MS_Verify_Sig()
 {
     GPG_PATH=\`exec <&- 2>&-; which gpg || command -v gpg || type gpg\`
@@ -349,6 +500,10 @@ MS_exec_cleanup() {
 MS_cleanup()
 {
     echo 'Signal caught, cleaning up' >&2
+    if [ -n "\$ZPID" ]; then
+        kill \$ZPID 2>/dev/null
+    fi
+
     MS_exec_cleanup
     cd "\$TMPROOT"
     rm -rf "\$tmpdir"
@@ -365,6 +520,7 @@ verbose=n
 cleanup=y
 cleanupargs=
 sig_key=
+ZPID=""
 
 initargs="\$@"
 
@@ -606,6 +762,8 @@ if test x"\$nox11" = xn; then
     fi
 fi
 
+MS_Handheld_Display "Installing \$(basename \$0)."
+
 if test x"\$targetdir" = x.; then
     tmpdir="."
 else
@@ -720,6 +878,10 @@ if test x"\$script" != x; then
     if test "\$res" -ne 0; then
 		test x"\$verbose" = xy && echo "The program '\$script' returned an error code (\$res)" >&2
     fi
+fi
+
+if [ -n "\$ZPID" ]; then
+    kill \$ZPID 2>/dev/null
 fi
 
 MS_exec_cleanup
