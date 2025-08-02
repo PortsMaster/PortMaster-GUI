@@ -34,12 +34,15 @@ SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
 [ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
 
 case "$DEVICE_NAME" in
-  tui*)
-    SDL_CTRL_NAME="muOS-Keys"
-  ;;
+  tui-brick)
+    SDL_CTRL_NAME="TRIMUI Brick Controller"
+    ;;
+  tui-spoon)
+    SDL_CTRL_NAME="TRIMUI Smart Pro Controller"
+    ;;
   *)
     SDL_CTRL_NAME="Deeplay-keys"
-  ;;
+    ;;
 esac
 
 export SDL_GAMECONTROLLERCONFIG=$(grep "$SDL_CTRL_NAME" "$SDL_GAMECONTROLLERCONFIG_FILE")
