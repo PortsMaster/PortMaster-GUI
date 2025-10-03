@@ -732,7 +732,7 @@
         "option_list": {
             "list": [],
             "align": "center",
-            "area": [ 0.0, 0.40, 1.0, 0.85 ],
+            "area": [ 0.0, 0.40, 1.0, 0.88 ],
             "text-clip": true,
             "font-size": 25,
             "font-color": "list_text",
@@ -748,10 +748,10 @@
 
         "featured_port_description": {
             "text": "{featured_ports.description}",
-            "font-size": 25,
+            "font-size": 18,
             "align": "center",
             "font-color": "general_font",
-            "area": [ 0.1, 0.6, 0.9, 0.9 ],
+            "area": [ 0.1, 0.33, 0.9, 0.38 ],
             "text-wrap": true
         },
 
