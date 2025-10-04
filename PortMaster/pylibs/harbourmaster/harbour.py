@@ -698,7 +698,7 @@ class HarbourMaster():
 
             if file_item.is_file():
                 with open(file_item, 'rb') as fh:
-                    file_header = file_item.read(1024)
+                    file_header = fh.read(1024)
                     if b"PORTMASTER NO TOUCHY" in file_header:
                         logger.debug(f"NO TOUCHY {file_name}")
                         continue
