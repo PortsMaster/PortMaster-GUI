@@ -62,8 +62,8 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
         CFW_VERSION="Unknown"
 
     elif [[ $CFW_FFS == *"arkos"* ]]; then
-        CFW_NAME=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9-]*\)).*/\1/p' | cut -d' ' -f 1)
-        CFW_VERSION=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9-]*\)).*/\2/p' | cut -d' ' -f 1)
+        CFW_NAME=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}[^)]*\)).*$/\1/p' | cut -d' ' -f 1)
+        CFW_VERSION=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}[^)]*\)).*$/\2/p' | cut -d' ' -f 1)
 
         if [[ $CFW_FFS == *"wummle"* ]]; then
             CFW_NAME="${CFW_NAME} wuMMLe"
