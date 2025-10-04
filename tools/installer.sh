@@ -14,7 +14,7 @@ if [ -f "/app/bin/retrodeck.sh" ]; then
   export LD_PRELOAD=""
   # loading the RetroDECK framework that even give access to variables such as roms_folder
   source /app/libexec/global.sh
-  CUR_TTY="/dev/null"
+  CUR_TTY=/dev/null
 
   if [ -z "$ports_folder" ]; then
     ports_folder="$rdhome/PortMaster"
@@ -35,7 +35,7 @@ elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
   ports_folder="$(grep "ports_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
   roms_folder="$(grep "roms_folder" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
   rdhome="$(grep "rdhome" /var/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
-  CUR_TTY="/dev/null"
+  CUR_TTY=/dev/null
 
   if [ -z "$ports_folder" ]; then
     ports_folder="$rdhome/PortMaster"
@@ -51,7 +51,7 @@ elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
   NO_SUDO="Y"
   touch "$HOME/no_es_restart"
 elif [ -f ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg ]; then
-  export CUR_TTY="/dev/null"
+  export CUR_TTY=/dev/null
   LD_PRELOAD=""
   # Another Fallback
   ports_folder="$(grep "ports_folder" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg | awk -F= '{print $2}')"
@@ -77,7 +77,8 @@ else
     controlfolder="/opt/system/Tools"
   elif [ -d "/mnt/mmc/MUOS" ]; then
     controlfolder="/mnt/mmc/MUOS"
-    OS_NAME_OVERRIDE="muos"
+    OS_NAME_OVERRIDE="muOS"
+    CUR_TTY=/dev/null
   elif [ -d "/opt/tools/" ]; then
     controlfolder="/opt/tools"
   elif [ -d "/userdata/system" ]; then
@@ -135,7 +136,7 @@ else
 fi
 
 RELOCATE_PM=""
-if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ] && [ "${OS_NAME}" != "ROCKNIX" ] && [ "${OS_NAME}" != "muos" ] && [ "${OS_NAME}" != "retrodeck" ]; then
+if [ "${OS_NAME}" != "JELOS" ] && [ "${OS_NAME}" != "UnofficialOS" ] && [ "${OS_NAME}" != "ROCKNIX" ] && [ "${OS_NAME}" != "muOS" ] && [ "${OS_NAME}" != "retrodeck" ]; then
   RELOCATE_PM="Y"
 fi
 
@@ -202,7 +203,7 @@ if [ "$OS_NAME" = "retrodeck" ]; then
     $ESUDO mv -vf PortMaster/PortMaster.sh "/${roms_folder}/portmaster/PortMaster.sh" | tee -a $CUR_TTY
 fi
 
-if [ "$OS_NAME" = "muos" ]; then
+if [ "$OS_NAME" = "muOS" ]; then
   mkdir -p /roms/ports/PortMaster
   cp -f "$controlfolder/PortMaster/control.txt" "/roms/ports/PortMaster/control.txt"
 fi
@@ -229,9 +230,10 @@ echo "Finished installing PortMaster" | tee -a $CUR_TTY
 sleep 2
 
 if [ ! -f "$HOME/no_es_restart" ]; then
-  if [ "$OS_NAME" = "muos" ]; then
+  if [ "$OS_NAME" = "muOS" ]; then
     # YEET
-    shutdown -r
+    /opt/muos/script/mux/quit.sh reboot frontend &
+    sleep 3
   elif [ "$OS_NAME" = "ROCKNIX" ]; then
     ## This is for the best.
     shutdown -r now
