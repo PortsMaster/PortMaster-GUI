@@ -33,7 +33,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.13"
+DEVICE_INFO_VERSION="0.1.14"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -62,8 +62,8 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
         CFW_VERSION="Unknown"
 
     elif [[ $CFW_FFS == *"arkos"* ]]; then
-        CFW_NAME=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}\))/\1/p' | cut -d' ' -f 1)
-        CFW_VERSION=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9]\{8\}\)).*$/\2/p' | cut -d' ' -f 1)
+        CFW_NAME=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9-]*\)).*/\1/p' | cut -d' ' -f 1)
+        CFW_VERSION=$(echo "${CFW_INFO}" | sed -n 's/title=\(.*\) (\([0-9-]*\)).*/\2/p' | cut -d' ' -f 1)
 
         if [[ $CFW_FFS == *"wummle"* ]]; then
             CFW_NAME="${CFW_NAME} wuMMLe"
@@ -171,6 +171,8 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
     elif [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
+    elif [[ "${DEVICE_NAME}" == "Console" ]]; then
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 3)
     elif [[ "$CFW_NAME" == "AmberELEC" ]] && [[ -f "/storage/.config/device" ]]; then
         DEVICE_NAME=$(cat /storage/.config/device)
     fi
@@ -394,6 +396,11 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
             DEVICE_NAME="TrimUI Brick"
             ANALOG_STICKS=0
         fi
+        ;;
+
+    "r36s"|"r35s/r36s")
+        DEVICE_CPU="RK3326"
+        DEVICE_NAME="R36S"
         ;;
 
     "tui-spoon")

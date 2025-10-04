@@ -14,7 +14,25 @@ ANALOG_STICKS=$(GET_VAR "device" "board/stick")
 
 export controlfolder="/mnt/mmc/MUOS/PortMaster"
 
-export directory=$(realpath "$0" | sed 's|^\./||' | awk -F'/' '{print $2 "/" $3}')
+script_path=$(realpath "$0")
+
+# Get the initial base directory.
+directory=$(echo "$script_path" | awk -F'/' '{print $2 "/" $3}')
+
+# Use a case statement to check if we are in the union path.
+case "$directory" in
+  "mnt/union")
+    # Test for the sdcard path first
+    if [ -f "$(echo "$script_path" | sed 's|/union/|/sdcard/|')" ]; then
+      directory="mnt/sdcard"
+    # Then test for the mmc path
+    elif [ -f "$(echo "$script_path" | sed 's|/union/|/mmc/|')" ]; then
+      directory="mnt/mmc"
+    fi
+    ;;
+esac
+
+export directory
 
 export PATH="/opt/python/bin:$controlfolder/muos:$controlfolder/muos:$PATH"
 
