@@ -1312,6 +1312,11 @@ class HarbourMaster():
                     results.append(processed_item)
 
             else:  # item_type == 'ports' or backward compatibility
+                # Is this an older deprecated featured ports list?
+                deprecated_list = item.get('deprecated', False)
+                if deprecated_list:
+                    continue
+
                 # Handle port lists (backward compatible with old format)
                 ports_list = item.get('ports', None)
                 if ports_list is None:
