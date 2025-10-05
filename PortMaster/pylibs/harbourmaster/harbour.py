@@ -1276,68 +1276,101 @@ class HarbourMaster():
         if not isinstance(featured_ports, list):
             return []
 
+        return self._process_featured_ports_items(featured_ports, featured_ports_dir, pre_load)
+
+    def _process_featured_ports_items(self, items, featured_ports_dir, pre_load, path_prefix=""):
         results = []
-        for idx, port_list in enumerate(featured_ports):
-            if not isinstance(port_list, dict):
+        for idx, item in enumerate(items):
+            if not isinstance(item, dict):
                 continue
 
-            if port_list.get('name', None) in (None, ""):
+            if item.get('name', None) in (None, ""):
                 if pre_load:
-                    logger.error(f"Bad featured_ports[{idx}]: Missing title info")
+                    logger.error(f"Bad featured_ports{path_prefix}[{idx}]: Missing name")
                 continue
 
-            if port_list.get('ports', None) is None:
-                if pre_load:
-                    logger.error(f"Bad featured_ports[{idx}]: Missing ports info")
-                continue
+            item_type = item.get('type', 'ports')  # Default to 'ports' for backward compatibility
 
-            if not isinstance(port_list.get('ports', None), list):
-                if pre_load:
-                    logger.error(f"Bad featured_ports[{idx}]: bad ports item")
-                continue
-
-            port_list_image = port_list.get('image', None)
-            if port_list_image is not None and port_list_image != "":
-                port_list_image_url = self.PORT_INFO_URL + port_list_image
-                port_list_image_file = featured_ports_dir / port_list_image.rsplit('/', 1)[-1]
-
-                if not port_list_image_file.is_file():
-                    download_info = download(port_list_image_file, port_list_image_url, callback=self.callback, no_check=True)
-
-                    if download_info is None:
-                        port_list_image = None
-
-            if port_list_image is None:
-                port_list_image_file = ""
-
-            port_list_ports = {}
-            for idx2, port_name in enumerate(port_list['ports']):
-                port_info = self.port_info(port_name)
-                if port_info is None:
+            # Handle nested categories
+            if item_type == 'category':
+                children = item.get('children', [])
+                if not isinstance(children, list):
                     if pre_load:
-                        logger.error(f"Bad featured_ports[{idx}]['ports'][{idx}]: unknown port {port_name}")
+                        logger.error(f"Bad featured_ports{path_prefix}[{idx}]: category children must be a list")
                     continue
 
-                # Only show ports in here that are possible to install.
-                if not self.match_requirements(port_info):
-                    continue
-
-                port_list_ports[port_info['name']] = port_info
-
-            if len(port_list_ports) == 0:
-                # Don't show empty featured ports.
-                continue
-
-            full_port_list = {
-                'name': port_list['name'],
-                'image': port_list_image_file,
-                'description': port_list.get('description', ""),
-                'ports': port_list_ports,
+                processed_item = {
+                    'name': item['name'],
+                    'description': item.get('description', ''),
+                    'image': self._process_featured_ports_image(item.get('image'), featured_ports_dir),
+                    'type': 'category',
+                    'children': self._process_featured_ports_items(children, featured_ports_dir, pre_load, f"{path_prefix}[{idx}].children")
                 }
 
-            results.append(full_port_list)
+                # Only include categories that have children
+                if len(processed_item['children']) > 0:
+                    results.append(processed_item)
+
+            else:  # item_type == 'ports' or backward compatibility
+                # Is this an older deprecated featured ports list?
+                deprecated_list = item.get('deprecated', False)
+                if deprecated_list:
+                    continue
+
+                # Handle port lists (backward compatible with old format)
+                ports_list = item.get('ports', None)
+                if ports_list is None:
+                    if pre_load:
+                        logger.error(f"Bad featured_ports{path_prefix}[{idx}]: Missing ports info")
+                    continue
+
+                if not isinstance(ports_list, list):
+                    if pre_load:
+                        logger.error(f"Bad featured_ports{path_prefix}[{idx}]: bad ports item")
+                    continue
+
+                port_list_ports = {}
+                for idx2, port_name in enumerate(ports_list):
+                    port_info = self.port_info(port_name)
+                    if port_info is None:
+                        if pre_load:
+                            logger.error(f"Bad featured_ports{path_prefix}[{idx}]['ports'][{idx2}]: unknown port {port_name}")
+                        continue
+
+                    # Only show ports in here that are possible to install.
+                    if not self.match_requirements(port_info):
+                        continue
+
+                    port_list_ports[port_info['name']] = port_info
+
+                if len(port_list_ports) == 0:
+                    # Don't show empty featured ports.
+                    continue
+
+                processed_item = {
+                    'name': item['name'],
+                    'description': item.get('description', ''),
+                    'image': self._process_featured_ports_image(item.get('image'), featured_ports_dir),
+                    'type': 'ports',
+                    'ports': port_list_ports,
+                }
+
+                results.append(processed_item)
 
         return results
+
+    def _process_featured_ports_image(self, image_name, featured_ports_dir):
+        if image_name is not None and image_name != "":
+            image_url = self.PORT_INFO_URL + image_name
+            image_file = featured_ports_dir / image_name.rsplit('/', 1)[-1]
+
+            if not image_file.is_file():
+                download_info = download(image_file, image_url, callback=self.callback, no_check=True)
+                if download_info is None:
+                    return ""
+
+            return str(image_file)
+        return ""
 
     def list_utils(self):
 

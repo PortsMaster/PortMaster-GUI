@@ -775,7 +775,8 @@ class PortMasterV3(BaseSource):
             images_local_md5 = images_data.get(zip_xxx_name, {}).get('md5', None)
 
             if images_local_md5 != images_zip_md5:
-                images_zip_threshold -= 1
+                # This was negative for some reason?
+                images_zip_threshold += 1
 
         if images_zip_threshold > self.MAX_IMAGES_XXX_ZIP:
             # Yeah lets just download the big zip again.
