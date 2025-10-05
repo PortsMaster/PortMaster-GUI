@@ -14,6 +14,6 @@ fi
 
 # Run the patcher with exported args
 $GPTOKEYB "$LOVE_GPTK" &
-$LOVE_RUN "$controlfolder/utils/patcher" -f "$PATCHER_FILE" -g "$PATCHER_GAME" -t "$PATCHER_TIME" "$CHANGELOG"
+$LOVE_RUN "$controlfolder/utils/patcher" -f "$PATCHER_FILE" -g "$PATCHER_GAME" -t "$PATCHER_TIME" "$CHANGELOG" -q "$PATCHER_QUESTIONS"
 
 pm_gptokeyb_finish
