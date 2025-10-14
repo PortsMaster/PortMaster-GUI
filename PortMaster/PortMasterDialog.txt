@@ -17,7 +17,7 @@ PM_PID=""
 export PYSDL2_DLL_PATH="/usr/lib"
 
 PortMasterIPCheck() {
-if command -v curl >/dev/null 2>&1; then
+  if command -v curl >/dev/null 2>&1; then
     curl -fsS https://raw.githubusercontent.com/PortsMaster/PortMaster-New/main/README.md 2>/dev/null | grep '## PortMaster'
   elif command -v ip >/dev/null 2>&1; then
     # Taken from original PortMaster.sh
