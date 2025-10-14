@@ -19,7 +19,11 @@ export PYSDL2_DLL_PATH="/usr/lib"
 PortMasterIPCheck() {
   # Taken from original PortMaster.sh
   # https://github.com/christianhaitian/PortMaster/blob/f07bf22b46b1492879392c081e533100d6527dae/PortMaster/PortMaster.sh#L160
-  echo $(ip route | awk '/default/ { print $3 }')
+  if [[ "$CFW_NAME" == "RetroDECK" ]]; then
+    echo $(curl ifconfig.me | awk '{ print $1 }')
+  else
+    echo $(ip route | awk '/default/ { print $3 }')
+  fi
 }
 
 PortMasterDialogInit() {
