@@ -17,9 +17,13 @@ PM_PID=""
 export PYSDL2_DLL_PATH="/usr/lib"
 
 PortMasterIPCheck() {
-  # Taken from original PortMaster.sh
-  # https://github.com/christianhaitian/PortMaster/blob/f07bf22b46b1492879392c081e533100d6527dae/PortMaster/PortMaster.sh#L160
-  echo $(ip route | awk '/default/ { print $3 }')
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS https://raw.githubusercontent.com/PortsMaster/PortMaster-New/main/README.md 2>/dev/null | grep '## PortMaster'
+  elif command -v ip >/dev/null 2>&1; then
+    # Taken from original PortMaster.sh
+    # https://github.com/christianhaitian/PortMaster/blob/f07bf22b46b1492879392c081e533100d6527dae/PortMaster/PortMaster.sh#L160
+    ip route | awk '/default/ { print $3 }'
+  fi
 }
 
 PortMasterDialogInit() {
