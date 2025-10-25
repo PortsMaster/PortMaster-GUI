@@ -660,6 +660,8 @@ class Callback:
     """
     This is a simple class that is used by harbourmaster to cooperate with gui code.
     """
+    IS_GUI = False
+
     def __init__(self):
         self.was_cancelled = False
 

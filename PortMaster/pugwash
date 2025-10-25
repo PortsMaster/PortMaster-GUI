@@ -516,6 +516,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
     TICK_INTERVAL = 1000 // 5
     TEXT_DATA_FREQ = 5000
     MIN_THEME_VERSION = 1
+    IS_GUI = True
 
     def __init__(self, *, first_scene=None, force_theme=None):
         # Initialize SDL
@@ -1274,6 +1275,20 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         old_message_state = self.message_box_disable
         try:
             self.message_box_disable = True
+
+            yield
+
+        finally:
+            self.message_box_disable = old_message_state
+
+    @contextlib.contextmanager
+    def enable_messagebox(self):
+        """
+        Enables displaying the messagebox.
+        """
+        old_message_state = self.message_box_disable
+        try:
+            self.message_box_disable = False
 
             yield
 

@@ -41,7 +41,7 @@ $ESUDO chmod -R +x .
 ## Autoinstallation Code
 # This will automatically install zips found within the `PortMaster/autoinstall` / `ports/autoinstall` directory using harbourmaster
 AUTOINSTALL_DIR_1="$controlfolder/autoinstall"
-AUTOINSTALL_DIR_2="$directory/ports/autoinstall"
+AUTOINSTALL_DIR_2="/$directory/ports/autoinstall"
 
 if [ ! -d "$AUTOINSTALL_DIR_2" ]; then
   mkdir -p "$AUTOINSTALL_DIR_2"
