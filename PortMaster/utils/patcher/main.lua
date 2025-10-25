@@ -20,6 +20,7 @@ local gameName = "the game"
 local patchTime = "5 minutes"
 local isNews = false
 local patchScript = "patch_script.sh"  -- Default patch script
+local visibleOptionCount = 3
 
 -- Variables
 local patchOutput = {}
@@ -43,6 +44,9 @@ local outputQueue = {}
 local lineAddTimer = 0
 local lineAddInterval = 0.1
 
+local questionsFile, questions, questionAnswers = nil, nil, {}
+local currentQuestionIndex = 0
+
 -- Function to parse command-line arguments
 local function parseCommandLineArguments()
     if arg and #arg > 0 then
@@ -57,6 +61,18 @@ local function parseCommandLineArguments()
             elseif arg[i] == "-t" and arg[i + 1] and arg[i + 1] ~= "" then
                 patchTime = arg[i + 1]
                 i = i + 1
+            elseif arg[i] == "-q" and arg[i+1] then
+                questionsFile = arg[i+1]
+                local f = io.open(questionsFile, "r")
+                if f then
+                    local chunk = load(f:read("*a"), "@"..questionsFile, "t", _G)
+                    f:close()
+                    if chunk then
+                        local ok, result = pcall(chunk)
+                        if ok and type(result) == "table" then questions = result end
+                    end
+                end
+            i = i + 1
             elseif arg[i] == "-n" then
                 isNews = true
                 i = i + 1
@@ -69,9 +85,11 @@ end
 
 -- Function to initialize patch quads
 function initPatchQuads()
+    patchQuads = {}
     if patchImage then
+        local imgW, imgH = patchImage:getDimensions()
         for x = 0, patchboxFrameCount - 1 do
-            table.insert(patchQuads, love.graphics.newQuad(x * spriteWidth, 0, spriteWidth, spriteHeight, 3520, 240))
+            table.insert(patchQuads, love.graphics.newQuad(x * spriteWidth, 0, spriteWidth, spriteHeight, imgW, imgH))
         end
     end
 end
@@ -94,8 +112,7 @@ end
 function wrapText(text, limit)
     local wrappedText = {}
     local currentLine = ""
-
-    for word in text:gmatch("%S+") do
+    for word in tostring(text):gmatch("%S+") do
         if #currentLine + #word + 1 > limit then
             table.insert(wrappedText, currentLine)
             currentLine = word
@@ -146,6 +163,54 @@ function startPatchThread()
     startPatchAnimation("preThread")
 end
 
+-- Function to calculate Talkies height for questions
+function calculateTalkiesHeight(questionText, visibleSlots)
+    local lineHeight = font:getHeight()
+    local qLines = wrapText(questionText or "", 62)
+    local reservedOptions = math.min(#(questions[currentQuestionIndex].options or {}) + 2, visibleSlots + 2)
+    local total = #qLines * lineHeight + math.max(reservedOptions, 1) * lineHeight + 20
+    total = math.max(64, math.min(total, gameHeight - 40))
+    return total
+end
+
+-- Function to display the next question
+function showNextQuestion()
+    if not questions then return startPatchThread() end
+    currentQuestionIndex = currentQuestionIndex + 1
+    if currentQuestionIndex > #questions then
+        local env = ""
+        for k,v in pairs(questionAnswers) do env = env .. k.."="..v.." " end
+        if next(questionAnswers) then patchScript = env .. patchScript end
+        return startPatchThread()
+    end
+
+    local q = questions[currentQuestionIndex]
+    Talkies.height = calculateTalkiesHeight(q.question, visibleOptionCount)
+    Talkies.y = gameHeight - Talkies.height - 8
+    Talkies.inlineOptions = true
+
+    local function presentWindow(startIndex)
+        startIndex = startIndex or 1
+        local remaining = #q.options - startIndex + 1
+        local showCount = math.min(visibleOptionCount, remaining)
+        local visible = {}
+        for i=1, showCount do
+            local idx = startIndex+i-1
+            table.insert(visible, {idx=idx, text=q.options[idx][2], value=q.options[idx][1]})
+        end
+
+        local opts = {}
+        if startIndex > 1 then table.insert(opts, {"Back", function() presentWindow(math.max(1, startIndex-visibleOptionCount)) end}) end
+        for _,v in ipairs(visible) do
+            table.insert(opts, {v.text, function() questionAnswers[q.id] = v.value; showNextQuestion() end})
+        end
+        if startIndex+showCount-1 < #q.options then table.insert(opts, {"More", function() presentWindow(startIndex+showCount) end}) end
+        Talkies.say("Cybion", q.question, {image=cybion, thickness=2, options=opts})
+    end
+
+    presentWindow(1)
+end
+
 -- Function to show the initial Talkies dialog with two messages
 function showInitialTalkiesDialog()
     if isNews then
@@ -168,11 +233,11 @@ function showInitialTalkiesDialog()
             image = cybion,
             thickness = 2,
             oncomplete = function()
-                Talkies.say("Cybion", "The patch will take " .. patchTime .. ". So grab some coffee while you wait. Press A to start the patching process.", {
-                    image = cybion,
-                    thickness = 2,
-                    oncomplete = startPatchThread
-                })
+                if questions then
+                    Talkies.say("Cybion", "The patch will take " .. patchTime .. ". First, I need to ask you a few questions.", {image = cybion, thickness = 2, oncomplete = showNextQuestion})
+                else
+                    Talkies.say("Cybion", "The patch will take " .. patchTime .. ". Press A to start the patching process.", {image = cybion, thickness = 2, oncomplete = startPatchThread})
+                end
             end
         })
     end
@@ -181,23 +246,14 @@ end
 
 -- Function to show patch complete dialog
 function PatchComplete()
-    if isNews then
-        Talkies.say("Cybion", "Don't forget to update the port with the PortMaster App later. On with the game!", {
-            thickness = 2,
-            image = cybion,
-            oncomplete = function()
-                love.event.quit()
-            end
-        })
-    else
-        Talkies.say("Cybion", "Thank you for waiting, the patching process is complete! Press A to proceed to " .. gameName .. ".", {
-            thickness = 2,
-            image = cybion,
-            oncomplete = function()
-                love.event.quit()
-            end
-        })
-    end
+    local message = isNews and "Don't forget to update the port with the PortMaster App later. On with the game!" or "Thank you for waiting, the patching process is complete! Press A to proceed to " .. gameName .. "."
+    Talkies.say("Cybion", message, {
+        thickness = 2,
+        image = cybion,
+        oncomplete = function()
+            love.event.quit()
+        end
+    })
 end
 
 -- Function to show patch failed dialog
@@ -218,7 +274,8 @@ function PatchCancelled()
         patchInProgress = false
         showOutput = false
     end
-    Talkies.say("Cybion", isNews and "Don't forget to update the port with the PortMaster App later. On with the game!" or "Patching has been canceled. Please try again later.", {
+    local message = isNews and "Don't forget to update the port with the PortMaster App later. On with the game!" or "Patching has been canceled. Please try again later."
+    Talkies.say("Cybion", message, {
         thickness = 2,
         image = cybion,
         oncomplete = function()
@@ -314,6 +371,7 @@ function love.update(dt)
             -- Initiate Talkies dialog for patchState
             if patchAnimationTimer >= patchAnimationDuration then
                 patchAnimationState = "idle"
+                Talkies.height = nil
                 if patchState == "complete" then
                     PatchComplete()
                 elseif patchState == "failed" then
@@ -360,13 +418,10 @@ function love.draw()
     -- Draw patch output
     if showOutput then
         love.graphics.setFont(font)
-        local lineSpacing = outputLineSpacing
-        local outputHeight = #patchOutput * lineSpacing
-        local outputY = math.max(windowHeight - outputHeight - outputPaddingY, 0)
-
+        local outputY = math.max(windowHeight - #patchOutput * outputLineSpacing - outputPaddingY, 0)
         for i, line in ipairs(patchOutput) do
             love.graphics.setColor(outputTextColor)
-            love.graphics.print(line, outputPaddingX, outputY + (i - 1) * lineSpacing)
+            love.graphics.print(line, outputPaddingX, outputY + (i - 1) * outputLineSpacing)
         end
 
     end
@@ -381,10 +436,8 @@ function love.gamepadpressed(joystick, button)
     local currentDialog = Talkies.dialogs:peek()
     local isOptionDialog = currentDialog and currentDialog:showOptions()
 
-    if button == "a" then
-        if not patchInProgress then
-            Talkies.onAction()
-        end
+    if button == "a" and not patchInProgress then
+        Talkies.onAction()
     elseif button == "dpup" and isOptionDialog and not patchInProgress then
         Talkies.prevOption()
     elseif button == "dpdown" and isOptionDialog and not patchInProgress then
@@ -399,5 +452,19 @@ function love.gamepadpressed(joystick, button)
         elseif not patchInProgress then
             Talkies.onAction()
         end
+    end
+end
+
+function love.keypressed(key)
+    local mapping = { 
+        ["return"] = "a", 
+        ["escape"] = "b", 
+        ["up"] = "dpup", 
+        ["down"] = "dpdown", 
+        ["y"] = "y", 
+        ["x"] = "x" 
+    }
+    if mapping[key] then 
+        love.gamepadpressed(nil, mapping[key]) 
     end
 end
