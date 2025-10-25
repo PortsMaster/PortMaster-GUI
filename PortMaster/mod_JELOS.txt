@@ -19,6 +19,10 @@ fi
 export LIBGL_DRIVERS_PATH=/usr/lib32/dri:/usr/lib/dri
 
 pm_platform_helper() {
+    if [ -e "$PM_PIPE" ]; then
+        PortMasterDialogExit
+    fi
+
     # DO SOMETHING HERE
     printf ""
 }
