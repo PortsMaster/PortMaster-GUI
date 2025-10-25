@@ -31,56 +31,96 @@ source "$controlfolder/utils/pmsplash.txt"
 "$controlfolder/trimui/update.txt"
 
 ## Autoinstallation Code
-# This will automatically install zips found within the PortMaster/autoinstall directory using harbourmaster
-AUTOINSTALL=$(find "$controlfolder/autoinstall" -type f \( -name "*.zip" -o -name "*.squashfs" \))
-if [ -n "$AUTOINSTALL" ]; then
+# This will automatically install zips found within the `PortMaster/autoinstall` / `ports/autoinstall` directory using harbourmaster
+AUTOINSTALL_DIR_1="$controlfolder/autoinstall"
+AUTOINSTALL_DIR_2="$directory/ports/autoinstall"
+
+if [ ! -d "$AUTOINSTALL_DIR_2" ]; then
+  mkdir -p "$AUTOINSTALL_DIR_2"
+fi
+
+# Check if there are any files to process before starting the dialog
+AUTOINSTALL_FILES=$(find "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2" -type f \( -name "*.zip" -o -name "*.squashfs" \) 2>/dev/null)
+
+if [ -n "$AUTOINSTALL_FILES" ]; then
   source "$controlfolder/PortMasterDialog.txt"
 
   GW=$(PortMasterIPCheck)
   PortMasterDialogInit "no-check"
 
   PortMasterDialog "messages_begin"
-
   PortMasterDialog "message" "Auto-installation"
 
-  # Install the latest runtimes.zip
-  if [ -f "$controlfolder/autoinstall/runtimes.zip" ]; then
-    PortMasterDialog "message" "- Installing runtimes.zip, this could take a minute or two."
-    $ESUDO unzip -o "$controlfolder/autoinstall/runtimes.zip" -d "$controlfolder/libs"
-    $ESUDO rm -f "$controlfolder/autoinstall/runtimes.zip"
-    PortMasterDialog "message" "- SUCCESS: runtimes.zip"
-  fi
-
-  for file_name in "$controlfolder/autoinstall"/*.squashfs
-  do
-    $ESUDO mv -f "$file_name" "$controlfolder/libs"
-    PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
-  done
-
-  for file_name in "$controlfolder/autoinstall"/*.zip
-  do
-    if [[ "$(basename $file_name)" == "PortMaster.zip" ]]; then
-      continue
-    fi
-
-    if [[ $(PortMasterDialogResult "install" "$file_name") == "OKAY" ]]; then
-      $ESUDO rm -f "$file_name"
-      PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
-    else
-      PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
+  # 1. Install PortMaster.zip first
+  for autoinstall_dir in "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2"; do
+    if [ -f "$autoinstall_dir/PortMaster.zip" ]; then
+      if [ "$(PortMasterDialogResult "install" "$autoinstall_dir/PortMaster.zip")" = "OKAY" ]; then
+        $ESUDO rm -f "$autoinstall_dir/PortMaster.zip"
+        PortMasterDialog "message" "- SUCCESS: PortMaster.zip"
+      else
+        PortMasterDialog "message" "- FAILURE: PortMaster.zip"
+      fi
+      break # Stop after finding and processing the first one
     fi
   done
 
-  if [ -f "$controlfolder/autoinstall/PortMaster.zip" ]; then
-    file_name="$controlfolder/autoinstall/PortMaster.zip"
+  # 2. Install runtimes.zip and/or runtimes.${DEVICE_ARCH}.zip
+  RUNTIME_FILE_1="runtimes.zip"
+  RUNTIME_FILE_2="runtimes.${DEVICE_ARCH}.zip"
 
-    if [[ $(PortMasterDialogResult "install" "$file_name") == "OKAY" ]]; then
-      $ESUDO rm -f "$file_name"
-      PortMasterDialog "message" "- SUCCESS: $(basename $file_name)"
-    else
-      PortMasterDialog "message" "- FAILURE: $(basename $file_name)"
+  for autoinstall_dir in "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2"; do
+    for runtime_zip in "$RUNTIME_FILE_1" "$RUNTIME_FILE_2"; do
+      if [ -f "$autoinstall_dir/$runtime_zip" ]; then
+        PortMasterDialog "message" "- Installing $runtime_zip, this could take a minute or two."
+        $ESUDO unzip -o "$autoinstall_dir/$runtime_zip" -d "$controlfolder/libs"
+        $ESUDO rm -f "$autoinstall_dir/$runtime_zip"
+        PortMasterDialog "message" "- SUCCESS: $runtime_zip"
+      fi
+    done
+
+    if ls "$autoinstall_dir"/runtimes*.zip >/dev/null 2>&1; then
+      for file_name in "$autoinstall_dir"/runtimes*.zip; do
+        if [ -f "$file_name" ]; then
+            $ESUDO rm -f "$file_name"
+            PortMasterDialog "message" "- Removing invalid runtimes.zip: $(basename "$file_name")"
+        fi
+      done
     fi
-  fi
+  done
+
+  # 3. Install *.squashfs files
+  for autoinstall_dir in "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2"; do
+    if ls "$autoinstall_dir"/*.squashfs >/dev/null 2>&1; then
+      for file_name in "$autoinstall_dir"/*.squashfs; do
+        if [ -f "$file_name" ]; then
+            $ESUDO mv -f "$file_name" "$controlfolder/libs"
+            PortMasterDialog "message" "- SUCCESS: $(basename "$file_name")"
+        fi
+      done
+    fi
+  done
+
+  # 4. Install remaining *.zip files
+  for autoinstall_dir in "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2"; do
+    if ls "$autoinstall_dir"/*.zip >/dev/null 2>&1; then
+      for file_name in "$autoinstall_dir"/*.zip; do
+        # Skip files we've already processed
+        base_file=$(basename "$file_name")
+        if [ "$base_file" = "PortMaster.zip" ]; then
+          continue
+        fi
+
+        if [ -f "$file_name" ]; then
+            if [ "$(PortMasterDialogResult "install" "$file_name")" = "OKAY" ]; then
+              $ESUDO rm -f "$file_name"
+              PortMasterDialog "message" "- SUCCESS: $base_file"
+            else
+              PortMasterDialog "message" "- FAILURE: $base_file"
+            fi
+        fi
+      done
+    fi
+  done
 
   touch "$controlfolder/.trimui-refresh"
 
