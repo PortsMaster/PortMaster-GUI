@@ -148,8 +148,8 @@ pm_message() {
 
 
 pm_gptokeyb_finish() {
-    $ESUDO pkill -f gptokeyb
-    $ESUDO pkill -f gptokeyb2
+    $ESUDO pkill -9 -f gptokeyb
+    $ESUDO pkill -9 -f gptokeyb2
 }
 
 
