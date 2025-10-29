@@ -37,7 +37,7 @@
     "ghcr.io/devcontainers/features/git:1": {}
   },
 
-  "postCreateCommand": "pip install poetry && poetry install",
+  "postCreateCommand": "pip install -r requirements.txt",
 
   "forwardPorts": [],
 
