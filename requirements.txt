@@ -1,0 +1,25 @@
+# PortMaster Requirements
+# Production and development dependencies
+
+# Core dependencies (from PortMaster/exlibs)
+certifi==2020.11.08
+charset-normalizer==3.0.1
+colorama==0.4.6
+idna==3.4
+loguru==0.7.0
+urllib3==1.26.14
+requests==2.28.2
+
+# Additional production dependencies
+ansimarkup==1.5.0
+fastjsonschema==2.18.0
+qrcode==7.4.2
+PySDL2==0.9.15
+pysdl2-dll==2.32.0
+
+# Note: pypng is used by qrcode but may need separate installation
+# It's included as png.py in exlibs
+pypng==0.20220715.0
+
+# Test dependencies
+coverage>=7.0.0
