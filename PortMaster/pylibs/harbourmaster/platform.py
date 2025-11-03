@@ -745,6 +745,51 @@ class PlatformmuOS(PlatformBase):
     def first_run(self):
         self.portmaster_install()
 
+    def port_install(self, port_name, port_info, port_files):
+        super().port_install(port_name, port_info, port_files)
+
+        logger.debug(f"{self.__class__.__name__}: Port Install {port_name}")
+        logger.debug(f"--------------------- muOS platform port_install -----------------------------------")
+
+        """
+        Install port to application folder if mux_launch.sh exists
+        """
+
+        PORT_FOLDER = port_info['files']['port.json'].split('/', 1)[0]
+
+        # Safe default.
+        APP_NAME = port_info['name'].rsplit('.', 1)[0]
+        for port_file in port_info['files']:
+            if port_file.lower().endswith('.sh'):
+                # Use the first bash script we find.
+                APP_NAME = port_file.rsplit('.', 1)[0]
+                break
+
+        MUOS_APP_DIR     = Path("/run/muos/storage/application")
+        MUOSAPP_DEST_DIR = MUOS_APP_DIR / APP_NAME
+        MUX_FILE_PATH    = self.hm.ports_dir / PORT_FOLDER / "mux_launch.txt"
+
+        logger.debug(f"mux app file path being checked: {MUX_FILE_PATH}")
+        logger.debug(f"Destination directory: {MUOSAPP_DEST_DIR}")
+        logger.debug("-" * 20)
+
+        if MUOS_APP_DIR.is_dir() and MUX_FILE_PATH.is_file():
+            # File found, proceed with copy operations
+            logger.debug(f"Port is an Application: copying launch script to {MUOSAPP_DEST_DIR}")
+            
+            try:
+                MUOSAPP_DEST_DIR.mkdir(exist_ok=True)
+                logger.debug(f"Created destination directory: {MUOSAPP_DEST_DIR}")
+                shutil.copy2(MUX_FILE_PATH, MUOSAPP_DEST_DIR / "mux_launch.sh")
+                logger.debug("Copy successful.")
+                
+            except OSError as e:
+                logger.debug(f"Error during file operation: {e}")
+                
+        else:
+            # mux_launch.sh File not found
+            logger.debug(f"port is not an application, no mux_launch.sh")
+
     def portmaster_install(self):
         """
         Move files into place.
