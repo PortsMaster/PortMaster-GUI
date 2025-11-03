@@ -1655,7 +1655,8 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             fifo_config['done-file'].write_text("FAIL")
             return
 
-        self.message(args[0])
+        # Not sure how I never noticed that newlines were displaying as "\n" ...
+        self.message(args[0].replace('\\n', '\n'))
         fifo_config['done-file'].write_text("DONE")
 
     def fifo_progress(self, fifo_config, args):
@@ -1736,7 +1737,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             return
 
         fifo_config['done-file'].write_text("WAIT")
-        result = self.message_box(args[0], **mb_config)
+        result = self.message_box(args[0].replace('\\n', '\n'), **mb_config)
         fifo_config['done-file'].write_text(result and "TRUE" or "FALSE")
 
     def fifo_check_runtime(self, fifo_config, args):
