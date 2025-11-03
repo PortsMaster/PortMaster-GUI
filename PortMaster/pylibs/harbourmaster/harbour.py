@@ -1667,6 +1667,20 @@ class HarbourMaster():
             extra_info = {}
             port_info = check_port(download_info['name'], download_info['zip_file'], extra_info)
 
+            port_reqs = self.match_requirements(port_info)
+            if not port_reqs:
+                logger.info(f"PORT INFO: {port_info}")
+                logger.info(f"MATCH REQS: {port_reqs}")
+                logger.info(f"IS_GUI: {self.callback.IS_GUI}")
+
+                if self.callback.IS_GUI:
+                    # I forgot this was a thing, spent so long debugging this shit.
+                    with self.callback.enable_messagebox():
+                        most_likely_an_r36s = _("HELLO.\n\nIT LOOKS LIKE YOU'RE MANUALLY INSTALLING A PORT THAT IS INCOMPATIBLE WITH YOUR DEVICE.\n\nIF YOU HAVE ISSUES, DO NOT REPORT THEM ON DISCORD, YOU WILL BE SUBJECT TO RIDICULE.\n\nARE YOU SURE YOU WANT TO RESUME INSTALLING?")
+                        if self.callback.message_box(most_likely_an_r36s, want_cancel=True, cancel_text=_("Okay"), ok_text=_("Cancel")):
+                            # HAHA, FUCK YOU.
+                            return 255
+
             # Extra fix
             port_info_file_old = None
 

@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: MIT
 #
 
-# So we can check the version
 if [ ! -z "$PM_FUNCS_VERSION" ]; then
     return
 fi
 
-export PM_FUNCS_VERSION=2
+# So we can check the version
+export PM_FUNCS_VERSION=3
 
 export PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 export PM_PORTNAME="${PM_PORTNAME:-${PM_SCRIPTNAME%.sh}}"
@@ -21,6 +21,7 @@ if [[ "$CFW_NAME" == "muOS" ]]; then
     export LD_LIBRARY_PATH="/opt/muos/extra/lib:$LD_LIBRARY_PATH"
 fi
 
+source "$controlfolder/PortMasterDialog.txt"
 
 # Extract the latest NotoSans.tar.xz
 if [ -f "$controlfolder/pylibs/resources/NotoSans.tar.xz" ]; then
@@ -86,66 +87,49 @@ bind_files() {
 }
 
 pm_begin_splash() {
-    # Usage: pm_begin_splash
-    #
-    # Shows an splash screen, uses $PM_RESOURCE_DIR/splash.ini, override by setting `$PM_SPLASH_THEME`
-    # Some platforms the splashscreen program will quit immediately, others it will stay in the background.
-    # make sure you kill it with pm_end_splash, pm_show_error will kill the splashscreen so don't fret.
-    #
-
-    pm_end_splash
-
-    if [ ! -e "/dev/dri/card0" ]; then
-        PM_SPLASH_QUIT_MODE="-q"
-    else
-        PM_SPLASH_QUIT_MODE=""
-    fi
-
-    if [ -z "$PM_SPLASH_THEME" ]; then
-        PM_SPLASH_THEME="$PM_RESOURCE_DIR/splash.ini"
-    fi
-
-    $ESUDO "$controlfolder/sdl2imgshow.${DEVICE_ARCH}" -z "$PM_SPLASH_THEME" $PM_SPLASH_QUIT_MODE &
+    # Does nothing, noone ever used it, blame ImCoKeMaN
+    printf ""
 }
 
 
 pm_show_error() {
-    # Usage: pm_show_error "Missing Game Files" "Game files are missing, please see wiki for details."
-    #
-    # Shows an error message, uses $PM_RESOURCE_DIR/error.ini, override by setting `$PM_ERROR_THEME`
-    # this will wait for the user to press a button before quitting.
-    #
-
-    pm_end_splash
-
-    if [ ! -z "$PM_ERROR_THEME" ]; then
-        PM_ERROR_THEME="$PM_RESOURCE_DIR/error.ini"
+    # Usage: pm_show_error "Message here."
+    if [ ! -e "$PM_PIPE" ]; then
+        PortMasterDialogInit "no-harbour"
+        PortMasterDialog "messages_begin"
     fi
 
-    export PM_ERROR_TITLE="$1"
-    export PM_ERROR_MESSAGE="$2" 
+    echo "$1"
 
-    $ESUDO "$controlfolder/sdl2imgshow.${DEVICE_ARCH}" -z "$PM_ERROR_THEME" -wY
+    PortMasterDialog "message_box" "$1"
 }
 
 
 pm_end_splash() {
-    # Kills any splashscreen running.
-    $ESUDO pkill -f "sdl2imgshow.${DEVICE_ARCH}"
+    # You get nothing!
+    printf ""
 }
 
 
-pm_message() {
-    # Usage: pm_message "Some message here."
-    if [[ "$CFW_NAME" == "muOS" ]]; then
-        /opt/muos/extra/muxstart "$1"
-    elif [[ "$CFW_NAME" == "ROCKNIX" ]]; then
-        foot -F /bin/bash -c "echo \"$1\"; sleep 5" & 
-    else
-        echo "$1" > $CUR_TTY
+pm_message_end() {
+    if [ -e "$PM_PIPE" ]; then
+        sleep 3
+        PortMasterDialogExit
     fi
 }
 
+trap pm_message_end EXIT
+
+pm_message() {
+    # Usage: pm_message "Some message here."
+    if [ ! -e "$PM_PIPE" ]; then
+        PortMasterDialogInit "no-harbour"
+        PortMasterDialog "messages_begin"
+    fi
+
+    echo "$1"
+    PortMasterDialog "message" "$1"
+}
 
 pm_gptokeyb_finish() {
     $ESUDO pkill -9 -f gptokeyb
@@ -155,10 +139,20 @@ pm_gptokeyb_finish() {
 
 pm_finish() {
     pm_gptokeyb_finish
+    pm_message_end
 
     $ESUDO systemctl restart oga_events 2> /dev/null &
 
     if [ ! -z "$(echo "$CUR_TTY" | grep -e '^/dev/tty')" ]; then
         printf "\033c" > "$CUR_TTY"
     fi
+}
+
+pm_platform_helper() {
+    if [ -e "$PM_PIPE" ]; then
+        PortMasterDialogExit
+    fi
+
+    # DO SOMETHING HERE
+    printf ""
 }

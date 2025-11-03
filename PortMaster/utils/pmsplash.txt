@@ -16,3 +16,11 @@ $LOVE_RUN "$controlfolder/utils/pmsplash" &
 
 # So it can be waited.
 export PMSPLASH_PID=$!
+
+kill_splash() {
+    if kill -0 "$PMSPLASH_PID" >/dev/null 2>&1; then
+        kill -9 "$PMSPLASH_PID"
+    fi
+}
+
+trap kill_splash EXIT

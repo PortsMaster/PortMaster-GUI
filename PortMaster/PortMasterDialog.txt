@@ -3,6 +3,10 @@
 # SPDX-License-Identifier: MIT
 #
 
+if [ ! -z "$PM_PIPE" ]; then
+  return
+fi
+
 if [ ! -d "/dev/shm/portmaster" ]; then
   $ESUDO mkdir /dev/shm/portmaster
 else
