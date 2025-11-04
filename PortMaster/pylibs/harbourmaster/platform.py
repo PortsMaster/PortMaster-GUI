@@ -662,6 +662,8 @@ class PlatformmuOS(PlatformBase):
         'desc': 'desc',
         }
 
+    MUOSAPP_PM_MARKER = ".portmaster_was_here.txt"
+
     def gamelist_file(self):
         return SPECIAL_GAMELIST_CODE
 
@@ -765,30 +767,69 @@ class PlatformmuOS(PlatformBase):
                 APP_NAME = port_file.rsplit('.', 1)[0]
                 break
 
-        MUOS_APP_DIR     = Path("/run/muos/storage/application")
-        MUOSAPP_DEST_DIR = MUOS_APP_DIR / APP_NAME
-        MUX_FILE_PATH    = self.hm.ports_dir / PORT_FOLDER / "mux_launch.txt"
+        MUOSAPP_DIR     = Path("/run/muos/storage/application")
+        MUOSAPP_APP_DIR = MUOSAPP_DIR / APP_NAME
+        MUX_FILE_PATH   = self.hm.ports_dir / PORT_FOLDER / "mux_launch.txt"
 
         logger.debug(f"mux app file path being checked: {MUX_FILE_PATH}")
-        logger.debug(f"Destination directory: {MUOSAPP_DEST_DIR}")
+        logger.debug(f"Destination directory: {MUOSAPP_APP_DIR}")
         logger.debug("-" * 20)
 
-        if MUOS_APP_DIR.is_dir() and MUX_FILE_PATH.is_file():
+        if MUOSAPP_DIR.is_dir() and MUX_FILE_PATH.is_file():
             # File found, proceed with copy operations
-            logger.debug(f"Port is an Application: copying launch script to {MUOSAPP_DEST_DIR}")
+            logger.debug(f"Port is an Application: copying launch script to {MUOSAPP_APP_DIR}")
             
             try:
-                MUOSAPP_DEST_DIR.mkdir(exist_ok=True)
-                logger.debug(f"Created destination directory: {MUOSAPP_DEST_DIR}")
-                shutil.copy2(MUX_FILE_PATH, MUOSAPP_DEST_DIR / "mux_launch.sh")
+                MUOSAPP_APP_DIR.mkdir(exist_ok=True)
+                logger.debug(f"Created destination directory: {MUOSAPP_APP_DIR}")
+                shutil.copy2(MUX_FILE_PATH, MUOSAPP_APP_DIR / "mux_launch.sh")
                 logger.debug("Copy successful.")
-                
+
+                with (MUOSAPP_APP_DIR / self.MUOSAPP_PM_MARKER).open("w") as fh:
+                    fh.write(APP_NAME)
+
             except OSError as e:
                 logger.debug(f"Error during file operation: {e}")
                 
         else:
             # mux_launch.sh File not found
             logger.debug(f"port is not an application, no mux_launch.sh")
+
+    def port_uninstall(self, port_name, port_info, port_files):
+        super().port_uninstall(port_name, port_info, port_files)
+
+        logger.debug(f"{self.__class__.__name__}: Port Uninstall {port_name}")
+        logger.debug(f"--------------------- muOS platform port_uninstall -----------------------------------")
+
+        """
+        Remove port application folder if PM_MARKER exists in  `/run/muos/storage/application/{Port Script Name}/`
+        """
+
+        PORT_FOLDER = port_info['files']['port.json'].split('/', 1)[0]
+
+        # Safe default.
+        APP_NAME = port_info['name'].rsplit('.', 1)[0]
+        for port_file in port_info['files']:
+            if port_file.lower().endswith('.sh'):
+                # Use the first bash script we find.
+                APP_NAME = port_file.rsplit('.', 1)[0]
+                break
+
+        MUOSAPP_DIR     = Path("/run/muos/storage/application")
+        MUOSAPP_APP_DIR = MUOSAPP_DIR / APP_NAME
+
+        logger.debug(f"Destination directory: {MUOSAPP_APP_DIR}")
+        logger.debug("-" * 20)
+
+        if MUOSAPP_APP_DIR.is_dir() and (MUOSAPP_APP_DIR / self.MUOSAPP_PM_MARKER).is_file():
+            # File found, proceed with copy operations
+            logger.debug(f"Port had an Application: removing app directory {MUOSAPP_APP_DIR}")
+            
+            try:
+                shutil.rmtree(MUOSAPP_APP_DIR)
+
+            except OSError as e:
+                logger.debug(f"Error during file operation: {e}")
 
     def portmaster_install(self):
         """
