@@ -144,7 +144,7 @@ ALL_LANGUAGES = {
     "pl_PL": _("Polish"),
     "pt_PT": _("Portuguese (Portugal)"),
     "pt_BR": _("Portuguese (Brazil)"),
-    # "ro_RO": _("Romanian"),
+    "ro_RO": _("Romanian"),
     "ru_RU": _("Russian"),
     "sv_SE": _("Swedish"),
     "uk_UA": _("Ukrainian"),

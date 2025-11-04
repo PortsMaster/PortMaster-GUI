@@ -5,69 +5,69 @@ msgstr ""
 "POT-Creation-Date: 2025-11-04 17:44+0800\n"
 "PO-Revision-Date: 2025-11-04 09:45\n"
 "Last-Translator: \n"
-"Language-Team: Dutch\n"
-"Language: nl_NL\n"
+"Language-Team: Romanian\n"
+"Language: ro_RO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100>0 && n%100<20)) ? 1 : 2);\n"
 "X-Crowdin-Project: portmaster\n"
 "X-Crowdin-Project-ID: 610497\n"
-"X-Crowdin-Language: nl\n"
+"X-Crowdin-Language: ro\n"
 "X-Crowdin-File: messages.pot\n"
 "X-Crowdin-File-ID: 1\n"
 
 #: PortMaster/pugwash:134
 msgid "Danish"
-msgstr "Deens"
+msgstr "Daneză"
 
 #: PortMaster/pugwash:135
 msgid "German"
-msgstr "Duits"
+msgstr "Germană"
 
 #: PortMaster/pugwash:136
 msgid "English"
-msgstr "Engels"
+msgstr "Engleză"
 
 #: PortMaster/pugwash:137
 msgid "Spanish"
-msgstr "Spaans"
+msgstr "Spaniolă"
 
 #: PortMaster/pugwash:138
 msgid "Finnish"
-msgstr "Fins"
+msgstr "Finlandeză"
 
 #: PortMaster/pugwash:139
 msgid "French"
-msgstr "Frans"
+msgstr "Franceză"
 
 #: PortMaster/pugwash:140
 msgid "Italian"
-msgstr "Italiaans"
+msgstr "Italiană"
 
 #: PortMaster/pugwash:141
 msgid "Japanese"
-msgstr "Japans"
+msgstr "Japoneză"
 
 #: PortMaster/pugwash:142
 msgid "Korean"
-msgstr "Koreaans"
+msgstr "Coreeană"
 
 #: PortMaster/pugwash:143
 msgid "Dutch"
-msgstr "Nederlands"
+msgstr "Olandeză"
 
 #: PortMaster/pugwash:144
 msgid "Polish"
-msgstr "Pools"
+msgstr "Poloneză"
 
 #: PortMaster/pugwash:145
 msgid "Portuguese (Portugal)"
-msgstr "Portugees (Portugal)"
+msgstr "Portugheză (Portugalia)"
 
 #: PortMaster/pugwash:146
 msgid "Portuguese (Brazil)"
-msgstr "Portugees (Brazilië)"
+msgstr "Portugheză (Brazilia)"
 
 #: PortMaster/pugwash:147
 msgid "Romanian"
@@ -75,65 +75,65 @@ msgstr ""
 
 #: PortMaster/pugwash:148
 msgid "Russian"
-msgstr "Russisch"
+msgstr "Rusă"
 
 #: PortMaster/pugwash:149
 msgid "Swedish"
-msgstr "Zweeds"
+msgstr "Suedeză"
 
 #: PortMaster/pugwash:150
 msgid "Ukrainian"
-msgstr "Oekraïens"
+msgstr "Ucraineană"
 
 #: PortMaster/pugwash:151
 msgid "Chinese Simplified"
-msgstr "Chinees (vereenvoudigd)"
+msgstr "Chineză Simplificată"
 
 #: PortMaster/pugwash:702
 msgid "Unknown IP"
-msgstr "Onbekend IP-adres"
+msgstr "IP Necunoscut"
 
 #: PortMaster/pugwash:834 PortMaster/pugwash:983
 msgid "N/A"
-msgstr "N.v.t."
+msgstr ""
 
 #: PortMaster/pugwash:946
 msgid "** NO PORT **"
-msgstr "** GEEN PORT **"
+msgstr "** FĂRĂ PORT **"
 
 #: PortMaster/pugwash:965 PortMaster/pylibs/pugscene.py:2040
 msgid "Ready to Run"
-msgstr "Klaar om te Spelen"
+msgstr "Gata de Rulare"
 
 #: PortMaster/pugwash:965
 msgid "Requires Files"
-msgstr "Bestanden Vereist"
+msgstr "Necesită Fișiere"
 
 #: PortMaster/pugwash:977 PortMaster/pugwash:1004
 #: PortMaster/pylibs/pugscene.py:1129
 msgid "Installed"
-msgstr "Geïnstalleerd"
+msgstr "Instalat"
 
 #: PortMaster/pugwash:979
 msgid "Missing"
-msgstr "Ontbrekend"
+msgstr "Lipsă"
 
 #: PortMaster/pugwash:1005 PortMaster/pylibs/harbourmaster/harbour.py:1901
 #: PortMaster/pylibs/pugscene.py:2044
 msgid "Update Available"
-msgstr "Update Beschikbaar"
+msgstr "Actualizare Disponibilă"
 
 #: PortMaster/pugwash:1006 PortMaster/pylibs/harbourmaster/harbour.py:1900
 #: PortMaster/pylibs/pugscene.py:1129 PortMaster/pylibs/pugscene.py:2043
 msgid "Not Installed"
-msgstr "Niet Geïnstalleerd"
+msgstr "Neinstalat"
 
 #: PortMaster/pugwash:1182 PortMaster/pugwash:1570
 #: PortMaster/pylibs/harbourmaster/harbour.py:1680
 #: PortMaster/pylibs/pugscene.py:2381 PortMaster/pylibs/pugscene.py:2429
 #: PortMaster/pylibs/pugscene.py:2431
 msgid "Okay"
-msgstr "Oké"
+msgstr "OK"
 
 #: PortMaster/pugwash:1185 PortMaster/pugwash:1571
 #: PortMaster/pylibs/harbourmaster/harbour.py:1680
@@ -141,115 +141,115 @@ msgstr "Oké"
 #: PortMaster/pylibs/pugscene.py:2350 PortMaster/pylibs/pugscene.py:2384
 #: PortMaster/pylibs/pugscene.py:2429
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "Anulează"
 
 #: PortMaster/pugwash:1422
 msgid "Fetching latest gameinfo.xml files and cover images."
-msgstr "Meest recente gameinfo.xml bestanden en cover afbeeldingen ophalen."
+msgstr "Se preiau cele mai recente fișiere gameinfo.xml și imagini de copertă."
 
 #: PortMaster/pugwash:1443
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
-msgstr "Downloaden van gameinfo.xml voor {source_name}"
+msgstr "Se descarcă gameinfo.xml pentru {source_name}"
 
 #: PortMaster/pugwash:1476
 #, python-brace-format
 msgid "Installing {port_name}"
-msgstr "Installeert {port_name}"
+msgstr "Se instalează {port_name}"
 
 #: PortMaster/pugwash:1485
 #, python-brace-format
 msgid "Uninstalling {port_name}"
-msgstr "Deïnstalleert {port_name}"
+msgstr "Se dezinstalează {port_name}"
 
 #: PortMaster/pugwash:1496
 msgid "Updating all port sources:"
-msgstr "Alle port bronnen aan het bijwerken:"
+msgstr "Se actualizează toate sursele porturilor:"
 
 #: PortMaster/pugwash:1506
 #, python-brace-format
 msgid "Checking {runtime_name}"
-msgstr "{runtime_name} controlerenIn order to do so:"
+msgstr "Se verifică {runtime_name}"
 
 #: PortMaster/pugwash:1935
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
-msgstr "U wisselt van {old_release_channel} naar {new_release_channel} versie.\n\n"
-"Wilt u downgraden?"
+msgstr "Schimbi de la versiunea {old_release_channel} la versiunea {new_release_channel}.\n\n"
+"Dorești să faci un downgrade?"
 
 #: PortMaster/pugwash:1941
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
-msgstr "Er is een nieuwe versie van PortMaster ({portmaster_version})\n\n"
-"Wilt u upgraden?"
+msgstr "Există o nouă versiune a PortMaster ({portmaster_version})\n\n"
+"Dorești să faci un upgrade?"
 
 #: PortMaster/pugwash:1946
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
-msgstr "Wilt u PortMaster opnieuw installeren?\n\n"
-"Dit zal opnieuw installeren van het {release_channel} kanaal naar {portmaster_version}."
+msgstr "Dorești să reinstalezi PortMaster?\n\n"
+"Aceasta va reinstala din canalul {release_channel} la versiunea {portmaster_version}."
 
 #: PortMaster/pugwash:2085
 msgid "Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones."
-msgstr "Ports zijn toegevoegd of verwijderd, werk jouw gamelijst bij om de nieuwe games te zien of de verwijderde games uit de lijst te halen."
+msgstr "Porturile au fost adăugate sau eliminate, actualizează lista de jocuri pentru a vedea noile jocuri sau pentru a elimina cele dezinstalate."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:124
 msgid "Loading..."
-msgstr "Laden..."
+msgstr "Se încarcă..."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:219
 msgid "Loading Info."
-msgstr "Informatie laden."
+msgstr "Se încarcă informațiile."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:257
 msgid "Fetching latest featured ports."
-msgstr "Ophalen van de nieuwste ports."
+msgstr "Se preiau cele mai recente porturi recomandate."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:274
 #: PortMaster/pylibs/harbourmaster/harbour.py:297
 msgid "Fetching latest info."
-msgstr "Ophalen van de nieuwste informatie."
+msgstr "Se preiau cele mai recente informații."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:318
 msgid "Fetching latest porters."
-msgstr "Nieuwste porters ophalen."
+msgstr "Se preiau cei mai recenți porteri."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:336
 msgid "Loading Sources."
-msgstr "Bronnen worden geladen."
+msgstr "Se încarcă sursele."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:554
 msgid "Loading Ports."
-msgstr "Ports worden geladen."
+msgstr "Se încarcă porturile."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1568
 #, python-brace-format
 msgid "Installing Theme {download_name}."
-msgstr "Thema {download_name} wordt geïnstalleerd."
+msgstr "Se instalează tema {download_name}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1575
 #: PortMaster/pylibs/harbourmaster/harbour.py:1620
 #: PortMaster/pylibs/harbourmaster/harbour.py:1716
 msgid "Installing"
-msgstr "Aan het installeren"
+msgstr "Se instalează"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1588
 msgid "Theme {download_name!r} installed successfully."
-msgstr "Thema {download_name!r} is succesvol geïnstalleerd."
+msgstr "Tema {download_name!r} a fost instalată cu succes."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1611
 #: PortMaster/pylibs/harbourmaster/harbour.py:1700
 #, python-brace-format
 msgid "Installing {download_name}."
-msgstr "{download_name} wordt geïnstalleerd."
+msgstr "Se instalează {download_name}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1640
 #: PortMaster/pylibs/harbourmaster/harbour.py:1859
 msgid "Port {download_name!r} installed successfully."
-msgstr "Port {download_name!r} is succesvol geïnstalleerd."
+msgstr "Portul {download_name!r} a fost instalat cu succes."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1679
 msgid "HELLO.\n\n"
@@ -260,40 +260,40 @@ msgstr ""
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1816
 msgid "Installation failed, removing files..."
-msgstr "Installatie mislukt, bestanden verwijderen..."
+msgstr "Instalarea a eșuat, se elimină fișierele..."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1828
 #, python-brace-format
 msgid "Port {download_name} installed failed."
-msgstr "Port {download_name} installatie mislukt."
+msgstr "Instalarea portului {download_name} a eșuat."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1849
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
-msgstr "Port {download_name!r} en {runtime_name!r} succesvol geïnstalleerd."
+msgstr "Portul {download_name!r} și {runtime_name!r} au fost instalate cu succes."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1854
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
-msgstr "Port {download_name!r} is succesvol geïnstalleerd, maar {runtime_name!r} installatie is mislukt!!!\n\n"
-"Herinstalleer om het opnieuw te proberen, of controleer de wiki voor hulp."
+msgstr "Portul {download_name!r} a fost instalat cu succes, dar instalarea pentru {runtime_name!r} a eșuat!!\n\n"
+"Poți reîncerca instalarea sau verifica wiki-ul pentru ajutor."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1869
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
-msgstr "Poot {runtime} bevat een verkeerde runtime en het spel kan mogelijk niet correct worden uitgevoerd."
+msgstr "Portul {runtime} conține un runtime defect, jocul ar putea să nu ruleze corect."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1883
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
-msgstr "Port {runtime} bevat een onbekende runtime, het spel kan mogelijk niet correct worden uitgevoerd."
+msgstr "Portul {runtime} conține un runtime necunoscut, jocul ar putea să nu ruleze corect."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1902
 msgid "Verified"
-msgstr "Geverifiëerd"
+msgstr "Verificat"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1903
 msgid "Unverified"
-msgstr "Niet geverifiëerd"
+msgstr "Neverificat"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1904
 msgid "Broken"
@@ -301,83 +301,83 @@ msgstr "Defect"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1911
 msgid "Unable do download a runtime when in offline mode."
-msgstr "Kan geen runtime downloaden in offline modus."
+msgstr "Imposibil de descărcat un runtime în modul offline."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1917
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
-msgstr "Runtime {runtime} verifiëren"
+msgstr "Se verifică runtime-ul {runtime}"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1926
 #: PortMaster/pylibs/harbourmaster/harbour.py:1929
 msgid "Verifying"
-msgstr "Verifiëren"
+msgstr "Se verifică"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1954
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
-msgstr "Kan geen download vinden voor {runtime}."
+msgstr "Nu s-a găsit un fișier de descărcare pentru {runtime}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1960
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
-msgstr "Kan {runtime} niet downloaden in {device_arch}."
+msgstr "Nu s-a putut descărca {runtime} pentru arhitectura {device_arch}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1982
 #, python-brace-format
 msgid "Verified {runtime} successfully."
-msgstr "{runtime} succesvol geverifieerd."
+msgstr "{runtime} a fost verificat cu succes."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1985
 #, python-brace-format
 msgid "Verified {runtime}."
-msgstr "{runtime} geverifiëerd."
+msgstr "{runtime} verificat."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1991
 #, python-brace-format
 msgid "Updating {runtime}."
-msgstr "{runtime} bijwerken."
+msgstr "Se actualizează {runtime}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1995
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
-msgstr "Runtime {runtime} is defect, herinstalleert."
+msgstr "Runtime-ul {runtime} este defect, se reinstalează."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:1999
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
-msgstr "Runtime {runtime} aan het downloaden."
+msgstr "Se descarcă runtime-ul {runtime}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2028
 #: PortMaster/pylibs/harbourmaster/harbour.py:2038
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
-msgstr "Kan {runtime} niet downloaden, het spel kan mogelijk niet correct worden uitgevoerd."
+msgstr "Nu s-a putut descărca {runtime}, jocul ar putea să nu ruleze corect."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2047
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
-msgstr "{runtime} succesvol gedownload."
+msgstr "{runtime} a fost descărcat cu succes."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2056
 #: PortMaster/pylibs/harbourmaster/harbour.py:2135
 msgid "Unable to download in offline mode."
-msgstr "Kan geen port downloaden in offline modus."
+msgstr "Imposibil de descărcat în modul offline."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2153
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
-msgstr "Kan geen bron vinden voor {port_name}"
+msgstr "Nu s-a găsit o sursă pentru {port_name}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2167
 #, python-brace-format
 msgid "Unknown port {port_name}"
-msgstr "Onbekende port {port_name}"
+msgstr "Port necunoscut {port_name}."
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2202
 #, python-brace-format
 msgid "Removing {port_name}"
-msgstr "Verwijderen van {port_name}"
+msgstr "Se elimină {port_name}"
 
 #: PortMaster/pylibs/harbourmaster/harbour.py:2245
 #, python-brace-format
@@ -388,64 +388,64 @@ msgstr ""
 #: PortMaster/pylibs/harbourmaster/harbour.py:2250
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
-msgstr "{port_name} succesvol verwijderd"
+msgstr "{port_name} a fost dezinstalat cu succes."
 
 #: PortMaster/pylibs/harbourmaster/platform.py:536
 msgid "\n\n"
 "In order to do so:\n"
 "MENU -> UTILITIES -> Rescan Rom Directory"
 msgstr "\n\n"
-"Om dit te doen:\n"
-"MENU → HULPPROGRAMMA'S → Rom-map opnieuw scannen"
+"Pentru a face acest lucru:\n"
+"MENU -> UTILITARE -> Rescanare Director ROM"
 
 #: PortMaster/pylibs/harbourmaster/source.py:48
 msgid "Cache out of date."
-msgstr "Cache verouderd."
+msgstr "Cache-ul este expirat."
 
 #: PortMaster/pylibs/harbourmaster/source.py:53
 msgid "First check."
-msgstr "Eerste controle."
+msgstr "Prima verificare."
 
 #: PortMaster/pylibs/harbourmaster/source.py:56
 msgid "Auto Update."
-msgstr "Automatisch Bijwerken."
+msgstr "Actualizare Automată."
 
 #: PortMaster/pylibs/harbourmaster/source.py:151
 #: PortMaster/pylibs/harbourmaster/source.py:956
 msgid "Updating"
-msgstr "Bijwerken"
+msgstr "Se actualizează"
 
 #: PortMaster/pylibs/harbourmaster/source.py:162
 #: PortMaster/pylibs/harbourmaster/source.py:968
 msgid "Up to date already"
-msgstr "Al bijgewerkt"
+msgstr "Deja la zi"
 
 #: PortMaster/pylibs/harbourmaster/source.py:167
 #: PortMaster/pylibs/harbourmaster/source.py:973
 msgid "Fetching latest info"
-msgstr "Nieuwste informatie ophalen"
+msgstr "Se preiau cele mai recente informații"
 
 #: PortMaster/pylibs/harbourmaster/source.py:201
 #: PortMaster/pylibs/harbourmaster/source.py:1053
 msgid "Done."
-msgstr "Klaar."
+msgstr "Gata."
 
 #: PortMaster/pylibs/harbourmaster/source.py:209
 #: PortMaster/pylibs/harbourmaster/source.py:542
 #: PortMaster/pylibs/harbourmaster/source.py:1061
 #, python-brace-format
 msgid "Unable to find {port_name}."
-msgstr "Kan {port_name} niet vinden."
+msgstr "Nu s-a putut găsi {port_name}."
 
 #: PortMaster/pylibs/harbourmaster/source.py:220
 #, python-brace-format
 msgid "Unable to find verification info for {port_name}."
-msgstr "Kan de verificatie-informatie voor {port_name} niet vinden."
+msgstr "Nu s-au găsit informații de verificare pentru {port_name}."
 
 #: PortMaster/pylibs/harbourmaster/source.py:227
 #, python-brace-format
 msgid "Unable to download verification info for {port_name}."
-msgstr "Kan de verificatie-informatie voor {port_name} niet vinden."
+msgstr "Nu s-au putut descărca informațiile de verificare pentru {port_name}."
 
 #: PortMaster/pylibs/harbourmaster/source.py:237
 msgid "Success!"
@@ -456,135 +456,135 @@ msgstr "Succes!"
 #: PortMaster/pylibs/harbourmaster/source.py:860
 #: PortMaster/pylibs/pugtheme.py:428
 msgid "Fetching info"
-msgstr "Informatie ophalen"
+msgstr "Se preiau informațiile"
 
 #: PortMaster/pylibs/harbourmaster/source.py:603
 #, python-brace-format
 msgid "{source_name}: Fetching latest ports"
-msgstr "{source_name}: Laatste ports ophalen"
+msgstr "{source_name}: Se preiau cele mai recente porturi"
 
 #: PortMaster/pylibs/harbourmaster/source.py:642
 msgid "Fetching info."
-msgstr "Informatie ophalen."
+msgstr "Se preiau informațiile."
 
 #: PortMaster/pylibs/harbourmaster/source.py:1152
 msgid "Unable to download verification file."
-msgstr "Kan verificatiebestand niet downloaden."
+msgstr "Nu s-a putut descărca fișierul de verificare."
 
 #: PortMaster/pylibs/harbourmaster/source.py:1163
 msgid "Unable to download non zip files."
-msgstr "Kan geen non-zip bestanden downloaden."
+msgstr "Nu s-au putut descărca fișierele non zip."
 
 #: PortMaster/pylibs/harbourmaster/util.py:372
 #, python-brace-format
 msgid "Unable to download file. [{status_code}]"
-msgstr "Kan bestand niet downloaden. [{status_code}]"
+msgstr "Nu s-a putut descărca fișierul. [{status_code}]"
 
 #: PortMaster/pylibs/harbourmaster/util.py:388
 #, python-brace-format
 msgid "Downloading {file_url} - ({total_length_mb})"
-msgstr "Downloaden {file_url} - ({total_length_mb})"
+msgstr "Se descarcă {file_url} - ({total_length_mb} MB)"
 
 #: PortMaster/pylibs/harbourmaster/util.py:400
 #: PortMaster/pylibs/harbourmaster/util.py:414
 msgid "Downloading file."
-msgstr "Bestand wordt gedownload."
+msgstr "Se descarcă fișierul."
 
 #: PortMaster/pylibs/harbourmaster/util.py:431
 #, python-brace-format
 msgid "Download failed: {err}"
-msgstr "Downloaden mislukt: {err}"
+msgstr "Descărcarea a eșuat: {err}"
 
 #: PortMaster/pylibs/harbourmaster/util.py:443
 msgid "Download validation failed."
-msgstr "Download validatie mislukt."
+msgstr "Validarea descărcării a eșuat."
 
 #: PortMaster/pylibs/harbourmaster/util.py:449
 msgid "Passed file validation."
-msgstr "Bestandsvalidatie goedgekeurd."
+msgstr "Fișierul a trecut validarea."
 
 #: PortMaster/pylibs/harbourmaster/util.py:454
 msgid "Unable to validate download."
-msgstr "Kan download niet valideren."
+msgstr "Nu s-a putut valida descărcarea."
 
 #: PortMaster/pylibs/pugscene.py:381 PortMaster/pylibs/pugscene.py:477
 msgid "Main Menu"
-msgstr "Hoofdmenu"
+msgstr "Meniu Principal"
 
 #: PortMaster/pylibs/pugscene.py:409
 msgid "Disclaimer"
-msgstr "Disclaimer"
+msgstr "Declinarea responsabilității"
 
 #: PortMaster/pylibs/pugscene.py:435
 msgid "Accept"
-msgstr "Accepteren"
+msgstr "Acceptă"
 
 #: PortMaster/pylibs/pugscene.py:435 PortMaster/pylibs/pugscene.py:515
 msgid "Quit"
-msgstr "Sluiten"
+msgstr "Ieșire"
 
 #: PortMaster/pylibs/pugscene.py:465 PortMaster/pylibs/pugscene.py:579
 msgid "Are you sure you want to exit PortMaster?"
-msgstr "Weet u zeker dat u PortMaster wilt afsluiten?"
+msgstr "Ești sigur că vrei să ieși din PortMaster?"
 
 #: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:1513
 #: PortMaster/pylibs/pugscene.py:1515
 msgid "Featured Ports"
-msgstr "Aanbevolen Ports"
+msgstr "Porturi Recomandate"
 
 #: PortMaster/pylibs/pugscene.py:491
 msgid "Hand curated lists of ports"
-msgstr "Hand samengestelde lijst van ports"
+msgstr "Liste de porturi selectate manual"
 
 #: PortMaster/pylibs/pugscene.py:494
 msgid "All Ports"
-msgstr "Alle ports"
+msgstr "Toate Porturile"
 
 #: PortMaster/pylibs/pugscene.py:495
 msgid "List all ports available on PortMaster."
-msgstr "Toon alle beschikbare ports op PortMaster."
+msgstr "Listează toate porturile disponibile pe PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:498
 msgid "Ready to Run Ports"
-msgstr "Klaar om te Spelen Ports"
+msgstr "Porturi gata de rulare"
 
 #: PortMaster/pylibs/pugscene.py:499
 msgid "List all ports that are ready to play!"
-msgstr "Lijst alle ports die klaar zijn om te spelen!"
+msgstr "Listează toate porturile gata de jucat!"
 
 #: PortMaster/pylibs/pugscene.py:502
 msgid "Manage Ports"
-msgstr "Beheer Ports"
+msgstr "Gestionează Porturile"
 
 #: PortMaster/pylibs/pugscene.py:503
 msgid "Update / Uninstall Ports"
-msgstr "Update / Verwijder Ports"
+msgstr "Actualizare / Dezinstalare Porturi"
 
 #: PortMaster/pylibs/pugscene.py:508
 msgid "Options"
-msgstr "Opties"
+msgstr "Opțiuni"
 
 #: PortMaster/pylibs/pugscene.py:509
 msgid "PortMaster Options"
-msgstr "PortMaster Opties"
+msgstr "Opțiuni PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:512
 msgid "Exit"
-msgstr "Sluiten"
+msgstr "Ieșire"
 
 #: PortMaster/pylibs/pugscene.py:513
 msgid "Quit PortMaster"
-msgstr "Sluit PortMaster"
+msgstr "Ieși din PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:515 PortMaster/pylibs/pugscene.py:722
 #: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Enter"
-msgstr "Ga"
+msgstr "Intră"
 
 #: PortMaster/pylibs/pugscene.py:535
 #, python-brace-format
 msgid "Secret Mode {secret_mode}"
-msgstr "Geheime Modus {secret_mode}"
+msgstr "Mod Secret {secret_mode}"
 
 #: PortMaster/pylibs/pugscene.py:536 PortMaster/pylibs/pugscene.py:617
 #: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:661
@@ -593,7 +593,7 @@ msgstr "Geheime Modus {secret_mode}"
 #: PortMaster/pylibs/pugscene.py:790 PortMaster/pylibs/pugscene.py:866
 #: PortMaster/pylibs/pugscene.py:875
 msgid "Enabled"
-msgstr "Ingeschakeld"
+msgstr "Activat"
 
 #: PortMaster/pylibs/pugscene.py:536 PortMaster/pylibs/pugscene.py:617
 #: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:661
@@ -602,214 +602,214 @@ msgstr "Ingeschakeld"
 #: PortMaster/pylibs/pugscene.py:790 PortMaster/pylibs/pugscene.py:866
 #: PortMaster/pylibs/pugscene.py:875
 msgid "Disabled"
-msgstr "Uitgeschakeld"
+msgstr "Dezactivat"
 
 #: PortMaster/pylibs/pugscene.py:589
 msgid "Options Menu"
-msgstr "Opties Menu"
+msgstr "Meniu Opțiuni"
 
 #: PortMaster/pylibs/pugscene.py:595
 msgid "Interface"
-msgstr "Interface"
+msgstr "Interfață"
 
 #: PortMaster/pylibs/pugscene.py:599
 msgid "Choose Language"
-msgstr "Kies Taal"
+msgstr "Alege limba"
 
 #: PortMaster/pylibs/pugscene.py:600
 msgid "Select the language PortMaster uses."
-msgstr "Selecteer de taal voor PortMaster."
+msgstr "Selectează limba utilizată de PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:603 PortMaster/pylibs/pugscene.py:1222
 msgid "Select Theme"
-msgstr "Selecteer Thema"
+msgstr "Selectează Tema"
 
 #: PortMaster/pylibs/pugscene.py:604
 msgid "Select a theme for PortMaster."
-msgstr "Selecteer een thema voor PortMaster."
+msgstr "Selectează o temă pentru PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:610
 msgid "Select Color Scheme"
-msgstr "Selecteer Kleurenschema"
+msgstr "Selectează Schema de Culori"
 
 #: PortMaster/pylibs/pugscene.py:611
 msgid "Select a colour scheme for PortMaster"
-msgstr "Selecteer een kleurenschema voor PortMaster"
+msgstr "Selectează o schemă de culori pentru PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:613
 msgid "Audio"
-msgstr "Audio"
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:617 PortMaster/pylibs/pugscene.py:866
 msgid "Music: "
-msgstr "Muziek: "
+msgstr "Muzică: "
 
 #: PortMaster/pylibs/pugscene.py:618
 msgid "Enable or Disable background music in PortMaster."
-msgstr "Achtergrondmuziek voor PortMaster in- of uitschakelen."
+msgstr "Activează sau dezactivează muzica de fundal în PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:875
 msgid "Sound FX: "
-msgstr "Geluidseffecten: "
+msgstr "Efecte Sonore: "
 
 #: PortMaster/pylibs/pugscene.py:622
 msgid "Enable or Disable soundfx in PortMaster."
-msgstr "Geluidseffecten voor PortMaster in- of uitschakelen."
+msgstr "Activează sau dezactivează efectele sonore în PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:625
 msgid "Port Metadata"
-msgstr "Port Metadata"
+msgstr "Metadate Port"
 
 #: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Metadata Update: "
-msgstr "Metadata Update: "
+msgstr "Actualizare Metadate: "
 
 #: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Auto"
-msgstr "Auto"
+msgstr "Automată"
 
 #: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Manual"
-msgstr "Handmatig"
+msgstr "Manuală"
 
 #: PortMaster/pylibs/pugscene.py:630
 msgid "PortMaster updates metadata when ports are installed so that it shows port images and descriptions when browsing ports on your device."
-msgstr "PortMaster updates metadata wanneer ports zijn geïnstalleerd zodat deze portafbeeldingen en -beschrijvingen weergeven tijdens het browsen van ports op uw apparaat."
+msgstr "PortMaster actualizează metadatele atunci când porturile sunt instalate, astfel încât să afișeze imagini și descrieri ale porturilor când navighezi pe dispozitivul tău."
 
 #: PortMaster/pylibs/pugscene.py:634
 msgid "Metadata Refresh"
-msgstr "Metadata Verversen"
+msgstr "Reîmprospătare Metadate"
 
 #: PortMaster/pylibs/pugscene.py:635
 msgid "Manually update port metadata with missing/updated information and artwork."
-msgstr "Werk handmatig de poortmetagegevens bij met bijgewerkte informatie en opmaak."
+msgstr "Actualizează manual metadatele porturilor cu informații și ilustrații lipsă sau actualizate."
 
 #: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:649
 #: PortMaster/pylibs/pugscene.py:940
 msgid "Ports Location: "
-msgstr "Locatie ports: "
+msgstr "Locația Porturilor: "
 
 #: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:918
 msgid "Roms section"
-msgstr "Roms sectie"
+msgstr "Secțiunea ROM-uri"
 
 #: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:919
 msgid "Ports tab"
-msgstr "Ports tab"
+msgstr "Fila porturi"
 
 #: PortMaster/pylibs/pugscene.py:641 PortMaster/pylibs/pugscene.py:650
 msgid "Location where ports should be installed to."
-msgstr "Locatie waar ports geïnstalleerd moeten worden."
+msgstr "Locația unde ar trebui instalate porturile."
 
 #: PortMaster/pylibs/pugscene.py:649
 msgid "SD 1"
-msgstr "SD 1"
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:649
 msgid "SD 2"
-msgstr "SD 2"
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:652
 msgid "System"
-msgstr "Systeem"
+msgstr "Sistem"
 
 #: PortMaster/pylibs/pugscene.py:656 PortMaster/pylibs/pugscene.py:1051
 msgid "Runtime Manager"
-msgstr "Runtime Beheerder"
+msgstr "Manager Runtime"
 
 #: PortMaster/pylibs/pugscene.py:657
 msgid "Manage port runtimes."
-msgstr "Beheer port runtimes."
+msgstr "Gestionează runtime-urile porturilor."
 
 #: PortMaster/pylibs/pugscene.py:661 PortMaster/pylibs/pugscene.py:776
 msgid "Experimental Ports: "
-msgstr "Experimentele Ports: "
+msgstr "Porturi experimentale: "
 
 #: PortMaster/pylibs/pugscene.py:662
 msgid "Show or hide experimental ports."
-msgstr "Toon of verberg experimentele ports."
+msgstr "Afișează sau ascunde porturile experimentale."
 
 #: PortMaster/pylibs/pugscene.py:666
 msgid "Update Ports"
-msgstr "Ports Bijwerken"
+msgstr "Actualizare Porturi"
 
 #: PortMaster/pylibs/pugscene.py:667
 msgid "Fetch latest ports information."
-msgstr "Haal recente poort informatie op."
+msgstr "Preia cele mai recente informații despre porturi."
 
 #: PortMaster/pylibs/pugscene.py:671
 msgid "Update PortMaster"
-msgstr "PortMaster Bijwerken"
+msgstr "Actualizare PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:672
 msgid "Force check for a new PortMaster version."
-msgstr "Forceer check voor een nieuwe PortMaster versie."
+msgstr "Forțează verificarea unei noi versiuni a PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:677
 msgid "Restore PortMaster"
-msgstr "PortMaster herstellen"
+msgstr "Restaurare PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:678
 msgid "This will restore PortMaster to the latest stable version of PortMaster."
-msgstr "Dit zal PortMaster herstellen naar de laatste stabiele versie van PortMaster."
+msgstr "Aceasta va restaura PortMaster la cea mai recentă versiune stabilă."
 
 #: PortMaster/pylibs/pugscene.py:682
 #, python-brace-format
 msgid "Release Channel: {channel}"
-msgstr "Release Kanaal: {channel}"
+msgstr "Canal de distribuție: {channel}"
 
 #: PortMaster/pylibs/pugscene.py:684
 msgid "Change release channel of PortMaster, either beta or stable."
-msgstr "Verander het release-kanaal van PortMaster, bèta of stabiel."
+msgstr "Schimbă canalul de distribuție al PortMaster, fie beta, fie stabil."
 
 #: PortMaster/pylibs/pugscene.py:690
 msgid "Enable Alpha Releases"
-msgstr "Activeer Alpha Releases"
+msgstr "Activează Versiunile Alpha"
 
 #: PortMaster/pylibs/pugscene.py:691
 msgid "Change release channel of PortMaster to alpha."
-msgstr "Verander het release-kanaal van PortMaster naar alpha."
+msgstr "Schimbă canalul de distribuție al PortMaster la alpha."
 
 #: PortMaster/pylibs/pugscene.py:697 PortMaster/pylibs/pugscene.py:893
 #, python-brace-format
 msgid "Controller Mode: {controller_mode}"
-msgstr "Controller Modus: {controller_mode}"
+msgstr "Mod Controler: {controller_mode}"
 
 #: PortMaster/pylibs/pugscene.py:698
 msgid "Toggle between various controller layouts."
-msgstr "Schakel tussen verschillende controller lay-outs."
+msgstr "Comută între diferite configurații ale controlerului."
 
 #: PortMaster/pylibs/pugscene.py:701
 msgid "Secret Options"
-msgstr "Geheime Opties"
+msgstr "Opțiuni Secrete"
 
 #: PortMaster/pylibs/pugscene.py:704 PortMaster/pylibs/pugscene.py:764
 msgid "All Ports: "
-msgstr "Alle Ports: "
+msgstr "Toate Porturile: "
 
 #: PortMaster/pylibs/pugscene.py:705
 msgid "Show all ports, ignoring requirements."
-msgstr "Toon alle ports, negeer vereisten."
+msgstr "Afișează toate porturile, ignorând cerințele."
 
 #: PortMaster/pylibs/pugscene.py:708 PortMaster/pylibs/pugscene.py:790
 msgid "CWTBE Mode: "
-msgstr "CWTBE Modus: "
+msgstr "Mod CWTBE: "
 
 #: PortMaster/pylibs/pugscene.py:709
 msgid "Enable gptokeyb2 by default."
-msgstr "Gptokeyb2 als standaard inschakelen."
+msgstr "Activează gptokeyb2 în mod implicit."
 
 #: PortMaster/pylibs/pugscene.py:712
 msgid "Delete PortMaster Config"
-msgstr "Verwijder PortMaster Configuratie"
+msgstr "Șterge configurația PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:713 PortMaster/pylibs/pugscene.py:717
 msgid "This can break stuff, don't touch unless you know what you are doing."
-msgstr "Dit kan dingen breken, raak niet aan tenzij je weet wat je doet."
+msgstr "Aceasta poate cauza probleme, nu modifica dacă nu știi ce faci."
 
 #: PortMaster/pylibs/pugscene.py:716
 msgid "Delete PortMaster Runtimes"
-msgstr "Verwijder PortMaster Runtimes"
+msgstr "Șterge Runtime-urile PortMaster"
 
 #: PortMaster/pylibs/pugscene.py:722 PortMaster/pylibs/pugscene.py:1145
 #: PortMaster/pylibs/pugscene.py:1148 PortMaster/pylibs/pugscene.py:1256
@@ -820,267 +820,267 @@ msgstr "Verwijder PortMaster Runtimes"
 #: PortMaster/pylibs/pugscene.py:1832 PortMaster/pylibs/pugscene.py:1835
 #: PortMaster/pylibs/pugscene.py:1923 PortMaster/pylibs/pugscene.py:1925
 msgid "Back"
-msgstr "Terug"
+msgstr "Înapoi"
 
 #: PortMaster/pylibs/pugscene.py:794
 msgid "Are you sure you want to restore PortMaster?\n\n"
 "This will require you to run a specially crafted port that will be installed."
-msgstr "Weet u zeker dat u PortMaster wilt herstellen?\n\n"
-"Hiervoor moet u een speciaal gemaakte port uitvoeren die zal worden geïnstalleerd."
+msgstr "Ești sigur că vrei să restaurezi PortMaster?\n\n"
+"Aceasta va necesita rularea unui port special conceput care va fi instalat."
 
 #: PortMaster/pylibs/pugscene.py:804
 msgid "A special port has been installed called \"Restore PortMaster.sh\"\n\n"
 "Run this port to restore your PortMaster installation."
-msgstr "Een speciale port is geïnstalleerd genaamd \"Restore PortMaster.sh\"\n\n"
-"Voer deze poort uit om uw PortMaster installatie te herstellen."
+msgstr "Un port special a fost instalat, numit \"Restore PortMaster.sh\"\n\n"
+"Rulează acest port pentru a restaura instalarea PortMaster."
 
 #: PortMaster/pylibs/pugscene.py:807
 msgid "PortMaster will now quit so you can run the restoration port."
-msgstr "PortMaster wordt nu afgesloten zodat u de herstelport kunt uitvoeren."
+msgstr "PortMaster se va închide acum pentru a putea rula portul de restaurare."
 
 #: PortMaster/pylibs/pugscene.py:814
 msgid "Are you sure you want to change to the alpha release channel?\n\n"
 "PortMaster will upgrade or downgrade accordingly.\n\n"
 "THIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED"
-msgstr "Weet u zeker dat u wilt veranderen naar het alpha-release kanaal?\n\n"
-"PortMaster zal worden geüpgraded of gedegradeerd.\n\n"
-"DIT KAN EN ZAL DINGEN BREKEN, U BEN GEWAARSCHUWD"
+msgstr "Ești sigur că vrei să schimbi canalul de distribuție la versiunea alpha?\n\n"
+"PortMaster va face upgrade sau downgrade în consecință.\n\n"
+"ACEASTA POATE ȘI VA PROVOCA PROBLEME, AI FOST AVERTIZAT"
 
 #: PortMaster/pylibs/pugscene.py:841
 #, python-brace-format
 msgid "Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\n"
 "PortMaster will upgrade or downgrade accordingly."
-msgstr "Weet u zeker dat u het release-kanaal van {current_channel} naar {new_channel} wilt wijzigen?\n\n"
-"PortMaster zal worden geüpgraded of gedegradeerd naar toepassing."
+msgstr "Ești sigur că vrei să schimbi canalul de distribuție de la {current_channel} la {new_channel}?\n\n"
+"PortMaster va face upgrade sau downgrade în consecință."
 
 #: PortMaster/pylibs/pugscene.py:909
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
 "This will override any scraped artwork or port information and will require a 50+ MB download."
-msgstr "Weet u zeker dat u uw gamelist.xml wilt updaten?\n\n"
-"Dit overschrijft alle gescrapede bestands- of portinformatie en vereist een download van 50+ MB."
+msgstr "Ești sigur că vrei să actualizezi gamelist.xml?\n\n"
+"Aceasta va suprascrie orice imagine sau informație despre port colectată automat și va necesita o descărcare de peste 50 MB."
 
 #: PortMaster/pylibs/pugscene.py:930
 #, python-brace-format
 msgid "Are you sure you want to move ports from the {from_mode} to the {to_mode}"
-msgstr "Weet u zeker dat u ports van {from_mode} naar {to_mode} wilt verplaatsen"
+msgstr "Ești sigur că vrei să muți porturile din {from_mode} în {to_mode}?"
 
 #: PortMaster/pylibs/pugscene.py:949
 msgid "SDCARD 1"
-msgstr "SD KAART 1"
+msgstr "Card SD 1"
 
 #: PortMaster/pylibs/pugscene.py:950
 msgid "SDCARD 2"
-msgstr "SD KAART 2"
+msgstr "Card SD 2"
 
 #: PortMaster/pylibs/pugscene.py:954
 #, python-brace-format
 msgid "Are you sure you want to manage and install ports on {to_loc}?\n\n"
 "Already installed ports will not be moved.\n"
 "PortMaster will restart for this to take effect."
-msgstr "Weet je zeker dat je poorten wilt beheren en installeren op {to_loc}?\n\n"
-"Reeds geïnstalleerde poorten worden niet verplaatst.\n"
-"PortMaster zal opnieuw opstarten om dit door te voeren."
+msgstr "Ești sigur că vrei să gestionezi și să instalezi porturi pe {to_loc}?\n\n"
+"Porturile deja instalate nu vor fi mutate.\n"
+"PortMaster va reporni pentru ca această modificare să aibă efect."
 
 #: PortMaster/pylibs/pugscene.py:1018
 msgid "Deleting Runtimes:"
-msgstr "Runtimes verwijderen:"
+msgstr "Se șterg runtime-urile:"
 
 #: PortMaster/pylibs/pugscene.py:1043
 msgid "Source Manager"
-msgstr "Bron Beheerder"
+msgstr "Manager Surse"
 
 #: PortMaster/pylibs/pugscene.py:1085
 msgid "Download All"
-msgstr "Download Alles"
+msgstr "Descarcă Tot"
 
 #: PortMaster/pylibs/pugscene.py:1130
 msgid "Used"
-msgstr "Gebruikt"
+msgstr "Utilizat"
 
 #: PortMaster/pylibs/pugscene.py:1130
 msgid "Not Used"
-msgstr "Niet Gebruikt"
+msgstr "Neutilizat"
 
 #: PortMaster/pylibs/pugscene.py:1145
 msgid "Check"
-msgstr "Controleer"
+msgstr "Verifică"
 
 #: PortMaster/pylibs/pugscene.py:1145 PortMaster/pylibs/pugscene.py:1832
 #: PortMaster/pylibs/pugscene.py:1923
 msgid "Uninstall"
-msgstr "Verwijder"
+msgstr "Dezinstalează"
 
 #: PortMaster/pylibs/pugscene.py:1148 PortMaster/pylibs/pugscene.py:1835
 #: PortMaster/pylibs/pugscene.py:1925
 msgid "Install"
-msgstr "Installeer"
+msgstr "Instalează"
 
 #: PortMaster/pylibs/pugscene.py:1163
 msgid "Are you sure you want to download and verify all runtimes?"
-msgstr "Weet je zeker dat je alle runtimes wilt downloaden en verifiëren?"
+msgstr "Ești sigur că vrei să descarci și să verifici toate runtime-urile?"
 
 #: PortMaster/pylibs/pugscene.py:1205
 #, python-brace-format
 msgid "Deleted runtime {runtime}"
-msgstr "Runtime {runtime} verwijderd"
+msgstr "Runtime-ul {runtime} a fost șters"
 
 #: PortMaster/pylibs/pugscene.py:1240
 #, python-brace-format
 msgid "{theme_name} (Selected)"
-msgstr "{theme_name} (Geselecteerd)"
+msgstr "{theme_name} (Selectat)"
 
 #: PortMaster/pylibs/pugscene.py:1254 PortMaster/pylibs/pugscene.py:1339
 #: PortMaster/pylibs/pugscene.py:1393 PortMaster/pylibs/pugscene.py:1457
 #: PortMaster/pylibs/pugscene.py:1465 PortMaster/pylibs/pugscene.py:1526
 msgid "Select"
-msgstr "Selecteer"
+msgstr "Selectează"
 
 #: PortMaster/pylibs/pugscene.py:1259
 msgid "Download"
-msgstr "Download"
+msgstr "Descarcă"
 
 #: PortMaster/pylibs/pugscene.py:1278
 msgid "Do you want to change theme?\n\n"
 "You will have to restart for it to take effect."
-msgstr "Wilt u het thema wijzigen?\n\n"
-"U moet opnieuw opstarten voordat het in effect gaat."
+msgstr "Vrei să schimbi tema?\n\n"
+"Va trebui să repornești pentru ca modificarea să aibă efect."
 
 #: PortMaster/pylibs/pugscene.py:1319
 msgid "Select Colour Scheme"
-msgstr "Selecteer Kleurenschema"
+msgstr "Selectează Schema de Culori"
 
 #: PortMaster/pylibs/pugscene.py:1333
 #, python-brace-format
 msgid "{item_name} (Selected)"
-msgstr "{item_name} (Geselecteerd)"
+msgstr "{item_name} (Selectat)"
 
 #: PortMaster/pylibs/pugscene.py:1356
 msgid "Do you want to change the themes color scheme?\n\n"
 "You will have to restart for it to take affect."
-msgstr "Wilt u het thema's kleurenschema wijzigen?\n\n"
-"U moet opnieuw opstarten voordat het in effect gaat."
+msgstr "Vrei să schimbi schema de culori a temei?\n\n"
+"Va trebui să repornești pentru ca modificarea să aibă efect."
 
 #: PortMaster/pylibs/pugscene.py:1377
 msgid "Language Select"
-msgstr "Taal selecteren"
+msgstr "Selectare Limbă"
 
 #: PortMaster/pylibs/pugscene.py:1387
 #, python-brace-format
 msgid "{lang_name} (Selected)"
-msgstr "{lang_name} (Geselecteerd)"
+msgstr "{lang_name} (Selectat)"
 
 #: PortMaster/pylibs/pugscene.py:1410
 msgid "Do you want to change language?\n\n"
 "You will have to restart for it to take affect."
-msgstr "Wilt u de taal wijzigen?\n\n"
-"U moet opnieuw opstarten voordat het in effect gaat."
+msgstr "Vrei să schimbi limba?\n\n"
+"Va trebui să repornești pentru ca modificarea să aibă efect."
 
 #: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Delete"
-msgstr "Verwijder"
+msgstr "Șterge"
 
 #: PortMaster/pylibs/pugscene.py:1457
 msgid "Upper Case"
-msgstr "Hoofdletters"
+msgstr "Majuscule"
 
 #: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Space"
-msgstr "Spatie"
+msgstr "Spațiu"
 
 #: PortMaster/pylibs/pugscene.py:1465
 msgid "Lower Case"
-msgstr "Kleine letters"
+msgstr "Minuscule"
 
 #: PortMaster/pylibs/pugscene.py:1543
 msgid "No featured ports found, internet connection is required."
-msgstr "Geen aanbevolen ports gevonden, internetverbinding is vereist."
+msgstr "Nu s-au găsit porturi recomandate, este necesară o conexiune la internet."
 
 #: PortMaster/pylibs/pugscene.py:1587 PortMaster/pylibs/pugscene.py:1610
 msgid "NO PORTS"
-msgstr "GEEN PORTS"
+msgstr "NICIUN PORT"
 
 #: PortMaster/pylibs/pugscene.py:1591 PortMaster/pylibs/pugscene.py:1617
 msgid "** NO PORTS FOUND **"
-msgstr "** GEEN PORTS GEVONDEN **"
+msgstr "** NU S-AU GĂSIT PORTURI **"
 
 #: PortMaster/pylibs/pugscene.py:1593 PortMaster/pylibs/pugscene.py:1620
 msgid "Download ports first."
-msgstr "Download eerst ports."
+msgstr "Descarcă mai întâi porturile."
 
 #: PortMaster/pylibs/pugscene.py:1622
 msgid "Try removing some filters."
-msgstr "Probeer enkele filters te verwijderen."
+msgstr "Încearcă să elimini unele filtre."
 
 #: PortMaster/pylibs/pugscene.py:1777 PortMaster/pylibs/pugscene.py:1801
 #: PortMaster/pylibs/pugscene.py:1803 PortMaster/pylibs/pugscene.py:1890
 #: PortMaster/pylibs/pugscene.py:1895
 msgid "Show Info"
-msgstr "Toon info"
+msgstr "Afișează Informații"
 
 #: PortMaster/pylibs/pugscene.py:1782
 msgid "Ports List"
-msgstr "Ports Lijst"
+msgstr "Lista Porturilor"
 
 #: PortMaster/pylibs/pugscene.py:1801
 msgid "Filters"
-msgstr "Filters"
+msgstr "Filtre"
 
 #: PortMaster/pylibs/pugscene.py:1809
 msgid "Port Info Popup"
-msgstr "Port Info Popup"
+msgstr "Fereastră de Informații Port"
 
 #: PortMaster/pylibs/pugscene.py:1820 PortMaster/pylibs/pugscene.py:1823
 msgid "Hide Info"
-msgstr "Verberg informatie"
+msgstr "Ascunde Informațiile"
 
 #: PortMaster/pylibs/pugscene.py:1832 PortMaster/pylibs/pugscene.py:1923
 msgid "Reinstall"
-msgstr "Herinstalleer"
+msgstr "Reinstalează"
 
 #: PortMaster/pylibs/pugscene.py:1859
 msgid "Port Info"
-msgstr "Port Info"
+msgstr "Informații Port"
 
 #: PortMaster/pylibs/pugscene.py:1945
 #, python-brace-format
 msgid "Are you sure you want to uninstall {port_name}?"
-msgstr "Weet u zeker dat u {port_name} wilt verwijderen?"
+msgstr "Ești sigur că vrei să dezinstalezi {port_name}?"
 
 #: PortMaster/pylibs/pugscene.py:1989
 msgid "Filters Scene"
-msgstr "Scène Filters"
+msgstr "Scena Filtrelor"
 
 #: PortMaster/pylibs/pugscene.py:2018
 msgid "Alphabetical"
-msgstr "Alfabetisch"
+msgstr "Alfabetic"
 
 #: PortMaster/pylibs/pugscene.py:2019
 msgid "Recently Added"
-msgstr "Recent Toegevoegd"
+msgstr "Adăugate Recent"
 
 #: PortMaster/pylibs/pugscene.py:2020
 msgid "Recently Updated"
-msgstr "Recent Bijgewerkt"
+msgstr "Actualizate Recent"
 
 #: PortMaster/pylibs/pugscene.py:2023
 msgid "Action"
-msgstr "Actie"
+msgstr "Acțiune"
 
 #: PortMaster/pylibs/pugscene.py:2024
 msgid "Adventure"
-msgstr "Avontuur"
+msgstr "Aventură"
 
 #: PortMaster/pylibs/pugscene.py:2025
 msgid "Arcade"
-msgstr "Arcade"
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:2026
 msgid "Casino/Card"
-msgstr "Casino/Kaart"
+msgstr "Casino/Cărți"
 
 #: PortMaster/pylibs/pugscene.py:2027
 msgid "First Person Shooter"
-msgstr "First Person Shooter"
+msgstr "Shooter la persoana întâi"
 
 #: PortMaster/pylibs/pugscene.py:2028
 msgid "Platformer"
@@ -1088,27 +1088,27 @@ msgstr "Platformer"
 
 #: PortMaster/pylibs/pugscene.py:2029
 msgid "Puzzle"
-msgstr "Puzzel"
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:2030
 msgid "Racing"
-msgstr "Racing"
+msgstr "Curse"
 
 #: PortMaster/pylibs/pugscene.py:2031
 msgid "Rhythm"
-msgstr "Ritme"
+msgstr "Ritm"
 
 #: PortMaster/pylibs/pugscene.py:2032
 msgid "Role Playing Game"
-msgstr "Rollenspel"
+msgstr "Joc de rol (RPG)"
 
 #: PortMaster/pylibs/pugscene.py:2033
 msgid "Simulation"
-msgstr "Simulatie"
+msgstr "Simulare"
 
 #: PortMaster/pylibs/pugscene.py:2034
 msgid "Sports"
-msgstr "Sporten"
+msgstr "Sporturi"
 
 #: PortMaster/pylibs/pugscene.py:2035
 msgid "Strategy"
@@ -1116,39 +1116,39 @@ msgstr "Strategie"
 
 #: PortMaster/pylibs/pugscene.py:2036
 msgid "Visual Novel"
-msgstr "Visuele Roman"
+msgstr "Roman Vizual"
 
 #: PortMaster/pylibs/pugscene.py:2037
 msgid "Other"
-msgstr "Andere"
+msgstr "Altele"
 
 #: PortMaster/pylibs/pugscene.py:2041
 msgid "Files Required"
-msgstr "Bestanden Verplicht"
+msgstr "Fișiere Necesare"
 
 #: PortMaster/pylibs/pugscene.py:2042
 msgid "Experimental"
-msgstr "Experimenteel "
+msgstr ""
 
 #: PortMaster/pylibs/pugscene.py:2045
 msgid "Broken Ports"
-msgstr "Gebroken Ports"
+msgstr "Porturi Defecte"
 
 #: PortMaster/pylibs/pugscene.py:2048
 msgid "Free game, all files included."
-msgstr "Gratis spel, alle bestanden inbegrepen."
+msgstr "Joc gratuit, toate fișierele incluse."
 
 #: PortMaster/pylibs/pugscene.py:2049
 msgid "Demo files included."
-msgstr "Demo bestanden inbegrepen."
+msgstr "Fișiere demo incluse."
 
 #: PortMaster/pylibs/pugscene.py:2050
 msgid "Free external assets needed."
-msgstr "Gratis externe bestanden nodig."
+msgstr "Necesită resurse externe gratuite."
 
 #: PortMaster/pylibs/pugscene.py:2051
 msgid "Paid external assets needed."
-msgstr "Betaalde externe bestanden nodig."
+msgstr "Necesită resurse externe plătite."
 
 #: PortMaster/pylibs/pugscene.py:2054 PortMaster/pylibs/pugscene.py:2055
 #: PortMaster/pylibs/pugscene.py:2056 PortMaster/pylibs/pugscene.py:2057
@@ -1156,53 +1156,53 @@ msgstr "Betaalde externe bestanden nodig."
 #: PortMaster/pylibs/pugscene.py:2060
 #, python-brace-format
 msgid "{runtime_name} Runtime"
-msgstr "{runtime_name} Runtime"
+msgstr "Runtime {runtime_name}"
 
 #: PortMaster/pylibs/pugscene.py:2063
 msgid "ARM 32bit"
-msgstr "ARM 32bit"
+msgstr "ARM 32biți"
 
 #: PortMaster/pylibs/pugscene.py:2064
 msgid "ARM 64bit"
-msgstr "ARM 64bit"
+msgstr "ARM 64biți"
 
 #: PortMaster/pylibs/pugscene.py:2065
 msgid "x86 64bit"
-msgstr "x86 64bit"
+msgstr "x86 64biți"
 
 #: PortMaster/pylibs/pugscene.py:2110
 msgid "Sort:"
-msgstr "Sorteer:"
+msgstr "Sortare:"
 
 #: PortMaster/pylibs/pugscene.py:2125
 msgid "Clear Filters"
-msgstr "Filters Wissen"
+msgstr "Șterge Filtrele"
 
 #: PortMaster/pylibs/pugscene.py:2149
 msgid "Genres:"
-msgstr "Genres:"
+msgstr "Genuri:"
 
 #: PortMaster/pylibs/pugscene.py:2179
 msgid "Attributes:"
-msgstr "Attributen:"
+msgstr "Atribute:"
 
 #: PortMaster/pylibs/pugscene.py:2208
 msgid "Architecture:"
-msgstr "Architectuur:"
+msgstr "Arhitectură:"
 
 #: PortMaster/pylibs/pugscene.py:2237
 msgid "Availability:"
-msgstr "Beschikbaarheid:"
+msgstr "Disponibilitate:"
 
 #: PortMaster/pylibs/pugscene.py:2266
 msgid "Porters:"
-msgstr "Porters:"
+msgstr "Porteri:"
 
 #: PortMaster/pylibs/pugscene.py:2334
 msgid "Messages"
-msgstr "Berichten"
+msgstr "Mesaje"
 
 #: PortMaster/pylibs/pugscene.py:2369
 msgid "Are you sure you want to cancel?"
-msgstr "Weet u zeker dat u wilt annuleren?"
+msgstr "Ești sigur că vrei să anulezi?"
 
