@@ -88,9 +88,10 @@ class HarbourMaster():
         self.libs_dir   = tools_dir / "PortMaster" / "libs"
         self.themes_dir = tools_dir / "PortMaster" / "themes"
         self.ports_dir  = ports_dir
-        self.scripts_dir  = scripts_dir
-        self.cfg_file     = self.cfg_dir / "config.json"
+        self.scripts_dir   = scripts_dir
+        self.cfg_file      = self.cfg_dir / "config.json"
         self.runtimes_file = self.cfg_dir / "runtimes.json"
+        self.need_restart  = False
 
         self.sources = {}
         self.config = {
@@ -140,6 +141,10 @@ class HarbourMaster():
                 self.platform.first_run()
 
                 self.cfg_data['first-run'] = False
+
+            if (self.tools_dir / "PortMaster" / 'post-install').is_file():
+                (self.tools_dir / "PortMaster" / 'post-install').unlink()
+                self.platform.portmaster_post_install()
 
             if 'theme' not in self.cfg_data:
                 self.cfg_data['theme'] = 'default_theme'

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2025-03-04 10:51\n"
+"PO-Revision-Date: 2025-11-04 09:35\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -27,7 +27,7 @@ msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {po
 msgstr ""
 
 #: Fallout.theme.zip/theme.json:684, Stardew.theme.zip/theme.json:541, Zelda.theme.zip/theme.json:485, ff_VII.theme.zip/theme.json:435, Doom.theme.zip/theme.json:522
-#: default_theme/theme.json:414
+#: default_theme/theme.json:418
 msgid "Free Space: {system.free_space}\n\n"
 "Porter: {port_info.porter}\n"
 "Genres: {port_info.genres}\n"
@@ -45,17 +45,17 @@ msgid "PM: {system.portmaster_version}\n"
 msgstr ""
 
 #: Fallout.theme.zip/theme.json:762, Stardew.theme.zip/theme.json:651, Zelda.theme.zip/theme.json:551, ff_VII.theme.zip/theme.json:523, Doom.theme.zip/theme.json:644
-#: default_theme/theme.json:499, default_theme/theme.json:625
+#: default_theme/theme.json:504, default_theme/theme.json:630
 msgid "IP: {system.ip_address}"
 msgstr ""
 
 #: Fallout.theme.zip/theme.json:831, Stardew.theme.zip/theme.json:739, Zelda.theme.zip/theme.json:633, ff_VII.theme.zip/theme.json:612, Doom.theme.zip/theme.json:741
-#: default_theme/theme.json:550
+#: default_theme/theme.json:555
 msgid "Creator: {theme_info.creator}\n"
 "Status: {theme_info.status}"
 msgstr ""
 
-#: Stardew.theme.zip/theme.json:605, ff_VII.theme.zip/theme.json:480, default_theme/theme.json:441
+#: Stardew.theme.zip/theme.json:605, ff_VII.theme.zip/theme.json:480, default_theme/theme.json:445
 msgid "Time: {system.time_24hr}\n"
 "CFW: {system.cfw_name} ({system.cfw_version})\n"
 "Device: {system.device_name}\n"
@@ -82,7 +82,7 @@ msgstr ""
 msgid "Time: {system.time_24hr}      Battery: {system.battery_level}"
 msgstr ""
 
-#: ff_VII.theme.zip/theme.json:488, default_theme/theme.json:449
+#: ff_VII.theme.zip/theme.json:488, default_theme/theme.json:453
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
@@ -114,7 +114,7 @@ msgid "• Creator: {theme_info.creator}\n"
 "{theme_info.description}"
 msgstr ""
 
-#: hiviz.theme.zip/theme.json:526, default_theme/theme.json:616
+#: hiviz.theme.zip/theme.json:526, default_theme/theme.json:621
 msgid "Name: {runtime_info.name}\n"
 "Status: {runtime_info.status}\n"
 "Ports: {runtime_info.ports}\n"
@@ -137,12 +137,12 @@ msgid "Title: {port_info.title}\n"
 "Description: {port_info.description}"
 msgstr ""
 
-#: default_theme/theme.json:315
+#: default_theme/theme.json:319
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Filters: {ports_list.filters}{endif}"
 msgstr ""
 
-#: default_theme/theme.json:343, default_theme/theme.json:843
+#: default_theme/theme.json:347, default_theme/theme.json:848
 msgid "Genres: {port_info.genres}\n"
 "{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"

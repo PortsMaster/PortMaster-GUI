@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 18:50+0800\n"
-"PO-Revision-Date: 2025-03-04 10:51\n"
+"POT-Creation-Date: 2025-11-04 17:44+0800\n"
+"PO-Revision-Date: 2025-11-04 09:45\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -69,6 +69,10 @@ msgstr "Portugiesisch (Portugal)"
 msgid "Portuguese (Brazil)"
 msgstr "Portugiesisch (Brasilien)"
 
+#: PortMaster/pugwash:147
+msgid "Romanian"
+msgstr ""
+
 #: PortMaster/pugwash:148
 msgid "Russian"
 msgstr "Russisch"
@@ -85,293 +89,308 @@ msgstr "Ukrainisch"
 msgid "Chinese Simplified"
 msgstr "Chinesisch (vereinfacht)"
 
-#: PortMaster/pugwash:701
+#: PortMaster/pugwash:702
 msgid "Unknown IP"
 msgstr "Unbekannte IP"
 
-#: PortMaster/pugwash:833 PortMaster/pugwash:979
+#: PortMaster/pugwash:834 PortMaster/pugwash:983
 msgid "N/A"
 msgstr "N/V"
 
-#: PortMaster/pugwash:942
+#: PortMaster/pugwash:946
 msgid "** NO PORT **"
 msgstr "** KEIN PORT **"
 
-#: PortMaster/pugwash:961 PortMaster/pylibs/pugscene.py:2013
+#: PortMaster/pugwash:965 PortMaster/pylibs/pugscene.py:2040
 msgid "Ready to Run"
-msgstr "Ready to Run"
+msgstr "Bereit zum Laufen"
 
-#: PortMaster/pugwash:961
+#: PortMaster/pugwash:965
 msgid "Requires Files"
 msgstr "Benötigt Dateien"
 
-#: PortMaster/pugwash:973 PortMaster/pugwash:1000
-#: PortMaster/pylibs/pugscene.py:1124
+#: PortMaster/pugwash:977 PortMaster/pugwash:1004
+#: PortMaster/pylibs/pugscene.py:1129
 msgid "Installed"
 msgstr "Installiert"
 
-#: PortMaster/pugwash:975
+#: PortMaster/pugwash:979
 msgid "Missing"
 msgstr "Fehlt"
 
-#: PortMaster/pugwash:1001 PortMaster/pylibs/harbourmaster/harbour.py:1672
-#: PortMaster/pylibs/pugscene.py:2017
+#: PortMaster/pugwash:1005 PortMaster/pylibs/harbourmaster/harbour.py:1901
+#: PortMaster/pylibs/pugscene.py:2044
 msgid "Update Available"
 msgstr "Update verfügbar"
 
-#: PortMaster/pugwash:1002 PortMaster/pylibs/harbourmaster/harbour.py:1671
-#: PortMaster/pylibs/pugscene.py:1124 PortMaster/pylibs/pugscene.py:2016
+#: PortMaster/pugwash:1006 PortMaster/pylibs/harbourmaster/harbour.py:1900
+#: PortMaster/pylibs/pugscene.py:1129 PortMaster/pylibs/pugscene.py:2043
 msgid "Not Installed"
 msgstr "Nicht installiert"
 
-#: PortMaster/pugwash:1178 PortMaster/pugwash:1552
-#: PortMaster/pylibs/pugscene.py:2351 PortMaster/pylibs/pugscene.py:2399
-#: PortMaster/pylibs/pugscene.py:2401
+#: PortMaster/pugwash:1182 PortMaster/pugwash:1570
+#: PortMaster/pylibs/harbourmaster/harbour.py:1680
+#: PortMaster/pylibs/pugscene.py:2381 PortMaster/pylibs/pugscene.py:2429
+#: PortMaster/pylibs/pugscene.py:2431
 msgid "Okay"
 msgstr "Okay"
 
-#: PortMaster/pugwash:1181 PortMaster/pugwash:1553
-#: PortMaster/pylibs/pugscene.py:1452 PortMaster/pylibs/pugscene.py:1460
-#: PortMaster/pylibs/pugscene.py:2320 PortMaster/pylibs/pugscene.py:2354
-#: PortMaster/pylibs/pugscene.py:2399
+#: PortMaster/pugwash:1185 PortMaster/pugwash:1571
+#: PortMaster/pylibs/harbourmaster/harbour.py:1680
+#: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
+#: PortMaster/pylibs/pugscene.py:2350 PortMaster/pylibs/pugscene.py:2384
+#: PortMaster/pylibs/pugscene.py:2429
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: PortMaster/pugwash:1404
+#: PortMaster/pugwash:1422
 msgid "Fetching latest gameinfo.xml files and cover images."
 msgstr "Lade aktuelle gameinfo.xml Dateien und Cover-Bilder herunter."
 
-#: PortMaster/pugwash:1425
+#: PortMaster/pugwash:1443
 #, python-brace-format
 msgid "Downloading gameinfo.xml for {source_name}"
 msgstr "Lade gameinfo.xml für {source_name} herunter"
 
-#: PortMaster/pugwash:1458
+#: PortMaster/pugwash:1476
 #, python-brace-format
 msgid "Installing {port_name}"
 msgstr "Installation von {port_name}"
 
-#: PortMaster/pugwash:1467
+#: PortMaster/pugwash:1485
 #, python-brace-format
 msgid "Uninstalling {port_name}"
 msgstr "Deinstallation von {port_name}"
 
-#: PortMaster/pugwash:1478
+#: PortMaster/pugwash:1496
 msgid "Updating all port sources:"
 msgstr "Aktualisieren aller Port-Quellen:"
 
-#: PortMaster/pugwash:1488
+#: PortMaster/pugwash:1506
 #, python-brace-format
 msgid "Checking {runtime_name}"
 msgstr "Prüfe {runtime_name}"
 
-#: PortMaster/pugwash:1916
+#: PortMaster/pugwash:1935
 #, python-brace-format
 msgid "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\n"
 "Do you want to downgrade?"
 msgstr "Es wird von {old_release_channel} zur {new_release_channel} Version gewechselt.\n\n"
 "Soll das Downgrade durchgeführt werden?"
 
-#: PortMaster/pugwash:1922
+#: PortMaster/pugwash:1941
 #, python-brace-format
 msgid "There is a new version of PortMaster ({portmaster_version})\n\n"
 "Do you want to upgrade?"
 msgstr "Es gibt eine neue Version von PortMaster ({portmaster_version})\n\n"
 "Soll das Upgrade durchgeführt werden?"
 
-#: PortMaster/pugwash:1927
+#: PortMaster/pugwash:1946
 #, python-brace-format
 msgid "Do you want to reinstall PortMaster?\n\n"
 "This will reinstall from the {release_channel} channel to {portmaster_version}."
-msgstr "PortMaster neu installieren?\n\n"
+msgstr "PortMaster wieder installieren?\n\n"
 "Dies wird vom {release_channel} Kanal zur Version {portmaster_version} installiert."
 
-#: PortMaster/pugwash:2066
+#: PortMaster/pugwash:2085
 msgid "Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones."
 msgstr "Ports wurden hinzugefügt oder entfernt, aktualisieren Sie Ihre Spiele-Liste, um die neuen Spiele zu sehen oder entfernen Sie die deinstallierten."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:122
+#: PortMaster/pylibs/harbourmaster/harbour.py:124
 msgid "Loading..."
 msgstr "Lädt..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:217
+#: PortMaster/pylibs/harbourmaster/harbour.py:219
 msgid "Loading Info."
 msgstr "Informationen werden geladen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:255
+#: PortMaster/pylibs/harbourmaster/harbour.py:257
 msgid "Fetching latest featured ports."
 msgstr "Lade neueste Ports."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:272
-#: PortMaster/pylibs/harbourmaster/harbour.py:295
+#: PortMaster/pylibs/harbourmaster/harbour.py:274
+#: PortMaster/pylibs/harbourmaster/harbour.py:297
 msgid "Fetching latest info."
 msgstr "Lade neueste Informationen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:316
+#: PortMaster/pylibs/harbourmaster/harbour.py:318
 msgid "Fetching latest porters."
 msgstr "Lade neueste Porters."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:332
+#: PortMaster/pylibs/harbourmaster/harbour.py:336
 msgid "Loading Sources."
 msgstr "Lade Quellen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:550
+#: PortMaster/pylibs/harbourmaster/harbour.py:554
 msgid "Loading Ports."
 msgstr "Lade Ports."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1364
+#: PortMaster/pylibs/harbourmaster/harbour.py:1568
 #, python-brace-format
 msgid "Installing Theme {download_name}."
 msgstr "Installiere Theme {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1371
-#: PortMaster/pylibs/harbourmaster/harbour.py:1416
-#: PortMaster/pylibs/harbourmaster/harbour.py:1496
+#: PortMaster/pylibs/harbourmaster/harbour.py:1575
+#: PortMaster/pylibs/harbourmaster/harbour.py:1620
+#: PortMaster/pylibs/harbourmaster/harbour.py:1716
 msgid "Installing"
 msgstr "Wird installiert"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1384
+#: PortMaster/pylibs/harbourmaster/harbour.py:1588
 msgid "Theme {download_name!r} installed successfully."
 msgstr "Theme {download_name!r} erfolgreich installiert."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1407
-#: PortMaster/pylibs/harbourmaster/harbour.py:1480
+#: PortMaster/pylibs/harbourmaster/harbour.py:1611
+#: PortMaster/pylibs/harbourmaster/harbour.py:1700
 #, python-brace-format
 msgid "Installing {download_name}."
 msgstr "Installiere {download_name}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1436
-#: PortMaster/pylibs/harbourmaster/harbour.py:1630
+#: PortMaster/pylibs/harbourmaster/harbour.py:1640
+#: PortMaster/pylibs/harbourmaster/harbour.py:1859
 msgid "Port {download_name!r} installed successfully."
 msgstr "Port {download_name!r} erfolgreich installiert."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1590
+#: PortMaster/pylibs/harbourmaster/harbour.py:1679
+msgid "HELLO.\n\n"
+"IT LOOKS LIKE YOU'RE MANUALLY INSTALLING A PORT THAT IS INCOMPATIBLE WITH YOUR DEVICE.\n\n"
+"IF YOU HAVE ISSUES, DO NOT REPORT THEM ON DISCORD, YOU WILL BE SUBJECT TO RIDICULE.\n\n"
+"ARE YOU SURE YOU WANT TO RESUME INSTALLING?"
+msgstr ""
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:1816
 msgid "Installation failed, removing files..."
 msgstr "Installation fehlgeschlagen, entferne Dateien..."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1602
+#: PortMaster/pylibs/harbourmaster/harbour.py:1828
 #, python-brace-format
 msgid "Port {download_name} installed failed."
 msgstr "Port {download_name} Installation fehlgeschlagen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1620
+#: PortMaster/pylibs/harbourmaster/harbour.py:1849
 msgid "Port {download_name!r} and {runtime_name!r} installed successfully."
 msgstr "Port {download_name!r} und {runtime_name!r} erfolgreich installiert."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1625
+#: PortMaster/pylibs/harbourmaster/harbour.py:1854
 msgid "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\n"
 "Either reinstall to try again, or check the wiki for help."
 msgstr "Port {download_name!r} wurde erfolgreich installiert, Installation von {runtime_name!r} ist fehlgeschlagen\n"
 "Installiere den Port erneut um es nochmal zu versuchen oder besuche das Wiki für Hilfe."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1640
+#: PortMaster/pylibs/harbourmaster/harbour.py:1869
 #, python-brace-format
 msgid "Port {runtime} contains a bad runtime, game may not run correctly."
 msgstr "Port {runtime} enthält eine fehlerhafte Runtime, möglicherweise funktioniert das Spiel nicht korrekt."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1654
+#: PortMaster/pylibs/harbourmaster/harbour.py:1883
 #, python-brace-format
 msgid "Port {runtime} contains an unknown runtime, game may not run correctly."
 msgstr "Port {runtime} enthält eine unbekannte Runtime, möglicherweise funktioniert das Spiel nicht korrekt."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1673
+#: PortMaster/pylibs/harbourmaster/harbour.py:1902
 msgid "Verified"
 msgstr "Überprüft"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1674
+#: PortMaster/pylibs/harbourmaster/harbour.py:1903
 msgid "Unverified"
 msgstr "Nicht verifiziert"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1675
+#: PortMaster/pylibs/harbourmaster/harbour.py:1904
 msgid "Broken"
 msgstr "Fehlerhaft"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1682
+#: PortMaster/pylibs/harbourmaster/harbour.py:1911
 msgid "Unable do download a runtime when in offline mode."
 msgstr "Runtimes lassen sich nicht im Offline Modus herunterladen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1688
+#: PortMaster/pylibs/harbourmaster/harbour.py:1917
 #, python-brace-format
 msgid "Verifying runtime {runtime}"
 msgstr "Überprüfe Runtime {runtime}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1697
-#: PortMaster/pylibs/harbourmaster/harbour.py:1700
+#: PortMaster/pylibs/harbourmaster/harbour.py:1926
+#: PortMaster/pylibs/harbourmaster/harbour.py:1929
 msgid "Verifying"
 msgstr "Überprüfe"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1725
+#: PortMaster/pylibs/harbourmaster/harbour.py:1954
 #, python-brace-format
 msgid "Unable to find a download for {runtime}."
 msgstr "Es konnte kein Download für {runtime} gefunden werden."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1731
+#: PortMaster/pylibs/harbourmaster/harbour.py:1960
 #, python-brace-format
 msgid "Unable to download {runtime} in {device_arch}."
 msgstr "Kann {runtime} in {device_arch} nicht herunterladen."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1752
+#: PortMaster/pylibs/harbourmaster/harbour.py:1982
 #, python-brace-format
 msgid "Verified {runtime} successfully."
 msgstr "{runtime} erfolgreich überprüft."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1755
+#: PortMaster/pylibs/harbourmaster/harbour.py:1985
 #, python-brace-format
 msgid "Verified {runtime}."
 msgstr "{runtime} verifiziert."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1761
+#: PortMaster/pylibs/harbourmaster/harbour.py:1991
 #, python-brace-format
 msgid "Updating {runtime}."
 msgstr "Aktualisiere {runtime}."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1765
+#: PortMaster/pylibs/harbourmaster/harbour.py:1995
 #, python-brace-format
 msgid "Runtime {runtime} is broken, reinstalling."
 msgstr "Laufzeit- {runtime} ist defekt, Installiere neu."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1769
+#: PortMaster/pylibs/harbourmaster/harbour.py:1999
 #, python-brace-format
 msgid "Downloading runtime {runtime}."
 msgstr "Lade runtime {runtime} herunter"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1798
-#: PortMaster/pylibs/harbourmaster/harbour.py:1808
+#: PortMaster/pylibs/harbourmaster/harbour.py:2028
+#: PortMaster/pylibs/harbourmaster/harbour.py:2038
 #, python-brace-format
 msgid "Unable to download {runtime}, game may not run correctly."
 msgstr "Runtime konnte nicht runtergeladen werden, öglicherweise funktioniert das Spiel nicht korrekt."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1817
+#: PortMaster/pylibs/harbourmaster/harbour.py:2047
 #, python-brace-format
 msgid "Successfully downloaded {runtime}."
 msgstr "Erfolgreich {runtime} heruntergeladen"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1826
-#: PortMaster/pylibs/harbourmaster/harbour.py:1905
+#: PortMaster/pylibs/harbourmaster/harbour.py:2056
+#: PortMaster/pylibs/harbourmaster/harbour.py:2135
 msgid "Unable to download in offline mode."
 msgstr "Download im Offline-Modus nicht möglich."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1923
+#: PortMaster/pylibs/harbourmaster/harbour.py:2153
 #, python-brace-format
 msgid "Unable to find a source for {port_name}"
 msgstr "Es konnte keine Quelle für {port_name} gefunden werden."
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1937
+#: PortMaster/pylibs/harbourmaster/harbour.py:2167
 #, python-brace-format
 msgid "Unknown port {port_name}"
 msgstr "Unbekannter Port {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:1970
+#: PortMaster/pylibs/harbourmaster/harbour.py:2202
 #, python-brace-format
 msgid "Removing {port_name}"
 msgstr "Entferne {port_name}"
 
-#: PortMaster/pylibs/harbourmaster/harbour.py:2011
+#: PortMaster/pylibs/harbourmaster/harbour.py:2245
+#, python-brace-format
+msgid "Error uninstalling {port_name}\n\n"
+"{error}"
+msgstr ""
+
+#: PortMaster/pylibs/harbourmaster/harbour.py:2250
 #, python-brace-format
 msgid "Successfully uninstalled {port_name}"
 msgstr "Erfolgreich {port_name} deinstalliert"
 
-#: PortMaster/pylibs/harbourmaster/platform.py:490
+#: PortMaster/pylibs/harbourmaster/platform.py:536
 msgid "\n\n"
 "In order to do so:\n"
 "MENU -> UTILITIES -> Rescan Rom Directory"
@@ -392,28 +411,28 @@ msgid "Auto Update."
 msgstr "Automatische Aktualisierung"
 
 #: PortMaster/pylibs/harbourmaster/source.py:151
-#: PortMaster/pylibs/harbourmaster/source.py:955
+#: PortMaster/pylibs/harbourmaster/source.py:956
 msgid "Updating"
 msgstr "Aktualisiere"
 
 #: PortMaster/pylibs/harbourmaster/source.py:162
-#: PortMaster/pylibs/harbourmaster/source.py:967
+#: PortMaster/pylibs/harbourmaster/source.py:968
 msgid "Up to date already"
 msgstr "Neuste Version bereits installiert"
 
 #: PortMaster/pylibs/harbourmaster/source.py:167
-#: PortMaster/pylibs/harbourmaster/source.py:972
+#: PortMaster/pylibs/harbourmaster/source.py:973
 msgid "Fetching latest info"
 msgstr "Lade neuste Informationen"
 
 #: PortMaster/pylibs/harbourmaster/source.py:201
-#: PortMaster/pylibs/harbourmaster/source.py:1052
+#: PortMaster/pylibs/harbourmaster/source.py:1053
 msgid "Done."
 msgstr "Fertig"
 
 #: PortMaster/pylibs/harbourmaster/source.py:209
 #: PortMaster/pylibs/harbourmaster/source.py:542
-#: PortMaster/pylibs/harbourmaster/source.py:1060
+#: PortMaster/pylibs/harbourmaster/source.py:1061
 #, python-brace-format
 msgid "Unable to find {port_name}."
 msgstr "{port_name} konnte nicht gefunden werden"
@@ -434,8 +453,8 @@ msgstr "Erfolgreich!"
 
 #: PortMaster/pylibs/harbourmaster/source.py:291
 #: PortMaster/pylibs/harbourmaster/source.py:455
-#: PortMaster/pylibs/harbourmaster/source.py:859
-#: PortMaster/pylibs/pugtheme.py:423
+#: PortMaster/pylibs/harbourmaster/source.py:860
+#: PortMaster/pylibs/pugtheme.py:428
 msgid "Fetching info"
 msgstr "Lade Informationen"
 
@@ -448,377 +467,378 @@ msgstr "Lade neuste Ports"
 msgid "Fetching info."
 msgstr "Lade Informationen"
 
-#: PortMaster/pylibs/harbourmaster/source.py:1151
+#: PortMaster/pylibs/harbourmaster/source.py:1152
 msgid "Unable to download verification file."
 msgstr "Überprüfungsdatei konnte nicht heruntergeladen werden"
 
-#: PortMaster/pylibs/harbourmaster/source.py:1162
+#: PortMaster/pylibs/harbourmaster/source.py:1163
 msgid "Unable to download non zip files."
 msgstr "Nur Zip Dateien können heruntergeladen werden."
 
-#: PortMaster/pylibs/harbourmaster/util.py:360
+#: PortMaster/pylibs/harbourmaster/util.py:372
 #, python-brace-format
 msgid "Unable to download file. [{status_code}]"
 msgstr "[{status_code}] konnte nicht heruntergeladen werden."
 
-#: PortMaster/pylibs/harbourmaster/util.py:376
+#: PortMaster/pylibs/harbourmaster/util.py:388
 #, python-brace-format
 msgid "Downloading {file_url} - ({total_length_mb})"
 msgstr "Lade {file_url} - ({total_length_mb}) herunter."
 
-#: PortMaster/pylibs/harbourmaster/util.py:388
-#: PortMaster/pylibs/harbourmaster/util.py:402
+#: PortMaster/pylibs/harbourmaster/util.py:400
+#: PortMaster/pylibs/harbourmaster/util.py:414
 msgid "Downloading file."
 msgstr "Lade Datei herunter"
 
-#: PortMaster/pylibs/harbourmaster/util.py:419
+#: PortMaster/pylibs/harbourmaster/util.py:431
 #, python-brace-format
 msgid "Download failed: {err}"
 msgstr "Download fehlgeschlagen: {err}"
 
-#: PortMaster/pylibs/harbourmaster/util.py:431
+#: PortMaster/pylibs/harbourmaster/util.py:443
 msgid "Download validation failed."
 msgstr "Download Überprüfung fehlgeschlagen"
 
-#: PortMaster/pylibs/harbourmaster/util.py:437
+#: PortMaster/pylibs/harbourmaster/util.py:449
 msgid "Passed file validation."
 msgstr "Dateiüberprüfung erfolgreich"
 
-#: PortMaster/pylibs/harbourmaster/util.py:442
+#: PortMaster/pylibs/harbourmaster/util.py:454
 msgid "Unable to validate download."
 msgstr "Download konnte nicht überprüft werden."
 
-#: PortMaster/pylibs/pugscene.py:380 PortMaster/pylibs/pugscene.py:476
+#: PortMaster/pylibs/pugscene.py:381 PortMaster/pylibs/pugscene.py:477
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: PortMaster/pylibs/pugscene.py:408
+#: PortMaster/pylibs/pugscene.py:409
 msgid "Disclaimer"
 msgstr "Haftungsausschluss"
 
-#: PortMaster/pylibs/pugscene.py:434
+#: PortMaster/pylibs/pugscene.py:435
 msgid "Accept"
 msgstr "Akzeptieren"
 
-#: PortMaster/pylibs/pugscene.py:434 PortMaster/pylibs/pugscene.py:514
+#: PortMaster/pylibs/pugscene.py:435 PortMaster/pylibs/pugscene.py:515
 msgid "Quit"
 msgstr "Verlassen"
 
-#: PortMaster/pylibs/pugscene.py:464 PortMaster/pylibs/pugscene.py:578
+#: PortMaster/pylibs/pugscene.py:465 PortMaster/pylibs/pugscene.py:579
 msgid "Are you sure you want to exit PortMaster?"
 msgstr "Bist du sicher, dass du PortMaster verlassen möchtest?"
 
-#: PortMaster/pylibs/pugscene.py:489 PortMaster/pylibs/pugscene.py:1504
+#: PortMaster/pylibs/pugscene.py:490 PortMaster/pylibs/pugscene.py:1513
+#: PortMaster/pylibs/pugscene.py:1515
 msgid "Featured Ports"
 msgstr "Empfohlene Ports"
 
-#: PortMaster/pylibs/pugscene.py:490
+#: PortMaster/pylibs/pugscene.py:491
 msgid "Hand curated lists of ports"
 msgstr "Von Hand ausgewählte Ports"
 
-#: PortMaster/pylibs/pugscene.py:493
+#: PortMaster/pylibs/pugscene.py:494
 msgid "All Ports"
 msgstr "Alle Ports"
 
-#: PortMaster/pylibs/pugscene.py:494
+#: PortMaster/pylibs/pugscene.py:495
 msgid "List all ports available on PortMaster."
 msgstr "Alle verfügbaren PortMaster Ports auflisten."
 
-#: PortMaster/pylibs/pugscene.py:497
+#: PortMaster/pylibs/pugscene.py:498
 msgid "Ready to Run Ports"
 msgstr "Ready to Run Ports"
 
-#: PortMaster/pylibs/pugscene.py:498
+#: PortMaster/pylibs/pugscene.py:499
 msgid "List all ports that are ready to play!"
 msgstr "Alle Ports auflisten, die zum Spielen bereit sind!"
 
-#: PortMaster/pylibs/pugscene.py:501
+#: PortMaster/pylibs/pugscene.py:502
 msgid "Manage Ports"
 msgstr "Ports verwalten"
 
-#: PortMaster/pylibs/pugscene.py:502
+#: PortMaster/pylibs/pugscene.py:503
 msgid "Update / Uninstall Ports"
 msgstr "Ports aktualisieren / deinstallieren"
 
-#: PortMaster/pylibs/pugscene.py:507
+#: PortMaster/pylibs/pugscene.py:508
 msgid "Options"
 msgstr "Optionen"
 
-#: PortMaster/pylibs/pugscene.py:508
+#: PortMaster/pylibs/pugscene.py:509
 msgid "PortMaster Options"
 msgstr "PortMaster Optionen"
 
-#: PortMaster/pylibs/pugscene.py:511
+#: PortMaster/pylibs/pugscene.py:512
 msgid "Exit"
 msgstr "Beenden"
 
-#: PortMaster/pylibs/pugscene.py:512
+#: PortMaster/pylibs/pugscene.py:513
 msgid "Quit PortMaster"
 msgstr "PortMaster beenden"
 
-#: PortMaster/pylibs/pugscene.py:514 PortMaster/pylibs/pugscene.py:721
-#: PortMaster/pylibs/pugscene.py:1452 PortMaster/pylibs/pugscene.py:1460
+#: PortMaster/pylibs/pugscene.py:515 PortMaster/pylibs/pugscene.py:722
+#: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Enter"
 msgstr "Eingabe"
 
-#: PortMaster/pylibs/pugscene.py:534
+#: PortMaster/pylibs/pugscene.py:535
 #, python-brace-format
 msgid "Secret Mode {secret_mode}"
 msgstr "Geheim-Modus {secret_mode}"
 
-#: PortMaster/pylibs/pugscene.py:535 PortMaster/pylibs/pugscene.py:616
-#: PortMaster/pylibs/pugscene.py:620 PortMaster/pylibs/pugscene.py:660
-#: PortMaster/pylibs/pugscene.py:703 PortMaster/pylibs/pugscene.py:707
-#: PortMaster/pylibs/pugscene.py:761 PortMaster/pylibs/pugscene.py:771
-#: PortMaster/pylibs/pugscene.py:785 PortMaster/pylibs/pugscene.py:861
-#: PortMaster/pylibs/pugscene.py:870
+#: PortMaster/pylibs/pugscene.py:536 PortMaster/pylibs/pugscene.py:617
+#: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:661
+#: PortMaster/pylibs/pugscene.py:704 PortMaster/pylibs/pugscene.py:708
+#: PortMaster/pylibs/pugscene.py:764 PortMaster/pylibs/pugscene.py:776
+#: PortMaster/pylibs/pugscene.py:790 PortMaster/pylibs/pugscene.py:866
+#: PortMaster/pylibs/pugscene.py:875
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: PortMaster/pylibs/pugscene.py:535 PortMaster/pylibs/pugscene.py:616
-#: PortMaster/pylibs/pugscene.py:620 PortMaster/pylibs/pugscene.py:660
-#: PortMaster/pylibs/pugscene.py:703 PortMaster/pylibs/pugscene.py:707
-#: PortMaster/pylibs/pugscene.py:761 PortMaster/pylibs/pugscene.py:771
-#: PortMaster/pylibs/pugscene.py:785 PortMaster/pylibs/pugscene.py:861
-#: PortMaster/pylibs/pugscene.py:870
+#: PortMaster/pylibs/pugscene.py:536 PortMaster/pylibs/pugscene.py:617
+#: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:661
+#: PortMaster/pylibs/pugscene.py:704 PortMaster/pylibs/pugscene.py:708
+#: PortMaster/pylibs/pugscene.py:764 PortMaster/pylibs/pugscene.py:776
+#: PortMaster/pylibs/pugscene.py:790 PortMaster/pylibs/pugscene.py:866
+#: PortMaster/pylibs/pugscene.py:875
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: PortMaster/pylibs/pugscene.py:588
+#: PortMaster/pylibs/pugscene.py:589
 msgid "Options Menu"
 msgstr "Optionen"
 
-#: PortMaster/pylibs/pugscene.py:594
+#: PortMaster/pylibs/pugscene.py:595
 msgid "Interface"
 msgstr "Benutzeroberfläche"
 
-#: PortMaster/pylibs/pugscene.py:598
+#: PortMaster/pylibs/pugscene.py:599
 msgid "Choose Language"
 msgstr "Sprache wählen"
 
-#: PortMaster/pylibs/pugscene.py:599
+#: PortMaster/pylibs/pugscene.py:600
 msgid "Select the language PortMaster uses."
 msgstr "Sprache auswählen."
 
-#: PortMaster/pylibs/pugscene.py:602 PortMaster/pylibs/pugscene.py:1217
+#: PortMaster/pylibs/pugscene.py:603 PortMaster/pylibs/pugscene.py:1222
 msgid "Select Theme"
 msgstr "Theme auswählen"
 
-#: PortMaster/pylibs/pugscene.py:603
+#: PortMaster/pylibs/pugscene.py:604
 msgid "Select a theme for PortMaster."
 msgstr "Theme auswählen."
 
-#: PortMaster/pylibs/pugscene.py:609
+#: PortMaster/pylibs/pugscene.py:610
 msgid "Select Color Scheme"
 msgstr "Farbschema auswählen"
 
-#: PortMaster/pylibs/pugscene.py:610
+#: PortMaster/pylibs/pugscene.py:611
 msgid "Select a colour scheme for PortMaster"
 msgstr "Farbschema auswählen"
 
-#: PortMaster/pylibs/pugscene.py:612
+#: PortMaster/pylibs/pugscene.py:613
 msgid "Audio"
 msgstr "Audio"
 
-#: PortMaster/pylibs/pugscene.py:616 PortMaster/pylibs/pugscene.py:861
+#: PortMaster/pylibs/pugscene.py:617 PortMaster/pylibs/pugscene.py:866
 msgid "Music: "
 msgstr "Musik"
 
-#: PortMaster/pylibs/pugscene.py:617
+#: PortMaster/pylibs/pugscene.py:618
 msgid "Enable or Disable background music in PortMaster."
 msgstr "Hintergrundmusik in PortMaster aktivieren oder deaktivieren."
 
-#: PortMaster/pylibs/pugscene.py:620 PortMaster/pylibs/pugscene.py:870
+#: PortMaster/pylibs/pugscene.py:621 PortMaster/pylibs/pugscene.py:875
 msgid "Sound FX: "
 msgstr "Sound FX"
 
-#: PortMaster/pylibs/pugscene.py:621
+#: PortMaster/pylibs/pugscene.py:622
 msgid "Enable or Disable soundfx in PortMaster."
 msgstr "Soundfx in PortMaster aktivieren oder deaktivieren."
 
-#: PortMaster/pylibs/pugscene.py:624
+#: PortMaster/pylibs/pugscene.py:625
 msgid "Port Metadata"
 msgstr "Port-Metadaten"
 
-#: PortMaster/pylibs/pugscene.py:628 PortMaster/pylibs/pugscene.py:898
+#: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Metadata Update: "
 msgstr "Metadaten Update: "
 
-#: PortMaster/pylibs/pugscene.py:628 PortMaster/pylibs/pugscene.py:898
+#: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Auto"
 msgstr "Automatisch"
 
-#: PortMaster/pylibs/pugscene.py:628 PortMaster/pylibs/pugscene.py:898
+#: PortMaster/pylibs/pugscene.py:629 PortMaster/pylibs/pugscene.py:903
 msgid "Manual"
 msgstr "Manuell"
 
-#: PortMaster/pylibs/pugscene.py:629
+#: PortMaster/pylibs/pugscene.py:630
 msgid "PortMaster updates metadata when ports are installed so that it shows port images and descriptions when browsing ports on your device."
 msgstr "PortMaster aktualisiert Metadaten, wenn Ports installiert werden, sodass Bilder und Beschreibungen beim Durchsuchen von Ports auf dem Gerät angezeigt werden."
 
-#: PortMaster/pylibs/pugscene.py:633
+#: PortMaster/pylibs/pugscene.py:634
 msgid "Metadata Refresh"
 msgstr "Metadaten aktualisieren"
 
-#: PortMaster/pylibs/pugscene.py:634
+#: PortMaster/pylibs/pugscene.py:635
 msgid "Manually update port metadata with missing/updated information and artwork."
 msgstr "Port-Metadaten manuell mit fehlenden/aktualisierten Informationen und Grafiken aktualisieren."
 
-#: PortMaster/pylibs/pugscene.py:639 PortMaster/pylibs/pugscene.py:648
-#: PortMaster/pylibs/pugscene.py:935
+#: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:649
+#: PortMaster/pylibs/pugscene.py:940
 msgid "Ports Location: "
 msgstr "Ports-Speicherort: "
 
-#: PortMaster/pylibs/pugscene.py:639 PortMaster/pylibs/pugscene.py:913
+#: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:918
 msgid "Roms section"
 msgstr "Rom-Bereich"
 
-#: PortMaster/pylibs/pugscene.py:639 PortMaster/pylibs/pugscene.py:914
+#: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:919
 msgid "Ports tab"
 msgstr "Ports-Tab"
 
-#: PortMaster/pylibs/pugscene.py:640 PortMaster/pylibs/pugscene.py:649
+#: PortMaster/pylibs/pugscene.py:641 PortMaster/pylibs/pugscene.py:650
 msgid "Location where ports should be installed to."
 msgstr "Speicherort an dem Ports installiert werden sollen."
 
-#: PortMaster/pylibs/pugscene.py:648
+#: PortMaster/pylibs/pugscene.py:649
 msgid "SD 1"
 msgstr "SD 1"
 
-#: PortMaster/pylibs/pugscene.py:648
+#: PortMaster/pylibs/pugscene.py:649
 msgid "SD 2"
 msgstr "SD 2"
 
-#: PortMaster/pylibs/pugscene.py:651
+#: PortMaster/pylibs/pugscene.py:652
 msgid "System"
 msgstr "System"
 
-#: PortMaster/pylibs/pugscene.py:655 PortMaster/pylibs/pugscene.py:1046
+#: PortMaster/pylibs/pugscene.py:656 PortMaster/pylibs/pugscene.py:1051
 msgid "Runtime Manager"
 msgstr "Runtime-Verwaltung"
 
-#: PortMaster/pylibs/pugscene.py:656
+#: PortMaster/pylibs/pugscene.py:657
 msgid "Manage port runtimes."
 msgstr "Port Runtimes verwalten."
 
-#: PortMaster/pylibs/pugscene.py:660 PortMaster/pylibs/pugscene.py:771
+#: PortMaster/pylibs/pugscene.py:661 PortMaster/pylibs/pugscene.py:776
 msgid "Experimental Ports: "
 msgstr "Experimentelle Ports: "
 
-#: PortMaster/pylibs/pugscene.py:661
+#: PortMaster/pylibs/pugscene.py:662
 msgid "Show or hide experimental ports."
 msgstr "Zeige oder verstecke experimentelle Ports."
 
-#: PortMaster/pylibs/pugscene.py:665
+#: PortMaster/pylibs/pugscene.py:666
 msgid "Update Ports"
 msgstr "Ports aktualisieren"
 
-#: PortMaster/pylibs/pugscene.py:666
+#: PortMaster/pylibs/pugscene.py:667
 msgid "Fetch latest ports information."
 msgstr "Neueste Port-Informationen abrufen."
 
-#: PortMaster/pylibs/pugscene.py:670
+#: PortMaster/pylibs/pugscene.py:671
 msgid "Update PortMaster"
 msgstr "PortMaster aktualisieren"
 
-#: PortMaster/pylibs/pugscene.py:671
+#: PortMaster/pylibs/pugscene.py:672
 msgid "Force check for a new PortMaster version."
 msgstr "Auf neue PortMaster Version prüfen."
 
-#: PortMaster/pylibs/pugscene.py:676
+#: PortMaster/pylibs/pugscene.py:677
 msgid "Restore PortMaster"
 msgstr "PortMaster wiederherstellen"
 
-#: PortMaster/pylibs/pugscene.py:677
+#: PortMaster/pylibs/pugscene.py:678
 msgid "This will restore PortMaster to the latest stable version of PortMaster."
 msgstr "Dadurch wird PortMaster auf die aktuelle stabile Version von PortMaster zurückgesetzt."
 
-#: PortMaster/pylibs/pugscene.py:681
+#: PortMaster/pylibs/pugscene.py:682
 #, python-brace-format
 msgid "Release Channel: {channel}"
 msgstr "Release-Kanal: {channel}"
 
-#: PortMaster/pylibs/pugscene.py:683
+#: PortMaster/pylibs/pugscene.py:684
 msgid "Change release channel of PortMaster, either beta or stable."
 msgstr "Ändert den Release-Kanal von PortMaster, entweder Beta oder Stable."
 
-#: PortMaster/pylibs/pugscene.py:689
+#: PortMaster/pylibs/pugscene.py:690
 msgid "Enable Alpha Releases"
 msgstr "Alpha-Versionen aktivieren"
 
-#: PortMaster/pylibs/pugscene.py:690
+#: PortMaster/pylibs/pugscene.py:691
 msgid "Change release channel of PortMaster to alpha."
 msgstr "Ändert den Release-Kanal von PortMaster auf \"Alpha\"."
 
-#: PortMaster/pylibs/pugscene.py:696 PortMaster/pylibs/pugscene.py:888
+#: PortMaster/pylibs/pugscene.py:697 PortMaster/pylibs/pugscene.py:893
 #, python-brace-format
 msgid "Controller Mode: {controller_mode}"
 msgstr "Controller-Modus: {controller_mode}"
 
-#: PortMaster/pylibs/pugscene.py:697
+#: PortMaster/pylibs/pugscene.py:698
 msgid "Toggle between various controller layouts."
 msgstr "Zwischen verschiedenen Controller-Layouts wechseln."
 
-#: PortMaster/pylibs/pugscene.py:700
+#: PortMaster/pylibs/pugscene.py:701
 msgid "Secret Options"
 msgstr "Geheime Optionen"
 
-#: PortMaster/pylibs/pugscene.py:703 PortMaster/pylibs/pugscene.py:761
+#: PortMaster/pylibs/pugscene.py:704 PortMaster/pylibs/pugscene.py:764
 msgid "All Ports: "
 msgstr "Alle Ports: "
 
-#: PortMaster/pylibs/pugscene.py:704
+#: PortMaster/pylibs/pugscene.py:705
 msgid "Show all ports, ignoring requirements."
 msgstr "Zeige alle Ports, ignoriere Voraussetzungen."
 
-#: PortMaster/pylibs/pugscene.py:707 PortMaster/pylibs/pugscene.py:785
+#: PortMaster/pylibs/pugscene.py:708 PortMaster/pylibs/pugscene.py:790
 msgid "CWTBE Mode: "
 msgstr "CWTBE Modus: "
 
-#: PortMaster/pylibs/pugscene.py:708
+#: PortMaster/pylibs/pugscene.py:709
 msgid "Enable gptokeyb2 by default."
 msgstr "Aktiviere gptokeyb2 standardmäßig."
 
-#: PortMaster/pylibs/pugscene.py:711
+#: PortMaster/pylibs/pugscene.py:712
 msgid "Delete PortMaster Config"
 msgstr "PortMaster Konfiguration löschen"
 
-#: PortMaster/pylibs/pugscene.py:712 PortMaster/pylibs/pugscene.py:716
+#: PortMaster/pylibs/pugscene.py:713 PortMaster/pylibs/pugscene.py:717
 msgid "This can break stuff, don't touch unless you know what you are doing."
 msgstr "Griffel weg wenn du kein Plan hast, sonst machst du noch alles kaputt!"
 
-#: PortMaster/pylibs/pugscene.py:715
+#: PortMaster/pylibs/pugscene.py:716
 msgid "Delete PortMaster Runtimes"
 msgstr "PortMaster Laufzeiten löschen"
 
-#: PortMaster/pylibs/pugscene.py:721 PortMaster/pylibs/pugscene.py:1140
-#: PortMaster/pylibs/pugscene.py:1143 PortMaster/pylibs/pugscene.py:1251
-#: PortMaster/pylibs/pugscene.py:1333 PortMaster/pylibs/pugscene.py:1334
-#: PortMaster/pylibs/pugscene.py:1387 PortMaster/pylibs/pugscene.py:1388
-#: PortMaster/pylibs/pugscene.py:1515 PortMaster/pylibs/pugscene.py:1750
-#: PortMaster/pylibs/pugscene.py:1774 PortMaster/pylibs/pugscene.py:1776
-#: PortMaster/pylibs/pugscene.py:1805 PortMaster/pylibs/pugscene.py:1808
-#: PortMaster/pylibs/pugscene.py:1896 PortMaster/pylibs/pugscene.py:1898
+#: PortMaster/pylibs/pugscene.py:722 PortMaster/pylibs/pugscene.py:1145
+#: PortMaster/pylibs/pugscene.py:1148 PortMaster/pylibs/pugscene.py:1256
+#: PortMaster/pylibs/pugscene.py:1338 PortMaster/pylibs/pugscene.py:1339
+#: PortMaster/pylibs/pugscene.py:1392 PortMaster/pylibs/pugscene.py:1393
+#: PortMaster/pylibs/pugscene.py:1526 PortMaster/pylibs/pugscene.py:1777
+#: PortMaster/pylibs/pugscene.py:1801 PortMaster/pylibs/pugscene.py:1803
+#: PortMaster/pylibs/pugscene.py:1832 PortMaster/pylibs/pugscene.py:1835
+#: PortMaster/pylibs/pugscene.py:1923 PortMaster/pylibs/pugscene.py:1925
 msgid "Back"
 msgstr "Zurück"
 
-#: PortMaster/pylibs/pugscene.py:789
+#: PortMaster/pylibs/pugscene.py:794
 msgid "Are you sure you want to restore PortMaster?\n\n"
 "This will require you to run a specially crafted port that will be installed."
 msgstr "Bist du sicher, dass du PortMaster wiederherstellen möchtest?\n\n"
 "Dies wird erfordern, dass du einen speziell erstellten Port ausführst, der installiert wird."
 
-#: PortMaster/pylibs/pugscene.py:799
+#: PortMaster/pylibs/pugscene.py:804
 msgid "A special port has been installed called \"Restore PortMaster.sh\"\n\n"
 "Run this port to restore your PortMaster installation."
 msgstr "Ein spezieller Port mit dem Namen \"Restore PortMaster.sh\" wurde installiert.\n\n"
 "Starte diesen Port, um die PortMaster Installation wiederherzustellen."
 
-#: PortMaster/pylibs/pugscene.py:802
+#: PortMaster/pylibs/pugscene.py:807
 msgid "PortMaster will now quit so you can run the restoration port."
 msgstr "PortMaster wird nun beendet, damit du den Wiederherstellungs-Port ausführen kannst."
 
-#: PortMaster/pylibs/pugscene.py:809
+#: PortMaster/pylibs/pugscene.py:814
 msgid "Are you sure you want to change to the alpha release channel?\n\n"
 "PortMaster will upgrade or downgrade accordingly.\n\n"
 "THIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED"
@@ -826,33 +846,33 @@ msgstr "Bist du sicher, dass du zum Alpha-Release-Kanal wechseln möchtest?\n\n"
 "PortMaster wird entsprechend upgraden oder downgraden.\n\n"
 "WARNUNG: DIES KANN UND WIRD PROBLEME VERURSACHEN"
 
-#: PortMaster/pylibs/pugscene.py:836
+#: PortMaster/pylibs/pugscene.py:841
 #, python-brace-format
 msgid "Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\n"
 "PortMaster will upgrade or downgrade accordingly."
 msgstr "Bist du sicher, dass du den Release-Kanal von {current_channel} auf {new_channel} ändern möchtest?\n\n"
 "PortMaster wird entsprechend upgraden oder downgraden."
 
-#: PortMaster/pylibs/pugscene.py:904
+#: PortMaster/pylibs/pugscene.py:909
 msgid "Are you sure you want to update your gamelist.xml?\n\n"
 "This will override any scraped artwork or port information and will require a 50+ MB download."
 msgstr "Möchten sie wirklich gamelist.xml aktualisieren?\n\n\n\n"
 "Dadurch werden gespeicherte Designs oder Port-Informationen überschrieben und es wird ein 50+ MB Download benötigt."
 
-#: PortMaster/pylibs/pugscene.py:925
+#: PortMaster/pylibs/pugscene.py:930
 #, python-brace-format
 msgid "Are you sure you want to move ports from the {from_mode} to the {to_mode}"
 msgstr "Sind Sie sicher, dass Sie Ports von \"{from_mode}\" nach \"{to_mode}\" verschieben möchten"
 
-#: PortMaster/pylibs/pugscene.py:944
+#: PortMaster/pylibs/pugscene.py:949
 msgid "SDCARD 1"
 msgstr "SDKARTE 1"
 
-#: PortMaster/pylibs/pugscene.py:945
+#: PortMaster/pylibs/pugscene.py:950
 msgid "SDCARD 2"
 msgstr "SDKARTE 2"
 
-#: PortMaster/pylibs/pugscene.py:949
+#: PortMaster/pylibs/pugscene.py:954
 #, python-brace-format
 msgid "Are you sure you want to manage and install ports on {to_loc}?\n\n"
 "Already installed ports will not be moved.\n"
@@ -861,326 +881,328 @@ msgstr "Möchten sie wirklich Ports auf {to_loc} installieren und verwalten?\n\n
 "Bereits installiere Ports werden nicht verschoben.\n\n"
 "PortMaster wird neu starten um die Änderungen anzuwenden."
 
-#: PortMaster/pylibs/pugscene.py:1013
+#: PortMaster/pylibs/pugscene.py:1018
 msgid "Deleting Runtimes:"
 msgstr "Lösche Runtimes:"
 
-#: PortMaster/pylibs/pugscene.py:1038
+#: PortMaster/pylibs/pugscene.py:1043
 msgid "Source Manager"
 msgstr "Quellen-Manager"
 
-#: PortMaster/pylibs/pugscene.py:1080
+#: PortMaster/pylibs/pugscene.py:1085
 msgid "Download All"
 msgstr "Alles herunterladen"
 
-#: PortMaster/pylibs/pugscene.py:1125
+#: PortMaster/pylibs/pugscene.py:1130
 msgid "Used"
 msgstr "Benutzt"
 
-#: PortMaster/pylibs/pugscene.py:1125
+#: PortMaster/pylibs/pugscene.py:1130
 msgid "Not Used"
 msgstr "Nicht verwendet"
 
-#: PortMaster/pylibs/pugscene.py:1140
+#: PortMaster/pylibs/pugscene.py:1145
 msgid "Check"
 msgstr "Überprüfen"
 
-#: PortMaster/pylibs/pugscene.py:1140 PortMaster/pylibs/pugscene.py:1805
-#: PortMaster/pylibs/pugscene.py:1896
+#: PortMaster/pylibs/pugscene.py:1145 PortMaster/pylibs/pugscene.py:1832
+#: PortMaster/pylibs/pugscene.py:1923
 msgid "Uninstall"
 msgstr "Deinstallieren"
 
-#: PortMaster/pylibs/pugscene.py:1143 PortMaster/pylibs/pugscene.py:1808
-#: PortMaster/pylibs/pugscene.py:1898
+#: PortMaster/pylibs/pugscene.py:1148 PortMaster/pylibs/pugscene.py:1835
+#: PortMaster/pylibs/pugscene.py:1925
 msgid "Install"
 msgstr "Installieren"
 
-#: PortMaster/pylibs/pugscene.py:1158
+#: PortMaster/pylibs/pugscene.py:1163
 msgid "Are you sure you want to download and verify all runtimes?"
 msgstr "Alle runtimes herunterladen und verifizieren?"
 
-#: PortMaster/pylibs/pugscene.py:1200
+#: PortMaster/pylibs/pugscene.py:1205
 #, python-brace-format
 msgid "Deleted runtime {runtime}"
 msgstr "Runtime- {runtime} entfernt"
 
-#: PortMaster/pylibs/pugscene.py:1235
+#: PortMaster/pylibs/pugscene.py:1240
 #, python-brace-format
 msgid "{theme_name} (Selected)"
 msgstr "{theme_name} (Ausgewählt)"
 
-#: PortMaster/pylibs/pugscene.py:1249 PortMaster/pylibs/pugscene.py:1334
-#: PortMaster/pylibs/pugscene.py:1388 PortMaster/pylibs/pugscene.py:1452
-#: PortMaster/pylibs/pugscene.py:1460 PortMaster/pylibs/pugscene.py:1515
+#: PortMaster/pylibs/pugscene.py:1254 PortMaster/pylibs/pugscene.py:1339
+#: PortMaster/pylibs/pugscene.py:1393 PortMaster/pylibs/pugscene.py:1457
+#: PortMaster/pylibs/pugscene.py:1465 PortMaster/pylibs/pugscene.py:1526
 msgid "Select"
 msgstr "Auswählen"
 
-#: PortMaster/pylibs/pugscene.py:1254
+#: PortMaster/pylibs/pugscene.py:1259
 msgid "Download"
 msgstr "Herunterladen"
 
-#: PortMaster/pylibs/pugscene.py:1273
+#: PortMaster/pylibs/pugscene.py:1278
 msgid "Do you want to change theme?\n\n"
 "You will have to restart for it to take effect."
 msgstr "Theme wechseln?\n\n"
 "Neustart erforderlich, damit Änderungen wirksam werden."
 
-#: PortMaster/pylibs/pugscene.py:1314
+#: PortMaster/pylibs/pugscene.py:1319
 msgid "Select Colour Scheme"
 msgstr "Farbschema auswählen"
 
-#: PortMaster/pylibs/pugscene.py:1328
+#: PortMaster/pylibs/pugscene.py:1333
 #, python-brace-format
 msgid "{item_name} (Selected)"
 msgstr "{item_name} (Ausgewählt)"
 
-#: PortMaster/pylibs/pugscene.py:1351
+#: PortMaster/pylibs/pugscene.py:1356
 msgid "Do you want to change the themes color scheme?\n\n"
 "You will have to restart for it to take affect."
 msgstr "Farbschema für das Theme ändern?\n\n"
 "Neustart erforderlich, damit Änderungen wirksam werden."
 
-#: PortMaster/pylibs/pugscene.py:1372
+#: PortMaster/pylibs/pugscene.py:1377
 msgid "Language Select"
 msgstr "Sprachauswahl"
 
-#: PortMaster/pylibs/pugscene.py:1382
+#: PortMaster/pylibs/pugscene.py:1387
 #, python-brace-format
 msgid "{lang_name} (Selected)"
 msgstr "{lang_name} (Ausgewählt)"
 
-#: PortMaster/pylibs/pugscene.py:1405
+#: PortMaster/pylibs/pugscene.py:1410
 msgid "Do you want to change language?\n\n"
 "You will have to restart for it to take affect."
 msgstr "Sprache wechseln?\n\n"
 "Neustart erforderlich, damit Änderungen wirksam werden."
 
-#: PortMaster/pylibs/pugscene.py:1452 PortMaster/pylibs/pugscene.py:1460
+#: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Delete"
 msgstr "Löschen"
 
-#: PortMaster/pylibs/pugscene.py:1452
+#: PortMaster/pylibs/pugscene.py:1457
 msgid "Upper Case"
 msgstr "Großbuchstaben"
 
-#: PortMaster/pylibs/pugscene.py:1452 PortMaster/pylibs/pugscene.py:1460
+#: PortMaster/pylibs/pugscene.py:1457 PortMaster/pylibs/pugscene.py:1465
 msgid "Space"
 msgstr "Leerzeichen"
 
-#: PortMaster/pylibs/pugscene.py:1460
+#: PortMaster/pylibs/pugscene.py:1465
 msgid "Lower Case"
 msgstr "Kleinbuchstaben"
 
-#: PortMaster/pylibs/pugscene.py:1532
+#: PortMaster/pylibs/pugscene.py:1543
 msgid "No featured ports found, internet connection is required."
 msgstr "Keine empfohlenen Ports gefunden, Internetverbindung erforderlich."
 
-#: PortMaster/pylibs/pugscene.py:1560 PortMaster/pylibs/pugscene.py:1583
+#: PortMaster/pylibs/pugscene.py:1587 PortMaster/pylibs/pugscene.py:1610
 msgid "NO PORTS"
 msgstr "KEINE PORTS"
 
-#: PortMaster/pylibs/pugscene.py:1564 PortMaster/pylibs/pugscene.py:1590
+#: PortMaster/pylibs/pugscene.py:1591 PortMaster/pylibs/pugscene.py:1617
 msgid "** NO PORTS FOUND **"
 msgstr "** KEINE PORTS GEFUNDEN **"
 
-#: PortMaster/pylibs/pugscene.py:1566 PortMaster/pylibs/pugscene.py:1593
+#: PortMaster/pylibs/pugscene.py:1593 PortMaster/pylibs/pugscene.py:1620
 msgid "Download ports first."
 msgstr "Zuerst Ports herunterladen."
 
-#: PortMaster/pylibs/pugscene.py:1595
+#: PortMaster/pylibs/pugscene.py:1622
 msgid "Try removing some filters."
 msgstr "Zuerst Filter entfernen"
 
-#: PortMaster/pylibs/pugscene.py:1750 PortMaster/pylibs/pugscene.py:1774
-#: PortMaster/pylibs/pugscene.py:1776 PortMaster/pylibs/pugscene.py:1863
-#: PortMaster/pylibs/pugscene.py:1868
+#: PortMaster/pylibs/pugscene.py:1777 PortMaster/pylibs/pugscene.py:1801
+#: PortMaster/pylibs/pugscene.py:1803 PortMaster/pylibs/pugscene.py:1890
+#: PortMaster/pylibs/pugscene.py:1895
 msgid "Show Info"
 msgstr "Info anzeigen"
 
-#: PortMaster/pylibs/pugscene.py:1755
+#: PortMaster/pylibs/pugscene.py:1782
 msgid "Ports List"
 msgstr "Portliste"
 
-#: PortMaster/pylibs/pugscene.py:1774
+#: PortMaster/pylibs/pugscene.py:1801
 msgid "Filters"
 msgstr "Filter"
 
-#: PortMaster/pylibs/pugscene.py:1782
+#: PortMaster/pylibs/pugscene.py:1809
 msgid "Port Info Popup"
 msgstr "Port-Info-Popup"
 
-#: PortMaster/pylibs/pugscene.py:1793 PortMaster/pylibs/pugscene.py:1796
+#: PortMaster/pylibs/pugscene.py:1820 PortMaster/pylibs/pugscene.py:1823
 msgid "Hide Info"
 msgstr "Info ausblenden"
 
-#: PortMaster/pylibs/pugscene.py:1805 PortMaster/pylibs/pugscene.py:1896
+#: PortMaster/pylibs/pugscene.py:1832 PortMaster/pylibs/pugscene.py:1923
 msgid "Reinstall"
 msgstr "Neuinstallieren"
 
-#: PortMaster/pylibs/pugscene.py:1832
+#: PortMaster/pylibs/pugscene.py:1859
 msgid "Port Info"
 msgstr "Port Info"
 
-#: PortMaster/pylibs/pugscene.py:1918
+#: PortMaster/pylibs/pugscene.py:1945
 #, python-brace-format
 msgid "Are you sure you want to uninstall {port_name}?"
 msgstr "{port_name} wirklich deinstallieren?"
 
-#: PortMaster/pylibs/pugscene.py:1962
+#: PortMaster/pylibs/pugscene.py:1989
 msgid "Filters Scene"
 msgstr "Filter-Szene"
 
-#: PortMaster/pylibs/pugscene.py:1991
+#: PortMaster/pylibs/pugscene.py:2018
 msgid "Alphabetical"
 msgstr "Alphabetisch"
 
-#: PortMaster/pylibs/pugscene.py:1992
+#: PortMaster/pylibs/pugscene.py:2019
 msgid "Recently Added"
 msgstr "Zuletzt hinzugefügt"
 
-#: PortMaster/pylibs/pugscene.py:1993
+#: PortMaster/pylibs/pugscene.py:2020
 msgid "Recently Updated"
 msgstr "Vor kurzem aktualisiert"
 
-#: PortMaster/pylibs/pugscene.py:1996
+#: PortMaster/pylibs/pugscene.py:2023
 msgid "Action"
 msgstr "Aktion"
 
-#: PortMaster/pylibs/pugscene.py:1997
+#: PortMaster/pylibs/pugscene.py:2024
 msgid "Adventure"
 msgstr "Adventure"
 
-#: PortMaster/pylibs/pugscene.py:1998
+#: PortMaster/pylibs/pugscene.py:2025
 msgid "Arcade"
 msgstr "Arcade"
 
-#: PortMaster/pylibs/pugscene.py:1999
+#: PortMaster/pylibs/pugscene.py:2026
 msgid "Casino/Card"
 msgstr "Casino/Card"
 
-#: PortMaster/pylibs/pugscene.py:2000
+#: PortMaster/pylibs/pugscene.py:2027
 msgid "First Person Shooter"
 msgstr "First Person Shooter"
 
-#: PortMaster/pylibs/pugscene.py:2001
+#: PortMaster/pylibs/pugscene.py:2028
 msgid "Platformer"
 msgstr "Platformer"
 
-#: PortMaster/pylibs/pugscene.py:2002
+#: PortMaster/pylibs/pugscene.py:2029
 msgid "Puzzle"
 msgstr "Puzzle"
 
-#: PortMaster/pylibs/pugscene.py:2003
+#: PortMaster/pylibs/pugscene.py:2030
 msgid "Racing"
 msgstr "Racing"
 
-#: PortMaster/pylibs/pugscene.py:2004
+#: PortMaster/pylibs/pugscene.py:2031
 msgid "Rhythm"
 msgstr "Rhythm"
 
-#: PortMaster/pylibs/pugscene.py:2005
+#: PortMaster/pylibs/pugscene.py:2032
 msgid "Role Playing Game"
 msgstr "Role Playing Game"
 
-#: PortMaster/pylibs/pugscene.py:2006
+#: PortMaster/pylibs/pugscene.py:2033
 msgid "Simulation"
 msgstr "Simulation"
 
-#: PortMaster/pylibs/pugscene.py:2007
+#: PortMaster/pylibs/pugscene.py:2034
 msgid "Sports"
 msgstr "Sports"
 
-#: PortMaster/pylibs/pugscene.py:2008
+#: PortMaster/pylibs/pugscene.py:2035
 msgid "Strategy"
 msgstr "Strategie"
 
-#: PortMaster/pylibs/pugscene.py:2009
+#: PortMaster/pylibs/pugscene.py:2036
 msgid "Visual Novel"
 msgstr "Visual Novel"
 
-#: PortMaster/pylibs/pugscene.py:2010
+#: PortMaster/pylibs/pugscene.py:2037
 msgid "Other"
 msgstr "Sonstiges"
 
-#: PortMaster/pylibs/pugscene.py:2014
+#: PortMaster/pylibs/pugscene.py:2041
 msgid "Files Required"
 msgstr "Erforderliche Dateien"
 
-#: PortMaster/pylibs/pugscene.py:2015
+#: PortMaster/pylibs/pugscene.py:2042
 msgid "Experimental"
 msgstr "Experimentell"
 
-#: PortMaster/pylibs/pugscene.py:2018
+#: PortMaster/pylibs/pugscene.py:2045
 msgid "Broken Ports"
 msgstr "Defekte Ports"
 
-#: PortMaster/pylibs/pugscene.py:2021
+#: PortMaster/pylibs/pugscene.py:2048
 msgid "Free game, all files included."
 msgstr "Kostenloses Spiel, alle Dateien enthalten."
 
-#: PortMaster/pylibs/pugscene.py:2022
+#: PortMaster/pylibs/pugscene.py:2049
 msgid "Demo files included."
 msgstr "Demo-Dateien enthalten."
 
-#: PortMaster/pylibs/pugscene.py:2023
+#: PortMaster/pylibs/pugscene.py:2050
 msgid "Free external assets needed."
 msgstr "Kostenlose externe Assets erforderlich."
 
-#: PortMaster/pylibs/pugscene.py:2024
+#: PortMaster/pylibs/pugscene.py:2051
 msgid "Paid external assets needed."
 msgstr "Kostenpflichtige externe Assets erforderlich."
 
-#: PortMaster/pylibs/pugscene.py:2027 PortMaster/pylibs/pugscene.py:2028
-#: PortMaster/pylibs/pugscene.py:2029 PortMaster/pylibs/pugscene.py:2030
+#: PortMaster/pylibs/pugscene.py:2054 PortMaster/pylibs/pugscene.py:2055
+#: PortMaster/pylibs/pugscene.py:2056 PortMaster/pylibs/pugscene.py:2057
+#: PortMaster/pylibs/pugscene.py:2058 PortMaster/pylibs/pugscene.py:2059
+#: PortMaster/pylibs/pugscene.py:2060
 #, python-brace-format
 msgid "{runtime_name} Runtime"
 msgstr "{runtime_name} Runtime"
 
-#: PortMaster/pylibs/pugscene.py:2033
+#: PortMaster/pylibs/pugscene.py:2063
 msgid "ARM 32bit"
 msgstr "ARM 32Bit"
 
-#: PortMaster/pylibs/pugscene.py:2034
+#: PortMaster/pylibs/pugscene.py:2064
 msgid "ARM 64bit"
 msgstr "ARM 64Bit"
 
-#: PortMaster/pylibs/pugscene.py:2035
+#: PortMaster/pylibs/pugscene.py:2065
 msgid "x86 64bit"
 msgstr "x86 64Bit"
 
-#: PortMaster/pylibs/pugscene.py:2080
+#: PortMaster/pylibs/pugscene.py:2110
 msgid "Sort:"
 msgstr "Sortieren:"
 
-#: PortMaster/pylibs/pugscene.py:2095
+#: PortMaster/pylibs/pugscene.py:2125
 msgid "Clear Filters"
 msgstr "Filter löschen"
 
-#: PortMaster/pylibs/pugscene.py:2119
+#: PortMaster/pylibs/pugscene.py:2149
 msgid "Genres:"
 msgstr "Genres:"
 
-#: PortMaster/pylibs/pugscene.py:2149
+#: PortMaster/pylibs/pugscene.py:2179
 msgid "Attributes:"
 msgstr "Attribute:"
 
-#: PortMaster/pylibs/pugscene.py:2178
+#: PortMaster/pylibs/pugscene.py:2208
 msgid "Architecture:"
 msgstr "Architektur:"
 
-#: PortMaster/pylibs/pugscene.py:2207
+#: PortMaster/pylibs/pugscene.py:2237
 msgid "Availability:"
 msgstr "Verfügbarkeit:"
 
-#: PortMaster/pylibs/pugscene.py:2236
+#: PortMaster/pylibs/pugscene.py:2266
 msgid "Porters:"
 msgstr "Porter:"
 
-#: PortMaster/pylibs/pugscene.py:2304
+#: PortMaster/pylibs/pugscene.py:2334
 msgid "Messages"
 msgstr "Meldungen"
 
-#: PortMaster/pylibs/pugscene.py:2339
+#: PortMaster/pylibs/pugscene.py:2369
 msgid "Are you sure you want to cancel?"
 msgstr "Wirklich abbrechen?"
 
