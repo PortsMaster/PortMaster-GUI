@@ -238,6 +238,12 @@ class PlatformBase():
         """
         logger.debug(f"{self.__class__.__name__}: PortMaster Install")
 
+    def portmaster_post_install(self):
+        """
+        Called on after portmaster is updated, on next launch, this can be used clean up special files, fix up boo boos.
+        """
+        logger.debug(f"{self.__class__.__name__}: PortMaster Post Install")
+
     def set_gcd_mode(self, mode=None):
         logger.info(f"{self.__class__.__name__}: Set GCD Mode {mode}")
 
@@ -353,8 +359,49 @@ class PlatformROCKNIX(PlatformJELOS):
 
 
 class PlatformBatocera(PlatformBase):
-    MOVE_PM_BASH = True
+    MOVE_PM_BASH = False
     ES_NAME = "batocera-es"
+
+    def portmaster_install(self):
+        super().portmaster_install()
+        """
+        Just move PortMaster.sh from `PortMaster/` to `/userdata/roms/ports/`.
+        """
+
+        PM_LOCATION   = self.hm.tools_dir   / "PortMaster" / "PortMaster.sh"
+        BAD_LOCATION  = self.hm.tools_dir   / "PortMaster.sh"
+        GOOD_LOCATION = self.hm.scripts_dir / "PortMaster.sh"
+
+        try:
+            if PM_LOCATION.is_file():
+                shutil.copy2(PM_LOCATION, GOOD_LOCATION)
+                PM_LOCATION.unlink()
+
+            # Delete this file so we don't trigger the `post_install` action below.
+            if BAD_LOCATION.is_file():
+                BAD_LOCATION.unlink()
+
+        except OSError as e:
+            logger.error(f"Error during file operation: {e}")
+
+    def portmaster_post_install(self):
+        super().portmaster_post_install()
+        """
+        Old installs use `MOVE_PM_BASH`, so it will move the PortMaster.sh to `BAD_LOCATION`
+        and the above `portmaster_install` code will not have been run, this means that we need to move
+        `BAD_LOCATION` to `GOOD_LOCATION`.
+
+        On newer/future updates this won't matter as PortMaster.sh should not be present at `BAD_LOCATION`.
+        """
+        BAD_LOCATION  = self.hm.tools_dir   / "PortMaster.sh"
+        GOOD_LOCATION = self.hm.scripts_dir / "PortMaster.sh"
+
+        try:
+            if BAD_LOCATION.is_file():
+                shutil.copy2(BAD_LOCATION, GOOD_LOCATION)
+                BAD_LOCATION.unlink()
+        except OSError as e:
+            logger.error(f"Error during file operation: {e}")
 
     """
     Taken from Mikhailzrick's getInvertButtonsValue
@@ -789,11 +836,11 @@ class PlatformmuOS(PlatformBase):
                     fh.write(APP_NAME)
 
             except OSError as e:
-                logger.debug(f"Error during file operation: {e}")
-                
+                logger.error(f"Error during file operation: {e}")
+
         else:
             # mux_launch.sh File not found
-            logger.debug(f"port is not an application, no mux_launch.sh")
+            logger.debug(f"port is not an application, no mux_launch.txt")
 
     def port_uninstall(self, port_name, port_info, port_files):
         super().port_uninstall(port_name, port_info, port_files)
