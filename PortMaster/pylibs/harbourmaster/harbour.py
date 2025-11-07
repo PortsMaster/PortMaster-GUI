@@ -1827,9 +1827,11 @@ class HarbourMaster():
 
         try:
             extra_info = {}
+            logger.info(f"Verifying port")
             port_info = check_port(download_info['name'], download_info['zip_file'], extra_info)
 
             port_reqs = self.match_requirements(port_info)
+
             if not port_reqs:
                 logger.info(f"PORT INFO: {port_info}")
                 logger.info(f"MATCH REQS: {port_reqs}")
@@ -1904,6 +1906,8 @@ class HarbourMaster():
                         add_list_unique(undo_data, dest_file)
 
                     # cprint(f"- <b>{file_info.filename!r}</b> as <b>{fix_path}{file_info.filename}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
+
+                    logger.debug(f"Extracting {file_info.filename} to {dest_dir}.")
                     zf.extract(file_info, path=dest_dir)
 
             # print(f"Port Info: {port_info}")
@@ -1946,7 +1950,7 @@ class HarbourMaster():
             if not port_info_file.is_file():
                 add_list_unique(undo_data, port_info_file)
 
-            print(f"-> {port_info_file}")
+            # print(f"-> {port_info_file}")
             with open(port_info_file, 'w') as fh:
                 json.dump(port_info, fh, indent=4)
 

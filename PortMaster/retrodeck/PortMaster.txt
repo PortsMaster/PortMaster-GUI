@@ -27,7 +27,8 @@ echo "Starting PortMaster."
 
 chmod -R +x .
 
-exec > >(tee "$controlfolder/log.txt") 2>&1
+> "$controlfolder/log.txt" && exec > >(tee "$controlfolder/log.txt") 2>&1
+
 source "$controlfolder/utils/pmsplash.txt"
 
 ## Autoinstallation Code

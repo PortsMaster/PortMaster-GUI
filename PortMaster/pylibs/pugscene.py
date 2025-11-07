@@ -708,6 +708,10 @@ class OptionScene(BaseScene):
                 _("CWTBE Mode: ") + ((self.gui.hm.tools_dir / "PortMaster" / "cwtbe_flag").is_file() and _("Enabled") or _("Disabled")),
                 description=_("Enable gptokeyb2 by default."))
             self.tags['option_list'].add_option(
+                'toggle-debug',
+                _("Debug Mode: ") + ((self.gui.hm.tools_dir / "PortMaster" / "debug_all_the_things_flag").is_file() and _("Enabled") or _("Disabled")),
+                description=_("Enable debug logging all the time."))
+            self.tags['option_list'].add_option(
                 'delete-config',
                 _("Delete PortMaster Config"),
                 description=_("This can break stuff, don't touch unless you know what you are doing."))
@@ -788,6 +792,18 @@ class OptionScene(BaseScene):
                 item = self.tags['option_list'].list_selected()
                 self.tags['option_list'].list[item] = (
                     _("CWTBE Mode: ") + (cwtbe_flag.is_file() and _("Enabled") or _("Disabled")))
+
+            if selected_option == 'toggle-debug':
+                debug_flag = (self.gui.hm.tools_dir / "PortMaster" / "debug_all_the_things_flag")
+
+                if debug_flag.is_file():
+                    debug_flag.unlink()
+                else:
+                    debug_flag.touch()
+
+                item = self.tags['option_list'].list_selected()
+                self.tags['option_list'].list[item] = (
+                    _("Debug Mode: ") + ((self.gui.hm.tools_dir / "PortMaster" / "debug_all_the_things_flag").is_file() and _("Enabled") or _("Disabled")))
 
             if selected_option == 'restore-portmaster':
                 if not self.gui.message_box(
@@ -1879,6 +1895,8 @@ class PortInfoScene(BaseScene):
             return
 
         self.port_info = self.gui.hm.port_info(self.port_name, installed=(self.action != 'install'))
+        if self.port_info is None:
+            self.port_info = self.gui.hm.port_info(self.port_name, installed=True)
 
         self.port_attrs = self.gui.hm.port_info_attrs(self.port_info)
 

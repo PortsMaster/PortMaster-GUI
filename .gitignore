@@ -190,3 +190,7 @@ runtimes*.zip
 Install*PortMaster.sh
 *.portmaster.zip
 pm_devices.cfg
+
+# Debug things
+cwtbe_flag
+debug_all_the_things_flag
