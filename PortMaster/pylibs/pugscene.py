@@ -1597,9 +1597,16 @@ class PortListBaseScene():
         if not self.ready:
             self.gui.set_data('ports_list.total_ports', str(len(self.gui.hm.list_ports_names_new(self.options['base_filters']))))
 
+        sort_by = self.options['sort_by']
+        reverse = False
+        if sort_by.endswith('_rev'):
+            sort_by = sort_by[:-4]
+            reverse = True
+
         self.all_ports = self.gui.hm.list_ports_new(
             filters=(self.options['base_filters'] + self.options['filters']),
-            sort_by=self.options['sort_by'])
+            sort_by=sort_by,
+            reverse=reverse)
         self.port_list = list(self.all_ports.keys())
 
         self.gui.set_data('ports_list.filters', ', '.join(sorted(self.options['filters'])))
@@ -2018,6 +2025,7 @@ class FiltersScene(BaseScene):
             "alphabetical":     _("Alphabetical"),
             "recently_added":   _("Recently Added"),
             "recently_updated": _("Recently Updated"),
+            "total_downloads":  _("Total Downloads"),
 
             # Genres.
             "action":           _("Action"),
@@ -2099,7 +2107,9 @@ class FiltersScene(BaseScene):
             if display_order == 'sort':
                 for hm_sort_order in harbourmaster.HM_SORT_ORDER:
                     if hm_sort_order == self.sort_by:
-                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, "    "]
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, _("Ascending") + " "]
+                    elif (hm_sort_order + '_rev') == self.sort_by:
+                        text = ["    ", "_CHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, _("Descending") + " "]
                     else:
                         text = ["    ", "_UNCHECKED", f"  {filter_translation.get(hm_sort_order, hm_sort_order)}", None, "    "]
 
@@ -2289,8 +2299,9 @@ class FiltersScene(BaseScene):
 
             if selected_filter in harbourmaster.HM_SORT_ORDER:
                 if self.sort_by == selected_filter:
-                    return True
+                    selected_filter += '_rev'
 
+                logger.debug(f"{self.sort_by} -> {selected_filter}")
                 self.sort_by = selected_filter
                 self.list_scene.options['sort_by'] = selected_filter
                 self.list_scene.update_ports()
