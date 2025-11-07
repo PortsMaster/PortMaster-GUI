@@ -650,9 +650,13 @@ def main(argv):
         if config['offline']:
             config['no-check'] = True
 
+        if (harbourmaster.HM_TOOLS_DIR / "PortMaster" / "debug_all_the_things_flag").is_file():
+            config['debug'] = True
+
         if config['quiet']:
             logger.remove(0)  # For the default handler, it's actually '0'.
             logger.add(sys.stderr, level="ERROR")
+
         elif config['debug']:
             logger.remove(0)  # For the default handler, it's actually '0'.
             logger.add(sys.stderr, level="DEBUG")

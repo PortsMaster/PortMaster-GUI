@@ -258,6 +258,7 @@ HM_SORT_ORDER = [
     "alphabetical",
     "recently_added",
     "recently_updated",
+    "total_downloads",
     ]
 
 

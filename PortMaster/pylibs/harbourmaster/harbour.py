@@ -35,6 +35,7 @@ from .captain import *
 ## Config loading
 class HarbourMaster():
     __PORTS_INFO = None
+    __PORTS_DOWNLOAD = None
     __PORTERS = None
 
     CONFIG_VERSION = 2
@@ -48,11 +49,14 @@ class HarbourMaster():
 
     INFO_CHECK_INTERVAL = (60 * 60 * 1)
 
-    PORT_INFO_URL      = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
-    PORTS_INFO_URL     = PORT_INFO_URL + "ports_info.json"
-    FEATURED_PORTS_URL = PORT_INFO_URL + "featured_ports.json"
-    PORTERS_URL        = PORT_INFO_URL + "porters.json"
-    SOURCES_URL        = PORT_INFO_URL + "sources.json"
+    # This is the new way of checking files.
+    PORT_INFO_JSON = "https://api.github.com/repos/PortsMaster/PortMaster-Info/git/trees/main?recursive=true"
+    PORT_INFO_URL  = "https://github.com/PortsMaster/PortMaster-Info/raw/main/"
+    # PORTS_INFO_URL          = PORT_INFO_URL + "ports_info.json"
+    # FEATURED_PORTS_URL      = PORT_INFO_URL + "featured_ports.json"
+    # FEATURED_IMAGES_ZIP_URL = PORT_INFO_URL + "featured_images.zip"
+    # PORTERS_URL             = PORT_INFO_URL + "porters.json"
+    # SOURCES_URL             = PORT_INFO_URL + "sources.json"
 
     def __init__(self, config, *, tools_dir=None, ports_dir=None, scripts_dir=None, temp_dir=None, callback=None):
         """
@@ -142,7 +146,7 @@ class HarbourMaster():
 
                 self.cfg_data['first-run'] = False
 
-            if (self.tools_dir / "PortMaster" / 'post-install').is_file():
+            if not HM_TESTING and (self.tools_dir / "PortMaster" / 'post-install').is_file():
                 (self.tools_dir / "PortMaster" / 'post-install').unlink()
                 self.platform.portmaster_post_install()
 
@@ -210,6 +214,22 @@ class HarbourMaster():
 
         return self.__PORTS_INFO
 
+    def port_downloads(self, port_name):
+        if self.__PORTS_DOWNLOAD is None:
+            port_stats_data = {"ports": {}}
+
+            port_stats = self.cfg_dir / "port_stats.json"
+            if port_stats.is_file():
+                with port_stats.open('r') as fh:
+                    port_stats_data = json_safe_load(fh)
+
+            if isinstance(port_stats_data, dict) and "ports" in port_stats_data:
+                self.__PORTS_DOWNLOAD = port_stats_data["ports"]
+            else:
+                self.__PORTS_DOWNLOAD = {}
+
+        return self.__PORTS_DOWNLOAD.get(port_name, 0)
+
     def porters(self):
         if self.__PORTERS is None:
             with open(self.cfg_dir / "porters.json", 'r') as fh:
@@ -220,17 +240,61 @@ class HarbourMaster():
 
         return self.__PORTERS
 
+    def load_info_fetch_remote(self, local_file, remote_url, remote_size, sha_source):
+        """
+        This function is used to fetch a remote file during load_info.
+        """
+
+        # Over 1mb we will use a progress bar.
+        if remote_size > (1024 * 1024):
+            temp_file = download(
+                self.temp_dir / local_file.name,
+                remote_url,
+                callback=self.callback,
+                no_check=True)
+
+            if not temp_file:
+                # Something fucked up. :|
+                return False
+
+            sha_local = calculate_git_blob_sha_file(temp_file)
+            if sha_local != sha_source:
+                self.callback.message(_("Download validation failed."))
+                logger.error(f"File validation failed {sha_local} vs {sha_source}")
+                temp_file.unlink()
+
+            if temp_file != local_file:
+                shutil.copy2(temp_file, local_file)
+                if temp_file.is_file():
+                    temp_file.unlink()
+            return True
+
+        else:
+            file_data = fetch_data(remote_url)
+
+            if file_data is None:
+                # Who knows...
+                self.callback.message(_("Unable to download file."))
+                return False
+
+            sha_local = calculate_git_blob_sha_data(file_data)
+            if sha_local != sha_source:
+                self.callback.message(_("Download validation failed."))
+                logger.error(f"File validation failed {sha_local} vs {sha_source}")
+                return False
+
+            with local_file.open("wb") as fh:
+                fh.write(file_data)
+
+            return True
+
     def load_info(self, force_load=False):
         self.callback.message("- {}".format(_("Loading Info.")))
-        info_file = self.cfg_dir / "ports_info.json"
-        info_file_md5 = self.cfg_dir / "ports_info.md5"
-
-        porters_file = self.cfg_dir / "porters.json"
-        featured_ports_file = self.cfg_dir / "featured_ports.json"
-        featured_ports_dir = self.cfg_dir / "featured_ports/"
         self.runtimes_info = None
 
         if self.runtimes_file.is_file():
+            ## TODO: double check this shit and redo it.
+
             with open(self.runtimes_file, 'r') as fh:
                 self.runtimes_info = json_safe_load(fh)
 
@@ -239,98 +303,187 @@ class HarbourMaster():
         if self.runtimes_info is None:
             self.runtimes_info = {}
 
+        # These are the base files, and empty versions that are safe.
+        base_check_files = [
+            (
+                "ports_info.json",
+                '{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}',
+                _("Fetching latest ports info data.")),
+            (
+                "porters.json",
+                '{}',
+                _("Fetching latest porters info.")),
+            (
+                "port_stats.json",
+                '{"ports": {}, "total_downloads": 0}',
+                _("Fetching latest port stats.")),
+            (
+                "featured_ports.json",
+                '[]',
+                _("Fetching latest featured ports.")),
+            (
+                "featured_images.zip",
+                None, # Doesn't matter if it doesn't exist.
+                _("Fetching latest featured port images zip."))
+            ]
+
+        # Create empty files for fallback.
+        for file_name, base_data, info_message in base_check_files:
+            if base_data is None:
+                continue
+
+            local_file = self.cfg_dir / file_name
+            if local_file.is_file():
+                continue
+
+            with open(local_file, 'w') as fh:
+                fh.write(base_data)
+
+        # And this for good luck.
+        featured_ports_dir  = self.cfg_dir / "featured_ports/"
+        if not featured_ports_dir.is_dir():
+            featured_ports_dir.mkdir(0o755, exist_ok=True, parents=True)
+
+        # Delete some old config keys.
+        if "featured_ports_checked" in self.cfg_data:
+            del self.cfg_data["featured_ports_checked"]
+
+        if "porters_checked" in self.cfg_data:
+            del self.cfg_data["porters_checked"]
+
+        if "ports_info_checked" in self.cfg_data:
+            del self.cfg_data["ports_info_checked"]
+
+        # In offline mode, we're done!
         if self.config['offline'] or self.config['no-check']:
-            if not porters_file.is_file():
-                with open(porters_file, 'w') as fh:
-                    fh.write('{}')
-
-            if not info_file.is_file():
-                with open(info_file, 'w') as fh:
-                    fh.write('{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}')
-
-            if not featured_ports_file.is_file():
-                with open(featured_ports_file, 'w') as fh:
-                    fh.write('[]')
-
             return
 
-        if force_load is True or not featured_ports_file.is_file() or (
-                not self.config['no-check'] and (
-                    self.cfg_data.get('featured_ports_checked') is None or
-                    datetime_compare(self.cfg_data['featured_ports_checked']) >= self.INFO_CHECK_INTERVAL)):
+        # Check if we are due to fetch new data.
+        TIME_SINCE_CHECK = self.INFO_CHECK_INTERVAL
 
-            self.callback.message("  - {}".format(_("Fetching latest featured ports.")))
-            ports_list_data = fetch_text(self.FEATURED_PORTS_URL)
+        if self.cfg_data.get('last-info-check', None) is not None:
+            TIME_SINCE_CHECK = datetime_compare(self.cfg_data['last-info-check'])
 
-            if ports_list_data is None:
-                ports_list_data = "{}"
-                # Things are broken, probably muOS, put it in offline mode.
-                self.config['offline'] = True
+        # Too soon?
+        if TIME_SINCE_CHECK < self.INFO_CHECK_INTERVAL:
+            # Too soon.
+            return
 
-            with open(featured_ports_file, 'w') as fh:
-                fh.write(ports_list_data)
+        # Fetch the github api tree data for the PortMaster-Info repo.
+        port_info_json_raw = fetch_text(self.PORT_INFO_JSON)
+        if port_info_json_raw is None:
+            # Things are broken, probably muOS, put it in offline mode.
+            self.config['offline'] = True
+            return
 
-            self.featured_ports()
+        port_info_json = json_safe_loads(port_info_json_raw)
+        if port_info_json is None or not isinstance(port_info_json, dict) or 'tree' not in port_info_json:
+            logger.error(f"Unable to fetch a sensible version of {self.PORT_INFO_JSON}, aborting: {port_info_json_raw}")
+            return
 
-            if ports_list_data != "{}":
-                self.cfg_data['featured_ports_checked'] = datetime.datetime.now().isoformat()
+        # Build up the database of the files.
+        port_info_info = {}
+        for item in port_info_json['tree']:
+            if item['type'] != 'blob':
+                continue
 
-        if not info_file.is_file():
-            self.callback.message("  - {}".format(_("Fetching latest info.")))
-            info_md5 = fetch_text(self.PORTS_INFO_URL + '.md5')
-            info_data = fetch_text(self.PORTS_INFO_URL)
+            if item['path'].startswith('.'):
+                continue
 
-            if info_data is None:
-                info_data = '{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}'
-                self.config['offline'] = True
+            file_name = item['path']
 
-            with open(info_file, 'w') as fh:
-                fh.write(info_data)
+            # Fix featured ports images local path.
+            if file_name.startswith('images/'):
+                file_name = 'featured_ports/' + file_name.split('/', 1)[-1]
 
-            if info_md5 is not None:
-                with open(info_file_md5, 'w') as fh:
-                    fh.write(info_md5)
+            port_info_info[file_name] = {
+                'sha':  item['sha'],
+                'size': item['size'],
+                'url':  self.PORT_INFO_URL + item['path'],
+                'updated': False,
+                }
 
-                self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
+        # Check the base files.
+        for file_name, base_data, info_message in base_check_files:
+            if file_name not in port_info_info:
+                continue
 
-        elif force_load is True or not self.config['no-check'] and (
-                self.cfg_data.get('ports_info_checked') is None or
-                datetime_compare(self.cfg_data['ports_info_checked']) >= self.INFO_CHECK_INTERVAL):
+            local_file = self.cfg_dir / file_name
 
-            info_md5 = fetch_text(self.PORTS_INFO_URL + '.md5')
-            if not info_file_md5.is_file() or info_md5 != info_file_md5.read_text().strip():
-                self.callback.message("  - {}".format(_("Fetching latest info.")))
-                info_data = fetch_text(self.PORTS_INFO_URL)
+            local_sha = calculate_git_blob_sha_file(local_file)
+            logger.debug(f"{file_name}: {local_sha} vs {port_info_info[file_name]['sha']}")
+            if local_sha == port_info_info[file_name]['sha']:
+                continue
 
-                if info_data is None:
-                    info_data = '{"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}'
-                    self.config['offline'] = True
+            self.callback.message("  - {}".format(info_message))
 
-                with open(info_file, 'w') as fh:
-                    fh.write(info_data)
+            local_file.parent.mkdir(0o755, exist_ok=True, parents=True)
 
-                if info_md5 is not None:
-                    with open(info_file_md5, 'w') as fh:
-                        fh.write(info_md5)
+            port_info_info[file_name]['updated'] = self.load_info_fetch_remote(
+                local_file,
+                port_info_info[file_name]['url'],
+                port_info_info[file_name]['size'],
+                port_info_info[file_name]['sha'])
 
-                    self.cfg_data['ports_info_checked'] = datetime.datetime.now().isoformat()
+        featured_ports_images = {}
 
-        if force_load is True or not porters_file.is_file() or (
-                not self.config['no-check'] and (
-                    self.cfg_data.get('porters_checked') is None or
-                    datetime_compare(self.cfg_data['porters_checked']) >= self.INFO_CHECK_INTERVAL)):
+        # Extract the featured_images.zip
+        if port_info_info.get("featured_images.zip", {}).get("updated", False):
+            # Updated featured_images.zip :)
+            with zipfile.ZipFile(self.cfg_dir / "featured_images.zip", 'r') as zf:
+                logger.info("Extracting featured_images.zip")
 
-            self.callback.message("  - {}".format(_("Fetching latest porters.")))
-            porters_data = fetch_text(self.PORTERS_URL)
+                for file_info in enumerate(zf.infolist()):
+                    if file_info.filename.endswith('/'):
+                        continue
 
-            if porters_data is None:
-                porters_data = "{}"
+                    # We only want images.
+                    if not file_info.filename.endswith(('.png', '.jpg')):
+                        continue
 
-            with open(porters_file, 'w') as fh:
-                fh.write(porters_data)
+                    logger.info(f"- {file_info.filename}")
 
-            if porters_data != "{}":
-                self.cfg_data['porters_checked'] = datetime.datetime.now().isoformat()
+                    # Force it to only keep the file name, because I don't trust you (or me) to not fuck it up.
+                    local_file = featured_ports_dir / file_info.filename.rsplit('/', 1)[-1]
+                    featured_ports_images[local_file.name] = True
+
+                    with local_file.open('wb') as fh:
+                        fh.write(zf.read(file_info.filename))
+
+        # Hopefully catch any images that weren't in the featured_images.zip
+        for file_name in port_info_info:
+            if not file_name.startswith('featured_ports/'):
+                continue
+
+            if not file_name.endswith(('.png', '.jpg')):
+                continue
+
+            local_file = self.cfg_dir / file_name
+
+            # Skip ones that were just extracted in the zip file.
+            if featured_ports_images.get(local_file.name):
+                continue
+
+            local_sha = calculate_git_blob_sha_file(local_file)
+            logger.debug(f"{file_name}: {local_sha} vs {port_info_info[file_name]['sha']}")
+            if local_sha == port_info_info[file_name]['sha']:
+                continue
+
+            self.callback.message("  - {}".format(_("Fetching featured port image {file_name}").format(file_name=local_file.name)))
+
+            port_info_info[file_name]['updated'] = self.load_info_fetch_remote(
+                local_file,
+                port_info_info[file_name]['url'],
+                port_info_info[file_name]['size'],
+                port_info_info[file_name]['sha'])
+
+        # Check the featured_ports.json
+        # if port_info_info.get("featured_ports.json", {}).get("updated", False):
+        #     self.featured_ports()
+
+        self.cfg_data['last-info-check'] = datetime.datetime.now().isoformat()
+
+        return
 
     def load_sources(self):
         source_files = list(self.cfg_dir.glob('*.source.json'))
@@ -1237,7 +1390,7 @@ class HarbourMaster():
 
         installed_status = 'installed' in filters
 
-        sort_by_reverse_order = ('recently_added', 'recently_updated')
+        sort_by_reverse_order = ('recently_added', 'recently_updated', 'total_downloads')
         if sort_by in sort_by_reverse_order:
             reverse = not reverse
 
@@ -1310,7 +1463,7 @@ class HarbourMaster():
                     'image': self._process_featured_ports_image(item.get('image'), featured_ports_dir),
                     'type': 'category',
                     'children': self._process_featured_ports_items(children, featured_ports_dir, pre_load, f"{path_prefix}[{idx}].children")
-                }
+                    }
 
                 # Only include categories that have children
                 if len(processed_item['children']) > 0:
@@ -1366,13 +1519,14 @@ class HarbourMaster():
 
     def _process_featured_ports_image(self, image_name, featured_ports_dir):
         if image_name is not None and image_name != "":
-            image_url = self.PORT_INFO_URL + image_name
+            # image_url = self.PORT_INFO_URL + image_name
             image_file = featured_ports_dir / image_name.rsplit('/', 1)[-1]
 
             if not image_file.is_file():
-                download_info = download(image_file, image_url, callback=self.callback, no_check=True)
-                if download_info is None:
-                    return ""
+                ## We no longer download here, it is now done in load_info.
+                # download_info = download(image_file, image_url, callback=self.callback, no_check=True)
+                # if download_info is None:
+                return ""
 
             return str(image_file)
         return ""
@@ -1434,6 +1588,9 @@ class HarbourMaster():
 
             elif port_name in self.broken_ports:
                  port_info_merge(result, self.broken_ports[name_cleaner(port_name)])
+
+        if 'source' in result:
+            result['source']['downloads'] = self.port_downloads(port_name)
 
         self.__PORT_INFO_CACHE[port_key] = result
         return result
@@ -1670,9 +1827,11 @@ class HarbourMaster():
 
         try:
             extra_info = {}
+            logger.info(f"Verifying port")
             port_info = check_port(download_info['name'], download_info['zip_file'], extra_info)
 
             port_reqs = self.match_requirements(port_info)
+
             if not port_reqs:
                 logger.info(f"PORT INFO: {port_info}")
                 logger.info(f"MATCH REQS: {port_reqs}")
@@ -1747,6 +1906,8 @@ class HarbourMaster():
                         add_list_unique(undo_data, dest_file)
 
                     # cprint(f"- <b>{file_info.filename!r}</b> as <b>{fix_path}{file_info.filename}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
+
+                    logger.debug(f"Extracting {file_info.filename} to {dest_dir}.")
                     zf.extract(file_info, path=dest_dir)
 
             # print(f"Port Info: {port_info}")
@@ -1789,7 +1950,7 @@ class HarbourMaster():
             if not port_info_file.is_file():
                 add_list_unique(undo_data, port_info_file)
 
-            print(f"-> {port_info_file}")
+            # print(f"-> {port_info_file}")
             with open(port_info_file, 'w') as fh:
                 json.dump(port_info, fh, indent=4)
 

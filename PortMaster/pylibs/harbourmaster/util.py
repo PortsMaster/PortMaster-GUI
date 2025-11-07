@@ -273,6 +273,7 @@ def add_pm_signature(file_name, info):
     with file_name.open('w') as fh:
         fh.write("\n".join(file_data))
 
+
 def remove_pm_signature(file_name):
     ## Removes the portmaster signature to a bash script.
 
@@ -317,6 +318,81 @@ def hash_file(file_name):
             md5.update(data)
 
     return md5.hexdigest()
+
+
+def hash_file_sha(file_name):
+    if isinstance(file_name, str):
+        file_name = pathlib.Path(file_name)
+    elif not isinstance(file_name, pathlib.PurePath):
+        raise ValueError(file_name)
+
+    if not file_name.is_file():
+        return None
+
+    sha = hashlib.sha1()
+    with file_name.open('rb') as fh:
+        for data in iter(lambda: fh.read(1024 * 1024 * 10), b''):
+            sha.update(data)
+
+    return sha.hexdigest()
+
+
+def calculate_git_blob_sha_file(file_name):
+    """
+    Calculates the Git blob SHA-1 hash for a local file.
+
+    Args:
+        file_path: The path to the local file.
+
+    Returns:
+        The hexadecimal SHA-1 hash string.
+    """
+
+    if isinstance(file_name, str):
+        file_name = pathlib.Path(file_name)
+    elif not isinstance(file_name, pathlib.PurePath):
+        raise ValueError(file_name)
+
+    if not file_name.is_file():
+        return None
+
+    # Construct the Git blob header
+    # The header is "blob <size>\0"
+    sha = hashlib.sha1()
+    sha.update(f"blob {file_name.stat().st_size}\0".encode('utf-8'))
+
+    with open(file_name, 'rb') as fh:
+        for data in iter(lambda: fh.read(1024 * 1024 * 10), b''):
+            sha.update(data)
+
+    # Calculate the SHA-1 hash
+    return sha.hexdigest()
+
+
+def calculate_git_blob_sha_data(file_data):
+    """
+    Calculates the Git blob SHA-1 hash for raw data.
+
+    Args:
+        file_data: The path to the local file.
+
+    Returns:
+        The hexadecimal SHA-1 hash string.
+    """
+
+    if isinstance(file_data, str):
+        file_data = file_data.encode('utf-8')
+    elif not isinstance(file_data, bytes):
+        raise ValueError(file_data)
+
+    # Construct the Git blob header
+    # The header is "blob <size>\0"
+    sha = hashlib.sha1()
+    sha.update(f"blob {len(file_data)}\0".encode('utf-8'))
+    sha.update(file_data)
+
+    # Calculate the SHA-1 hash
+    return sha.hexdigest()
 
 
 def runtime_nicename(runtime):
@@ -369,7 +445,10 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
 
         if r.status_code != 200:
             if callback is not None:
-                callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
+                if no_message_box:
+                    callback.message(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
+                else:
+                    callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
 
             logger.error(f"Unable to download file: {file_url!r} [{r.status_code}]")
             return None
@@ -428,7 +507,10 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
         logger.error(f"Requests error: {err}")
 
         if callback is not None:
-            callback.message_box(_("Download failed: {err}").format(err=str(err)))
+            if no_message_box:
+                callback.message(_("Download failed: {err}").format(err=str(err)))
+            else:
+                callback.message_box(_("Download failed: {err}").format(err=str(err)))
 
         return None
 
@@ -440,11 +522,14 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
                 logger.error(f"File doesn't match the md5 file: {md5_file} != {md5_source}")
 
                 if callback is not None:
-                    callback.message_box(_("Download validation failed."))
+                    if no_message_box:
+                        callback.message(_("Download failed: {err}").format(err=str(err)))
+                    else:
+                        callback.message_box(_("Download validation failed."))
 
                 return None
-            else:
 
+            else:
                 if callback is not None:
                     callback.message(_("Passed file validation."))
                 else:
@@ -594,10 +679,15 @@ def port_sort_date_updated(port_info):
     return port_info.get('source', {}).get('date_updated', '1970-01-01')
 
 
+def port_sort_download_count(port_info):
+    return port_info.get('source', {}).get('downloads', 0)
+
+
 PORT_SORT_FUNCS = {
-    'alphabetical': port_sort_alphabetical,
+    'alphabetical':     port_sort_alphabetical,
     'recently_added':   port_sort_date_added,
     'recently_updated': port_sort_date_updated,
+    'total_downloads':  port_sort_download_count,
     }
 
 
@@ -708,6 +798,8 @@ __all__ = (
     'add_dict_list_unique',
     'add_list_unique',
     'add_pm_signature',
+    'calculate_git_blob_sha_data',
+    'calculate_git_blob_sha_file',
     'datetime_compare',
     'download',
     'fetch_data',
@@ -716,6 +808,7 @@ __all__ = (
     'get_dict_list',
     'get_path_fs',
     'hash_file',
+    'hash_file_sha',
     'json_safe_load',
     'json_safe_loads',
     'list_to_tuple',
