@@ -1591,7 +1591,6 @@ class HarbourMaster():
 
         if 'source' in result:
             result['source']['downloads'] = self.port_downloads(port_name)
-            logger.info(f"{port_name} == {result['source']['downloads']}")
 
         self.__PORT_INFO_CACHE[port_key] = result
         return result
