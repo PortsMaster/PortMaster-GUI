@@ -72,25 +72,49 @@ if [ -n "$AUTOINSTALL_FILES" ]; then
     fi
   done
 
-  # 2. Install runtimes.zip and/or runtimes.${DEVICE_ARCH}.zip
-  RUNTIME_FILE_1="runtimes.zip"
-  RUNTIME_FILE_2="runtimes.${DEVICE_ARCH}.zip"
-
+  # 2. Install runtimes.zip and/or runtimes.{full,popular}.${DEVICE_ARCH}.zip
   for autoinstall_dir in "$AUTOINSTALL_DIR_1" "$AUTOINSTALL_DIR_2"; do
-    for runtime_zip in "$RUNTIME_FILE_1" "$RUNTIME_FILE_2"; do
-      if [ -f "$autoinstall_dir/$runtime_zip" ]; then
-        PortMasterDialog "message" "- Installing $runtime_zip, this could take a minute or two."
-        $ESUDO unzip -o "$autoinstall_dir/$runtime_zip" -d "$controlfolder/libs"
-        $ESUDO rm -f "$autoinstall_dir/$runtime_zip"
-        PortMasterDialog "message" "- SUCCESS: $runtime_zip"
+    if [ -f "$autoinstall_dir/runtimes.zip" ]; then
+      # Old runtimes.zip do not include an architecture comment.
+      ZIP_COMMENT="$(unzip -z "$file_name" | tail -n1 | cut -d' ' -f1)"
+      if [ "$ZIP_COMMENT" = "${DEVICE_ARCH}" ] || [ "$ZIP_COMMENT" = "Archive:" ]; then
+        PortMasterDialog "message" "- Installing runtimes.zip."
+        $ESUDO unzip -o "$autoinstall_dir/runtimes.zip" -d "$controlfolder/libs" | while IFS= read -r line; do
+          case "$line" in
+            *'inflating:'*|*'extracting:'*)
+              filename=$(echo "$line" | awk '{print $2}')
+              PortMasterDialog "message" " - $(basename $filename)"
+              ;;
+          esac
+        done
+        $ESUDO rm -f "$autoinstall_dir/runtimes.zip"
+        PortMasterDialog "message" "- SUCCESS: runtimes.zip"
+      else
+        PortMasterDialogMessageBox "Unable to install runtime.zip, it is for the wrong architecture.\n\nDeleting file from autoinstall/."
+        $ESUDO rm -f "$autoinstall_dir/runtimes.zip"
       fi
-    done
+    fi
 
     if ls "$autoinstall_dir"/runtimes*.zip >/dev/null 2>&1; then
       for file_name in "$autoinstall_dir"/runtimes*.zip; do
         if [ -f "$file_name" ]; then
+          # Newer runtimes.full.ARCH.zip and friends includes the architecture as a comment.
+          if [ "$(unzip -z "$file_name" | tail -n1 | cut -d' ' -f1)" = "${DEVICE_ARCH}" ]; then
+            PortMasterDialog "message" "- Installing $(basename "$file_name")."
+            $ESUDO unzip -o "$file_name" -d "$controlfolder/libs" | while IFS= read -r line; do
+              case "$line" in
+                *'inflating:'*|*'extracting:'*)
+                  filename=$(echo "$line" | awk '{print $2}')
+                  PortMasterDialog "message" " - $(basename $filename)"
+                  ;;
+              esac
+            done
             $ESUDO rm -f "$file_name"
-            PortMasterDialog "message" "- Removing invalid runtimes.zip: $(basename "$file_name")"
+            PortMasterDialog "message" "- SUCCESS: $(basename "$file_name")"
+          else
+            PortMasterDialogMessageBox "Unable to install $(basename "$file_name"), it is for the wrong architecture.\n\nDeleting file from autoinstall directory."
+            $ESUDO rm -f "$file_name"
+          fi
         fi
       done
     fi

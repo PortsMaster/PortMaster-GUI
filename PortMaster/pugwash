@@ -655,6 +655,9 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
         cfg_data = self.get_config()
         default_sound = False
 
+        if cfg_data.get('analog-min', 0) > 0:
+            self.events.analog_min = cfg_data['analog-min']
+
         if 'arkos' in capabilities['name'].lower() and 'rk3366' in capabilities['cpu']:
             default_sound = not Path('/etc/asound.conf').exists()
 
