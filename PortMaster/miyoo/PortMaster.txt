@@ -94,8 +94,15 @@ if [ -n "$AUTOINSTALL_FILES" ]; then
       # Old runtimes.zip do not include an architecture comment.
       ZIP_COMMENT="$(unzip -z "$file_name" | tail -n1 | cut -d' ' -f1)"
       if [ "$ZIP_COMMENT" = "${DEVICE_ARCH}" ] || [ "$ZIP_COMMENT" = "Archive:" ]; then
-        PortMasterDialog "message" "- Installing runtimes.zip, this could take a minute or two."
-        $ESUDO unzip -o "$autoinstall_dir/runtimes.zip" -d "$controlfolder/libs"
+        PortMasterDialog "message" "- Installing runtimes.zip."
+        $ESUDO unzip -o "$autoinstall_dir/runtimes.zip" -d "$controlfolder/libs" | while IFS= read -r line; do
+          case "$line" in
+            *'inflating:'*|*'extracting:'*)
+              filename=$(echo "$line" | awk '{print $2}')
+              PortMasterDialog "message" " - $(basename $filename)"
+              ;;
+          esac
+        done
         $ESUDO rm -f "$autoinstall_dir/runtimes.zip"
         PortMasterDialog "message" "- SUCCESS: runtimes.zip"
       else
@@ -109,8 +116,15 @@ if [ -n "$AUTOINSTALL_FILES" ]; then
         if [ -f "$file_name" ]; then
           # Newer runtimes.full.ARCH.zip and friends includes the architecture as a comment.
           if [ "$(unzip -z "$file_name" | tail -n1 | cut -d' ' -f1)" = "${DEVICE_ARCH}" ]; then
-            PortMasterDialog "message" "- Installing $(basename "$file_name"), this could take a minute or two."
-            $ESUDO unzip -o "$file_name" -d "$controlfolder/libs"
+            PortMasterDialog "message" "- Installing $(basename "$file_name")."
+            $ESUDO unzip -o "$file_name" -d "$controlfolder/libs" | while IFS= read -r line; do
+              case "$line" in
+                *'inflating:'*|*'extracting:'*)
+                  filename=$(echo "$line" | awk '{print $2}')
+                  PortMasterDialog "message" " - $(basename $filename)"
+                  ;;
+              esac
+            done
             $ESUDO rm -f "$file_name"
             PortMasterDialog "message" "- SUCCESS: $(basename "$file_name")"
           else
