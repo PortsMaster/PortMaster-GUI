@@ -77,7 +77,9 @@ _PortMasterWaitForCmd() {
       break
     fi
 
-    if [ $wait -gt 1000 ]; then
+    ## TODO: 30 minutes seems like a bit much, but this is for a single command,
+    ##       downstream may have to handle this if it is too short.
+    if [ $wait -gt 6000 ]; then
       break
     fi
 
