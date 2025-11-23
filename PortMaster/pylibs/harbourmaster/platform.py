@@ -609,13 +609,48 @@ class PlatformRetroDECK(PlatformBase):
         if self.RD_CONFIG is None:
             rdconfig = {}
 
-            rdconfig_file=Path("/var/config/retrodeck/retrodeck.cfg")
-            if not rdconfig_file.is_file():
-                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
-
             rdconfig['rdhome'] = None
             rdconfig['roms_folder'] = None
             rdconfig['ports_folder'] = None
+
+            # XARGON !!!!!!
+            rdconfig_file=Path("/var/config/retrodeck/retrodeck.json")
+            if not rdconfig_file.is_file():
+                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json")
+
+            if rdconfig_file.is_file():
+                with open(rdconfig_file, 'r') as fh:
+                    rdconfig_data = json_safe_load(fh)
+
+                    if not isinstance(rdconfig_data, dict):
+                        logger.error(f"Unable to load the retrodeck.json: {rdconfig_file}.")
+                        return None
+
+                    if 'rd_home_path' is not in rdconfig_data.get('paths', {}):
+                        logger.error(f"Unable to find the rd_home_path value in {rdconfig_file}.")
+                        return None
+
+                    rdconfig['rdhome'] = Path(rdconfig_data['paths']['rd_home_path'])
+
+                    if 'roms_path' in rdconfig_data['paths']:
+                        rdconfig['roms_folder'] = Path(rdconfig_data['paths']['roms_path'])
+                    else:
+                        rdconfig['roms_folder'] = rdconfig['rdhome'] / "roms"
+
+                    if 'ports_path' in rdconfig_data['paths']:
+                        rdconfig['ports_folder'] = Path(rdconfig_data['paths']['ports_path'])
+                    else:
+                        rdconfig['ports_folder'] = rdconfig['rdhome'] / "PortMaster"
+
+                self.RD_CONFIG = rdconfig
+
+                logger.info(f"RD_CONFIG: {rdconfig}")
+
+                return self.RD_CONFIG
+
+            rdconfig_file=Path("/var/config/retrodeck/retrodeck.cfg")
+            if not rdconfig_file.is_file():
+                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
 
             with open(rdconfig_file, 'r') as fh:
                 for line in fh:

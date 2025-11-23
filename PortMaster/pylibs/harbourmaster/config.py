@@ -3,12 +3,13 @@
 
 
 # System imports
+import json
+import os
 import pathlib
 import platform
-import os
+import re
 import subprocess
 import textwrap
-import re
 
 from pathlib import Path
 
@@ -112,7 +113,43 @@ elif Path("/storage/roms/ports").is_dir():
     HM_DEFAULT_PORTS_DIR   = Path("/storage/roms/ports")
     HM_DEFAULT_SCRIPTS_DIR = Path("/storage/roms/ports")
 
-## Check if retrodeck.sh exists. Chose this file/location as platform independent from were retrodeck is installed.
+## Check if retrodeck.cfg or retrodeck.json exists. Chose this file/location as platform independent from were retrodeck is installed.
+elif Path("/var/config/retrodeck/retrodeck.json").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json").is_file():
+    rdconfig=Path("/var/config/retrodeck/retrodeck.json")
+    HM_DEFAULT_TOOLS_DIR = Path("/var/data")
+
+    if not rdconfig.is_file():
+        rdconfig = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json")
+        HM_DEFAULT_TOOLS_DIR  = (Path.home() / ".var/app/net.retrodeck.retrodeck/data")
+
+    rdhome = None
+    ports_folder = None
+    roms_folder  = None
+    rdconfig_data = None
+
+    with open(rdconfig_file, 'r') as fh:
+        try:
+            rdconfig_data = json.load(fh)
+        except json.JSONDecodeError as err:
+            logger.error(f"Unable to load {rdconfig_file}:{err.pos}:{err.lineno}:{err.colno}: {err.doc}")
+            exit(255)
+
+    if not isinstance(rdconfig_data, dict):
+        logger.error(f"Unable to load the retrodeck.json: {rdconfig_file}.")
+        exit(255)
+
+    if 'rd_home_path' is not in rdconfig_data.get('paths', {}):
+        logger.error(f"Unable to find the rd_home_path value in {rdconfig_file}.")
+        exit(255)
+
+    rdhome = Path(rdconfig_data['paths']['rd_home_path'])
+
+    roms_folder  = Path(rdconfig_data['paths'].get('roms_path',  rdhome / "roms"))
+    ports_folder = Path(rdconfig_data['paths'].get('ports_path', rdhome / "PortMaster"))
+
+    HM_DEFAULT_PORTS_DIR   = ports_folder / "ports"
+    HM_DEFAULT_SCRIPTS_DIR = roms_folder  / "portmaster"
+
 elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
     rdconfig=Path("/var/config/retrodeck/retrodeck.cfg")
     HM_DEFAULT_TOOLS_DIR = Path("/var/data")
