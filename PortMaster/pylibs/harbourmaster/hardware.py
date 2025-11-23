@@ -333,6 +333,7 @@ def nice_device_to_device(raw_device):
         ('powkiddy x55',             'x55'),
 
         ('anbernic rg28xx*',      'rg28xx'),
+        ('anbernic rg34xx sp*',   'rg34xx-sp'),
         ('anbernic rg34xx-sp*',   'rg34xx-sp'),
         ('anbernic rg35xx h*',    'rg35xx-h'),
         ('anbernic rg35xx sp*',   'rg35xx-sp'),

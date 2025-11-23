@@ -559,6 +559,11 @@ class PlatformArkOS(PlatformGCD_PortMaster, PlatformBase):
         return self.hm.ports_dir / 'gamelist.xml'
 
 
+class PlatformdArkOS(PlatformArkOS):
+    # WOO! :D
+    ...
+
+
 class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = 'emustation'
@@ -1202,6 +1207,7 @@ class PlatformTesting(PlatformBase):
 
 HM_PLATFORMS = {
     'arkos':     PlatformArkOS,
+    'darkos':    PlatformdArkOS,
     'amberelec': PlatformAmberELEC,
     'emuelec':   PlatformEmuELEC,
     'unofficialos': PlatformUOS,
