@@ -86,6 +86,9 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
 elif [ -f "/opt/muos/config/system/version" ]; then
     CFW_NAME="muOS"
     CFW_VERSION=$(<"/opt/muos/config/system/version")
+elif [ -e "$(which knulli-version)" ]; then
+    CFW_NAME="Knulli"
+    CFW_VERSION="$(knulli-version | cut -d' ' -f 1)"
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
@@ -137,6 +140,8 @@ elif [ -f "$HOME/.config/.OS_ARCH" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.OS_ARCH")
 elif [  -f "/app/bin/retrodeck.sh" ]; then
     DEVICE_NAME="RetroDECK"
+elif [ -f "/boot/boot/knulli.board" ]; then
+    DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/knulli.board)
 elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
 elif [ -f "/boot/boot/system.board" ]; then

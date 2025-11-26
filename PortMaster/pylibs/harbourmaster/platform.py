@@ -626,7 +626,7 @@ class PlatformRetroDECK(PlatformBase):
                         logger.error(f"Unable to load the retrodeck.json: {rdconfig_file}.")
                         return None
 
-                    if 'rd_home_path' is not in rdconfig_data.get('paths', {}):
+                    if 'rd_home_path' not in rdconfig_data.get('paths', {}):
                         logger.error(f"Unable to find the rd_home_path value in {rdconfig_file}.")
                         return None
 

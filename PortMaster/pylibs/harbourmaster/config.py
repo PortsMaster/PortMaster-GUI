@@ -138,7 +138,7 @@ elif Path("/var/config/retrodeck/retrodeck.json").is_file() or (Path.home() / ".
         logger.error(f"Unable to load the retrodeck.json: {rdconfig_file}.")
         exit(255)
 
-    if 'rd_home_path' is not in rdconfig_data.get('paths', {}):
+    if 'rd_home_path' not in rdconfig_data.get('paths', {}):
         logger.error(f"Unable to find the rd_home_path value in {rdconfig_file}.")
         exit(255)
 
