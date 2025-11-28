@@ -115,11 +115,11 @@ elif Path("/storage/roms/ports").is_dir():
 
 ## Check if retrodeck.cfg or retrodeck.json exists. Chose this file/location as platform independent from were retrodeck is installed.
 elif Path("/var/config/retrodeck/retrodeck.json").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json").is_file():
-    rdconfig=Path("/var/config/retrodeck/retrodeck.json")
+    rdconfig_file=Path("/var/config/retrodeck/retrodeck.json")
     HM_DEFAULT_TOOLS_DIR = Path("/var/data")
 
-    if not rdconfig.is_file():
-        rdconfig = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json")
+    if not rdconfig_file.is_file():
+        rdconfig_file = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json")
         HM_DEFAULT_TOOLS_DIR  = (Path.home() / ".var/app/net.retrodeck.retrodeck/data")
 
     rdhome = None
@@ -151,18 +151,18 @@ elif Path("/var/config/retrodeck/retrodeck.json").is_file() or (Path.home() / ".
     HM_DEFAULT_SCRIPTS_DIR = roms_folder  / "portmaster"
 
 elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg").is_file():
-    rdconfig=Path("/var/config/retrodeck/retrodeck.cfg")
+    rdconfig_file=Path("/var/config/retrodeck/retrodeck.cfg")
     HM_DEFAULT_TOOLS_DIR = Path("/var/data")
 
-    if not rdconfig.is_file():
-        rdconfig = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
+    if not rdconfig_file.is_file():
+        rdconfig_file = (Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
         HM_DEFAULT_TOOLS_DIR  = (Path.home() / ".var/app/net.retrodeck.retrodeck/data")
 
     rdhome=None
     ports_folder=None
     roms_folder=None
 
-    with open(rdconfig, 'r') as fh:
+    with open(rdconfig_file, 'r') as fh:
         for line in fh:
             line = line.strip()
 
@@ -186,7 +186,7 @@ elif Path("/var/config/retrodeck/retrodeck.cfg").is_file() or (Path.home() / ".v
         ports_folder=rdhome / "PortMaster"
 
     HM_DEFAULT_PORTS_DIR   = Path(ports_folder) / "ports"
-    HM_DEFAULT_SCRIPTS_DIR = Path(roms_folder) / "portmaster"
+    HM_DEFAULT_SCRIPTS_DIR = Path(roms_folder)  / "portmaster"
 
 else:
     HM_DEFAULT_TOOLS_DIR = Path("/roms/ports")

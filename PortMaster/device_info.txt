@@ -74,7 +74,10 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 
     unset CFW_INFO
     unset CFW_FFS
-
+elif [ -f "/app/bin/retrodeck" ]; then
+    # RetroDeck Neo
+    CFW_NAME="RetroDECK"
+    CFW_VERSION=$(jq -r .version /var/config/retrodeck/retrodeck.json)
 elif [ -f "/app/bin/retrodeck.sh" ]; then
     # RetroDeck
     CFW_NAME="RetroDECK"
@@ -138,7 +141,9 @@ elif [ -f "$HOME/.config/.DEVICE" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.DEVICE")
 elif [ -f "$HOME/.config/.OS_ARCH" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.OS_ARCH")
-elif [  -f "/app/bin/retrodeck.sh" ]; then
+elif [ -f "/app/bin/retrodeck" ]; then
+    DEVICE_NAME="RetroDECK"
+elif [ -f "/app/bin/retrodeck.sh" ]; then
     DEVICE_NAME="RetroDECK"
 elif [ -f "/boot/boot/knulli.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/knulli.board)
