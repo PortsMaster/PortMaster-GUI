@@ -33,7 +33,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.14"
+DEVICE_INFO_VERSION="0.1.15"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -90,7 +90,7 @@ elif [ -f "/opt/muos/config/system/version" ]; then
     CFW_NAME="muOS"
     CFW_VERSION=$(<"/opt/muos/config/system/version")
 elif [ -e "$(which knulli-version)" ]; then
-    CFW_NAME="Knulli"
+    CFW_NAME="knulli"
     CFW_VERSION="$(knulli-version | cut -d' ' -f 1)"
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"

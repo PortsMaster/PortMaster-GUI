@@ -362,6 +362,13 @@ class PlatformBatocera(PlatformBase):
     MOVE_PM_BASH = False
     ES_NAME = "batocera-es"
 
+    BATOCERA_CONFIG_FILES = [
+        "/userdata/system/knulli.conf",   # Knulli
+        "/userdata/system/system.conf",   # REG-Linux, maybe?
+        "/userdata/system/batocera.conf", # Batocera, Knulli
+        ]
+    BATOCERA_CONFIG = None
+
     def portmaster_install(self, bash_files):
         super().portmaster_install(bash_files)
         """
@@ -425,11 +432,25 @@ class PlatformBatocera(PlatformBase):
 
         return False  # Return False if not found 
 
-    def batocera_settings_get(self, key, default=None, config_file='/userdata/system/batocera.conf'):
+    def batocera_settings_get(self, key, default=None):
         """
         This parses the batocera_settings files.
         """
-        with open(config_file, 'r') as fh:
+        if self.BATOCERA_CONFIG is None:
+            for config_file in self.BATOCERA_CONFIG_FILES:
+                if Path(config_file).is_file():
+                    self.BATOCERA_CONFIG = config_file
+                    break
+            else:
+                self.BATOCERA_CONFIG = ""
+                logger.error(f"Unable to find a suitable batocera.conf file, returning {default}")
+                return default
+
+        if self.BATOCERA_CONFIG == "":
+            # Return default every time since none was found.
+            return default
+
+        with open(self.BATOCERA_CONFIG, 'r') as fh:
             for line in fh:
                 line = line.strip()
 
