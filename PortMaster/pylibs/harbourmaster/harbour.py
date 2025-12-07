@@ -1700,7 +1700,7 @@ class HarbourMaster():
             path_check = self.ports_dir
 
         path_fs = get_path_fs(path_check)
-        logger.debug(f"path_fs={path_fs}")
+        logger.debug(f"Fix Perms: {path_check} = {path_fs}")
 
         if path_fs not in ('ext4', 'ext3', 'overlay'):
             return
@@ -1769,6 +1769,8 @@ class HarbourMaster():
             if (self.cfg_dir / "PortMaster.sh").is_file():
                 (self.cfg_dir / "PortMaster.sh").unlink()
 
+            bash_files = []
+
             with zipfile.ZipFile(download_file, 'r') as zf:
                 self.callback.message(_("Installing {download_name}.").format(download_name="PortMaster"))
 
@@ -1795,13 +1797,18 @@ class HarbourMaster():
                         self.callback.message(f"- moving {dest_file} to {move_bash_dir / dest_file.name}")
                         shutil.move(dest_file, move_bash_dir / dest_file.name)
 
+                        # Bash file is moved from the PortMaster directory so we need to chmod it separately.
+                        bash_files.append(move_bash_dir / dest_file.name)
+
             self.set_gcd_mode(gcd_mode)
 
-            self.platform.portmaster_install()
+            self.platform.portmaster_install(bash_files)
+
+            self._fix_permissions(self.tools_dir / "PortMaster")
+            for bash_file in bash_files:
+                self._fix_permissions(bash_file)
 
             self.callback.message_box(_("Port {download_name!r} installed successfully.").format(download_name="PortMaster"))
-
-            self._fix_permissions(self.tools_dir)
 
         finally:
             if do_delete:
@@ -1924,6 +1931,10 @@ class HarbourMaster():
             if 'source' in port_info:
                 del port_info['source']
 
+            # Get a list of files/dirs we should fix permissions of.
+            fix_perm_files = []
+
+            # Build up this also.
             port_info['files'] = {
                 'port.json': str(self._ports_dir_relative_to(port_info_file)),
                 }
@@ -1934,8 +1945,10 @@ class HarbourMaster():
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
 
-                    if item.casefold().endswith('.sh'):
+                    if item.lower().endswith('.sh'):
                         add_pm_signature(self.ports_dir / item, [port_info['name'], item])
+
+                    fix_perm_files.append(self._ports_dir_file(item, item.casefold().endswith('.sh')))
 
             # And any optional ones.
             for item in get_dict_list(port_info, 'items_opt'):
@@ -1943,8 +1956,10 @@ class HarbourMaster():
                     if item not in get_dict_list(port_info['files'], item):
                         add_dict_list_unique(port_info['files'], item, item)
 
-                    if item.casefold().endswith('.sh'):
+                    if item.lower().endswith('.sh'):
                         add_pm_signature(self.ports_dir / item, [port_info['name'], item])
+
+                    fix_perm_files.append(self._ports_dir_file(item, item.casefold().endswith('.sh')))
             # print(f"Merged Info: {port_info}")
 
             if not port_info_file.is_file():
@@ -1957,7 +1972,7 @@ class HarbourMaster():
             # Remove the zip file if it is in the self.temp_dir
             is_successs = True
 
-            self.platform.port_install(port_info['name'], port_info, undo_data)
+            self.platform.port_install(port_info['name'], port_info, undo_data, fix_perm_files)
 
             if extra_info['gameinfo_xml'] is not None:
                 if self.cfg_data.get('gamelist_update', True):
@@ -1967,6 +1982,10 @@ class HarbourMaster():
                         self.platform.gamelist_add(gameinfo_xml)
 
             self._port_attrs_updated = True
+
+            # Fix permissions
+            for fix_perm_file in fix_perm_files:
+                self._fix_permissions(fix_perm_file)
 
         except HarbourException as err:
             is_successs = False
@@ -1996,11 +2015,6 @@ class HarbourMaster():
                 self._port_attrs_updated = True
 
                 return 255
-
-        self._fix_permissions()
-
-        if self.ports_dir != self.scripts_dir:
-            self._fix_permissions(self.scripts_dir)
 
         # logger.debug(port_info)
         if len(port_info['attr'].get('runtime', [])) > 0:

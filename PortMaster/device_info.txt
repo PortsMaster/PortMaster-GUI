@@ -33,7 +33,7 @@ if [ ! -z "$DEVICE_INFO_VERSION" ]; then
     return
 fi
 
-DEVICE_INFO_VERSION="0.1.14"
+DEVICE_INFO_VERSION="0.1.15"
 
 if [ -z "$controlfolder" ]; then
     SCRIPT_DIR="$(dirname "$0")"
@@ -74,7 +74,10 @@ if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
 
     unset CFW_INFO
     unset CFW_FFS
-
+elif [ -f "/app/bin/retrodeck" ]; then
+    # RetroDeck Neo
+    CFW_NAME="RetroDECK"
+    CFW_VERSION=$(jq -r .version /var/config/retrodeck/retrodeck.json)
 elif [ -f "/app/bin/retrodeck.sh" ]; then
     # RetroDeck
     CFW_NAME="RetroDECK"
@@ -86,6 +89,9 @@ elif [ -f "/opt/muos/config/version.txt" ]; then
 elif [ -f "/opt/muos/config/system/version" ]; then
     CFW_NAME="muOS"
     CFW_VERSION=$(<"/opt/muos/config/system/version")
+elif [ -e "$(which knulli-version)" ]; then
+    CFW_NAME="knulli"
+    CFW_VERSION="$(knulli-version | cut -d' ' -f 1)"
 elif [ -e "$(which batocera-version)" ]; then
     CFW_NAME="Batocera"
     CFW_VERSION="$(batocera-version | cut -d' ' -f 1)"
@@ -135,8 +141,12 @@ elif [ -f "$HOME/.config/.DEVICE" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.DEVICE")
 elif [ -f "$HOME/.config/.OS_ARCH" ]; then
     DEVICE_NAME=$(cat "$HOME/.config/.OS_ARCH")
-elif [  -f "/app/bin/retrodeck.sh" ]; then
+elif [ -f "/app/bin/retrodeck" ]; then
     DEVICE_NAME="RetroDECK"
+elif [ -f "/app/bin/retrodeck.sh" ]; then
+    DEVICE_NAME="RetroDECK"
+elif [ -f "/boot/boot/knulli.board" ]; then
+    DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/knulli.board)
 elif [ -f "/boot/boot/batocera.board" ]; then
     DEVICE_NAME=$(tr '[a-z]' '[A-Z]' < /boot/boot/batocera.board)
 elif [ -f "/boot/boot/system.board" ]; then

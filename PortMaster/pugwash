@@ -822,6 +822,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
                 self.set_data("system.total_space", "000 B")
 
             battery_paths = [
+                Path("/tmp/battery.percent"),
                 Path("/sys/class/power_supply/battery/capacity"),
                 Path("/sys/class/power_supply/axp2202-battery/capacity"),
                 Path("/sys/class/power_supply/BAT1/capacity"),

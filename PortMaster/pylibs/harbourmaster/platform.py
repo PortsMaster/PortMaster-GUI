@@ -204,7 +204,7 @@ class PlatformBase():
         """
         logger.debug(f"{self.__class__.__name__}: First Run")
 
-    def port_install(self, port_name, port_info, port_files):
+    def port_install(self, port_name, port_info, port_files, fix_perm_files):
         """
         Called on after a port is installed, this can be used to check permissions, possibly augment the bash scripts.
         """
@@ -232,7 +232,7 @@ class PlatformBase():
         else:
             self.removed_ports.add(port_name)
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Called on after portmaster is updated, this can be used clean up special files.
         """
@@ -330,9 +330,9 @@ class PlatformJELOS(PlatformBase):
         return self.hm.ports_dir / 'gamelist.xml'
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Copy JELOS PortMaster files here.
         """
@@ -362,8 +362,15 @@ class PlatformBatocera(PlatformBase):
     MOVE_PM_BASH = False
     ES_NAME = "batocera-es"
 
-    def portmaster_install(self):
-        super().portmaster_install()
+    BATOCERA_CONFIG_FILES = [
+        "/userdata/system/knulli.conf",   # Knulli
+        "/userdata/system/system.conf",   # REG-Linux, maybe?
+        "/userdata/system/batocera.conf", # Batocera, Knulli
+        ]
+    BATOCERA_CONFIG = None
+
+    def portmaster_install(self, bash_files):
+        super().portmaster_install(bash_files)
         """
         Just move PortMaster.sh from `PortMaster/` to `/userdata/roms/ports/`.
         """
@@ -425,11 +432,25 @@ class PlatformBatocera(PlatformBase):
 
         return False  # Return False if not found 
 
-    def batocera_settings_get(self, key, default=None, config_file='/userdata/system/batocera.conf'):
+    def batocera_settings_get(self, key, default=None):
         """
         This parses the batocera_settings files.
         """
-        with open(config_file, 'r') as fh:
+        if self.BATOCERA_CONFIG is None:
+            for config_file in self.BATOCERA_CONFIG_FILES:
+                if Path(config_file).is_file():
+                    self.BATOCERA_CONFIG = config_file
+                    break
+            else:
+                self.BATOCERA_CONFIG = ""
+                logger.error(f"Unable to find a suitable batocera.conf file, returning {default}")
+                return default
+
+        if self.BATOCERA_CONFIG == "":
+            # Return default every time since none was found.
+            return default
+
+        with open(self.BATOCERA_CONFIG, 'r') as fh:
             for line in fh:
                 line = line.strip()
 
@@ -469,10 +490,12 @@ class PlatformBatocera(PlatformBase):
         REBOOT_FILE = self.hm.tools_dir / ".pugwash-reboot"
         REBOOT_FILE.touch()
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
+
         TL_DIR = self.hm.tools_dir / "PortMaster"
         BC_DIR = TL_DIR / "batocera"
 
@@ -510,10 +533,12 @@ class PlatformKnulli(PlatformBatocera):
             if self.WANT_SWAP_BUTTONS:
                 self.WANT_XBOX_FIX = not self.WANT_XBOX_FIX
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
+
         TL_DIR = self.hm.tools_dir / "PortMaster"
         BC_DIR = TL_DIR / "knulli"
 
@@ -609,13 +634,48 @@ class PlatformRetroDECK(PlatformBase):
         if self.RD_CONFIG is None:
             rdconfig = {}
 
-            rdconfig_file=Path("/var/config/retrodeck/retrodeck.cfg")
-            if not rdconfig_file.is_file():
-                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
-
             rdconfig['rdhome'] = None
             rdconfig['roms_folder'] = None
             rdconfig['ports_folder'] = None
+
+            # XARGON !!!!!!
+            rdconfig_file=Path("/var/config/retrodeck/retrodeck.json")
+            if not rdconfig_file.is_file():
+                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json")
+
+            if rdconfig_file.is_file():
+                with open(rdconfig_file, 'r') as fh:
+                    rdconfig_data = json_safe_load(fh)
+
+                    if not isinstance(rdconfig_data, dict):
+                        logger.error(f"Unable to load the retrodeck.json: {rdconfig_file}.")
+                        return None
+
+                    if 'rd_home_path' not in rdconfig_data.get('paths', {}):
+                        logger.error(f"Unable to find the rd_home_path value in {rdconfig_file}.")
+                        return None
+
+                    rdconfig['rdhome'] = Path(rdconfig_data['paths']['rd_home_path'])
+
+                    if 'roms_path' in rdconfig_data['paths']:
+                        rdconfig['roms_folder'] = Path(rdconfig_data['paths']['roms_path'])
+                    else:
+                        rdconfig['roms_folder'] = rdconfig['rdhome'] / "roms"
+
+                    if 'ports_path' in rdconfig_data['paths']:
+                        rdconfig['ports_folder'] = Path(rdconfig_data['paths']['ports_path'])
+                    else:
+                        rdconfig['ports_folder'] = rdconfig['rdhome'] / "PortMaster"
+
+                self.RD_CONFIG = rdconfig
+
+                logger.info(f"RD_CONFIG: {rdconfig}")
+
+                return self.RD_CONFIG
+
+            rdconfig_file=Path("/var/config/retrodeck/retrodeck.cfg")
+            if not rdconfig_file.is_file():
+                rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
 
             with open(rdconfig_file, 'r') as fh:
                 for line in fh:
@@ -672,12 +732,13 @@ class PlatformRetroDECK(PlatformBase):
         return gamelists_dir / 'gamelist.xml'
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
 
         RD_DIR = self.hm.tools_dir / "PortMaster" / "retrodeck"
         PM_DIR = self.hm.tools_dir / "PortMaster"
@@ -697,6 +758,9 @@ class PlatformRetroDECK(PlatformBase):
             (SC_DIR / "PortMaster.sh").unlink()
 
         shutil.copy(RD_DIR / "PortMaster.txt", SC_DIR / "PortMaster.sh")
+
+        # Fix perms
+        bash_files.append(SC_DIR / "PortMaster.sh")
 
         TASK_SET = Path(self.hm.tools_dir / "PortMaster" / "tasksetter")
         if TASK_SET.is_file():
@@ -797,10 +861,10 @@ class PlatformmuOS(PlatformBase):
             self.added_ports.add('GAMELIST UPDATER')
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
-    def port_install(self, port_name, port_info, port_files):
-        super().port_install(port_name, port_info, port_files)
+    def port_install(self, port_name, port_info, port_files, fix_perm_files):
+        super().port_install(port_name, port_info, port_files, fix_perm_files)
 
         logger.debug(f"{self.__class__.__name__}: Port Install {port_name}")
         logger.debug(f"--------------------- muOS platform port_install -----------------------------------")
@@ -883,10 +947,11 @@ class PlatformmuOS(PlatformBase):
             except OSError as e:
                 logger.debug(f"Error during file operation: {e}")
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
 
         MU_DIR = self.hm.tools_dir / "PortMaster" / "muos"
         PM_DIR = self.hm.tools_dir / "PortMaster"
@@ -905,6 +970,8 @@ class PlatformmuOS(PlatformBase):
         # PEBKAC
         logger.debug(f'Move {MU_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
         shutil.copy(MU_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        bash_files.append(PM_DIR / "PortMaster.sh")
 
         TASK_SET = Path(self.hm.tools_dir / "PortMaster" / "tasksetter")
         if TASK_SET.is_file():
@@ -932,12 +999,13 @@ class PlatformTrimUI(PlatformBase):
         }
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
 
         TU_DIR = self.hm.tools_dir / "PortMaster" / "trimui"
         PM_DIR = self.hm.tools_dir / "PortMaster"
@@ -957,14 +1025,16 @@ class PlatformTrimUI(PlatformBase):
         logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / "launch.sh"}')
         shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / "launch.sh")
 
+        bash_files.append(self.hm.tools_dir / "launch.sh")
+
         TASK_SET = Path(PM_DIR / "tasksetter")
         if TASK_SET.is_file():
             TASK_SET.unlink()
 
         TASK_SET.touch()
 
-    def port_install(self, port_name, port_info, port_files):
-        super().port_install(port_name, port_info, port_files)
+    def port_install(self, port_name, port_info, port_files, fix_perm_files):
+        super().port_install(port_name, port_info, port_files, fix_perm_files)
 
         ## Gets called when a port is installed.
         # logger.debug(f"{port_name}: {port_files}")
@@ -985,6 +1055,7 @@ class PlatformTrimUI(PlatformBase):
                 continue
 
             self.add_port_script(port_file)
+            # I should add to fix_perm_files, but fucking TrimUI... i doubt it is using ext4. :D
 
     def port_uninstall(self, port_name, port_info, port_files):
         super().port_uninstall(port_name, port_info, port_files)
@@ -1170,12 +1241,13 @@ class PlatformMiyoo(PlatformBase):
     WANT_XBOX_FIX = True
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
-    def portmaster_install(self):
+    def portmaster_install(self, bash_files):
         """
         Move files into place.
         """
+        super().portmaster_install(bash_files)
 
         MY_DIR = self.hm.tools_dir / "PortMaster" / "miyoo"
         PM_DIR = self.hm.tools_dir / "PortMaster"
@@ -1187,6 +1259,8 @@ class PlatformMiyoo(PlatformBase):
         # ACTIVATE THE PORTMASTER
         logger.debug(f'Copy {MY_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
         shutil.copy(MY_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        bash_files.append(PM_DIR / "PortMaster.sh")
 
         # CONTROL HACK
         CONTROL_HACK = Path("/root/.local/share/PortMaster/control.txt")

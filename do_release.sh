@@ -71,6 +71,7 @@ zip -9r PortMaster.zip PortMaster/ \
     -x PortMaster/log.txt \
     -x PortMaster/pugwash.txt \
     -x PortMaster/harbourmaster.txt \
+    -x PortMaster/\*_flag \
     -x '*.DS_Store'
 
 if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then

@@ -20,6 +20,37 @@ PM_PID=""
 
 export PYSDL2_DLL_PATH="/usr/lib"
 
+# Save some variables that are important.
+SAVE_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+
+SAVE_SDL_VARS="
+SDL_VIDEODRIVER
+SDL_VIDEO_GL_DRIVER
+SDL_VIDEO_EGL_DRIVER
+SDL_DYNAMIC_API
+SDL_OPENGL_DRIVER
+SDL_RENDER_DRIVER
+SDL_NO_OPENGL
+"
+
+# This will accumulate env arguments
+SAVE_CLEAN_ENV=""
+
+# Loop through variables 
+for VAR in $SAVE_SDL_VARS; do
+    eval "VAL=\${$VAR+set}"
+
+    if [ "$VAL" = "set" ]; then
+        # We keep variables that exist
+        eval "SAVE_CLEAN_ENV=\"$SAVE_CLEAN_ENV $VAR=\${$VAR}\""
+    else
+        # We unset variables that do NOT exist, we also make sure unsets are at the front.
+        SAVE_CLEAN_ENV="-u $VAR $SAVE_CLEAN_ENV"
+    fi
+done
+
+echo "$SAVE_CLEAN_ENV" > ~/pm_dialog.txt
+
 PortMasterIPCheck() {
   if command -v curl >/dev/null 2>&1; then
     curl -fsS https://raw.githubusercontent.com/PortsMaster/PortMaster-New/main/README.md 2>/dev/null | grep '## PortMaster'
@@ -37,13 +68,16 @@ PortMasterDialogInit() {
     printf "WAIT" | $ESUDO tee "$PM_DONE" > /dev/null
 
     if [[ "$1" == "no-harbour" ]] || [[ "$1" == "no-harbor" ]]; then
-      $ESUDO $controlfolder/pugwash --no-harbour --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
+      $ESUDO env $SAVE_CLEAN_ENV LD_LIBRARY_PATH="$SAVE_LD_LIBRARY_PATH" \
+        $controlfolder/pugwash --no-harbour --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
       PM_PID="$!"
     elif [[ "$1" == "no-check" ]]; then
-      $ESUDO $controlfolder/pugwash --no-check --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
+      $ESUDO env $SAVE_CLEAN_ENV LD_LIBRARY_PATH="$SAVE_LD_LIBRARY_PATH" \
+        $controlfolder/pugwash --no-check --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
       PM_PID="$!"
     else
-      $ESUDO $controlfolder/pugwash --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
+      $ESUDO env $SAVE_CLEAN_ENV LD_LIBRARY_PATH="$SAVE_LD_LIBRARY_PATH" \
+        $controlfolder/pugwash --quiet fifo_control "$PM_PIPE" "$PM_DONE" > /dev/null &
       PM_PID="$!"
     fi
 

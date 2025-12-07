@@ -8,13 +8,44 @@ CUR_TTY=/dev/stdout
 
 if [ -f "/app/bin/retrodeck.sh" ]; then
   # loading the RetroDECK framework that even give access to variables such as roms_folder
-  source /app/libexec/global.sh
+  if [ -z "$roms_folder" ]; then
+    source /app/libexec/global.sh
+  fi
+
+  if [ -z "$rdhome" ] && [ -z "$rd_home_path" ]; then
+    echo "Something went wrong."
+    exit 255
+  fi
 
   if [ -z "$ports_folder" ]; then
-    ports_folder="$rdhome/PortMaster"
+    if [ ! -z "$rd_home_path" ]; then
+      ports_folder="$rd_home_path/PortMaster"
+    else
+      ports_folder="$rdhome/PortMaster"
+    fi
   fi
 
   export controlfolder="/var/data/PortMaster"
+  export directory="$ports_folder"
+elif [ -f "/var/config/retrodeck/retrodeck.json" ]; then
+  # Fallback
+  ports_folder="$(jq -r ".paths.ports_path" "/var/config/retrodeck/retrodeck.json")"
+
+  if [ "$ports_folder" = "null" ]; then
+    ports_folder="$(jq -r ".paths.rd_home_path" "/var/config/retrodeck/retrodeck.json")/PortMaster"
+  fi
+
+  export controlfolder="/var/data/PortMaster"
+  export directory="$ports_folder"
+elif [ -f ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json ]; then
+  # Fallback
+  ports_folder="$(jq -r ".paths.ports_path" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json)"
+
+  if [ "$ports_folder" = "null" ]; then
+    ports_folder="$(jq -r ".paths.rd_home_path" ~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json)/PortMaster"
+  fi
+
+  export controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data/PortMaster"
   export directory="$ports_folder"
 elif [ -f "/var/config/retrodeck/retrodeck.cfg" ]; then
   # Fallback

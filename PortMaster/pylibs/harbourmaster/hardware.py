@@ -483,6 +483,12 @@ def new_device_info():
         info['version'] = subprocess.getoutput('batocera-version').strip().split(' ', 1)[0]
         info['device'] = safe_cat('/boot/boot/batocera.board').strip()
 
+    knulli_version = safe_cat('/usr/share/knulli/knulli.version')
+    if knulli_version != '':
+        info.setdefault('name', 'Knulli')
+        info['version'] = subprocess.getoutput('knulli-version').strip().split(' ', 1)[0]
+        info['device'] = safe_cat('/boot/boot/knulli.board').strip()
+
     # REG Linux
     reglinux_version = safe_cat('/usr/share/reglinux/system.version')
     if reglinux_version != '':

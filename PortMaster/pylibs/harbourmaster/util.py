@@ -445,10 +445,7 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
 
         if r.status_code != 200:
             if callback is not None:
-                if no_message_box:
-                    callback.message(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
-                else:
-                    callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
+                callback.message_box(_("Unable to download file. [{status_code}]").format(status_code=r.status_code))
 
             logger.error(f"Unable to download file: {file_url!r} [{r.status_code}]")
             return None
@@ -507,10 +504,7 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
         logger.error(f"Requests error: {err}")
 
         if callback is not None:
-            if no_message_box:
-                callback.message(_("Download failed: {err}").format(err=str(err)))
-            else:
-                callback.message_box(_("Download failed: {err}").format(err=str(err)))
+            callback.message_box(_("Download failed: {err}").format(err=str(err)))
 
         return None
 
@@ -522,10 +516,7 @@ def download(file_name, file_url, md5_source=None, md5_result=None, callback=Non
                 logger.error(f"File doesn't match the md5 file: {md5_file} != {md5_source}")
 
                 if callback is not None:
-                    if no_message_box:
-                        callback.message(_("Download failed: {err}").format(err=str(err)))
-                    else:
-                        callback.message_box(_("Download validation failed."))
+                    callback.message_box(_("Download validation failed."))
 
                 return None
 
