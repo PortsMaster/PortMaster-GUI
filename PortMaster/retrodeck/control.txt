@@ -76,6 +76,7 @@ fi
 echo "\$controlfolder = $controlfolder"
 echo "\$directory = $directory"
 
+export PYSDL2_DLL_PATH="/usr/lib:/lib:$LD_LIBRARY_PATH"
 export ESUDO=""
 export ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 
