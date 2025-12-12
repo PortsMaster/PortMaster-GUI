@@ -194,7 +194,7 @@ def _finds_libs_at_path(libnames, path, patterns):
                         versioned.append(os.path.join(subpath, filename))
 
             versioned.sort(key = _so_version_num, reverse = True)
-            results.extend(results)
+            results.extend(versioned)
 
     return results
 
