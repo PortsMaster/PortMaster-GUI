@@ -128,7 +128,9 @@ pm_message() {
     fi
 
     echo "$1"
-    PortMasterDialog "message" "$1"
+    if [ "$1" != "Patching process already completed. Skipping." ]; then
+        PortMasterDialog "message" "$1"
+    fi
 }
 
 pm_gptokeyb_finish() {
