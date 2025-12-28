@@ -128,7 +128,7 @@ pm_message() {
     fi
 
     echo "$1"
-    if [$1 != "Patching process already completed. Skipping."]; then
+    if [ "$1" != "Patching process already completed. Skipping." ]; then
         PortMasterDialog "message" "$1"
     fi
 }
