@@ -485,7 +485,7 @@ class PlatformBatocera(PlatformBase):
         return self.hm.ports_dir / 'gamelist.xml'
 
     def first_run(self):
-        self.portmaster_install()
+        self.portmaster_install([])
 
         REBOOT_FILE = self.hm.tools_dir / ".pugwash-reboot"
         REBOOT_FILE.touch()
