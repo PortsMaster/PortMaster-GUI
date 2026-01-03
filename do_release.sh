@@ -82,11 +82,7 @@ if [[ "$1" == "stable" ]] || [ "$MAKE_INSTALL" = "Y" ]; then
 
         if [ ! -f "runtimes.${RUNTIME_ARCH}.zip" ]; then
             echo "Downloading Runtimes for $RUNTIME_ARCH."
-            mkdir -p runtimes
-            cd runtimes
-            ../tools/download_runtimes.sh
-            zip -9 "../runtimes.${RUNTIME_ARCH}.zip" *
-            cd ..
+            tools/download_runtimes.sh
             rm -fRv runtimes
         fi
     done
