@@ -18,7 +18,9 @@ PM_PIPE="/dev/shm/portmaster/pm_input"
 PM_DONE="/dev/shm/portmaster/pm_done"
 PM_PID=""
 
-export PYSDL2_DLL_PATH="/usr/lib"
+if [ -z "$PYSDL2_DLL_PATH" ]; then
+  export PYSDL2_DLL_PATH="/usr/lib"
+fi
 
 # Save some variables that are important.
 SAVE_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
@@ -38,15 +40,15 @@ SAVE_CLEAN_ENV=""
 
 # Loop through variables 
 for VAR in $SAVE_SDL_VARS; do
-    eval "VAL=\${$VAR+set}"
+  eval "VAL=\${$VAR+set}"
 
-    if [ "$VAL" = "set" ]; then
-        # We keep variables that exist
-        eval "SAVE_CLEAN_ENV=\"$SAVE_CLEAN_ENV $VAR=\${$VAR}\""
-    else
-        # We unset variables that do NOT exist, we also make sure unsets are at the front.
-        SAVE_CLEAN_ENV="-u $VAR $SAVE_CLEAN_ENV"
-    fi
+  if [ "$VAL" = "set" ]; then
+    # We keep variables that exist
+    eval "SAVE_CLEAN_ENV=\"$SAVE_CLEAN_ENV $VAR=\${$VAR}\""
+  else
+    # We unset variables that do NOT exist, we also make sure unsets are at the front.
+    SAVE_CLEAN_ENV="-u $VAR $SAVE_CLEAN_ENV"
+  fi
 done
 
 echo "$SAVE_CLEAN_ENV" > ~/pm_dialog.txt

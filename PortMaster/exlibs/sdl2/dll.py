@@ -151,6 +151,12 @@ def _finds_libs_at_path(libnames, path, patterns):
     # First, find any libraries matching pattern exactly within given path
     for libname in searchfor:
         for subpath in str.split(path, os.pathsep):
+            if subpath == "": # Sometimes we can get blank subpaths, better skip these.
+                continue
+
+            if not os.path.isdir(subpath):
+                continue
+
             for pattern in patterns:
                 dllfile = os.path.join(subpath, pattern.format(libname))
                 if os.path.exists(dllfile):
@@ -160,15 +166,35 @@ def _finds_libs_at_path(libnames, path, patterns):
     # pattern (e.g. libSDL2.so.2) at path and add them in descending version order
     # (i.e. newest first)
     if sys.platform not in ("win32", "darwin"):
-        versioned = []
-        files = os.listdir(path)
-        for f in files:
-            for libname in searchfor:
-                dllname = "lib{0}.so".format(libname)
-                if dllname in f and not (dllname == f or f.startswith(".")):
-                    versioned.append(os.path.join(path, f))
-        versioned.sort(key = _so_version_num, reverse = True)
-        results = results + versioned
+        # This is an abomination, I have cleaned it it up to work with separated paths like
+        # the code above does and cleaned up the logic to capture edge cases.
+        for subpath in str.split(path, os.pathsep):
+            versioned = []
+
+            if subpath == "":
+                continue
+
+            if not os.path.isdir(subpath):
+                continue
+
+            files = os.listdir(subpath)
+
+            for filename in files:
+                if filename.startswith("."):
+                    continue
+
+                for libname in searchfor:
+                    dllname = "lib{0}.so".format(libname)
+
+                    if dllname == filename:
+                        # This file would be added above.
+                        continue
+
+                    if dllname in filename:
+                        versioned.append(os.path.join(subpath, filename))
+
+            versioned.sort(key = _so_version_num, reverse = True)
+            results.extend(versioned)
 
     return results
 

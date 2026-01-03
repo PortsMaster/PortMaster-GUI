@@ -76,6 +76,8 @@ fi
 echo "\$controlfolder = $controlfolder"
 echo "\$directory = $directory"
 
+export LD_LIBRARY_PATH="/usr/lib:/lib:/app/retrodeck/components/shared-libs:/app/retrodeck/components/shared-libs/org.kde.Sdk/6.7/:/app/retrodeck/components/shared-libs:/app/retrodeck/components/shared-libs/org.kde.Platform/6.7/:/app/retrodeck/components/shared-libs/org.gnome.Platform/49/:/app/retrodeck/components/shared-libs/org.freedesktop.Platform/25.08/:$LD_LIBRARY_PATH"
+export PYSDL2_DLL_PATH="$LD_LIBRARY_PATH"
 export ESUDO=""
 export ESUDOKILL="-k" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 

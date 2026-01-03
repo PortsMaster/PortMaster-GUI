@@ -236,24 +236,31 @@ if [ ! -f "$HOME/no_es_restart" ]; then
     sleep 3
   elif [ "$OS_NAME" = "ROCKNIX" ]; then
     ## This is for the best.
+    chmod -Rv +x "$controlfolder"
+
     shutdown -r now
   elif [[ "$ES_NAME" == "batocera-es-swissknife" ]]; then
     ## Broken
     # batocera-es-swissknife --restart
     curl http://localhost:1234/reloadgames
 
-    # Install our own shGenerator.py
-    if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
-      cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
+    chmod -Rv +x "$controlfolder"
 
-      if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
-        # New style relative imports
-        cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
-      else
-        # Old style absolute imports
-        cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+    # Install our own shGenerator.py
+    if [ -d "/usr/lib/python3.11/" ]; then
+      if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+        cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
+
+        if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+          # New style relative imports
+          cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+        else
+          # Old style absolute imports
+          cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+        fi
       fi
 
+      # Newer knulli it is `knulli-save-overlay`, but that is not a concern because it has a different python version.
       batocera-save-overlay
     fi
   else
