@@ -1073,8 +1073,11 @@ class PlatformTrimUI(PlatformBase):
 
         if port_mode == 'roms':
             target_file = ROM_SCRIPT_DIR / (port_script.name)
-            logger.debug(f"Copying {str(port_script)} to {str(target_file)}")
-            shutil.copy(port_script, target_file)
+            if not os.path.samefile(port_script, target_file):
+                logger.debug(f"Copying {str(port_script)} to {str(target_file)}")
+                shutil.copy(port_script, target_file)
+            else:
+                logger.debug(f"Skipping copy of {str(port_script)} to {str(target_file)} as they are the same file")
 
         elif port_mode == 'ports':
             new_port_dir = PORT_DIR / f"portmaster-{name_cleaner(port_script.stem)}"
