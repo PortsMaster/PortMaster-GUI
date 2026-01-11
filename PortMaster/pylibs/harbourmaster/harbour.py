@@ -433,7 +433,7 @@ class HarbourMaster():
             with zipfile.ZipFile(self.cfg_dir / "featured_images.zip", 'r') as zf:
                 logger.info("Extracting featured_images.zip")
 
-                for file_info in enumerate(zf.infolist()):
+                for file_info in zf.infolist():
                     if file_info.filename.endswith('/'):
                         continue
 
