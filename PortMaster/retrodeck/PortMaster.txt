@@ -25,7 +25,7 @@ cd "$controlfolder"
 
 echo "Starting PortMaster."
 
-chmod -R +x .
+# chmod -R +x . ## WHO DID THIS????
 
 > "$controlfolder/log.txt" && exec > >(tee "$controlfolder/log.txt") 2>&1
 

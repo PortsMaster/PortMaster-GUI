@@ -400,14 +400,31 @@ def new_device_info():
     info = {}
 
     # Works on RetroDECK if flatplack deployed to $HOME folder.
-    retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.cfg')
+    # RetroDECK NEO. :D
+    retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.json')
     if retrodeck_version == '':
-        retrodeck_version = safe_cat('~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')
+        retrodeck_version = safe_cat('~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.json')
+
+    logger.info(retrodeck_version)
 
     if retrodeck_version != '':
+        retrodeck_json = json_safe_loads(retrodeck_version)
+
         info['name'] = 'RetroDECK'
-        info['version'] = ' '.join(re.findall(r'version=(.*)', retrodeck_version))
+        info['version'] = 'Unknown'
         info['device'] = 'retrodeck'
+
+        if isinstance(retrodeck_json, dict):
+            info['version'] = retrodeck_json.get('version', 'Unknown')
+    else:
+        retrodeck_version = safe_cat('/var/config/retrodeck/retrodeck.cfg')
+        if retrodeck_version == '':
+            retrodeck_version = safe_cat('~/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg')
+
+        if retrodeck_version != '':
+            info['name'] = 'RetroDECK'
+            info['version'] = ' '.join(re.findall(r'version=(.*)', retrodeck_version))
+            info['device'] = 'retrodeck'
 
     ## Works on muOS (obviously)
     muos_version = safe_cat('/opt/muos/config/version.txt')
