@@ -76,7 +76,7 @@ jobs:
           ./do_release.sh "${{steps.version.outputs.release}}" "${{steps.version.outputs.version}}"
           ./do_muos_release.sh
           ./do_trimui_release.sh
-          ./do_x86_64_release.sh "stable"
+          ./do_x86_64_release.sh
 
       - name: Create md5 hashes
         id: md5
