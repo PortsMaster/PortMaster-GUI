@@ -138,3 +138,22 @@ make
 It will error with `make[1]: *** No rule to make target 'doc/xmlstarlet.1', needed by 'all-am'.  Stop.` but it doesnt matter, the file we want is `xml`
 
 Guidelines to build taken from here: https://github.com/acjohnson/xmlstarlet-static-binary
+
+## Compile astcenc
+
+```sh
+git clone "https://github.com/bmdhacks/astc-encoder.git"
+
+cd astc-encoder
+git checkout bmd-guide
+mkdir build
+cd build
+
+# compiler version and options were tested in an array of about 16 different options
+CXX=clang++ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CXX_FLAGS_RELEASE="-O3 -DNDEBUG -mcpu=cortex-a35" \
+      -DASTCENC_ISA_NEON=ON -DASTCENC_INVARIANCE=OFF \
+      -DASTCENC_BLOCK_MAX_TEXELS=64 -DASTCENC_WERROR=OFF \
+      -DCMAKE_INSTALL_PREFIX=../ ..
+make install -j$(nproc)
+```
