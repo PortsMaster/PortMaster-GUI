@@ -121,16 +121,20 @@ pm_message_end() {
 trap pm_message_end EXIT
 
 pm_message() {
+    echo "$1" # Moved here
+
+    # Skip initing the message and only print to avoid splashing a blank disappearing message
+    if [ "$1" = "Patching process already completed. Skipping." ]; then
+        return
+    fi
+
     # Usage: pm_message "Some message here."
     if [ ! -e "$PM_PIPE" ]; then
         PortMasterDialogInit "no-harbour"
         PortMasterDialog "messages_begin"
     fi
 
-    echo "$1"
-    if [ "$1" != "Patching process already completed. Skipping." ]; then
-        PortMasterDialog "message" "$1"
-    fi
+    PortMasterDialog "message" "$1"
 }
 
 pm_gptokeyb_finish() {
