@@ -247,7 +247,7 @@ if [ ! -f "$HOME/no_es_restart" ]; then
     chmod -Rv +x "$controlfolder"
 
     # Install our own shGenerator.py
-    if [ -d "/usr/lib/python3.11/" ]; then
+    if [ -f "/usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py" ]; then
       if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
         cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
 

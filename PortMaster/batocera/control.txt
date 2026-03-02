@@ -12,18 +12,20 @@ export ESUDO=""
 export ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k" 
 
 # Install our own shGenerator.py
-if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
-  cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
+if [ -f "/usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py" ]; then
+  if ! grep 'gamecontrollerdb.txt' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+    cp -f /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py.bak
 
-  if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
-    # New style relative imports
-    cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
-  else
-    # Old style absolute imports
-    cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+    if ! grep 'from generators.Generator import Generator' /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py; then
+      # New style relative imports
+      cp -f $controlfolder/batocera/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+    else
+      # Old style absolute imports
+      cp -f $controlfolder/knulli/shGenerator.py /usr/lib/python3.11/site-packages/configgen/generators/sh/shGenerator.py
+    fi
+
+    batocera-save-overlay
   fi
-
-  batocera-save-overlay
 fi
 
 if [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
