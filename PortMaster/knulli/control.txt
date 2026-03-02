@@ -46,6 +46,9 @@ get_controls() {
   LOWRES="N"
 
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
+  mv $SDL_GAMECONTROLLERCONFIG_FILE /tmp/gamecontrollerdb.tmp
+  grep 030000005e0400008e02000004010000 "$controlfolder/knulli/gamecontrollerdb.txt" >> $SDL_GAMECONTROLLERCONFIG_FILE
+  cat /tmp/gamecontrollerdb.tmp >> $SDL_GAMECONTROLLERCONFIG_FILE
 
   sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
 }
