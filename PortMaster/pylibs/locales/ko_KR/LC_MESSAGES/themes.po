@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2025-11-04 09:35\n"
+"PO-Revision-Date: 2026-03-02 06:58\n"
 "Last-Translator: \n"
 "Language-Team: Korean\n"
 "Language: ko_KR\n"
@@ -19,12 +19,13 @@ msgstr ""
 
 #: Fallout.theme.zip/theme.json:550, Stardew.theme.zip/theme.json:374, ff_VII.theme.zip/theme.json:257, Doom.theme.zip/theme.json:337
 msgid "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr ""
+msgstr "장르: {port_info.genres} 다운로드 크기: {port_info.download_size}{if:port_info.runtime} 실행 시간: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: Fallout.theme.zip/theme.json:611, Stardew.theme.zip/theme.json:475, ff_VII.theme.zip/theme.json:363, Doom.theme.zip/theme.json:444
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
 "Filters: {ports_list.filters}{endif}"
-msgstr ""
+msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}사용 가능한 이식본: {ports_list.filter_ports} / {ports_list.total_ports}\n"
+"필터: {ports_list.filters}{endif}"
 
 #: Fallout.theme.zip/theme.json:684, Stardew.theme.zip/theme.json:541, Zelda.theme.zip/theme.json:485, ff_VII.theme.zip/theme.json:435, Doom.theme.zip/theme.json:522
 #: default_theme/theme.json:418
@@ -34,7 +35,12 @@ msgid "Free Space: {system.free_space}\n\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Instruction: {port_info.instructions}"
-msgstr ""
+msgstr "여유 공간: {system.free_space}\n\n"
+"포터: {port_info.porter}\n"
+"장르: {port_info.genres}\n"
+"다운로드 크기: {port_info.download_size}{if:port_info.runtime}\n"
+"실행 시간: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
+"설명서: {port_info.instructions}"
 
 #: Fallout.theme.zip/theme.json:726
 msgid "PM: {system.portmaster_version}\n"
@@ -42,57 +48,73 @@ msgid "PM: {system.portmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total\n"
 "Time: {system.time_24hr}\n"
 "Battery: {system.battery_level}"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"공간: {system.free_space} 여유 공간 / {system.total_space} 총 공간\n"
+"시간: {system.time_24hr}\n"
+"배터리: {system.battery_level}"
 
 #: Fallout.theme.zip/theme.json:762, Stardew.theme.zip/theme.json:651, Zelda.theme.zip/theme.json:551, ff_VII.theme.zip/theme.json:523, Doom.theme.zip/theme.json:644
 #: default_theme/theme.json:504, default_theme/theme.json:630
 msgid "IP: {system.ip_address}"
-msgstr ""
+msgstr "IP: {system.ip_address}"
 
 #: Fallout.theme.zip/theme.json:831, Stardew.theme.zip/theme.json:739, Zelda.theme.zip/theme.json:633, ff_VII.theme.zip/theme.json:612, Doom.theme.zip/theme.json:741
 #: default_theme/theme.json:555
 msgid "Creator: {theme_info.creator}\n"
 "Status: {theme_info.status}"
-msgstr ""
+msgstr "제작자: {theme_info.creator}\n"
+"상태: {theme_info.status}"
 
 #: Stardew.theme.zip/theme.json:605, ff_VII.theme.zip/theme.json:480, default_theme/theme.json:445
 msgid "Time: {system.time_24hr}\n"
 "CFW: {system.cfw_name} ({system.cfw_version})\n"
 "Device: {system.device_name}\n"
 "Battery: {system.battery_level}"
-msgstr ""
+msgstr "시간: {system.time_24hr}\n"
+"CFW: {system.cfw_name} ({system.cfw_version})\n"
+"장치: {system.device_name}\n"
+"배터리: {system.battery_level}"
 
 #: Stardew.theme.zip/theme.json:613
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"공간: {system.free_space} 여유 공간"
 
 #: Zelda.theme.zip/theme.json:326
 msgid "Filters: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
-msgstr ""
+msgstr "필터: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
 
 #: Zelda.theme.zip/theme.json:376
 msgid "Genres: {port_info.genres}\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr ""
+msgstr "장르: {port_info.genres}\n"
+"다운로드 크기: {port_info.download_size}{if:port_info.runtime}\n"
+"실행 시간: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: Zelda.theme.zip/theme.json:522
 msgid "Time: {system.time_24hr}      Battery: {system.battery_level}"
-msgstr ""
+msgstr "시간: {system.time_24hr}      배터리: {system.battery_level}"
 
 #: ff_VII.theme.zip/theme.json:488, default_theme/theme.json:453
 msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
-msgstr ""
+msgstr "PM: {system.portmaster_version}\n"
+"HM: {system.harbourmaster_version}\n"
+"공간: {system.free_space} 여유 공간 / {system.total_space} 총 공간"
 
 #: hiviz.theme.zip/theme.json:267
 msgid "• Porter: {port_info.porter}\n"
 "• Genres: {port_info.genres}\n"
 "• Description: {port_info.description}"
-msgstr ""
+msgstr "• 포터: {port_info.porter}\n"
+"• 장르: {port_info.genres}\n"
+"• 설명: {port_info.description}"
 
 #: hiviz.theme.zip/theme.json:327
 msgid "• Genres: {port_info.genres}\n"
@@ -101,18 +123,26 @@ msgid "• Genres: {port_info.genres}\n"
 "• Description: {port_info.description}\n"
 "• Instructions:\n"
 "{port_info.instructions}"
-msgstr ""
+msgstr "• 장르: {port_info.genres}\n"
+"• 다운로드 크기: {port_info.download_size}{if:port_info.runtime}\n"
+"• 실행 시간: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"• 설명: {port_info.description}\n"
+"• 사용 방법:\n"
+"{port_info.instructions}"
 
 #: hiviz.theme.zip/theme.json:375
 msgid "PM: {system.portmaster_version}, HM: {system.harbourmaster_version}"
-msgstr ""
+msgstr "PM: {system.portmaster_version}, HM: {system.harbourmaster_version}"
 
 #: hiviz.theme.zip/theme.json:463
 msgid "• Creator: {theme_info.creator}\n"
 "• Status: {theme_info.status}\n"
 "• Description:\n"
 "{theme_info.description}"
-msgstr ""
+msgstr "• 제작자: {theme_info.creator}\n"
+"• 상태: {theme_info.status}\n"
+"• 설명:\n"
+"{theme_info.description}"
 
 #: hiviz.theme.zip/theme.json:526, default_theme/theme.json:621
 msgid "Name: {runtime_info.name}\n"
@@ -120,13 +150,19 @@ msgid "Name: {runtime_info.name}\n"
 "Ports: {runtime_info.ports}\n"
 "Download Size: {runtime_info.download_size}\n"
 "Install Size: {runtime_info.disk_size}"
-msgstr ""
+msgstr "이름: {runtime_info.name}\n"
+"상태: {runtime_info.status}\n"
+"포트: {runtime_info.ports}\n"
+"다운로드 크기: {runtime_info.download_size}\n"
+"설치 크기: {runtime_info.disk_size}"
 
 #: Doom.theme.zip/theme.json:586
 msgid "Time: {system.time_24hr}\n"
 "Battery: {system.battery_level}\n"
 "Space: {system.free_space} free"
-msgstr ""
+msgstr "시간: {system.time_24hr}\n"
+"배터리: {system.battery_level}\n"
+"공간: {system.free_space} 여유 공간"
 
 #: basic_theme.theme.zip/theme.json:77
 msgid "Title: {port_info.title}\n"
@@ -135,14 +171,20 @@ msgid "Title: {port_info.title}\n"
 "Download Size: {port_info.download_size}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
 "Description: {port_info.description}"
-msgstr ""
+msgstr "제목: {port_info.title}\n"
+"포터: {port_info.porter}\n"
+"장르: {port_info.genres}\n"
+"다운로드 크기: {port_info.download_size}{if:port_info.runtime}\n"
+"실행 시간: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"설명: {port_info.description}"
 
 #: default_theme/theme.json:319
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Filters: {ports_list.filters}{endif}"
-msgstr ""
+msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}사용 가능한 포트: {ports_list.filter_ports} / {ports_list.total_ports}\n"
+"필터: {ports_list.filters}{endif}"
 
-#: default_theme/theme.json:347, default_theme/theme.json:848
+#: default_theme/theme.json:347, default_theme/theme.json:846
 msgid "Genres: {port_info.genres}\n"
 "{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"

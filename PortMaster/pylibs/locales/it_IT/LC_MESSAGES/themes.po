@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2025-11-04 09:35\n"
+"PO-Revision-Date: 2026-03-02 06:58\n"
 "Last-Translator: \n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -166,7 +166,7 @@ msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {po
 msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Ports disponibili: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Filtri: {ports_list.filters}{endif}"
 
-#: default_theme/theme.json:347, default_theme/theme.json:848
+#: default_theme/theme.json:347, default_theme/theme.json:846
 msgid "Genres: {port_info.genres}\n"
 "{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: portmaster\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-09 16:35+0800\n"
-"PO-Revision-Date: 2025-11-04 09:35\n"
+"PO-Revision-Date: 2026-03-02 06:58\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: Fallout.theme.zip/theme.json:550, Stardew.theme.zip/theme.json:374, ff_VII.theme.zip/theme.json:257, Doom.theme.zip/theme.json:337
 msgid "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-msgstr "Жанры: {port_info.genres}    Размер загрузки: {port_info.download_size}{if:port_info.runtime}    Время выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}"
+msgstr "Жанры: {port_info.genres}    Размер загрузки: {port_info.download_size}{if:port_info.runtime}    Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: Fallout.theme.zip/theme.json:611, Stardew.theme.zip/theme.json:475, ff_VII.theme.zip/theme.json:363, Doom.theme.zip/theme.json:444
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \n"
@@ -39,7 +39,7 @@ msgstr "Свободное место: {system.free_space}\n\n"
 "Создатель: {port_info.porter}\n"
 "Жанры: {port_info.genres}\n"
 "Размер скачивания: {port_info.download_size}{if:port_info.runtime}\n"
-"Время выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
+"Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}\n\n"
 "Инструкция: {port_info.instructions}"
 
 #: Fallout.theme.zip/theme.json:726
@@ -50,7 +50,7 @@ msgid "PM: {system.portmaster_version}\n"
 "Battery: {system.battery_level}"
 msgstr "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
-"Сколько на карте занято: Свободно: {system.free_space} Свободно / {system.total_space} всего\n"
+"Накопитель: {system.free_space} свободно / {system.total_space} всего\n"
 "Время: {system.time_24hr}\n"
 "Батарея: {system.battery_level}"
 
@@ -82,7 +82,7 @@ msgid "PM: {system.portmaster_version}\n"
 "Space: {system.free_space} free"
 msgstr "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
-"Сколько на карте занято: Свободно {system.free_space} / всего"
+"Накопитель: {system.free_space} свободно"
 
 #: Zelda.theme.zip/theme.json:326
 msgid "Filters: {if:!ports_list.total_ports::ports_list.filter_ports} {ports_list.filters}{endif}"
@@ -94,7 +94,7 @@ msgid "Genres: {port_info.genres}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
 msgstr "Жанры: {port_info.genres}\n"
 "Размер загрузки: {port_info.download_size}{if:port_info.runtime}\n"
-"Время выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}"
+"Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
 #: Zelda.theme.zip/theme.json:522
 msgid "Time: {system.time_24hr}      Battery: {system.battery_level}"
@@ -105,8 +105,7 @@ msgid "PM: {system.portmaster_version}\n"
 "HM: {system.harbourmaster_version}\n"
 "Space: {system.free_space} free / {system.total_space} total"
 msgstr "PM: {system.portmaster_version}\n"
-"HM: {system.harbourmaster_version}\n"
-"Сколько на карте занято: Свободно {system.free_space} / {system.total_space} всего"
+"HM: {system.harbourmaster_version}Накопитель: {system.free_space} свободно / {system.total_space} всего"
 
 #: hiviz.theme.zip/theme.json:267
 msgid "• Porter: {port_info.porter}\n"
@@ -125,7 +124,7 @@ msgid "• Genres: {port_info.genres}\n"
 "{port_info.instructions}"
 msgstr "• Жанры: {port_info.genres}\n"
 "• Скачать Size: {port_info.download_size}{if:port_info.runtime}\n"
-"• Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"• Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
 "• Описание: {port_info.description}\n"
 "• Инструкции:\n"
 "{port_info.instructions}"
@@ -153,7 +152,7 @@ msgid "Name: {runtime_info.name}\n"
 msgstr "Имя: {runtime_info.name}\n"
 "Статус: {runtime_info.status}\n"
 "Порты: {runtime_info.ports}\n"
-"Размер установки: {runtime_info.download_size}\n"
+"Размер загрузки: {runtime_info.download_size}\n"
 "Размер установки: {runtime_info.disk_size}"
 
 #: Doom.theme.zip/theme.json:586
@@ -175,8 +174,8 @@ msgstr "Заголовок: {port_info.title}\n"
 "Портер: {port_info.porter}\n"
 "Жанры: {port_info.genres}\n"
 "Размер скачивания: {port_info.download_size}{if:port_info.runtime}\n"
-"Время выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
-"Описание информации о порте: {port_info.description}"
+"Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}\n"
+"Информация о порте: {port_info.description}"
 
 #: default_theme/theme.json:319
 msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \n"
@@ -184,11 +183,11 @@ msgid "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {po
 msgstr "{if:!ports_list.total_ports::ports_list.filter_ports}Доступные порты: {ports_list.filter_ports} / {ports_list.total_ports} \n"
 "Фильтры: {ports_list.filters}{endif}"
 
-#: default_theme/theme.json:347, default_theme/theme.json:848
+#: default_theme/theme.json:347, default_theme/theme.json:846
 msgid "Genres: {port_info.genres}\n"
 "{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
 msgstr "Жанры: {port_info.genres}\n"
 "{if:port_info.install_size}Установленный размер: {port_info.install_size}{else}Размер загрузки: {port_info.download_size}{endif}{if:port_info.runtime}\n"
-"Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
+"Среда выполнения: {port_info.runtime} ({port_info.runtime_status}){endif}"
 
