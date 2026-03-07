@@ -22,6 +22,11 @@ from loguru import logger
 _ = gettext.gettext
 
 
+def _is_unsupported_firmware():
+    """Check if running on an unsupported firmware (e.g. TrimUI OS)."""
+    return os.path.isfile('/etc/trimui_device.txt')
+
+
 class StringFormatter:
     def __init__(self, data_dict):
         self.data_dict = data_dict
@@ -394,6 +399,11 @@ class TempMenuScene(BaseScene):
                 ('root', [DisclaimerScene(self.gui)]),
                 ]
 
+        elif _is_unsupported_firmware():
+            self.gui.scenes = [
+                ('root', [UnsupportedFirmwareScene(self.gui)]),
+                ]
+
         else:
             self.gui.scenes = [
                 ('root', [MainMenuScene(self.gui)]),
@@ -451,6 +461,81 @@ class DisclaimerScene(BaseScene):
                 cfg_data['disclaimer'] = True
                 self.gui.save_config(cfg_data)
 
+                self.scene_deactivate()
+                self.gui.updated = True
+
+                if _is_unsupported_firmware():
+                    self.gui.scenes = [
+                        ('root', [UnsupportedFirmwareScene(self.gui)]),
+                        ]
+                else:
+                    self.gui.scenes = [
+                        ('root', [MainMenuScene(self.gui)]),
+                        ]
+
+                return True
+
+            if events.was_pressed('B'):
+                self.button_back()
+                if self.gui.message_box(
+                        _("Are you sure you want to exit PortMaster?"),
+                        want_cancel=True):
+
+                    self.gui.do_cancel()
+                    return True
+
+
+class UnsupportedFirmwareScene(BaseScene):
+
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.scene_title = _("Unsupported Firmware")
+
+        ## Wait x seconds.
+        self.firmware_wait = 10
+
+        self.load_regions("disclaimer", ['disclaimer_text'])
+
+        self.tags['disclaimer_text'].text = (
+            "Unsupported Firmware\n"
+            "\n"
+            "This firmware is not supported by PortMaster and many ports will not work correctly.\n"
+            "\n"
+            "To ensure our porters and developers can best assist the community, we focus our support on officially supported firmware. "
+            "Unsupported firmwares can have many differences, making it difficult to troubleshoot issues effectively and respect the valuable time of our volunteer developers.\n"
+            "\n"
+            "For the best experience, please switch to a supported firmware such as muOS or KNULLI. "
+            "Visit the PortMaster website for more information on supported firmware options.\n"
+            "\n"
+            "If you choose to continue using your current firmware, please seek support from its developers or community, as they will be the most knowledgeable about their software."
+            )
+
+        self.last_elapsed = None
+
+    def do_draw(self):
+        elapsed = self.gui.timers.since('firmware_wait') // 1000
+
+        elapsed = min(elapsed, self.firmware_wait)
+
+        if elapsed != self.last_elapsed:
+            if elapsed < self.firmware_wait:
+                self.tags['button_bar'].bar = [f'Wait {self.firmware_wait - elapsed} seconds']
+            else:
+                self.set_buttons({'A': _('I Understand'), 'B': _('Quit')})
+
+            self.last_elapsed = elapsed
+
+        super().do_draw()
+
+    def do_update(self, events):
+        super().do_update(events)
+
+        elapsed = self.gui.timers.since('firmware_wait') // 1000
+
+        elapsed = min(elapsed, self.firmware_wait)
+
+        if elapsed == self.firmware_wait:
+            if events.was_pressed('A'):
                 self.scene_deactivate()
                 self.gui.updated = True
                 self.gui.scenes = [
