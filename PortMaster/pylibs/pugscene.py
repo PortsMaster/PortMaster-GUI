@@ -22,9 +22,48 @@ from loguru import logger
 _ = gettext.gettext
 
 
-def _is_unsupported_firmware():
-    """Check if running on an unsupported firmware (e.g. TrimUI OS)."""
-    return os.path.isfile('/etc/trimui_device.txt')
+def get_startup_warnings(device_info):
+    """
+    Check for unsupported configurations that should warn the user.
+
+    Returns a list of (keyword, reason, suggestion) tuples describing each problem.
+    """
+    warnings = []
+
+    firmware_suggestion = _('For the best experience, switch to a supported firmware such as muOS or KNULLI.')
+
+    # Unsupported firmware checks, most-specific first
+    if Path('/mnt/SDCARD/spruce/').exists():
+        warnings.append(('spruce', _('SpruceOS is not supported by PortMaster.'), firmware_suggestion))
+
+    try:
+        if 'CrossMix-OS' in Path('/mnt/SDCARD/autorun.inf').read_text():
+            warnings.append(('crossmix', _('CrossMix-OS is not supported by PortMaster.'), firmware_suggestion))
+    except (OSError, UnicodeDecodeError):
+        pass
+
+    # TODO: add checks for NextUI, PakUI when we have unique markers
+
+    # Generic catch-all for TrimUI-based OSes we can't identify specifically
+    if not warnings and Path('/etc/trimui_device.txt').exists():
+        warnings.append(('trimui', _('Your OS is not supported by PortMaster.'), firmware_suggestion))
+
+    # Low RAM check
+    if device_info.get('ram', 1024) < 1024:
+        warnings.append(('lowram', _('Your device has less than 1GB of RAM.'), None))
+
+    return warnings
+
+
+def get_next_warning_time():
+    """
+    Returns an ISO date string for when to show the warning again.
+    """
+    import random
+    import datetime
+
+    next_warning = datetime.datetime.now() + datetime.timedelta(days=random.choice([5, 7, 11, 13]))
+    return next_warning.date().isoformat()
 
 
 class StringFormatter:
@@ -389,6 +428,8 @@ class TempMenuScene(BaseScene):
         self.set_buttons({})
 
     def do_update(self, events):
+        import datetime
+
         self.scene_deactivate()
         self.gui.updated = True
 
@@ -399,15 +440,18 @@ class TempMenuScene(BaseScene):
                 ('root', [DisclaimerScene(self.gui)]),
                 ]
 
-        elif _is_unsupported_firmware():
-            self.gui.scenes = [
-                ('root', [UnsupportedFirmwareScene(self.gui)]),
-                ]
-
         else:
-            self.gui.scenes = [
-                ('root', [MainMenuScene(self.gui)]),
-                ]
+            warnings = get_startup_warnings(harbourmaster.device_info())
+            warning_time = cfg_data.get('warning_time', '')
+
+            if warnings and warning_time < datetime.datetime.now().date().isoformat():
+                self.gui.scenes = [
+                    ('root', [StartupWarningScene(self.gui, warnings)]),
+                    ]
+            else:
+                self.gui.scenes = [
+                    ('root', [MainMenuScene(self.gui)]),
+                    ]
 
         return True
 
@@ -464,9 +508,10 @@ class DisclaimerScene(BaseScene):
                 self.scene_deactivate()
                 self.gui.updated = True
 
-                if _is_unsupported_firmware():
+                warnings = get_startup_warnings(harbourmaster.device_info())
+                if warnings:
                     self.gui.scenes = [
-                        ('root', [UnsupportedFirmwareScene(self.gui)]),
+                        ('root', [StartupWarningScene(self.gui, warnings)]),
                         ]
                 else:
                     self.gui.scenes = [
@@ -485,41 +530,44 @@ class DisclaimerScene(BaseScene):
                     return True
 
 
-class UnsupportedFirmwareScene(BaseScene):
+class StartupWarningScene(BaseScene):
 
-    def __init__(self, gui):
+    def __init__(self, gui, warnings):
         super().__init__(gui)
-        self.scene_title = _("Unsupported Firmware")
+        self.scene_title = _("Warning")
 
         ## Wait x seconds.
-        self.firmware_wait = 10
+        self.warning_wait = 10
 
         self.load_regions("disclaimer", ['disclaimer_text'])
 
-        self.tags['disclaimer_text'].text = (
-            "Unsupported Firmware\n"
-            "\n"
-            "This firmware is not supported by PortMaster and many ports will not work correctly.\n"
-            "\n"
-            "To ensure our porters and developers can best assist the community, we focus our support on officially supported firmware. "
-            "Unsupported firmwares can have many differences, making it difficult to troubleshoot issues effectively and respect the valuable time of our volunteer developers.\n"
-            "\n"
-            "For the best experience, please switch to a supported firmware such as muOS or KNULLI. "
-            "Visit the PortMaster website for more information on supported firmware options.\n"
-            "\n"
-            "If you choose to continue using your current firmware, please seek support from its developers or community, as they will be the most knowledgeable about their software."
-            )
+        # Build message from warnings: each reason, then suggestions, then common footer
+        parts = []
+        suggestions = []
+        for keyword, reason, suggestion in warnings:
+            parts.append(reason)
+            if suggestion is not None and suggestion not in suggestions:
+                suggestions.append(suggestion)
+
+        parts.append(_('Many ports will not work.'))
+
+        if suggestions:
+            parts.append('')
+            parts.extend(suggestions)
+
+        self.tags['disclaimer_text'].text = '\n'.join(parts)
+        self.tags['disclaimer_text'].fontsize = int(self.tags['disclaimer_text'].fontsize * 1.5)
 
         self.last_elapsed = None
 
     def do_draw(self):
-        elapsed = self.gui.timers.since('firmware_wait') // 1000
+        elapsed = self.gui.timers.since('warning_wait') // 1000
 
-        elapsed = min(elapsed, self.firmware_wait)
+        elapsed = min(elapsed, self.warning_wait)
 
         if elapsed != self.last_elapsed:
-            if elapsed < self.firmware_wait:
-                self.tags['button_bar'].bar = [f'Wait {self.firmware_wait - elapsed} seconds']
+            if elapsed < self.warning_wait:
+                self.tags['button_bar'].bar = [f'Wait {self.warning_wait - elapsed} seconds']
             else:
                 self.set_buttons({'A': _('I Understand'), 'B': _('Quit')})
 
@@ -530,12 +578,16 @@ class UnsupportedFirmwareScene(BaseScene):
     def do_update(self, events):
         super().do_update(events)
 
-        elapsed = self.gui.timers.since('firmware_wait') // 1000
+        elapsed = self.gui.timers.since('warning_wait') // 1000
 
-        elapsed = min(elapsed, self.firmware_wait)
+        elapsed = min(elapsed, self.warning_wait)
 
-        if elapsed == self.firmware_wait:
+        if elapsed == self.warning_wait:
             if events.was_pressed('A'):
+                cfg_data = self.gui.get_config()
+                cfg_data['warning_time'] = get_next_warning_time()
+                self.gui.save_config(cfg_data)
+
                 self.scene_deactivate()
                 self.gui.updated = True
                 self.gui.scenes = [
