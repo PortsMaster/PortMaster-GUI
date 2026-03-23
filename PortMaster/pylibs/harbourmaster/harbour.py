@@ -1368,6 +1368,7 @@ class HarbourMaster():
 
             if 'installed' not in filters:
                 tmp_ports.difference_update(self._source_port_attrs.get('installed', set()))
+                tmp_ports.difference_update(self._installed_port_attrs.get('installed', set()))
             else:
                 # sigh...
                 tmp_ports = set()
