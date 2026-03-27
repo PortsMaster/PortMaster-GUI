@@ -178,6 +178,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         # AYN Odin 2 and friends
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
+    elif [[ "${DEVICE_NAME}" == "RG" ]]; then
+        # Anbernic RG DS
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2-)
+
     elif [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
