@@ -47,6 +47,8 @@ DEVICES = {
     "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "ROCKNIX"]},
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
+    "Anbernic RG DS":       {"device": "rg-ds",       "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
+    "Anbernic RG Vita Pro": {"device": "rg-vita-pro", "manufacturer": "Anbernic",  "cfw": ["Knulli", "ROCKNIX"]},
 
     # Powkiddy
     "Powkiddy RGB10":         {"device": "rgb10",        "manufacturer": "Powkiddy",  "cfw": ["ArkOS", "ROCKNIX"]},
@@ -118,6 +120,10 @@ HW_INFO = {
     "rg34xx-h":    {"resolution": (720, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg28xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
+
+    # Anbernic Other
+    "rg-vita-pro": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3576", "capabilities": ["power", "ultra"], "ram": 4096},
+    "rg-ds":       {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3568", "capabilities": ["power"], "ram": 3072},
 
     # Hardkernel Devices
     "oga": {"resolution": (480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -198,6 +204,8 @@ CPU_INFO = {
     "rk3399":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3566-miyoo":  {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "rk3566":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3568":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "rk3576":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "rk3588":        {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "h700-knulli":   {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "h700-batocera": {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
@@ -344,6 +352,9 @@ def nice_device_to_device(raw_device):
         ('anbernic rg40xx*',      'rg40xx-h'),
         ('anbernic rg35xx*',      'rg35xx-h'),
         ('anbernic rg34xx*',      'rg34xx-h'),
+
+        ('anbernic rg ds',         'rg-ds'),
+        ('*rg vita*',              'rg-vita-pro'),
 
         ('miyoo rk3566 355 v10*', 'miyoo-flip'),
 
