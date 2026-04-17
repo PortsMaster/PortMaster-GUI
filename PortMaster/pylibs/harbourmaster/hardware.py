@@ -87,6 +87,9 @@ DEVICES = {
     # Valve
     "SteamDeck":  {"device": "steamdeck", "manufacturer": "Valve", "cfw": ["RetroDECK", "Batocera"]},
 
+    # MANGMI
+    "MANGMI Air X": {"device": "mangmiairx", "manufacturer": "MANGMI", "cfw": ["ROCKNIX"]},
+
     # Generic
     "XU10 Retro Handheld": {"device": "xu10", "manufacturer": "MagicX", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
     "R33S Retro Handheld": {"device": "r33s", "manufacturer": "Game Console", "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
@@ -170,6 +173,9 @@ HW_INFO = {
     # ZPG GKD
     "gkd-bubble": {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3566",  "capabilities": ["power"], "ram": 1024},
     "gkd-pixel2": {"resolution": (640, 480), "analogsticks": 0, "cpu": "rk3326",  "capabilities": [], "ram": 1024},
+
+    # MANGMI
+    "mangmiairx": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sm6115", "capabilities": ["power"], "ram": 4096},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
@@ -383,6 +389,8 @@ def nice_device_to_device(raw_device):
         ('retroid pocket 5',     'rp5'),
         ('retroid pocket mini',  'rpmini'),
         ('retroid pocket flip*', 'rpflip2'),
+
+        ('mangmi air x*', 'mangmiairx')
         )
 
     for pattern, device in pattern_to_device:

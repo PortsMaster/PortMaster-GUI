@@ -182,6 +182,10 @@ elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         # Anbernic RG DS
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f 2-)
 
+    elif [[ "${DEVICE_NAME}" == "Air" ]]; then
+        # MANGMI Air X
+        DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" | cut -d' ' -f -3)
+
     elif [[ "${DEVICE_NAME}" == "" ]]; then
         DEVICE_NAME=$(cat "/sys/firmware/devicetree/base/model" 2>/dev/null)
 
