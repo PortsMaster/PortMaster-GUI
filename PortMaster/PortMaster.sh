@@ -192,6 +192,9 @@ if [ -f "${controlfolder}/.emustation-refresh" ]; then
 elif [ -f "${controlfolder}/.weston-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.weston-refresh"
   $ESUDO systemctl restart ${UI_SERVICE}
+elif [ -f "${controlfolder}/.sway-refresh" ]; then
+  $ESUDO rm -f "${controlfolder}/.sway-refresh"
+  $ESUDO systemctl restart ${UI_SERVICE}
 elif [ -f "${controlfolder}/.emulationstation-refresh" ]; then
   $ESUDO rm -f "${controlfolder}/.emulationstation-refresh"
   $ESUDO systemctl restart emulationstation
