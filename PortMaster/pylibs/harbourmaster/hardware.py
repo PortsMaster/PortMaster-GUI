@@ -175,7 +175,7 @@ HW_INFO = {
     "gkd-pixel2": {"resolution": (640, 480), "analogsticks": 0, "cpu": "rk3326",  "capabilities": [], "ram": 1024},
 
     # MANGMI
-    "mangmiairx": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sm6115", "capabilities": ["power"], "ram": 4096},
+    "mangmiairx": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "sd662", "capabilities": ["power"], "ram": 4096},
 
     # Computer/Testing
     "pc":        {"resolution": (640, 480), "analogsticks": 2, "cpu": "unknown", "capabilities": ["opengl", "power"]},
