@@ -221,6 +221,7 @@ CPU_INFO = {
     "x86_64":        {"capabilities": ["x86_64"],           "primary_arch": "x86_64"},
     "s922x":         {"capabilities": ["aarch64"],          "primary_arch": "aarch64"},
     "sd865":         {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
+    "sd662":           {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     "unknown":       {"capabilities": ["armhf", "aarch64"], "primary_arch": "aarch64"},
     }
 
