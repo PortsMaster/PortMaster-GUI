@@ -317,7 +317,7 @@ class PlatformGCD_PortMaster:
 
 
 class PlatformUOS(PlatformGCD_PortMaster, PlatformBase):
-    ES_NAME = 'emustation'
+    ES_NAME = os.environ.get("UI_SERVICE","emustation").split()[0].replace(".service", "")
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'
