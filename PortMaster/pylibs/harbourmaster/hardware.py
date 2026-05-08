@@ -26,6 +26,20 @@ from .info import *
 from .util import *
 
 
+# This device name for Stock OS
+H700_INFO = {
+    'RGcubexx': 'rgcubexx',
+    'RG34xx': 'rg34xx-h',
+    'RG34xxSP': 'rg34xx-sp',
+    'RG28xx': 'rg28xx',
+    'RG35xx+_P': 'rg35xx-plus',
+    'RG35xxH': 'rg35xx-h',
+    'RG35xxSP': 'rg35xx-sp',
+    'RG40xxH': 'rg40xx-h',
+    'RG40xxV': 'rg40xx-v',
+    'RG35xxPRO': 'rg35xx-h'
+}
+
 # This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
 DEVICES = {
     # Anbernic
@@ -534,6 +548,11 @@ def new_device_info():
         info.setdefault('name', 'REGLinux')
         info['version'] = subprocess.getoutput('system-version').strip().split(' ', 1)[0]
         info['device'] = safe_cat('/boot/boot/system.board').strip()
+
+    # Stock OS
+    sohw = safe_cat('/mnt/vendor/oem/board.ini')
+    if sohw != '':
+        info['device'] = H700_INFO[sohw]
 
     if 'device' not in info:
         info['device'] = old_device_info()
