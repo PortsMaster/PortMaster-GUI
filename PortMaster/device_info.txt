@@ -49,7 +49,11 @@ fi
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
 
-if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
+if [ -f "/loong/loong_version" ]; then
+    CFW_NAME="Loong"
+    CFW_VERSION=$(cat /loong/loong_version 2>/dev/null | grep -o '"verShow"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+    [ -z "$CFW_VERSION" ] && CFW_VERSION="Unknown"
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     CFW_INFO=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
     CFW_FFS=$(grep -a "title=" "/usr/share/plymouth/themes/text.plymouth" | cut -d'=' -f 2- | tr -cd 'a-zA-Z' | tr '[:upper:]' '[:lower:]')
 
