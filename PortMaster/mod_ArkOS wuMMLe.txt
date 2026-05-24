@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+## Modular - ArkOS wuMMLe
+# 
+# A modular file that is sourced for specific script lines required by ports running on ArkOS wuMMLe.
+#
+# usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
+
+# Address and silence Pulseaudio Error "Failed to create secure directory (/run/user/1002//pulse): No such file or directory"
+$ESUDO mkdir -p /run/user/$UID/pulse
+$ESUDO chown $UID /run/user/$UID
+$ESUDO chown $UID /run/user/$UID/pulse
+$ESUDO chmod 755 /run/user/$UID
+$ESUDO chmod 755 /run/user/$UID/pulse
+sleep 0.3
+
+pm_platform_helper() {
+    # DO SOMETHING HERE
+    printf ""
+}
