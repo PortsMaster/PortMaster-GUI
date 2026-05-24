@@ -20,6 +20,7 @@ local gameName = "the game"
 local patchTime = "5 minutes"
 local isNews = false
 local patchScript = "patch_script.sh"  -- Default patch script
+local patchFailedMessage = "Patching failed! Please go to the PortMaster Discord for help."
 local visibleOptionCount = 3
 
 -- Variables
@@ -129,6 +130,14 @@ end
 function readPatchOutput()
     local line = patchChannel:pop()  -- Attempt to read output
     if line then
+        -- Patch scripts can override the failure dialog message by emitting
+        -- "PATCH_FAIL_MSG:<message>" before "Patching process failed!".
+        local overrideMsg = line:match("^PATCH_FAIL_MSG:(.*)")
+        if overrideMsg then
+            patchFailedMessage = overrideMsg
+            return
+        end
+
         local wrappedLines = wrapText(line, 62)
         for _, wrappedLine in ipairs(wrappedLines) do
             table.insert(patchOutput, wrappedLine)
@@ -258,7 +267,7 @@ end
 
 -- Function to show patch failed dialog
 function PatchFailed()
-    Talkies.say("Cybion", "Patching failed! Please go to the PortMaster Discord for help.", {
+    Talkies.say("Cybion", patchFailedMessage, {
         thickness = 2,
         image = cybion,
         oncomplete = function()
