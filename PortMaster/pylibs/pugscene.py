@@ -42,7 +42,13 @@ def get_startup_warnings(device_info):
     except (OSError, UnicodeDecodeError):
         pass
 
-    # TODO: add checks for NextUI, PakUI when we have unique markers
+    try:
+        if 'NextUI' in Path('/mnt/SDCARD/.system/version.txt').read_text():
+            warnings.append(('nextui', _('NextUI is not supported by PortMaster.'), firmware_suggestion))
+    except (OSError, UnicodeDecodeError):
+        pass
+
+    # TODO: add a check for PakUI when we have a unique marker
 
     # Generic catch-all for TrimUI-based OSes we can't identify specifically
     if not warnings and Path('/etc/trimui_device.txt').exists():
