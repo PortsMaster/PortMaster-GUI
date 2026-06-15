@@ -1073,7 +1073,7 @@ class PlatformTrimUI(PlatformBase):
 
         if port_mode == 'roms':
             target_file = ROM_SCRIPT_DIR / (port_script.name)
-            if not os.path.samefile(port_script, target_file):
+            if not target_file.exists() or not os.path.samefile(port_script, target_file):
                 logger.debug(f"Copying {str(port_script)} to {str(target_file)}")
                 shutil.copy(port_script, target_file)
             else:
