@@ -17,6 +17,28 @@ $ESUDO chmod 755 /run/user/$UID
 $ESUDO chmod 755 /run/user/$UID/pulse
 sleep 0.3
 
+if [ "$(readlink /usr/lib/aarch64-linux-gnu/libEGL.so.1)" != "libMali.so" ] || [ ! -e /usr/lib/aarch64-linux-gnu/libGLdispatch.so ]; then
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so.1.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv3.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv3.so.3
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so.1.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libmali.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libmali.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/aarch64-linux-gnu/libGLdispatch.so
+fi
+
 pm_platform_helper() {
     # DO SOMETHING HERE
     printf ""
