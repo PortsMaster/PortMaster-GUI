@@ -107,7 +107,7 @@ jobs:
       - name: "Publish Release"
         uses: ncipollo/release-action@v1
         with:
-          tag: "${{steps.version.outputs.version}} (${{steps.version.outputs.release}})"
+          tag: "${{steps.version.outputs.version}}"
           omitBodyDuringUpdate: true
           omitNameDuringUpdate: true
           allowUpdates: true
