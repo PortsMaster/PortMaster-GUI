@@ -953,6 +953,7 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             self.set_data("port_info.instructions", "")
             self.set_data("port_info.genres", "")
             self.set_data("port_info.porter", "")
+            self.set_data("port_info.source", "")
             self.set_data("port_info.ready_to_run", "")
             self.set_data("port_info.runtime", "")
             self.set_data("port_info.download_size", "")
@@ -960,10 +961,20 @@ class PortMasterGUI(pySDL2gui.GUI, harbourmaster.Callback):
             # self.set_data("port_info.image", "no-image")
             return
 
+        # 'Unknown', 'file' and 'url' mean manual install
+        port_source = port_info.get('status', {}).get('source', None)
+        if port_source in (None, "", "Unknown", "file", "url"):
+            port_source = port_info.get('source', {}).get('repo', None) or ""
+
+        description = port_info['attr']['desc']
+        if port_source != "":
+            description += "\n\n" + _("Source: {port_source}").format(port_source=port_source)
+
         self.set_data("port_info.name", port_name)
         self.set_data("port_info.image", str(self.get_port_image(port_name)))
         self.set_data("port_info.title", port_info['attr']['title'])
-        self.set_data("port_info.description", port_info['attr']['desc'])
+        self.set_data("port_info.description", description)
+        self.set_data("port_info.source", port_source)
         self.set_data("port_info.instructions", port_info['attr']['inst'])
         self.set_data("port_info.genres", ', '.join(port_info['attr']['genres']))
         self.set_data("port_info.porter", harbourmaster.oc_join(port_info['attr']['porter']))

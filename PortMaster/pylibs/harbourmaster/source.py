@@ -31,6 +31,8 @@ class BaseSource():
         self._file_name = file_name
         self._config = config
         self._prefix = config['prefix']
+        # Overridden by load_sources when the name collides with another source.
+        self.display_name = config['name']
         self._did_update = False
         self._wants_update = None
         self._images_dir = self.hm.cfg_dir / f"images_{self._prefix}"
@@ -429,7 +431,7 @@ class PortMasterV1(GitHubRawReleaseV1):
 
         zip_info['name'] = port_name
         zip_info['status'] = {
-            'source': self._config['name'],
+            'source': self.display_name,
             'md5':    md5_result[0],
             'status': 'downloaded',
             }
@@ -559,7 +561,7 @@ class PortMasterV2(GitHubRawReleaseV1):
 
         zip_info['name'] = port_name
         zip_info['status'] = {
-            'source': self._config['name'],
+            'source': self.display_name,
             'md5':    md5_result[0],
             'status': 'downloaded',
             }
@@ -684,7 +686,7 @@ class GitHubRepoV1(GitHubRawReleaseV1):
 
         zip_info['name'] = name_cleaner(port_name)
         zip_info['status'] = {
-            'source': self._config['name'],
+            'source': self.display_name,
             'md5':    md5_result[0],
             'status': 'downloaded',
             }
@@ -1083,7 +1085,7 @@ class PortMasterV3(BaseSource):
 
         zip_info['name'] = port_name
         zip_info['status'] = {
-            'source': self._config['name'],
+            'source': self.display_name,
             'md5':    md5_result[0],
             'status': 'downloaded',
             }

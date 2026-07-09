@@ -344,7 +344,7 @@
             "font-size[16:9]": 11,
             "font-color": "general_font",
             "text-wrap": true,
-            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
+            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\nSource: {port_info.source}{endif}"
         },
         "port_desc": {
             "parent": "port_info_text_area",
@@ -415,7 +415,7 @@
         },
         "port_info_instruction": {
             "area": [ 0.6, 0.1, 0.95, 0.65 ],
-            "text": "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\nInstruction: {port_info.instructions}",
+            "text": "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\nSource: {port_info.source}{endif}\n\nInstruction: {port_info.instructions}",
             "fill": "panels",
             "thickness": 6,
             "border": 8,
@@ -843,7 +843,7 @@
             "font-size[16:9]": 11,
             "font-color": "general_font",
             "text-wrap": true,
-            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
+            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\nSource: {port_info.source}{endif}"
         },
 
         "featured_port_description": {
