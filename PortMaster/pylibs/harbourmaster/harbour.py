@@ -494,6 +494,15 @@ class HarbourMaster():
         self.callback.message("  - {}".format(_("Loading Sources.")))
 
         check_keys = {'version': None, 'prefix': None, 'api': HM_SOURCE_APIS, 'name': None, 'last_checked': None, 'data': None}
+
+        reserved_prefixes = {}
+        reserved_names = {}
+        for default_file, default_text in HM_SOURCE_DEFAULTS.items():
+            default_data = json_safe_loads(default_text)
+            if default_data is not None:
+                reserved_prefixes[default_data['prefix']] = default_file
+                reserved_names[default_data['name']] = default_file
+
         for source_file in source_files:
             with source_file.open() as fh:
                 source_data = json_safe_load(fh)
@@ -536,9 +545,34 @@ class HarbourMaster():
                 source_data['last_checked'] = None
                 source_data['data'] = {}
 
+            # A reserved prefix only loads from its bundled file, even if the
+            # imposter file sorts first.
+            if reserved_prefixes.get(source_data['prefix'], source_file.name) != source_file.name:
+                logger.error(f"Reserved prefix {source_data['prefix']!r} in {source_file}, skipping.")
+                continue
+
+            # First file wins a prefix; a later source can't replace it.
+            if source_data['prefix'] in self.sources:
+                logger.error(f"Duplicate source prefix {source_data['prefix']!r} in {source_file}, skipping.")
+                continue
+
             source = HM_SOURCE_APIS[source_data['api']](self, source_file, source_data)
 
             self.sources[source_data['prefix']] = source
+
+        name_counts = {}
+        for source in self.sources.values():
+            name_counts[source.name] = name_counts.get(source.name, 0) + 1
+
+        for source in self.sources.values():
+            file_name = source._file_name.name
+            if source.name in reserved_names:
+                if file_name == reserved_names[source.name]:
+                    continue
+            elif name_counts[source.name] < 2:
+                continue
+
+            source.display_name = f"{source.name} ({file_name.rsplit('.source.json', 1)[0]})"
 
 
     def _get_pm_signature(self, file_name):
@@ -1578,6 +1612,9 @@ class HarbourMaster():
 
                 else:
                     result = port_info_load(source.port_info(port_name))
+
+                if result is not None and 'repo' not in result.get('source', {}):
+                    result.setdefault('source', {})['repo'] = source.display_name
 
         if result is None:
             self.__PORT_INFO_CACHE[port_key] = result

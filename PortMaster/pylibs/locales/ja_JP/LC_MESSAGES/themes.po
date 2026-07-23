@@ -170,3 +170,61 @@ msgid "Genres: {port_info.genres}\n"
 "Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}"
 msgstr ""
 
+#: default_theme/theme.json:347, default_theme/theme.json:846
+msgid ""
+"Genres: {port_info.genres}\n"
+"{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\n"
+"Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"Source: {port_info.source}{endif}"
+msgstr ""
+
+#: default_theme/theme.json:418
+msgid ""
+"Free Space: {system.free_space}\n"
+"\n"
+"Porter: {port_info.porter}\n"
+"Genres: {port_info.genres}\n"
+"Download Size: {port_info.download_size}{if:port_info.runtime}\n"
+"Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"Source: {port_info.source}{endif}\n"
+"\n"
+"Instruction: {port_info.instructions}"
+msgstr ""
+
+#: Zelda.theme.zip/theme.json
+msgid ""
+"Genres: {port_info.genres}\n"
+"Download Size: {port_info.download_size}{if:port_info.runtime}\n"
+"Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"Source: {port_info.source}{endif}"
+msgstr ""
+"ジャンル: {port_info.genres}\n"
+"ダウンロードサイズ: {port_info.download_size}{if:port_info.runtime}\n"
+"ランタイム: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"Source: {port_info.source}{endif}"
+
+#: Doom.theme.zip/theme.json, Fallout.theme.zip/theme.json, Stardew.theme.zip/theme.json, ff_VII.theme.zip/theme.json
+msgid "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}    Source: {port_info.source}{endif}"
+msgstr "ジャンル: {port_info.genres}    ダウンロードサイズ: {port_info.download_size}{if:port_info.runtime}    ランタイム: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}    Source: {port_info.source}{endif}"
+
+#: basic_theme.theme.zip/theme.json
+msgid ""
+"Title: {port_info.title}\n"
+"Porter: {port_info.porter}\n"
+"Genres: {port_info.genres}\n"
+"Download Size: {port_info.download_size}{if:port_info.runtime}\n"
+"Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"Source: {port_info.source}{endif}\n"
+"Description: {port_info.description}"
+msgstr ""
+
+#: hiviz.theme.zip/theme.json
+msgid ""
+"• Genres: {port_info.genres}\n"
+"• Download Size: {port_info.download_size}{if:port_info.runtime}\n"
+"• Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}{if:port_info.source}\n"
+"• Source: {port_info.source}{endif}\n"
+"• Description: {port_info.description}\n"
+"• Instructions:\n"
+"{port_info.instructions}"
+msgstr ""
