@@ -8,7 +8,7 @@ if [ ! -z "$PM_PIPE" ]; then
 fi
 
 if [ ! -d "/dev/shm/portmaster" ]; then
-  $ESUDO mkdir /dev/shm/portmaster
+  $ESUDO mkdir -p /dev/shm/portmaster
 else
   $ESUDO rm -f /dev/shm/portmaster/pm_*
 fi
