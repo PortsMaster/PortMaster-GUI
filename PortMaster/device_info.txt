@@ -49,7 +49,10 @@ fi
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
 
-if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
+if [ -d "/mnt/SDCARD/spruce" ]; then
+    CFW_NAME="spruce"
+    CFW_VERSION="$(cat /mnt/SDCARD/spruce/spruce 2>/dev/null)"
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     CFW_INFO=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
     CFW_FFS=$(grep -a "title=" "/usr/share/plymouth/themes/text.plymouth" | cut -d'=' -f 2- | tr -cd 'a-zA-Z' | tr '[:upper:]' '[:lower:]')
 
@@ -104,10 +107,6 @@ elif [ -e "$(which batocera-version)" ]; then
 elif [ -e "$(which system-version)" ]; then
     CFW_NAME="REGLinux"
     CFW_VERSION="$(system-version | cut -d' ' -f 1)"
-elif [ -d "/mnt/SDCARD/spruce" ]; then
-    # spruceOS runs on top of stock Miyoo/TrimUI/Anbernic firmware; check it first.
-    CFW_NAME="spruce"
-    CFW_VERSION="$(cat /mnt/SDCARD/spruce/spruce 2>/dev/null)"
 elif [ -d "/usr/trimui" ]; then
     # TrimUI Smart Pro
     CFW_NAME="TrimUI"
