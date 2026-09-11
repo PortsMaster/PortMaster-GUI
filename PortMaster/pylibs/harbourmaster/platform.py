@@ -1274,6 +1274,41 @@ class PlatformMiyoo(PlatformBase):
         shutil.copy(MY_DIR / "control.txt", CONTROL_HACK)
 
 
+class PlatformSpruce(PlatformBase):
+    # spruce sets SDL_GAMECONTROLLERCONFIG per pad itself.
+    WANT_XBOX_FIX = False
+
+    def first_run(self):
+        self.portmaster_install([])
+
+    def portmaster_install(self, bash_files):
+        """
+        Move files into place.
+        """
+        super().portmaster_install(bash_files)
+
+        SP_DIR = self.hm.tools_dir / "PortMaster" / "spruce"
+        PM_DIR = self.hm.tools_dir / "PortMaster"
+
+        logger.debug(f'Copy {SP_DIR / "control.txt"} -> {PM_DIR / "control.txt"}')
+        shutil.copy(SP_DIR / "control.txt", PM_DIR / "control.txt")
+
+        logger.debug(f'Copy {SP_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
+        shutil.copy(SP_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+
+        bash_files.append(PM_DIR / "PortMaster.sh")
+
+        XDG_DATA_HOME = Path(os.environ.get('XDG_DATA_HOME', Path.home() / '.local' / 'share'))
+        CONTROL_HACK = XDG_DATA_HOME / "PortMaster" / "control.txt"
+        CONTROL_HACK.parent.mkdir(parents=True, exist_ok=True)
+
+        logger.debug(f'Copy {SP_DIR / "control.txt"} -> {CONTROL_HACK}')
+        shutil.copy(SP_DIR / "control.txt", CONTROL_HACK)
+
+    def portmaster_post_install(self):
+        self.portmaster_install([])
+
+
 class PlatformTesting(PlatformBase):
     WANT_XBOX_FIX = False
     WANT_SWAP_BUTTONS = False
@@ -1296,6 +1331,7 @@ HM_PLATFORMS = {
     'muos':      PlatformmuOS,
     'miyoo':     PlatformMiyoo,
     'trimui':    PlatformTrimUI,
+    'spruce':    PlatformSpruce,
     'retrodeck': PlatformRetroDECK,
     'darwin':    PlatformTesting,
     'default':   PlatformBase,
