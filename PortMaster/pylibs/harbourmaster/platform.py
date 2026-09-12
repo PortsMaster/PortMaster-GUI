@@ -1275,8 +1275,7 @@ class PlatformMiyoo(PlatformBase):
 
 
 class PlatformSpruce(PlatformBase):
-    # spruce sets SDL_GAMECONTROLLERCONFIG per pad itself.
-    WANT_XBOX_FIX = False
+    WANT_XBOX_FIX = True
 
     def first_run(self):
         self.portmaster_install([])

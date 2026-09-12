@@ -548,6 +548,10 @@ def new_device_info():
 
     info['device'] = info['device'].lower().replace(' ', '-')
 
+    if Path('/mnt/SDCARD/spruce').is_dir():
+        info['name'] = 'spruce'
+        info['version'] = safe_cat('/mnt/SDCARD/spruce/spruce').strip()
+
     info.setdefault('name', 'Unknown')
     info.setdefault('version', '0.0.0')
 
