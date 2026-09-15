@@ -51,11 +51,11 @@ if (Path().cwd() / '.git').is_dir():
     HM_DEFAULT_SCRIPTS_DIR = Path('ports/').absolute()
     HM_TESTING=True
     
-elif Path("/mnt/sdcard/spruce").is_dir():
-    ## Spruce (Miyoo Flip)
-    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Roms/.portmaster")
-    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/Roms/PORTS64")
-    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/PORTS64")
+elif Path("/mnt/SDCARD/spruce").is_dir():
+    ## spruceOS (Miyoo Flip, TrimUI, Anbernic, Powkiddy RGB30...)
+    HM_DEFAULT_TOOLS_DIR   = Path("/mnt/SDCARD/Persistent/portmaster")
+    HM_DEFAULT_PORTS_DIR   = Path("/mnt/SDCARD/Roms/ports")
+    HM_DEFAULT_SCRIPTS_DIR = Path("/mnt/SDCARD/Roms/ports")
 
 elif Path("/mnt/SDCARD/MIYOO_EX/PortMaster").is_dir():
     ## TrimUI Smart Pro

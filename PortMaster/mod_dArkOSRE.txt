@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+## Modular - dArkOSRE
+# 
+# A modular file that is sourced for specific script lines required by ports running on dArkOSRE.
+#
+# usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
+
+# Address and silence Pulseaudio Error "Failed to create secure directory (/run/user/1002//pulse): No such file or directory"
+$ESUDO mkdir -p /run/user/$UID/pulse
+$ESUDO chown $UID /run/user/$UID
+$ESUDO chown $UID /run/user/$UID/pulse
+$ESUDO chmod 755 /run/user/$UID
+$ESUDO chmod 755 /run/user/$UID/pulse
+sleep 0.3
+
+if [ ! -e /usr/lib/aarch64-linux-gnu/libGLdispatch.so ]; then
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libEGL.so.1.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv1_CM.so.1.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv2.so.2.1.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv3.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libGLESv3.so.3
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libgbm.so.1.0.0
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libmali.so
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libMali.so /usr/lib/aarch64-linux-gnu/libmali.so.1
+  sudo ln -sfv /usr/lib/aarch64-linux-gnu/libGLdispatch.so.0.0.0 /usr/lib/aarch64-linux-gnu/libGLdispatch.so
+fi

@@ -49,7 +49,10 @@ fi
 CFW_NAME="Unknown"
 CFW_VERSION="Unknown"
 
-if [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
+if [ -d "/mnt/SDCARD/spruce" ]; then
+    CFW_NAME="spruce"
+    CFW_VERSION="$(cat /mnt/SDCARD/spruce/spruce 2>/dev/null)"
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ]; then
     CFW_INFO=$(grep "title=" "/usr/share/plymouth/themes/text.plymouth")
     CFW_FFS=$(grep -a "title=" "/usr/share/plymouth/themes/text.plymouth" | cut -d'=' -f 2- | tr -cd 'a-zA-Z' | tr '[:upper:]' '[:lower:]')
 
@@ -315,6 +318,16 @@ case "$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')" in
     "rpflip"*)
         DEVICE_NAME="Retroid Pocket Flip 2"
         DEVICE_CPU="SD865"
+        ;;
+
+    "retroid pocket 6"*)
+        DEVICE_NAME="Retroid Pocket 6"
+        DEVICE_CPU="SM8550"
+        ;;
+
+    "retroid pocket nova")
+        DEVICE_NAME="Retroid Pocket Nova"
+        DEVICE_CPU="SM8550"
         ;;
 
     "retroid pocket"*)

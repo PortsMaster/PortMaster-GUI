@@ -151,11 +151,10 @@ get_controls() {
 
   export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
 
-  # Spit the controller of the device our heuristics found (if it did).
   if [[ ! -z ${DEVICE} ]]; then
     grep "${SDLDBUSERFILE}" -e "${DEVICE}" > /tmp/gamecontrollerdb.txt
   else
-    echo "" > /tmp/gamecontrollerdb.txt
+    cp "$controlfolder/gamecontrollerdb.txt" /tmp/gamecontrollerdb.txt
   fi
 
   if [[ -f "${HOME}/.config/emulationstation/es_input.cfg" ]]; then

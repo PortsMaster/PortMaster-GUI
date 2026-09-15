@@ -120,4 +120,4 @@ jobs:
       - name: Release Info
         id: info
         run: |
-          echo "Published release: ${{steps.version.outputs.version}} to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"
+          echo "Published release: ${{steps.version.outputs.version}} (${{steps.version.outputs.release}}) to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"
