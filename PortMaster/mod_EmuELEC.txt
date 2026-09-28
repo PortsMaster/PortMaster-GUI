@@ -2,9 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 #
-
 ## Modular - EmuELEC
-# 
+#
 # A modular file that is sourced for specific script lines required by ports running on EmuELEC.
 #
 # usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
@@ -15,11 +14,23 @@ GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 # Use for Godot 3+
 GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
+# get_controls reads the full gamecontrollerdb.txt into sdl_controllerconfig when
+# no device GUID is known. Ports export it as SDL_GAMECONTROLLERCONFIG, which
+# exceeds MAX_ARG_STRLEN (131072 bytes) and makes every execve() fail with E2BIG.
+# SDL still gets the mappings via SDL_GAMECONTROLLERCONFIG_FILE.
+if declare -f get_controls >/dev/null 2>&1; then
+    eval "_pm_get_controls_orig() $(declare -f get_controls | tail -n +2)"
+
+    get_controls() {
+        _pm_get_controls_orig "$@"
+        [ "${#sdl_controllerconfig}" -gt 100000 ] && sdl_controllerconfig=""
+    }
+fi
+
 pm_platform_helper() {
     if [ -e "$PM_PIPE" ]; then
         PortMasterDialogExit
     fi
-
     # DO SOMETHING HERE
     printf ""
 }
