@@ -784,11 +784,15 @@ class HarbourMaster():
 
         ## Phase 1: Load all the known ports with port.json files
         for port_file in port_files:
-            port_info = self._load_port_info(port_file)
-
-            if port_info is None:
+            try:
+                port_info = self._load_port_info(port_file)
+            except Exception as err:
+                logger.error(f"[HarbourMaster] Failed to load metadata from '{port_file}': {err}")
                 continue
 
+            if not port_info:
+                logger.warning(f"[HarbourMaster] Skipping invalid port file '{port_file}'")
+                continue
             # The files attribute keeps track of file renames.
             if port_info.get('files', None) is None:
                 port_info['files'] = {
