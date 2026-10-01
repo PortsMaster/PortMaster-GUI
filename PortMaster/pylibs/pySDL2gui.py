@@ -1982,6 +1982,11 @@ class Region:
     select: a 3-tuple rgb color for the selected item, or a Region for rendering it
     selectable: a list including the index for each item of the list that may be selected by the user
     selected: the currently selected list item, which will be drawn using the color or Region referenced by the select attribute
+    listcolumns: int number of columns, when above 1 the list is drawn as a grid of tiles
+    listimage: a function taking a list index and returning an image filename (or None), called only for the tiles drawn in grid mode
+    itempadding: int space between a grid tile's edge and its image/label
+    In grid mode itemsize is the tile height (default: 3:4 image plus one line of text),
+    itemspacer is the gap between tiles, and altfill is the background of unselected tiles.
 
     BARS (toolbars)
     bar: a list that may include strings, Image objects, and image filenames. They will be drawn as a horizontal bar. A single null value will split the bar into 2 sides, the first one left aligned and the second one right aligned
@@ -2100,6 +2105,11 @@ class Region:
 
         self.itemsize = self._verify_int('item-size', None, optional=True)
         self.item_spacer = self._verify_int('item-spacer', 0, optional=True)
+        self.item_padding = self._verify_int('item-padding', 4, optional=True, minimum=0)
+
+        self.list_columns = self._verify_int('list-columns', 1, minimum=1, maximum=6)
+        self.list_image = None
+        self.grid_start_row = 0
 
         self.select_color = self._verify_color('select-color', optional=True)
         self.select_fill = self._verify_color('select-fill', optional=True)
@@ -2403,6 +2413,10 @@ class Region:
             #     y += self.fonts.draw(l, x, y, self.font_color, 255, self.align,
             #             text_area, outline=self.fontoutline).height + self.linespace
 
+        # RENDER GRID
+        elif self.list and self.list_columns > 1:
+            self._draw_grid(text_area)
+
         # RENDER LIST
         elif self.list:
             if self.itemsize is not None:
@@ -2542,6 +2556,168 @@ class Region:
 
                 irect.y += itemsize + self.item_spacer
                 i += 1
+
+    def _draw_grid(self, area):
+        '''
+        Draw the list as a grid of tiles, each tile showing its image from
+        list_image above its label. Used internally
+        '''
+        columns = self.list_columns
+        spacer = self.item_spacer
+        label_h = int(self.texts.line_height(self.font, self.fontsize) * self.lineheight)
+
+        tile_w = max((area.width - spacer * (columns - 1)) // columns, 1)
+        if self.itemsize is not None:
+            tile_h = self.itemsize
+        else:
+            tile_h = tile_w * 3 // 4 + label_h
+
+        rows = max((area.height + spacer) // (tile_h + spacer), 1)
+        total_rows = (len(self.list) + columns - 1) // columns
+
+        self.page_size = rows * columns
+        self.selected = self.selected % len(self.list)
+
+        # Only scroll once the selection leaves the visible rows.
+        selected_row = self.selected // columns
+        if selected_row < self.grid_start_row:
+            self.grid_start_row = selected_row
+        elif selected_row >= self.grid_start_row + rows:
+            self.grid_start_row = selected_row - rows + 1
+
+        self.grid_start_row = max(0, min(self.grid_start_row, total_rows - rows))
+        start = self.grid_start_row * columns
+
+        for i, t in enumerate(self.list[start: start + self.page_size], start):
+            row, column = divmod(i - start, columns)
+            tile = Rect(
+                area.x + column * (tile_w + spacer),
+                area.y + row * (tile_h + spacer),
+                tile_w, tile_h)
+
+            is_selected = (i == self.selected)
+            if is_selected and self.select_fill is not None:
+                fill = self.select_fill
+            elif self.noselect_fill is not None and not self.list_selectable(i):
+                fill = self.noselect_fill
+            else:
+                fill = self.alt_fill
+
+            if fill is not None:
+                # Didn't use sdlgfx as not every device ships with it.
+                radius = min(self.roundness, tile.width // 2, tile.height // 2)
+                rows = [(tile.x, tile.y + radius, tile.width, tile.height - radius * 2)]
+                for row, cut in enumerate(self._corner_cuts(radius)):
+                    rows += [
+                        (tile.x + cut, tile.y + row, tile.width - cut * 2, 1),
+                        (tile.x + cut, tile.bottom - row - 1, tile.width - cut * 2, 1)]
+
+                self.renderer.fill(rows, fill)
+
+            inner = tile.inflated(-self.item_padding * 2)
+            image_area = Rect(inner.x, inner.y, inner.width, inner.height - label_h)
+            label_area = Rect(inner.x, inner.bottom - label_h, inner.width, label_h)
+
+            image = None
+            if self.list_image is not None:
+                image = self.images.load(self.list_image(i))
+
+            if image is not None and image_area.width > 0 and image_area.height > 0:
+                dest = Rect.from_sdl(image.srcrect)
+                dest.fit(image_area)
+                image.draw_in(dest.tuple())
+
+                if self.roundness and fill is not None:
+                    # Round the image by painting over its corners in the tile colour.
+                    radius = min(self.roundness, dest.width // 2, dest.height // 2)
+                    corners = []
+                    for row, cut in enumerate(self._corner_cuts(radius)):
+                        top, bottom = dest.y + row, dest.bottom - row - 1
+                        left, right = dest.x, dest.right - cut
+                        corners += [
+                            (left, top, cut, 1), (right, top, cut, 1),
+                            (left, bottom, cut, 1), (right, bottom, cut, 1)]
+
+                    if corners:
+                        self.renderer.fill(corners, fill)
+
+            if is_selected:
+                color = self.select_color if self.select_color is not None else self.font_color
+            elif self.noselect_color and not self.list_selectable(i):
+                color = self.noselect_color
+            else:
+                color = self.font_color
+
+            texture = self.texts.render_text(
+                str(t),
+                self.font, self.fontsize, align='center')
+
+            if is_selected:
+                # Only the selected tile's label autoscrolls, like the plain list.
+                x, y, self.scroll_max, alignment = autoscroll_text(
+                    texture.size,
+                    label_area,
+                    'center',
+                    self.scroll_pos,
+                    False)
+            else:
+                alignment = 'center'
+                x, y = label_area.center
+
+            setattr(texture.size, alignment, (x, y))
+
+            with texture.with_color_mod(color):
+                texture.draw_in(label_area, clip=True)
+
+    def _corner_cuts(self, radius):
+        '''
+        How far each row of a rounded corner is cut in, top row first. Used internally
+        '''
+        return [
+            radius - int((radius ** 2 - (radius - row - 0.5) ** 2) ** 0.5)
+            for row in range(radius)]
+
+    def _update_grid(self):
+        '''
+        Handle input for a grid list: LEFT/RIGHT move one tile, UP/DOWN
+        move one row, L1/R1 move one page. Used internally
+
+        RETURNS: True if the selection changed
+        '''
+        events = self.gui.events
+        columns = self.list_columns
+        last = len(self.list) - 1
+
+        if events.was_pressed('LEFT') or events.was_pressed('L_LEFT') or events.was_pressed('R_LEFT'):
+            target = self.selected - 1
+
+        elif events.was_pressed('RIGHT') or events.was_pressed('L_RIGHT') or events.was_pressed('R_RIGHT'):
+            target = self.selected + 1
+
+        elif events.was_pressed('UP') or events.was_pressed('L_UP') or events.was_pressed('R_UP'):
+            target = self.selected - columns
+
+        elif events.was_pressed('DOWN') or events.was_pressed('L_DOWN') or events.was_pressed('R_DOWN'):
+            target = self.selected + columns
+            # Moving down onto a shorter last row lands on its final tile.
+            if target > last and self.selected // columns < last // columns:
+                target = last
+
+        elif events.was_pressed('L1'):
+            target = max(self.selected - self.page_size, 0)
+
+        elif events.was_pressed('R1'):
+            target = min(self.selected + self.page_size, last)
+
+        else:
+            return False
+
+        if target < 0 or target > last or target == self.selected:
+            return False
+
+        self.list_select(target, direction=(1 if target > self.selected else -1))
+        self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)
+        return True
 
     def reset_options(self):
         self.list = []
@@ -2828,7 +3004,10 @@ class Region:
             if options is not None and len(options) != length:
                 options = None
 
-            if self.gui.events.was_pressed('L1'):
+            if self.list_columns > 1:
+                changed = length > 0 and self._update_grid()
+
+            elif self.gui.events.was_pressed('L1'):
                 self.list_select(self.selected - self.page_size, direction=-1, allow_wrap=False)
 
                 self.gui.sounds.play(self.click_sound, volume=self.click_sound_volume)

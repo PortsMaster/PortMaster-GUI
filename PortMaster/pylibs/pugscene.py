@@ -694,6 +694,11 @@ class MainMenuScene(BaseScene):
         if events.was_pressed('A'):
             selected_option = self.tags['option_list'].selected_option()
             selected_parameter = self.option_options.get(selected_option, None)
+            selected_name = {
+                'install': _("All Ports"),
+                'install-rtr': _("Ready to Run"),
+                'uninstall': _("Manage Ports"),
+                }.get(selected_option)
 
             if selected_option == 'install-rtr':
                 selected_option = 'install'
@@ -701,7 +706,7 @@ class MainMenuScene(BaseScene):
             self.button_activate()
 
             if selected_option in ('install', 'install-rtr', 'uninstall'):
-                self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter}))
+                self.gui.push_scene('ports', PortsListScene(self.gui, {'mode': selected_option, 'base_filters': selected_parameter, 'name': selected_name}))
                 return True
 
             elif selected_option == 'featured-ports':
@@ -1736,6 +1741,17 @@ class FeaturedPortsListScene(FeaturedPortsNavigationScene):
 
 
 class PortListBaseScene():
+    def set_port_images(self):
+        ## Grid themes draw each port's image; the grid looks them up only for the tiles on screen.
+        if self.tags['ports_list'].list_columns > 1:
+            self.tags['ports_list'].list_image = self.port_image
+
+    def port_image(self, index):
+        if index >= len(self.port_list):
+            return None
+
+        return str(self.gui.get_port_image(self.port_list[index]))
+
     def update_ports(self):
         if self.gui.hm is None:
             self.all_ports = {}
@@ -1772,6 +1788,7 @@ class PortListBaseScene():
         self.gui.set_data('ports_list.filter_ports', str(len(self.port_list)))
 
         if len(self.port_list) == 0:
+            self.gui.set_data('ports_list.position', "0")
             self.tags['ports_list'].list = [
                 _('NO PORTS')]
 
@@ -1861,6 +1878,7 @@ class PortListBaseScene():
 
         if len(self.port_list) > 0 and self.last_port != self.tags['ports_list'].selected:
             self.last_port = self.tags['ports_list'].selected
+            self.gui.set_data('ports_list.position', str(self.last_port + 1))
 
             port_name = self.port_list[self.last_port]
             port_info = self.all_ports[port_name]
@@ -1937,6 +1955,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
         self.tags['ports_list'].list = [
             self.all_ports[port_name]['attr']['title']
             for port_name in self.port_list]
+        self.set_port_images()
 
         self.last_port = self.tags['ports_list'].selected + 1
 
@@ -1945,7 +1964,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
 class PortsListScene(PortListBaseScene, BaseScene):
     def __init__(self, gui, options):
         super().__init__(gui)
-        self.scene_title = _("Ports List")
+        self.scene_title = options.get('name') or _("Ports List")
 
         self.options = options
         self.options.setdefault('base_filters', [])
@@ -1959,6 +1978,7 @@ class PortsListScene(PortListBaseScene, BaseScene):
         self.load_regions("ports_list", [
             'ports_list',
             ])
+        self.set_port_images()
 
         self.ready = False
         self.update_ports()

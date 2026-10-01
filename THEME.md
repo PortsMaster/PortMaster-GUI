@@ -358,6 +358,38 @@ The list system is quite adequate
     }
 ```
 
+## Grid
+
+Setting `list-columns` above 1 draws a list as a grid of tiles instead of rows. Each tile shows the item's image above its name. Only `ports_list` (in the `ports_list` and `featured_ports` scenes) supplies images, other lists will draw tiles with just the name.
+
+```json
+    "ports_list": {
+        "list-columns": 3,            // number of columns (max 6) anything over will limit to 6, 1 (default) draws a normal list
+        "list-columns[wide]": 4,      // can be overridden like any other value
+        "item-size": 180,             // tile height, defaults to a 4:3 image plus one line of text
+        "item-spacer": 8,             // gap between tiles
+        "item-padding": 4,            // space between the tile edge and its image/name
+        "alt-fill": [ 38, 42, 51 ],   // color to fill unselected tiles
+        "select-fill": "accent",      // color to fill the selected tile
+        "roundness": 10,              // rounds the tiles, and the image corners when the tile has a fill
+        "line-height": 1.4,           // height of the name row, relative to the font
+        "autoscroll": "marquee",      // scroll the selected name if it is too long
+    }
+```
+
+In a grid LEFT/RIGHT move one tile, UP/DOWN move one row and L1/R1 move one page. The grid only scrolls when the selection moves off the visible rows.
+
+**Note:** keep the grid to 30 visible tiles or fewer (columns x rows). Only 30 images are kept loaded, so a bigger grid has to reload its images from the SD card on every redraw, which is very slow. The number of rows depends on the tile height (`item-size`) and the screen size.
+
+**Note:** only 30 images are kept loaded, and the grid loads a new one for every tile it shows, so scrolling quickly unloads older images. Any image a theme uses on its scenes (panels, icons, backgrounds) that is not listed in `#resources` can be unloaded while it is still on screen, which crashes PortMaster. List every static image in `#resources` so it is never unloaded:
+
+```json
+    "#resources": {
+        "panel.png": {},
+        "menu_icon.png": {}
+    }
+```
+
 
 ## Special Words
 
@@ -553,6 +585,7 @@ The format is:
 - ports_list.total_ports
 - ports_list.filter_ports
 - ports_list.filters
+- ports_list.position
 
 ## Featured Ports tags
 
