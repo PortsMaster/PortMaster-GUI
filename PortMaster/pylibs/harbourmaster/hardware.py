@@ -37,7 +37,10 @@ H700_INFO = {
     'RG35xxSP': 'rg35xx-sp',
     'RG40xxH': 'rg40xx-h',
     'RG40xxV': 'rg40xx-v',
-    'RG35xxPRO': 'rg35xx-h'
+    'RG35xxPRO': 'rg35xx-h',
+    'RGsp': 'rgsp',
+    'RGds': 'rg-ds',
+    'RGdsplus': 'rg-dsplus'
 }
 
 # This maps device name to HW_INFO, also includes manufacturer and compatible cfw.
@@ -59,9 +62,11 @@ DEVICES = {
     "Anbernic RG34XX SP":   {"device": "rg34xx-sp",   "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG34XX":      {"device": "rg34xx-h",    "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG28XX":      {"device": "rg28xx",      "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
+    "Anbernic RGSP":        {"device": "rgsp",        "manufacturer": "Anbernic",  "cfw": ["muOS", "Knulli", "ROCKNIX"]},
     "Anbernic RG351P/M":    {"device": "rg351p",      "manufacturer": "Anbernic",  "cfw": ["ArkOS (Wummle)", "AmberELEC", "ROCKNIX"]},
     "Anbernic RG351V":      {"device": "rg351v",      "manufacturer": "Anbernic",  "cfw": ["ArkOS", "AmberELEC", "ROCKNIX"]},
     "Anbernic RG DS":       {"device": "rg-ds",       "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
+    "Anbernic RG DS PLUS":  {"device": "rg-dsplus",   "manufacturer": "Anbernic",  "cfw": ["ROCKNIX"]},
     "Anbernic RG Vita Pro": {"device": "rg-vita-pro", "manufacturer": "Anbernic",  "cfw": ["Knulli", "ROCKNIX"]},
 
     # Powkiddy
@@ -138,11 +143,13 @@ HW_INFO = {
     "rg34xx-sp":   {"resolution": (720, 480), "analogsticks": 2, "cpu": "h700", "capabilities": ["power"], "ram": 2048},
     "rg34xx-h":    {"resolution": (720, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg28xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
+    "rgsp":        {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": ["power"], "ram": 1024},
     "rg35xx":      {"resolution": (640, 480), "analogsticks": 0, "cpu": "h700", "capabilities": [], "ram": 256},
 
     # Anbernic Other
     "rg-vita-pro": {"resolution": (1920, 1080), "analogsticks": 2, "cpu": "rk3576", "capabilities": ["power", "ultra"], "ram": 4096},
     "rg-ds":       {"resolution": (640, 480), "analogsticks": 2, "cpu": "rk3568", "capabilities": ["power"], "ram": 3072},
+    "rg-dsplus":   {"resolution": (1024, 768), "analogsticks": 1, "cpu": "rk3568", "capabilities": ["power"], "ram": 1024},
 
     # Hardkernel Devices
     "oga": {"resolution": (480, 320), "analogsticks": 1, "cpu": "rk3326", "capabilities": [], "ram": 1024},
@@ -373,12 +380,14 @@ def nice_device_to_device(raw_device):
         ('anbernic rg40xx h*',    'rg40xx-h'),
         ('anbernic rg40xx v*',    'rg40xx-v'),
         ('anbernic rgcube xx*',   'rgcubexx'),
+        ('anbernic rgsp*',        'rgsp'),
 
         ('anbernic rg40xx*',      'rg40xx-h'),
         ('anbernic rg35xx*',      'rg35xx-h'),
         ('anbernic rg34xx*',      'rg34xx-h'),
 
         ('anbernic rg ds',         'rg-ds'),
+        ('anbernic rg ds plus',         'rg-dsplus'),
         ('*rg vita*',              'rg-vita-pro'),
 
         ('miyoo rk3566 355 v10*', 'miyoo-flip'),
