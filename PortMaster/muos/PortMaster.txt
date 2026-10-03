@@ -158,6 +158,7 @@ if [ -n "$AUTOINSTALL_FILES" ]; then
 
     exit 0
   else
+    ${controlfolder}/muos/image_smash.txt    
     PortMasterDialogMessageBox "Finished running autoinstall."
     PortMasterDialogExit
   fi
