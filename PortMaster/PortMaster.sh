@@ -21,6 +21,9 @@ source $controlfolder/control.txt
 
 get_controls
 
+# Pass proxy settings after sudo, which filters the launcher's environment.
+mapfile -t pm_proxy_env < <(python3 "$controlfolder/arkos_proxy.py")
+
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
 CUR_TTY=/dev/tty0
 
@@ -172,7 +175,7 @@ fi
 export PYSDL2_DLL_PATH="/usr/lib"
 $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
 while true; do
-  $ESUDO ./pugwash $PORTMASTER_CMDS
+  $ESUDO env "${pm_proxy_env[@]}" ./pugwash $PORTMASTER_CMDS
 
   if [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
     break;
