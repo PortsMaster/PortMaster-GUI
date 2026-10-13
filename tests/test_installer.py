@@ -205,6 +205,8 @@ def portmaster_zip():
 
     files["PortMaster/trimui/config.json"] = (PM_DIR / "trimui" / "config.json").read_text()
     files["PortMaster/trimui/icon.png"] = "png"
+    files["PortMaster/batocera/control.txt"] = (PM_DIR / "batocera" / "control.txt").read_text()
+    files["PortMaster/knulli/control.txt"] = (PM_DIR / "knulli" / "control.txt").read_text()
     files["PortMaster/batocera/shGenerator.py"] = "# batocera shGenerator, gamecontrollerdb.txt\n"
     files["PortMaster/knulli/shGenerator.py"] = "# knulli shGenerator, gamecontrollerdb.txt\n"
     return files
@@ -365,12 +367,30 @@ def test_batocera(tmp_path, portmaster_zip, old_style):
 
     assert installer.path("/userdata/roms/ports/PortMaster.sh").read_text() == stub()
     assert not installer.path(XDG + "/PortMaster/PortMaster.sh").exists()
+    assert installer.path(XDG + "/PortMaster/control.txt").read_text() == portmaster_zip["PortMaster/batocera/control.txt"]
 
     ## The system's shGenerator.py is swapped for ours, the original kept.
     expected = "knulli" if old_style else "batocera"
     assert generator.read_text().startswith(f"# {expected} shGenerator")
     assert generator.with_name("shGenerator.py.bak").is_file()
     assert installer.calls() == ["curl http://localhost:1234/reloadgames", "batocera-save-overlay "]
+
+
+def test_knulli_gets_its_own_control(tmp_path, portmaster_zip):
+    ## knulli is found like Batocera, but its os-release names it, and that picks
+    ## knulli/control.txt over batocera's.
+    portmaster_zip["PortMaster/batocera/control.txt"] = "batocera control\n"
+    portmaster_zip["PortMaster/knulli/control.txt"] = "knulli control\n"
+    installer = Installer(tmp_path, "batocera")
+    write(installer.root, "/etc/os-release", 'NAME=Batocera.linux\nOS_NAME="knulli"\n')
+    put_zip(installer, portmaster_zip)
+
+    assert installer.detect()['OS_NAME'] == "knulli"
+    installer.run()
+
+    assert installer.path(XDG + "/PortMaster/control.txt").read_text() == "knulli control\n"
+    assert installer.path("/userdata/roms/ports/PortMaster.sh").read_text() == stub()
+    assert installer.calls() == ["curl http://localhost:1234/reloadgames"]
 
 
 def test_batocera_patched_generator_left_alone(tmp_path, portmaster_zip):

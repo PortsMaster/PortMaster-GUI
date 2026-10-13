@@ -26,6 +26,7 @@ ESUDO=""
 CUR_TTY="${PM_CUR_TTY:-/dev/tty0}"
 OS_NAME_OVERRIDE=""
 NO_FRONTEND_RESTART=""
+BATOCERA_LIKE=""
 
 ## -- Where is PortMaster going? -----------------------------------------------
 retrodeck_paths() {
@@ -121,7 +122,9 @@ elif [ -d "$R/userdata/roms/ports" ]; then
   ## Batocera, knulli, REG-Linux
   controlfolder="$XDG_DATA_HOME"
   directory="userdata/roms"
-  OS_NAME_OVERRIDE="batocera"
+  ## Only a default: knulli's os-release says OS_NAME="knulli" (and so gets knulli/control.txt).
+  OS_NAME="batocera"
+  BATOCERA_LIKE="Y"
   mkdir -pv "$R$controlfolder/PortMaster"
 
 elif [ -d "$R/opt/muos" ] || [ -d "$R/mnt/mmc/MUOS" ]; then
@@ -171,7 +174,7 @@ fi
 
 if [[ -e "$R/usr/share/plymouth/themes/text.plymouth" ]]; then
   ES_NAME="emulationstation"
-elif [ "$OS_NAME" = "batocera" ]; then
+elif [ "$BATOCERA_LIKE" = "Y" ]; then
   ES_NAME="batocera-es-swissknife"
 else
   ES_NAME="emustation"
@@ -194,7 +197,7 @@ if [ "$OS_NAME" = "muOS" ]; then
   exit 1
 fi
 
-echo "-- Installing on $OS_NAME --"
+echo "-- Installing on ${OS_NAME:-${PRETTY_NAME:-${NAME:-this device}}} --"
 
 if [ "$NO_SUDO" = "N" ]; then
   if sudo echo "Testing for sudo..." > /dev/null 2>&1; then
@@ -269,7 +272,7 @@ if [ ! -z "$OS_NAME" ]; then
 fi
 
 if [ ! -z "$RELOCATE_PM" ]; then
-  if [ "$OS_NAME" = "batocera" ]; then
+  if [ "$BATOCERA_LIKE" = "Y" ]; then
     $ESUDO mv -vf PortMaster/PortMaster.sh "$R/$directory/ports/PortMaster.sh" | tee -a $CUR_TTY
   else
     $ESUDO mv -vf PortMaster/PortMaster.sh PortMaster.sh | tee -a $CUR_TTY
