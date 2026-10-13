@@ -13,6 +13,7 @@ from .base import PlatformBase
 class PlatformRetroDECK(PlatformBase):
     MOVE_PM_BASH = False
     ES_NAME = 'show-refresh'
+    PORTMASTER_GAMELIST = True
     RD_CONFIG = None
     ROMS_REFRESH_TEXT = _("\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory")
 

@@ -13,6 +13,7 @@ from .base import PlatformBase
 class PlatformBatocera(PlatformBase):
     MOVE_PM_BASH = False
     ES_NAME = "batocera-es"
+    PORTMASTER_GAMELIST = True
 
     BATOCERA_CONFIG_FILES = [
         "/userdata/system/knulli.conf",   # Knulli
@@ -47,8 +48,9 @@ class PlatformBatocera(PlatformBase):
         Also on the first launch after an update: the update may have been installed by
         an older harbourmaster, whose portmaster_install never moved PortMaster.sh.
         """
-        super().portmaster_post_install()
+        ## The launcher first, then its entry in the gamelist.
         self._move_launcher()
+        super().portmaster_post_install()
 
     """
     Taken from Mikhailzrick's getInvertButtonsValue

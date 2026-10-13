@@ -3,6 +3,7 @@
 # gameinfo.xml -> the frontend's gamelist.xml (PlatformBase.gamelist_add and
 # gamelist_backup), and RetroDECK's ES-DE screenshot copy.
 
+import shutil
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -217,3 +218,114 @@ def test_retrodeck_missing_screenshot_still_adds_game(retrodeck, gameinfo, log_e
 
     gamelist_xml = retrodeck.test_rdhome / "ES-DE" / "gamelists" / "portmaster" / "gamelist.xml"
     assert "./Test Port.sh" in games(gamelist_xml)
+
+
+## -- PortMaster's own entry, on platforms whose ports list holds the launcher
+
+from conftest import PM_DIR  # noqa: E402
+from harbourmaster.platform.arkos import PlatformArkOS  # noqa: E402
+from harbourmaster.platform.batocera import PlatformBatocera, PlatformKnulli  # noqa: E402
+from harbourmaster.platform.emuelec import PlatformAmberELEC  # noqa: E402
+from harbourmaster.platform.jelos import PlatformROCKNIX  # noqa: E402
+
+
+@pytest.fixture
+def pm_files(hm):
+    """The real PortMaster/gameinfo.xml and screenshot.png, where PortMaster is installed."""
+    pm_dir = hm.tools_dir / "PortMaster"
+    pm_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy(str(PM_DIR / "gameinfo.xml"), str(pm_dir / "gameinfo.xml"))
+    shutil.copy(str(PM_DIR / "screenshot.png"), str(pm_dir / "screenshot.png"))
+    return pm_dir
+
+
+def ports_gamelist(hm):
+    return hm.ports_dir / "gamelist.xml"
+
+
+@pytest.mark.parametrize("platform_class", [PlatformBatocera, PlatformKnulli, PlatformAmberELEC])
+def test_portmaster_entry_added(hm, pm_files, platform_class):
+    platform_class(hm).gamelist_add_portmaster()
+
+    entry = games(ports_gamelist(hm))["./PortMaster.sh"]
+    assert entry['name'] == "PortMaster"
+    assert entry['desc'].startswith("PortMaster is an open-source port manager")
+    ## PortMaster isn't in the ports dir on Batocera, so the image is a full path.
+    assert entry['image'] == str(pm_files / "screenshot.png")
+    assert (pm_files / "screenshot.png").is_file()
+
+
+def test_portmaster_entry_updates_in_place(hm, pm_files):
+    ports_gamelist(hm).write_text(
+        "<gameList><game><path>./PortMaster.sh</path><name>PortMaster.sh</name><playcount>7</playcount></game>"
+        "<game><path>./Other.sh</path><name>Other</name></game></gameList>")
+    platform = PlatformBatocera(hm)
+
+    platform.gamelist_add_portmaster()
+    platform.gamelist_add_portmaster()
+
+    result = games(ports_gamelist(hm))
+    assert sorted(result) == ["./Other.sh", "./PortMaster.sh"]
+    assert result["./PortMaster.sh"]['name'] == "PortMaster"
+    assert result["./PortMaster.sh"]['playcount'] == "7"
+
+
+def test_portmaster_entry_retrodeck(retrodeck, hm, pm_files):
+    retrodeck.gamelist_add_portmaster()
+
+    media = retrodeck.test_rdhome / "ES-DE" / "downloaded_media" / "portmaster" / "screenshots" / "PortMaster.png"
+    assert media.read_bytes() == (PM_DIR / "screenshot.png").read_bytes()
+
+    gamelist_xml = retrodeck.test_rdhome / "ES-DE" / "gamelists" / "portmaster" / "gamelist.xml"
+    entry = games(gamelist_xml)["./PortMaster.sh"]
+    assert entry['name'] == "PortMaster"
+    assert 'image' not in entry
+
+
+def test_portmaster_entry_respects_gamelist_update(hm, pm_files):
+    hm.cfg_data['gamelist_update'] = False
+
+    PlatformBatocera(hm).gamelist_add_portmaster()
+
+    assert not ports_gamelist(hm).exists()
+
+
+@pytest.mark.parametrize("platform_class", [PlatformBase, PlatformArkOS, PlatformROCKNIX])
+def test_portmaster_entry_not_where_the_launcher_lives_elsewhere(hm, pm_files, platform_class):
+    ## ArkOS: Tools menu, ROCKNIX: its own start script and a hidden folder.
+    platform_class(hm).gamelist_add_portmaster()
+
+    assert not ports_gamelist(hm).exists()
+
+
+@pytest.mark.parametrize("gameinfo", [None, "<gameList><game><path>"])
+def test_portmaster_entry_bad_gameinfo(hm, pm_files, gameinfo):
+    if gameinfo is None:
+        (pm_files / "gameinfo.xml").unlink()
+    else:
+        (pm_files / "gameinfo.xml").write_text(gameinfo)
+
+    PlatformBatocera(hm).gamelist_add_portmaster()
+
+    assert not ports_gamelist(hm).exists() or "PortMaster.sh" not in ports_gamelist(hm).read_text()
+
+
+def test_post_install_moves_launcher_then_adds_entry(hm, pm_files, monkeypatch, tmp_path):
+    ## Batocera: the launcher arrives in PortMaster/ and moves to the ports dir.
+    monkeypatch.setattr(hm, "scripts_dir", hm.ports_dir)
+    (pm_files / "PortMaster.sh").write_text("launcher")
+    platform = PlatformKnulli(hm)
+
+    seen = []
+    real_add = platform.gamelist_add
+
+    def gamelist_add(gameinfo_file):
+        seen.append((hm.ports_dir / "PortMaster.sh").is_file())
+        real_add(gameinfo_file)
+
+    monkeypatch.setattr(platform, "gamelist_add", gamelist_add)
+
+    platform.portmaster_post_install()
+
+    assert seen == [True]
+    assert "./PortMaster.sh" in games(ports_gamelist(hm))

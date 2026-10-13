@@ -17,6 +17,7 @@ class PlatformUOS(PlatformGCD_PortMaster, PlatformBase):
 class PlatformAmberELEC(PlatformGCD_PortMaster, PlatformBase):
     MOVE_PM_BASH = True
     ES_NAME = 'emustation'
+    PORTMASTER_GAMELIST = True
 
     def gamelist_file(self):
         return self.hm.ports_dir / 'gamelist.xml'

@@ -4,7 +4,9 @@
 
 import contextlib
 import shutil
+import tempfile
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from loguru import logger
 from ..util import CancelEvent
 
@@ -40,6 +42,10 @@ class PlatformBase():
         ]
 
     BLANK_GAMELIST_XML = """<?xml version='1.0' encoding='utf-8'?>\n<gameList />\n"""
+
+    ## The launcher is in this frontend's ports list, so PortMaster adds its own entry
+    ## (PortMaster/gameinfo.xml) to the gamelist.
+    PORTMASTER_GAMELIST = False
 
     def __init__(self, hm):
         self.hm = hm
@@ -228,6 +234,37 @@ class PlatformBase():
         Called on after portmaster is updated, on next launch, this can be used clean up special files, fix up boo boos.
         """
         logger.debug(f"{self.__class__.__name__}: PortMaster Post Install")
+        self.gamelist_add_portmaster()
+
+    def gamelist_add_portmaster(self):
+        """
+        Adds (or updates) PortMaster's own entry in the frontend's gamelist, from
+        PortMaster/gameinfo.xml, on platforms whose ports list holds the launcher.
+        """
+        if not self.PORTMASTER_GAMELIST or not self.hm.cfg_data.get('gamelist_update', True):
+            return
+
+        pm_dir = self.hm.tools_dir / "PortMaster"
+        gameinfo_file = pm_dir / "gameinfo.xml"
+
+        try:
+            gameinfo_tree = ET.parse(str(gameinfo_file))
+
+        except (OSError, ET.ParseError) as err:
+            logger.warning(f"Unable to add PortMaster to the gamelist, {gameinfo_file}: {err}")
+            return
+
+        ## Its paths are relative to where PortMaster is, which isn't the ports dir everywhere.
+        for game in gameinfo_tree.getroot().findall('game'):
+            for child in game:
+                if child.tag in self.XML_PATH_FIX and child.text and child.text.strip().startswith('./'):
+                    child.text = str(self.hm.tools_dir / child.text.strip()[2:])
+
+        temp_dir = None if self.hm.temp_dir is None else str(self.hm.temp_dir)
+        with tempfile.TemporaryDirectory(dir=temp_dir) as work_dir:
+            temp_gameinfo = Path(work_dir) / "gameinfo.xml"
+            gameinfo_tree.write(str(temp_gameinfo), encoding='unicode')
+            self.gamelist_add(temp_gameinfo)
 
     def set_gcd_mode(self, mode=None):
         logger.info(f"{self.__class__.__name__}: Set GCD Mode {mode}")
