@@ -22,7 +22,7 @@ from pugwash.scenes import StringFormatter, TempMenuScene
 from gettext import gettext as _
 from pugwash import PYLIB_PATH, PORTMASTER_VERSION, PORTMASTER_DEBUG
 from pugwash.lang import lang_list
-from pugwash.util import get_ip_address, is_process_running
+from pugwash.util import battery_level, get_ip_address, is_process_running
 from pugwash.app_callbacks import CallbackMixin
 from pugwash.app_commands import CommandsMixin
 from pugwash.app_fifo import FifoControlMixin
@@ -276,15 +276,28 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             self.hm.save_config()
 
     ## Loop stuff.
+    def apply_button_mapping(self):
+        """
+        The platform's button layout: which physical button is A (xbox fix), and
+        whether the button bar shows A/B swapped. Needs self.hm.
+        """
+        if self.hm is None:
+            return
+
+        platform = self.hm.platform
+
+        if platform.WANT_XBOX_FIX:
+            self.events.fix_xbox_mode()
+
+        if self.hm.platform_name in ('retrodeck', ):
+            self.events.fix_retrodeck_mode()
+
+        self.SWAP_BUTTONS = platform.WANT_SWAP_BUTTONS
+
+        logger.info(f"Buttons: {platform.__class__.__name__}, xbox fix: {platform.WANT_XBOX_FIX}, swap labels: {platform.WANT_SWAP_BUTTONS}")
+
     def run(self):
-        if self.hm is not None:
-            if self.hm.platform.WANT_XBOX_FIX:
-                self.events.fix_xbox_mode()
-
-            if self.hm.platform_name in ('retrodeck', ):
-                self.events.fix_retrodeck_mode()
-
-            self.SWAP_BUTTONS = self.hm.platform.WANT_SWAP_BUTTONS
+        self.apply_button_mapping()
 
         try:
             while True:
@@ -353,19 +366,9 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
                 self.set_data("system.used_space", "000 B")
                 self.set_data("system.total_space", "000 B")
 
-            battery_paths = [
-                Path("/tmp/battery.percent"),
-                Path("/sys/class/power_supply/battery/capacity"),
-                Path("/sys/class/power_supply/axp2202-battery/capacity"),
-                Path("/sys/class/power_supply/BAT1/capacity"),
-                Path("/sys/class/power_supply/qcom-battery/capacity"),
-                ]
-
-            for battery_file in battery_paths:
-                if battery_file.exists():
-                    self.set_data("system.battery_level", f"{int(battery_file.read_text().strip())}%")
-                    break
-
+            level = battery_level()
+            if level is not None:
+                self.set_data("system.battery_level", f"{level}%")
             else:
                 self.set_data("system.battery_level", _("N/A"))
 

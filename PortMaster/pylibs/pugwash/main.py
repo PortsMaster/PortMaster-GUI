@@ -102,11 +102,7 @@ def main(argv):
                 with pm.enable_cancellable(False):
                     pm.hm = pm.run_task(HarbourMaster, config, temp_dir=temp_dir, callback=pm)
 
-            if pm.hm is not None:
-                if pm.hm.platform.WANT_XBOX_FIX:
-                    pm.events.fix_xbox_mode()
-
-                pm.SWAP_BUTTONS = pm.hm.platform.WANT_SWAP_BUTTONS
+            pm.apply_button_mapping()
 
             pm.do_fifo_control(config, argv[2:])
             pm.quit()

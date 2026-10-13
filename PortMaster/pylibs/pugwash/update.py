@@ -96,10 +96,7 @@ def portmaster_check_update(pm, config, temp_dir):
             config['no-check'] = True
 
             pm.hm = pm.run_task(HarbourMaster, config, temp_dir=temp_dir, callback=pm)
-            if pm.hm.platform.WANT_XBOX_FIX:
-                pm.events.fix_xbox_mode()
-
-            pm.SWAP_BUTTONS = pm.hm.platform.WANT_SWAP_BUTTONS
+            pm.apply_button_mapping()
 
             if pm.message_box(update_reason, want_cancel=True):
                 pm.do_install(

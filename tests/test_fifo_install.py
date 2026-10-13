@@ -157,3 +157,55 @@ def test_no_refresh_marker_without_a_frontend_to_restart(es_name, fifo, frontend
 
     assert fifo.install(str(write_port_zip(tmp_path / "testport.zip", basic_port_files()))) == "OKAY"
     assert list(frontend.parent.glob(".*-refresh")) == []
+
+
+################################################################################
+## message_box / selection_list options
+@pytest.fixture
+def boxes(fifo, monkeypatch):
+    shown = []
+
+    def message_box(message, **kwargs):
+        shown.append((message, kwargs))
+        return True
+
+    monkeypatch.setattr(fifo.gui, "message_box", message_box)
+    return shown
+
+
+@pytest.mark.parametrize("args, expected", [
+    (["Hello"], ("Hello", {'want_cancel': False})),
+    (["--want-cancel", "Hello"], ("Hello", {'want_cancel': True})),
+    (["--ok-text", "Yes", "--cancel-text", "No", "--want-cancel", "Hello"],
+        ("Hello", {'want_cancel': True, 'ok_text': "Yes", 'cancel_text': "No"})),
+    (["--ok-text", "Yes", "Hello\\nWorld"], ("Hello\nWorld", {'want_cancel': False, 'ok_text': "Yes"})),
+    (["--", "--not-an-option"], ("--not-an-option", {'want_cancel': False})),
+    ])
+def test_message_box_options(fifo, boxes, args, expected):
+    fifo.gui.fifo_message_box(fifo.config, list(args))
+
+    assert boxes == [expected]
+    assert fifo.config['done-file'].read_text() == "TRUE"
+
+
+def test_selection_list_options(fifo, monkeypatch):
+    shown = []
+    monkeypatch.setattr(fifo.gui, "show_selection_list", lambda config, register: shown.append(config) or "a")
+    fifo.config['register']['things'] = {'a': {'title': "A"}}
+
+    fifo.gui.fifo_selection_list(fifo.config, ["--ok-text=Pick", "--cancel-text=Back", "--want-cancel", "--register=things", "--want-description"])
+
+    assert shown[0]['want_cancel']
+    assert shown[0]['ok_text'] == "Pick"
+    assert shown[0]['cancel_text'] == "Back"
+    assert shown[0]['want_description']
+    assert fifo.config['done-file'].read_text() == "a"
+
+
+@pytest.mark.sdl
+def test_selection_list_button_bar(fifo, gui):
+    from pugwash.scenes import DialogSelectionList
+
+    scene = DialogSelectionList(gui, {'want_cancel': True, 'ok_text': "Pick", 'cancel_text': "Back"}, {'a': {'title': "A"}})
+    texts = [item for _, item in scene.tags['button_bar'].bar if isinstance(item, str)]
+    assert texts == ["Pick", "Back"]

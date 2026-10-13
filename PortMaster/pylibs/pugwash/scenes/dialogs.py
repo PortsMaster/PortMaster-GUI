@@ -108,10 +108,13 @@ class DialogSelectionList(BaseScene):
         self.last_selection = None
         self.update_selection()
 
+        ok_text = self.options.get('ok_text') or _("Okay")
+        cancel_text = self.options.get('cancel_text') or _("Cancel")
+
         if self.options.get('want_cancel', False):
-            self.set_buttons({'A': _("Okay"), 'B': _("Cancel")})
+            self.set_buttons({'A': ok_text, 'B': cancel_text})
         else:
-            self.set_buttons({'A': _("Okay")})
+            self.set_buttons({'A': ok_text})
 
     def update_selection(self):
         selection = self.tags['selection_list'].selected_option()

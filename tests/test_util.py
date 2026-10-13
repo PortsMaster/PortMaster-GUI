@@ -330,3 +330,22 @@ def test_download_cancel_removes_file_and_reraises(tmp_path, fake_get):
 def test_json_safe_loads():
     assert util.json_safe_loads('{"a": 1}') == {"a": 1}
     assert util.json_safe_loads('{broken') is None
+
+
+################################################################################
+## pugwash.util.battery_level
+def test_battery_level(tmp_path):
+    from pugwash.util import BATTERY_PATHS, battery_level
+
+    missing = tmp_path / "missing"
+    empty = tmp_path / "empty"
+    empty.write_text("")
+    muos = tmp_path / "capacity"
+    muos.write_text("69")  # muOS writes no newline
+    sysfs = tmp_path / "sysfs"
+    sysfs.write_text("71\n")
+
+    assert battery_level([missing, empty, muos, sysfs]) == 69
+    assert battery_level([missing, sysfs]) == 71
+    assert battery_level([missing, empty]) is None
+    assert BATTERY_PATHS[0].parts[:3] == ("/", "run", "muos")

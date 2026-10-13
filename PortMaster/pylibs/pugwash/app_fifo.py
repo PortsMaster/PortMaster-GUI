@@ -92,7 +92,7 @@ class FifoControlMixin:
                 break
 
             if args[i].startswith('--cancel-text='):
-                config['ok_text'] = _(args[i].split('=', 1)[-1])
+                config['cancel_text'] = _(args[i].split('=', 1)[-1])
                 del args[i]
 
             elif args[i].startswith('--ok-text='):
@@ -102,6 +102,10 @@ class FifoControlMixin:
             elif args[i].startswith('--register='):
                 reg_name = args[i].split('=', 1)[-1]
                 register = fifo_config['register'].get(reg_name, {})
+                del args[i]
+
+            elif args[i] == '--want-cancel':
+                config['want_cancel'] = True
                 del args[i]
 
             elif args[i].startswith('--want-description'):
@@ -237,16 +241,11 @@ class FifoControlMixin:
                 del args[i]
                 continue
 
-            if len(args) > 1:
-                if args[i] == '--cancel-text':
-                    mb_config['cancel_text'] = _(args[i + 1])
-                    del args[i]
-                    continue
-
-                elif args[i] == '--ok-text':
-                    mb_config['ok_text'] = _(args[i + 1])
-                    del args[i]
-                    continue
+            ## These take the next argument as their value.
+            if args[i] in ('--cancel-text', '--ok-text') and i + 1 < len(args):
+                mb_config[args[i][2:].replace('-', '_')] = _(args[i + 1])
+                del args[i:i + 2]
+                continue
 
             logger.warning(f"unknown option {args[i]}")
             del args[i]

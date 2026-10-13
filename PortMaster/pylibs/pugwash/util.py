@@ -3,6 +3,7 @@
 # Small helpers for the GUI.
 
 import subprocess
+from pathlib import Path
 import harbourmaster
 
 
@@ -18,6 +19,32 @@ def is_process_running(process_name):
         return bool(output.strip())  # If output exists, the process is running
     except subprocess.CalledProcessError:
         return False  # pgrep returns non-zero exit code if no process matches
+
+
+## Where to find the battery level (0-100), first one that reads wins.
+BATTERY_PATHS = (
+    Path("/run/muos/battery/capacity"),  # muOS (newer releases), calibrated
+    Path("/tmp/battery.percent"),
+    Path("/sys/class/power_supply/battery/capacity"),
+    Path("/sys/class/power_supply/axp2202-battery/capacity"),
+    Path("/sys/class/power_supply/BAT1/capacity"),
+    Path("/sys/class/power_supply/qcom-battery/capacity"),
+    )
+
+
+def battery_level(paths=BATTERY_PATHS):
+    """
+    The battery level as an int, or None if there is no battery we can read.
+    Files that can't be read or don't hold a number are skipped.
+    """
+    for battery_file in paths:
+        try:
+            return int(Path(battery_file).read_text().strip())
+
+        except (OSError, ValueError):
+            continue
+
+    return None
 
 
 __IP_ADDRESS=None

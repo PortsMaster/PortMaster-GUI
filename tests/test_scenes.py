@@ -101,3 +101,38 @@ def test_other_cfw_options(option_ids):
     assert 'muos-port-mode-toggle' not in options
     assert 'trimui-port-mode-toggle' not in options
     assert 'restore-portmaster' in options
+
+
+################################################################################
+## Button layout from the platform (normal GUI and fifo_control both use this)
+@pytest.fixture
+def restore_buttons(gui):
+    events = gui.events
+    saved = (dict(events.BUTTON_MAP), dict(events.KEY_MAP), events.XBOX_FIXED, gui.SWAP_BUTTONS, gui.hm)
+    yield gui
+    events.BUTTON_MAP.clear()
+    events.BUTTON_MAP.update(saved[0])
+    events.KEY_MAP.clear()
+    events.KEY_MAP.update(saved[1])
+    events.XBOX_FIXED, gui.SWAP_BUTTONS, gui.hm = saved[2:]
+
+
+@pytest.mark.parametrize("platform_name, xbox_fix, swap", [
+    ("default", False, False),
+    ("knulli", True, False),
+    ("knulli", False, True),
+    ("retrodeck", False, False),
+    ])
+def test_apply_button_mapping(restore_buttons, platform_name, xbox_fix, swap):
+    import sdl2
+    gui = restore_buttons
+    platform = SimpleNamespace(WANT_XBOX_FIX=xbox_fix, WANT_SWAP_BUTTONS=swap)
+    gui.hm = SimpleNamespace(platform=platform, platform_name=platform_name)
+
+    gui.apply_button_mapping()
+    gui.apply_button_mapping()  # twice is the same as once
+
+    a_button = gui.events.BUTTON_MAP[sdl2.SDL_CONTROLLER_BUTTON_A]
+    assert a_button == ('B' if xbox_fix else 'A')
+    assert gui.SWAP_BUTTONS is swap
+    assert (gui.events.KEY_MAP.get(sdl2.SDLK_q) == 'START') is (platform_name == 'retrodeck')
