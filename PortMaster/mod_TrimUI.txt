@@ -23,6 +23,8 @@ GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 export HOME="/mnt/SDCARD/Data/home"
 
 pm_platform_helper() {
+    pm_message_close
+
     if [ -e "$PM_PIPE" ]; then
         PortMasterDialogExit
     fi

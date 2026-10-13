@@ -92,8 +92,36 @@ pm_begin_splash() {
 }
 
 
+# portmsg draws pm_message/pm_show_error, pugwash is the fallback when it is missing.
+PM_MSG_BIN="$controlfolder/portmsg.${DEVICE_ARCH}"
+PM_MSG_PID=""
+
+pm_message_close() {
+    # Removes the current portmsg message right away.
+    if [ -n "$PM_MSG_PID" ]; then
+        kill "$PM_MSG_PID" 2> /dev/null
+        wait "$PM_MSG_PID" 2> /dev/null
+        PM_MSG_PID=""
+    fi
+}
+
+
 pm_show_error() {
     # Usage: pm_show_error "Message here."
+    # Message first, then any portmsg options, e.g. --title "Title". Older PortMaster versions only show the message.
+    if [ -x "$PM_MSG_BIN" ]; then
+        if [ "${1#--}" = "$1" ]; then
+            local text="$1"
+            shift
+            set -- --text "$text" "$@"
+        fi
+        pm_message_close
+        $ESUDO env $SAVE_CLEAN_ENV LD_LIBRARY_PATH="$SAVE_LD_LIBRARY_PATH" \
+            SDL_GAMECONTROLLERCONFIG="${SDL_GAMECONTROLLERCONFIG:-$sdl_controllerconfig}" \
+            "$PM_MSG_BIN" "$@"
+        return
+    fi
+
     if [ ! -e "$PM_PIPE" ]; then
         PortMasterDialogInit "no-harbour"
         PortMasterDialog "messages_begin"
@@ -112,6 +140,11 @@ pm_end_splash() {
 
 
 pm_message_end() {
+    if [ -n "$PM_MSG_PID" ]; then
+        sleep 3
+        pm_message_close
+    fi
+
     if [ -e "$PM_PIPE" ]; then
         sleep 3
         PortMasterDialogExit
@@ -129,6 +162,24 @@ pm_message() {
     fi
 
     # Usage: pm_message "Some message here."
+    # Message first, then any portmsg options, e.g. --title "Title". Older PortMaster versions only show the message.
+    # Stays up without a close button until the next message, pm_platform_helper or the end of the script (or --timeout).
+    if [ -x "$PM_MSG_BIN" ]; then
+        if [ "${1#--}" = "$1" ]; then
+            local text="$1"
+            shift
+            set -- --text "$text" "$@"
+        fi
+        local mode="--wait"
+        case " $* " in *" --timeout "*) mode="" ;; esac
+        pm_message_close
+        $ESUDO env $SAVE_CLEAN_ENV LD_LIBRARY_PATH="$SAVE_LD_LIBRARY_PATH" \
+            SDL_GAMECONTROLLERCONFIG="${SDL_GAMECONTROLLERCONFIG:-$sdl_controllerconfig}" \
+            "$PM_MSG_BIN" $mode --type info "$@" &
+        PM_MSG_PID=$!
+        return
+    fi
+
     if [ ! -e "$PM_PIPE" ]; then
         PortMasterDialogInit "no-harbour"
         PortMasterDialog "messages_begin"
@@ -155,6 +206,8 @@ pm_finish() {
 }
 
 pm_platform_helper() {
+    pm_message_close
+
     if [ -e "$PM_PIPE" ]; then
         PortMasterDialogExit
     fi
