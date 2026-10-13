@@ -417,18 +417,15 @@ def test_spruce(tmp_path, portmaster_zip):
 
 
 def test_trimui(tmp_path, portmaster_zip):
+    ## TrimUI bundles PortMaster (trimui.portmaster.zip), a stray run just puts it in the right place.
     installer = Installer(tmp_path, "trimui")
     put_zip(installer, portmaster_zip)
 
     installer.run()
 
-    ## The Apps menu entry, laid out like do_trimui_release.sh's trimui.portmaster.zip.
-    app = installer.path("/mnt/SDCARD/Apps/PortMaster")
-    assert (app / "launch.sh").read_text() == stub("trimui")
-    assert os.access(str(app / "launch.sh"), os.X_OK)
-    assert (app / "config.json").is_file()
-    assert (app / "icon.png").is_file()
-    assert not (app / "PortMaster" / "PortMaster.sh").exists()
+    pm = installer.path("/mnt/SDCARD/Apps/PortMaster/PortMaster")
+    assert (pm / "pugwash").is_file()
+    assert (pm / "control.txt").read_text() == (PM_DIR / "trimui" / "control.txt").read_text()
     assert installer.calls() == []
 
 

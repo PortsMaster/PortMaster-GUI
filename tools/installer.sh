@@ -101,15 +101,17 @@ elif [ -f "$R$HOME/.var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.c
   export controlfolder="$HOME/.var/app/net.retrodeck.retrodeck/data"
   retrodeck_paths
 
+## spruce, TrimUI (and RetroDECK) bundle PortMaster and don't use this installer, they
+## are only found so a stray run puts PortMaster where they keep it.
 elif [ -d "$R/mnt/SDCARD/spruce" ]; then
-  ## spruce: its PortMaster app runs PortMaster/PortMaster.sh
+  ## spruce
   controlfolder="/mnt/SDCARD/Persistent/portmaster"
   directory="/mnt/SDCARD/Roms"
   OS_NAME_OVERRIDE="spruce"
   NO_FRONTEND_RESTART="Y"
 
 elif [ -d "$R/mnt/SDCARD/Apps/PortMaster" ]; then
-  ## TrimUI: the Apps menu runs Apps/PortMaster/launch.sh
+  ## TrimUI
   controlfolder="/mnt/SDCARD/Apps/PortMaster"
   directory="/mnt/SDCARD/Data"
   OS_NAME_OVERRIDE="trimui"
@@ -268,15 +270,6 @@ fi
 if [ "$OS_NAME" = "retrodeck" ]; then
   $ESUDO mkdir -p "$R/${roms_folder}/portmaster"
   $ESUDO mv -vf PortMaster/PortMaster.sh "$R/${roms_folder}/portmaster/PortMaster.sh" | tee -a $CUR_TTY
-fi
-
-if [ "$OS_NAME" = "trimui" ]; then
-  ## The Apps menu entry, as do_trimui_release.sh lays it out.
-  $ESUDO rm -f PortMaster/PortMaster.sh
-  $ESUDO cp -vf PortMaster/trimui/config.json config.json | tee -a $CUR_TTY
-  $ESUDO cp -vf PortMaster/trimui/icon.png icon.png | tee -a $CUR_TTY
-  $ESUDO cp -vf PortMaster/trimui/PortMaster.txt launch.sh | tee -a $CUR_TTY
-  $ESUDO chmod +x launch.sh
 fi
 
 if [ "$OS_NAME" = "muOS" ]; then
