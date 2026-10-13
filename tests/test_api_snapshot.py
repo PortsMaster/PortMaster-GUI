@@ -110,8 +110,12 @@ def current_api(include_sdl=True):
 
 
 def _sdl_available():
+    ## The GUI modules import all of these.
     try:
         import sdl2  # noqa: F401
+        import sdl2.sdlimage  # noqa: F401
+        import sdl2.sdlmixer  # noqa: F401
+        import sdl2.sdlttf  # noqa: F401
         return True
 
     except ImportError:

@@ -53,7 +53,11 @@ pm_hook_run_pugwash() {
 
 ## After the GUI has quit for good (or autoinstall finished with no internet).
 pm_hook_post_launch() {
-  $ESUDO systemctl restart oga_events &
+  ## ArkOS's hotkey daemon, other CFWs don't have it.
+  if systemctl cat oga_events >/dev/null 2>&1; then
+    $ESUDO systemctl restart oga_events &
+  fi
+
   printf "\033c" > $CUR_TTY
 }
 

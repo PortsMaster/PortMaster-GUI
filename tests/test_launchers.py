@@ -89,8 +89,15 @@ class Launcher:
         write_exe(pm / "trimui" / "image_smash.txt", LOG)
         write_exe(pm / "trimui" / "update.txt", LOG)
 
-        for tool in ("systemctl", "sudo", "curl", "pkill", "mount", "umount", "df"):
+        for tool in ("sudo", "curl", "pkill", "mount", "umount", "df"):
             write_exe(self.bin / tool, LOG)
+
+        ## `systemctl cat UNIT` only finds the units in $FAKE_UNITS.
+        write_exe(self.bin / "systemctl", (
+            'if [ "$1" = "cat" ]; then\n'
+            '  case " $FAKE_UNITS " in *" $2 "*) exit 0;; esac\n'
+            '  exit 1\n'
+            'fi\n') + LOG)
 
         self.env = {
             'PATH': f"{self.bin}:{os.environ['PATH']}",
@@ -101,6 +108,7 @@ class Launcher:
             'FAKE_GW': "192.168.1.1",
             'FAKE_MARKERS': "",
             'FAKE_REBOOT_ONCE': str(tmp_path / "reboot-once"),
+            'FAKE_UNITS': "oga_events",
             }
 
     def run(self, cfw=None, stub=None, **env):
@@ -172,6 +180,13 @@ def test_generic_stub_runs_gui(launcher):
 
     assert calls == ["get_controls", "pugwash ", "systemctl restart oga_events"]
     assert (launcher.pm / "log.txt").is_file()
+
+
+def test_generic_without_oga_events(launcher):
+    ## eg: AmberELEC, ROCKNIX: no "Unit oga_events.service not found." in the log.
+    calls = launcher.run(FAKE_UNITS="")
+
+    assert calls == ["get_controls", "pugwash "]
 
 
 def test_generic_restarts_gui_on_request(launcher):

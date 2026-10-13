@@ -121,6 +121,10 @@ class PlatformRetroDECK(PlatformBase):
         SRC_IMAGE = Path(image_element.text)
         DST_IMAGE = IMG_DIR / (Path(port_script).stem + SRC_IMAGE.suffix)
 
+        if not SRC_IMAGE.is_file():
+            logger.warning(f"{port_script}: no image at {SRC_IMAGE}")
+            return
+
         logger.info(f"COPY: {SRC_IMAGE} -> {DST_IMAGE}")
         shutil.copy(SRC_IMAGE, DST_IMAGE)
 

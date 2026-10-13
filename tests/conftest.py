@@ -260,21 +260,39 @@ def start_fifo_gui(pm_dir, cwd, env, tmp_path, args=("--offline", "--no-check", 
 
 ################################################################################
 ## Skip sdl tests when the SDL2 libraries are missing.
-def _sdl_available():
+def _sdl_missing():
+    """
+    Why the sdl tests can't run here, or None if they can. On devices the GUI also
+    needs SDL2_image/mixer/ttf, and some SDL builds (muOS, AmberELEC, knulli) have no
+    dummy video driver.
+    """
     try:
-        import sdl2  # noqa: F401
+        import sdl2
         import sdl2.ext  # noqa: F401
-        return True
+        import sdl2.sdlimage  # noqa: F401
+        import sdl2.sdlmixer  # noqa: F401
+        import sdl2.sdlttf  # noqa: F401
 
-    except ImportError:
-        return False
+    except ImportError as err:
+        return f"SDL2 not available ({err}), pip install pysdl2-dll"
+
+    if sdl2.SDL_VideoInit(None) != 0:
+        error = sdl2.SDL_GetError().decode('utf-8', 'replace')
+        return f"SDL video driver {os.environ.get('SDL_VIDEODRIVER')!r} unavailable ({error}), try PM_TEST_VIDEODRIVER="
+
+    sdl2.SDL_VideoQuit()
+    return None
 
 
 def pytest_collection_modifyitems(config, items):
-    if _sdl_available():
+    if not any(item.get_closest_marker("sdl") for item in items):
         return
 
-    skip_sdl = pytest.mark.skip(reason="SDL2 not available, pip install pysdl2-dll")
+    reason = _sdl_missing()
+    if reason is None:
+        return
+
+    skip_sdl = pytest.mark.skip(reason=reason)
     for item in items:
         if item.get_closest_marker("sdl"):
             item.add_marker(skip_sdl)

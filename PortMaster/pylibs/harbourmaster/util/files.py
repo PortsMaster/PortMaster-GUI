@@ -32,7 +32,8 @@ def load_pm_signature(file_name):
         with open(file_name, 'rb') as fh:
             data = fh.read(1024)
 
-            for line in data.decode('utf-8').split('\n'):
+            ## Some scripts (eg: makeself installers) have binary data after the header.
+            for line in data.decode('utf-8', 'replace').split('\n'):
                 if not line.strip().startswith('#'):
                     continue
 
@@ -45,10 +46,6 @@ def load_pm_signature(file_name):
                 return [
                     item.strip()
                     for item in line.split(':', 1)[1].strip().split(',', 1)]
-
-    except UnicodeDecodeError as err:
-        logger.error(f"Error loading {file_name}: {err}")
-        return None
 
     except Exception as err:
         # Bad but we will live.

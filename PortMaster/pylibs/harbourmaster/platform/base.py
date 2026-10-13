@@ -6,6 +6,7 @@ import contextlib
 import shutil
 import xml.etree.ElementTree as ET
 from loguru import logger
+from ..util import CancelEvent
 
 
 SPECIAL_GAMELIST_CODE = object()
@@ -62,13 +63,9 @@ class PlatformBase():
         gamelist_xml = self.gamelist_file()
 
         if gamelist_xml in (None, SPECIAL_GAMELIST_CODE):
-            try:
-                yield gamelist_xml
+            yield gamelist_xml
+            return
 
-            finally:
-                return
-
-        gamelist_xml = self.gamelist_file()
         gamelist_bak = gamelist_xml.with_name(gamelist_xml.name + '.bak')
 
         broken = False
@@ -102,16 +99,20 @@ class PlatformBase():
 
             yield gamelist_xml
 
-        except:
+        except BaseException as err:
             if self._GAMELIST_BACKUP == 1:
                 logger.debug(f"Restoring {gamelist_bak} to {gamelist_xml}")
                 shutil.copy(gamelist_bak, gamelist_xml)
 
-            raise
+            ## Cancelling / quitting goes on up. Anything else is logged and dropped,
+            ## a broken gamelist must never fail the install that updates it.
+            if isinstance(err, (CancelEvent, KeyboardInterrupt, SystemExit, GeneratorExit)):
+                raise
+
+            logger.exception(f"Updating {gamelist_xml} failed, restored the backup: {err}")
 
         finally:
             self._GAMELIST_BACKUP -= 1
-            return
 
     def gamelist_add(self, gameinfo_file):
         if not gameinfo_file.is_file():
@@ -159,7 +160,8 @@ class PlatformBase():
 
                 for child in gameinfo_element:
                     if child.tag in self.XML_ELEMENT_CALLBACK:
-                        if FIX_PATH and child.tag in self.XML_PATH_FIX:
+                        ## Callbacks (eg: copying the image) get a real path, not one relative to the ports dir.
+                        if child.tag in self.XML_PATH_FIX:
                             new_path = child.text.strip()
                             if new_path.startswith('./'):
                                 new_path = new_path[2:]

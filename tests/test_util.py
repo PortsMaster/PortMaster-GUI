@@ -193,6 +193,20 @@ def test_pm_signature_ignores_non_scripts(tmp_path):
     assert util.load_pm_signature(text_file) is None
 
 
+@pytest.mark.parametrize("signed", [True, False])
+def test_pm_signature_binary_script(tmp_path, log_errors, signed):
+    ## Self-extracting installers (makeself) are .sh files with gzip data after the header.
+    script = tmp_path / "installer.sh"
+    header = b"#!/bin/sh\n"
+    if signed:
+        header += b"# PORTMASTER: game.zip, installer.sh\n"
+
+    script.write_bytes(header + b"echo unpacking\n" + bytes(range(256)) * 8)
+
+    assert util.load_pm_signature(script) == (["game.zip", "installer.sh"] if signed else None)
+    assert log_errors == []
+
+
 ################################################################################
 ## download()
 class FakeResponse:
