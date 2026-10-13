@@ -127,6 +127,35 @@ def basic_port_files(name="testport", title="Test Port", script="Test Port.sh", 
         }
 
 
+def write_raw_zip(zip_path, data):
+    """A 'zip' that is whatever bytes you give it (garbage, empty, truncated...)."""
+    zip_path.write_bytes(data)
+    return zip_path
+
+
+def port_files_with(name="testport", port_json=None, attr=None, drop=(), extra=None, **kwargs):
+    """
+    basic_port_files() with port.json changed: `port_json` replaces root keys (or the
+    whole file if it is a str), `attr` replaces attr keys, `drop` removes files.
+    """
+    files = basic_port_files(name=name, **kwargs)
+    pj_name = f"{name}/port.json"
+
+    if isinstance(port_json, str):
+        files[pj_name] = port_json
+
+    else:
+        files[pj_name].update(port_json or {})
+        if attr:
+            files[pj_name]["attr"].update(attr)
+
+    for item in drop:
+        files.pop(item)
+
+    files.update(extra or {})
+    return files
+
+
 class RecordingCallback(harbourmaster.Callback):
     """
     Records everything harbourmaster tells the user, answers message boxes with `answer`.
@@ -280,6 +309,17 @@ def hm_dirs(tmp_path):
 @pytest.fixture
 def callback():
     return RecordingCallback()
+
+
+@pytest.fixture
+def log_errors():
+    """Every ERROR (or worse) loguru message logged during the test."""
+    from loguru import logger
+
+    messages = []
+    handler_id = logger.add(lambda message: messages.append(message.record["message"]), level="ERROR")
+    yield messages
+    logger.remove(handler_id)
 
 
 @pytest.fixture

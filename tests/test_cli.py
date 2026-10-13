@@ -132,3 +132,13 @@ def test_portsjson_with_utils(hm_script, online_hm, tmp_path):
     ports_json = json.loads(out_file.read_text())
     assert "100liljumps.zip" in [port['name'] for port in ports_json['ports']]
     assert ports_json['utils']['ags_3.6.squashfs']['name'] == "Adventure Game Studio 3.6"
+
+
+@pytest.mark.xfail(strict=True, reason="BUG: the CLI says nothing about why an install failed")
+def test_install_failure_reason_printed(cli, tmp_path):
+    (tmp_path / "garbage.zip").write_bytes(b"not a zip")
+
+    result = cli("install", "./garbage.zip")
+
+    assert result.returncode == 255
+    assert "Installation failed:" in result.output

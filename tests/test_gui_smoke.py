@@ -88,3 +88,17 @@ def test_install_bad_zip_fails(fifo_gui, tmp_path):
 
     assert fifo_gui.send("install", str(zip_file)) == "FAIL"
     assert fifo_gui.exit() == 0
+
+
+def test_install_garbage_then_keep_going(fifo_gui, hm_dirs, tmp_path):
+    ## A broken autoinstall zip must answer FAIL and leave pugwash working.
+    (tmp_path / "garbage.zip").write_bytes(b"not a zip")
+    good = write_port_zip(tmp_path / "testport.zip", basic_port_files())
+
+    assert fifo_gui.send("messages_begin") == "DONE"
+    assert fifo_gui.send("install", str(tmp_path / "garbage.zip")) == "FAIL"
+    assert fifo_gui.send("install", str(good)) == "OKAY"
+    assert fifo_gui.send("messages_end") == "DONE"
+
+    assert (hm_dirs['ports_dir'] / "Test Port.sh").is_file()
+    assert fifo_gui.exit() == 0
