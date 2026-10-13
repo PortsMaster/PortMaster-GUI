@@ -13,6 +13,8 @@ pm_message() {
 }
 
 pm_platform_helper() {
+    pm_message_close
+
     if [ -e "$PM_PIPE" ]; then
         PortMasterDialogExit
     fi
