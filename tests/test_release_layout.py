@@ -120,7 +120,10 @@ def test_pugwash_starts_without_noto_fonts(release_env, tmp_path):
         zf.extractall(str(pm_dir))
 
     (pm_dir / "pylibs.zip").unlink()
-    (pm_dir / "pylibs" / "resources" / "NotoSans.tar.xz").unlink()
+    ## (The PortMaster Test Suite's copy of the code doesn't have it to begin with.)
+    noto_fonts = pm_dir / "pylibs" / "resources" / "NotoSans.tar.xz"
+    if noto_fonts.exists():
+        noto_fonts.unlink()
 
     gui = start_fifo_gui(pm_dir, pm_dir.parent, release_env, tmp_path)
     try:
