@@ -18,6 +18,17 @@ mv lib/libinterpose.so libinterpose.$DEVICE_ARCH.so
 mv gptokeyb2 gptokeyb2.$DEVICE_ARCH
 ```
 
+# PORTMSG Compilation
+
+Message cards for `pm_message`/`pm_show_error`. Needs `libsdl2-dev` and `xxd`; the aarch64 build only needs GLIBC_2.17.
+
+```sh
+git clone "https://github.com/PortsMaster/portmsg.git"
+cd portmsg
+make
+cp portmsg.aarch64 ../PortMaster/
+```
+
 # XDELTA3 Compilation
 
 ## Compile liblzma statically
