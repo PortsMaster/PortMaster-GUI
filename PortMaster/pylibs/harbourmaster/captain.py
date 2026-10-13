@@ -38,7 +38,15 @@ def check_port(port_name, zip_file, extra_info=None):
     port_info_file_fix = False
     game_info_file_fix = False
 
-    with zipfile.ZipFile(zip_file, 'r') as zf:
+    ## Not a zip at all is the user's mistake (eg: a download page saved as .zip), not a crash.
+    try:
+        zf = zipfile.ZipFile(zip_file, 'r')
+
+    except zipfile.BadZipFile as err:
+        logger.error(f"Port {port_name} is not a zip file: {err}")
+        raise BadPort(_("This is not a valid zip file.")) from None
+
+    with zf:
         for file_info in zf.infolist():
             if file_info.filename.startswith('/'):
                 ## Sneaky

@@ -606,3 +606,19 @@ def test_portmaster_zip_replaces_running_launcher(hm, tmp_path):
 
     assert launcher.read_text() == "new launcher\n"
     assert not any(path.name.endswith(".new") for path in launcher.parent.iterdir())
+
+
+def test_not_a_zip_is_a_plain_error(hm, tmp_path, callback):
+    ## A bad download is the user's problem, not a crash: one line, no traceback in the log.
+    from loguru import logger
+
+    records = []
+    handler_id = logger.add(lambda message: records.append(message.record), level="ERROR")
+    try:
+        assert hm.install_port(str(write_raw_zip(tmp_path / "testport.zip", b"<html>not a zip</html>"))) == 255
+    finally:
+        logger.remove(handler_id)
+
+    assert failure_reasons(callback) == ["Installation failed: This is not a valid zip file."]
+    assert hm.last_install_error == "This is not a valid zip file."
+    assert records and all(record["exception"] is None for record in records)
