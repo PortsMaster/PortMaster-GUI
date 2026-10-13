@@ -393,10 +393,16 @@ def test_env_only(launcher, cfw, sdl_path):
 
 
 def test_spruce_gui_env_keeps_its_sdl(launcher):
-    ## spruce's pm_hook_env picks the SDL2 (from the card), pm_hook_gui_env must leave it.
+    ## spruce's pm_hook_env picks the SDL2 (the card's spruce/portmaster/portmaster.txt),
+    ## pm_hook_gui_env must leave it. A fake card file, so a real spruce device's doesn't count.
+    card = launcher.root / "card-portmaster.txt"
+    card.write_text('export PYSDL2_DLL_PATH="/card/lib/"\n')
+    hooks = launcher.pm / "spruce" / "launch_hooks.txt"
+    hooks.write_text(hooks.read_text().replace("/mnt/SDCARD/spruce/portmaster/portmaster.txt", str(card)))
+
     result = subprocess.run(
         ["bash", "-c", f'controlfolder="{launcher.pm}"; source "$controlfolder/utils/pm_launch.txt" spruce; echo "SDL=$PYSDL2_DLL_PATH"'],
-        env=dict(launcher.env, PM_LAUNCH_ENV_ONLY="Y", PYSDL2_DLL_PATH="/card/lib/"), cwd=str(launcher.root), timeout=60,
+        env=dict(launcher.env, PM_LAUNCH_ENV_ONLY="Y"), cwd=str(launcher.root), timeout=60,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
     assert "SDL=/card/lib/" in result.stdout.splitlines()
