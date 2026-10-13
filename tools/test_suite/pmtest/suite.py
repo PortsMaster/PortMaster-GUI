@@ -10,6 +10,7 @@
 
 import argparse
 import datetime
+import ipaddress
 import json
 import os
 import platform
@@ -199,10 +200,10 @@ def summary_entries(sections, report_name):
     if failed:
         overall = f"{len(failed)} of {len(ran)} checks failed"
         overall_desc = "Failed: " + ", ".join(section.name for section in failed) + \
-            f".\n\nPlease send the report to the PortMaster devs:\n{report_name}"
+            f".\n\nPlease send the report to whoever gave you the Test Suite:\n{report_name}"
     else:
         overall = f"All {len(ran)} checks passed"
-        overall_desc = f"Thanks for testing! The report is saved as:\n{report_name}"
+        overall_desc = f"Thanks for testing! Please send the report to whoever gave you the Test Suite:\n{report_name}"
 
     entries = [("#overall", overall, overall_desc)]
     for section in sections:
@@ -212,7 +213,9 @@ def summary_entries(sections, report_name):
 
         entries.append((section.key, f"{LABELS[section.status]}: {section.name}", description))
 
-    entries.append(("#report", "Report", f"Saved as:\n{report_name}\n\nIn the PortMaster Test Suite's reports folder."))
+    entries.append(("#report", "Report", (
+        f"Saved as:\n{report_name}\n\nIn the PortMaster Test Suite's reports folder (ports/pmtest/reports). "
+        "Addresses, serial numbers and network names have been taken out, so it's safe to share.")))
     return entries
 
 
@@ -238,22 +241,99 @@ def report_name(info, when):
     return f"{clean(info.get('cfw', 'cfw'))}-{clean(info.get('device', 'device'))}-{when.strftime('%Y%m%d-%H%M')}.zip"
 
 
-def write_report(zip_path, work_dir, sections, info, extra_files=()):
-    """Everything in work_dir, the summary, and extra_files [(path, name in zip)]."""
+################################################################################
+## Scrubbing: reports get passed around in public, so no addresses, serials or names.
+_IPV4 = re.compile(r"(?<![\d.])(\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3}))(?![\d.])")
+_IPV6 = re.compile(r"(?<![\w:.])(?:[0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4}(?![\w:])")
+_MAC = re.compile(r"(?<![0-9A-Fa-f])(?:[0-9A-Fa-f]{2}([:-]))(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}(?![0-9A-Fa-f])(?![:-][0-9A-Fa-f])")
+_SERIAL = re.compile(r"(?i)((?<![\w.])\w*serial(?:_?number|_?no|_?num)?\s*[=:]\s*)([^\s,;]+)")
+_SSID = re.compile(r"""(?i)(\be?ssid\s*[=:]?\s*)("[^"\n]*"|'[^'\n]*'|[^\s,;]+)""")
+
+## Hostnames that only say what the device is.
+GENERIC_HOSTNAMES = {"localhost", "batocera", "knulli", "rocknix", "amberelec", "muos", "steamdeck", "retrodeck"}
+
+
+def private_names(hostname, info, cpu=""):
+    """The names to take out of a report: the hostname, unless it's just the device's, CPU's or CFW's name."""
+    name = (hostname or "").strip()
+    if len(name) < 3:
+        return []
+
+    if name.lower() in GENERIC_HOSTNAMES | {str(info.get(key, '')).lower() for key in ('device', 'cfw', 'cfw_version')} | {str(cpu).lower()}:
+        return []
+
+    return [name]
+
+
+def _mask_ipv4(match):
+    try:
+        address = ipaddress.ip_address(match.group(1))
+
+    except ValueError:
+        return match.group(0)
+
+    ## Versions look just like addresses (runtime 6.12.0.122): only the private ranges go.
+    if address.is_private and not (address.is_loopback or address.is_unspecified):
+        return f"x.x.x.{match.group(2)}"
+
+    return match.group(0)
+
+
+def _mask_ipv6(match):
+    text = match.group(0)
+    if "::" not in text and text.count(":") != 7:
+        return text
+
+    try:
+        address = ipaddress.ip_address(text)
+
+    except ValueError:
+        return text
+
+    if address.is_loopback or address.is_unspecified:
+        return text
+
+    return "x::x"
+
+
+def scrub(text, names=()):
+    """text without IP/MAC addresses, serial numbers, Wi-Fi network names or `names`."""
+    text = _MAC.sub("xx:xx:xx:xx:xx:xx", text)
+    text = _IPV6.sub(_mask_ipv6, text)
+    text = _IPV4.sub(_mask_ipv4, text)
+    text = _SERIAL.sub(lambda match: match.group(1) + "xxxx", text)
+    text = _SSID.sub(lambda match: match.group(1) + "xxxx", text)
+    for name in names:
+        text = re.sub(r"(?<![\w-])" + re.escape(name) + r"(?![\w-])", "device-host", text)
+
+    return text
+
+
+def write_report(zip_path, work_dir, sections, info, extra_files=(), names=()):
+    """Everything in work_dir, the summary, and extra_files [(path, name in zip)], scrubbed."""
     zip_path.parent.mkdir(parents=True, exist_ok=True)
 
+    def add(zf, name, data):
+        try:
+            data = scrub(data.decode("utf-8"), names).encode("utf-8")
+
+        except UnicodeDecodeError:
+            pass
+
+        zf.writestr(name, data)
+
     with zipfile.ZipFile(str(zip_path), 'w', zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("summary.txt", summary_text(sections, info))
-        zf.writestr("summary.json", json.dumps({
-            'info': info, 'sections': [section.to_dict() for section in sections]}, indent=2))
+        add(zf, "summary.txt", summary_text(sections, info).encode("utf-8"))
+        add(zf, "summary.json", json.dumps({
+            'info': info, 'scrubbed': True, 'sections': [section.to_dict() for section in sections]}, indent=2).encode("utf-8"))
 
         for path in sorted(work_dir.rglob("*")):
             if path.is_file() and path.name not in ("progress", "pm_input", "pm_done") and "scratch" not in path.parts:
-                zf.write(str(path), str(path.relative_to(work_dir)))
+                add(zf, str(path.relative_to(work_dir)), path.read_bytes())
 
         for path, name in extra_files:
             if Path(path).is_file():
-                zf.write(str(path), name)
+                add(zf, name, Path(path).read_bytes())
 
     return zip_path
 
@@ -740,7 +820,7 @@ class Suite:
             (self.controlfolder / "pugwash.txt", "portmaster/pugwash.txt"),
             (self.controlfolder / "harbourmaster.txt", "portmaster/harbourmaster.txt"),
             (self.controlfolder / "log.txt", "portmaster/log.txt"),
-            ])
+            ], names=private_names(platform.node(), self.info, (self.base_env or os.environ).get("DEVICE_CPU", "")))
         self.log(f"report: {report}")
 
         if self.has_ui:

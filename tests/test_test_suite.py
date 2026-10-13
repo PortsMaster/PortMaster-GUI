@@ -134,6 +134,63 @@ def test_write_report(tmp_path):
     assert data['sections'][0]['status'] == "pass"
 
 
+@pytest.mark.parametrize("line, scrubbed", [
+    ## From real reports.
+    ("[   12.5] wlan0: authenticate with 0c:c6:55:66:7b:3d", "[   12.5] wlan0: authenticate with xx:xx:xx:xx:xx:xx"),
+    ("Bluetooth: hci0: BD_ADDR 00-03-7F-95-00-45 set", "Bluetooth: hci0: BD_ADDR xx:xx:xx:xx:xx:xx set"),
+    ("RTW: set pairwise key camid:0, addr:9e:86:dd:d7:b6:d9, kid:0", "RTW: set pairwise key camid:0, addr:xx:xx:xx:xx:xx:xx, kid:0"),
+    ("cfg80211_rtw_change_station(wlan0) mac:9e:86:dd:d7:b6:d9", "cfg80211_rtw_change_station(wlan0) mac:xx:xx:xx:xx:xx:xx"),
+    ("SERIAL=MQ66142507031604", "SERIAL=xxxx"),
+    ("usb 1-1: SerialNumber: 0123456789AB", "usb 1-1: SerialNumber: xxxx"),
+    ("got 192.168.68.138 from dhcp, gateway 10.0.0.1", "got x.x.x.138 from dhcp, gateway x.x.x.1"),
+    ("inet6 fe80::1a2b:3c4d:5e6f:7a8b/64", "inet6 x::x/64"),
+    ("wlan0: connected to SSID=\"Home Network\"", "wlan0: connected to SSID=xxxx"),
+    ("ESSID:MyWifi", "ESSID:xxxx"),
+    ## Not addresses: versions, times, loopback, public addresses.
+    ("runtime godot 6.12.0.122 and 3.5.2", "runtime godot 6.12.0.122 and 3.5.2"),
+    ("14:10:18 started, 0:0:0:1 scsi", "14:10:18 started, 0:0:0:1 scsi"),
+    ("listening on 127.0.0.1 and ::1", "listening on 127.0.0.1 and ::1"),
+    ("github.com is 140.82.112.3", "github.com is 140.82.112.3"),
+    ("serial-getty@ttyFIQ0.service, serializers_osgga.so", "serial-getty@ttyFIQ0.service, serializers_osgga.so"),
+    ("as /devices/platform/soc@0/888000.serial/888000.serial:0/input", "as /devices/platform/soc@0/888000.serial/888000.serial:0/input"),
+    ("tests.test_hardware::test_device_info_defaults: assert", "tests.test_hardware::test_device_info_defaults: assert"),
+    ])
+def test_scrub(line, scrubbed):
+    assert suite.scrub(line) == scrubbed
+
+
+def test_scrub_hostname():
+    assert suite.scrub("ark353v login: ark353v-ish ark353v", ["ark353v"]) == "device-host login: ark353v-ish device-host"
+
+    ## Only when it isn't just the device's (or CPU's) name, those are in every report anyway.
+    assert suite.private_names("muos-6b1c52", {'device': "rg35xx-h"}) == ["muos-6b1c52"]
+    assert suite.private_names("RG351MP", {'device': "RG351MP"}) == []
+    assert suite.private_names("SM6115", {'device': "MANGMI Air X MQ66"}, cpu="sm6115") == []
+    assert suite.private_names("knulli", {}) == []
+    assert suite.private_names("gladiator", {'cfw_version': "gladiator"}) == []
+    assert suite.private_names("", {}) == []
+
+
+def test_write_report_scrubs(tmp_path):
+    work = tmp_path / "work"
+    (work / "device").mkdir(parents=True)
+    (work / "device" / "dmesg.txt").write_text("wlan0: 68:8f:c9:0e:98:a9 on mydevice at 192.168.1.20\n")
+    (work / "binary.bin").write_bytes(b"\xff\xfe 192.168.1.20")
+    log = tmp_path / "pugwash.txt"
+    log.write_text("mydevice: fetched from 192.168.1.20\n")
+
+    report = suite.write_report(
+        tmp_path / "r.zip", work, sections((suite.PASS, "fine")), {'cfw': "test"},
+        extra_files=[(log, "portmaster/pugwash.txt")], names=["mydevice"])
+
+    with zipfile.ZipFile(report) as zf:
+        assert zf.read("device/dmesg.txt").decode() == "wlan0: xx:xx:xx:xx:xx:xx on device-host at x.x.x.20\n"
+        assert zf.read("portmaster/pugwash.txt").decode() == "device-host: fetched from x.x.x.20\n"
+        ## Not text: as it was.
+        assert zf.read("binary.bin") == b"\xff\xfe 192.168.1.20"
+        assert json.loads(zf.read("summary.json"))['scrubbed'] is True
+
+
 def test_pick_work_dir(tmp_path, monkeypatch):
     first, second = tmp_path / "tmpfs", tmp_path / "sdcard"
 
