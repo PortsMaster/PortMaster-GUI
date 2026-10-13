@@ -15,13 +15,6 @@ from conftest import basic_port_files, port_files_with, write_port_zip, write_ra
 pytestmark = pytest.mark.sdl
 
 
-@pytest.fixture(scope="module")
-def gui(pugwash):
-    gui = pugwash.PortMasterGUI(first_scene=pugwash.BlankScene, force_theme="default_theme")
-    yield gui
-    gui.quit()
-
-
 @pytest.fixture
 def fifo(gui, hm_dirs, tmp_path, monkeypatch):
     """The GUI with a HarbourMaster in tmp dirs, and a fifo_config like do_fifo_control's."""

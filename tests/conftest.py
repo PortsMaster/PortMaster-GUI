@@ -289,6 +289,17 @@ def pugwash():
     return SimpleNamespace(**{**vars(pugwash.scenes), **vars(pugwash.app)})
 
 
+@pytest.fixture(scope="session")
+def gui(pugwash):
+    """
+    One headless PortMasterGUI for the whole test run. SDL keeps some state at class
+    level (eg: the default renderer), so the GUI can't be quit and made again.
+    """
+    gui = pugwash.PortMasterGUI(first_scene=pugwash.BlankScene, force_theme="default_theme")
+    yield gui
+    gui.quit()
+
+
 ################################################################################
 ## Fixtures
 @pytest.fixture

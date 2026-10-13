@@ -18,13 +18,6 @@ from conftest import PYLIB_PATH
 pytestmark = pytest.mark.sdl
 
 
-@pytest.fixture(scope="module")
-def gui(pugwash):
-    gui = pugwash.PortMasterGUI(first_scene=pugwash.BlankScene, force_theme="default_theme")
-    yield gui
-    gui.quit()
-
-
 @pytest.fixture
 def count_frames(gui, monkeypatch):
     """Counts main loop iterations, optionally running a hook each frame."""
