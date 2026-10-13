@@ -338,7 +338,13 @@ class FifoControlMixin:
                     with self.disable_messagebox():
                         results = self.run_task(autoinstall.run_autoinstall, self.hm, self, args)
 
+            ## The launcher refreshes the frontend afterwards, where it can't the user
+            ## is told how to do it (RetroDECK).
+            refresh_text = None
             if any(result.ok for result in results):
+                if self.hm.platform.ES_NAME == 'show-refresh':
+                    refresh_text = autoinstall.games_list_refresh_text(self.hm.platform)
+
                 self.request_frontend_refresh()
 
             if len(results) > 0 and all(result.ok for result in results):
@@ -347,7 +353,7 @@ class FifoControlMixin:
             self.show_selection_list({
                 'want_description': True,
                 'title': _("Auto-installation"),
-                }, autoinstall.summary_register(results))
+                }, autoinstall.summary_register(results, refresh_text))
 
         except Exception:
             logger.exception(f"fifo: autoinstall {args} failed")

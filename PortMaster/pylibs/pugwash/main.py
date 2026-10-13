@@ -11,6 +11,7 @@ from harbourmaster import HarbourMaster, make_temp_directory
 from gettext import gettext as _
 from pugwash import PORTMASTER_DEBUG
 from pugwash.app import PortMasterGUI
+from pugwash.autoinstall import games_list_refresh_text
 from pugwash.update import portmaster_check_update
 from pugwash.util import get_ip_address
 
@@ -130,7 +131,7 @@ def main(argv):
                 logger.debug(f"{pm.hm.platform.ports_changed()}")
                 if pm.hm.platform.ports_changed():
                     if pm.hm.platform.ES_NAME == 'show-refresh':
-                        pm.message_box(_("Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones." + pm.hm.platform.ROMS_REFRESH_TEXT))
+                        pm.message_box(games_list_refresh_text(pm.hm.platform))
                     else:
                         pm.request_frontend_refresh()
 

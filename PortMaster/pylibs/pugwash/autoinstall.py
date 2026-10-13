@@ -196,9 +196,20 @@ def run_autoinstall(hm, callback, dirs):
     return results
 
 
-def summary_register(results):
+def games_list_refresh_text(platform):
+    """
+    What to tell the user on platforms whose frontend PortMaster can't refresh
+    itself (ES_NAME 'show-refresh', eg: RetroDECK), so they rescan for new ports.
+    """
+    return _("Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones.") + platform.ROMS_REFRESH_TEXT
+
+
+def summary_register(results, refresh_text=None):
     """
     The selection_list register for the summary page: a totals line, then each file.
+
+    refresh_text: added to the totals line when something was installed, eg: how to
+    rescan the frontend's games list.
     """
     installed = sum(1 for result in results if result.ok)
     failed = len(results) - installed
@@ -208,6 +219,9 @@ def summary_register(results):
         total_desc = _("Some files failed to install, select them to see why. They were left in the autoinstall directory.")
     else:
         total_desc = _("Everything installed successfully.")
+
+    if refresh_text and installed > 0:
+        total_desc += "\n\n" + refresh_text
 
     register['#total'] = {
         'title': _("{installed} installed, {failed} failed").format(installed=installed, failed=failed),

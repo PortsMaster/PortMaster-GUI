@@ -332,3 +332,31 @@ def test_fifo_requests_frontend_refresh(fifo, dirs, gui, monkeypatch):
 
     fifo(dir_1)
     assert refreshed == [True]
+
+
+def test_summary_refresh_text():
+    ## eg: RetroDECK, whose ES-DE PortMaster can't restart: say how to rescan.
+    installed = [autoinstall.AutoinstallResult("good.zip", True)]
+    failed = [autoinstall.AutoinstallResult("bad.zip", False, "broken")]
+
+    register = autoinstall.summary_register(installed, "Rescan your games.")
+    assert register['#total']['description'].endswith("\n\nRescan your games.")
+
+    ## Nothing new to find.
+    assert "Rescan" not in autoinstall.summary_register(failed, "Rescan your games.")['#total']['description']
+    assert "Rescan" not in autoinstall.summary_register(installed)['#total']['description']
+
+
+@pytest.mark.sdl
+@pytest.mark.parametrize("es_name, expected", [("show-refresh", True), ("emulationstation", False)])
+def test_fifo_summary_says_how_to_rescan(fifo, dirs, gui, monkeypatch, es_name, expected):
+    dir_1, _ = dirs
+    write_port_zip(dir_1 / "testport.zip", basic_port_files())
+    monkeypatch.setattr(gui.hm.platform, "ES_NAME", es_name)
+    monkeypatch.setattr(gui.hm.platform, "ROMS_REFRESH_TEXT", "\n\nMENU -> UTILITIES -> Rescan Rom Directory")
+    monkeypatch.setattr(gui, "request_frontend_refresh", lambda: None)
+
+    fifo(dir_1)
+
+    ((config, register), ) = fifo.shown
+    assert ("Rescan Rom Directory" in register['#total']['description']) is expected
