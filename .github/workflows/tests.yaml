@@ -42,10 +42,11 @@ jobs:
         run: |
           flake8 --select=E9,F63,F7,F82,F811 \
             PortMaster/pugwash PortMaster/harbourmaster \
-            PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests
+            PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests tools/test_suite
           # The launchers (shellcheck is preinstalled on the runners)
           cd PortMaster && shellcheck -s bash --severity=error \
-            utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt ../tools/installer.sh
+            utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt ../tools/installer.sh \
+            "../tools/test_suite/PortMaster Test Suite.sh"
 
       - name: Run tests
         # Coverage must not drop below the floor (3.7 measures ~1% lower than 3.12), raise it as coverage improves.

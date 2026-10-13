@@ -10,6 +10,10 @@
 #       release workflow. Makes dist/version.json from ./version.json (the release
 #       workflow downloads the latest one there) or downloads it.
 #
+#   ./do_release.sh testsuite [version]
+#       A test build plus dist/pmtest.zip, the "PortMaster Test Suite" port for testers
+#       (tools/test_suite): it installs that build, runs every test and saves a report.
+#
 #   ./do_release.sh test [version]
 #       A build for testing on devices. The version defaults to today's next unused
 #       YYYY-MM-DD_XX69 (2026-10-13_0069, then _0169, ...): it never clashes with a
@@ -22,6 +26,7 @@
 #   PM_CACHE_DIR     downloads (makeself, runtimes), kept between builds (default: ./.cache/release)
 #   PM_TEST_CHANNEL  the release channel a test build updates from (default: beta)
 #   PM_VERSION_JSON  the version.json to update (default: ./version.json, else the latest release's)
+#   PM_PMTEST_WHEELS a folder of pytest wheels for pmtest.zip (default: downloaded into PM_CACHE_DIR)
 
 set -euo pipefail
 
@@ -41,7 +46,7 @@ CHANNEL="${1:-alpha}"
 VERSION="${2:-}"
 
 case "$CHANNEL" in
-  alpha|beta|stable|test) ;;
+  alpha|beta|stable|test|testsuite) ;;
   -h|--help|help) usage ;;
   *) echo "Unknown release channel: $CHANNEL"; usage ;;
 esac
@@ -67,7 +72,7 @@ next_test_version() {
 }
 
 if [ -z "$VERSION" ]; then
-  if [ "$CHANNEL" = "test" ]; then
+  if [ "$CHANNEL" = "test" ] || [ "$CHANNEL" = "testsuite" ]; then
     VERSION="$(next_test_version)"
   else
     VERSION="$(date -u +%Y.%m.%d-%H%M)"
@@ -79,8 +84,13 @@ if [ "${PM_PRINT_VERSION:-}" = "Y" ]; then
   exit 0
 fi
 
+IS_TEST=""
+case "$CHANNEL" in
+  test|testsuite) IS_TEST="Y" ;;
+esac
+
 STAMP_CHANNEL="$CHANNEL"
-if [ "$CHANNEL" = "test" ]; then
+if [ -n "$IS_TEST" ]; then
   STAMP_CHANNEL="${PM_TEST_CHANNEL:-beta}"
 fi
 
@@ -104,14 +114,14 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
 cd "$REPO_DIR"
 if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   {
-    git ls-files -z --cached --others --exclude-standard -- PortMaster tools
+    git ls-files -z --cached --others --exclude-standard -- PortMaster tools tests pytest.ini
     find PortMaster/pylibs/locales -name '*.pot' -print0
   } | while IFS= read -r -d '' file_name; do
     ## (tracked files deleted on disk are still listed)
     [ -f "$file_name" ] && printf '%s\0' "$file_name"
   done | tar -cf - --null -T - | tar -xf - -C "$BUILD_DIR"
 else
-  tar -cf - --exclude='__pycache__' --exclude='.DS_Store' --exclude='._*' PortMaster tools | tar -xf - -C "$BUILD_DIR"
+  tar -cf - --exclude='__pycache__' --exclude='.DS_Store' --exclude='._*' PortMaster tools tests pytest.ini | tar -xf - -C "$BUILD_DIR"
 fi
 
 cd "$BUILD_DIR"
@@ -208,8 +218,47 @@ if [ "$CHANNEL" = "stable" ] || [ "${MAKE_INSTALL:-}" = "Y" ]; then
   cp Install*PortMaster.sh "$DIST_DIR/"
 fi
 
+## -- The PortMaster Test Suite port -------------------------------------------------
+if [ "$CHANNEL" = "testsuite" ]; then
+  echo "Creating pmtest.zip"
+
+  ## pytest and what it needs, pure python, the newest that still run on Python 3.7.
+  PMTEST_WHEELS="${PM_PMTEST_WHEELS:-$CACHE_DIR/pmtest-wheels}"
+  if [ -z "${PM_PMTEST_WHEELS:-}" ] && [ ! -f "$PMTEST_WHEELS/.complete" ]; then
+    mkdir -p "$PMTEST_WHEELS"
+    ${PM_PIP:-python3 -m pip} download --quiet --no-deps --only-binary=:all: \
+        --python-version 3.7 --implementation py --abi none --platform any -d "$PMTEST_WHEELS" \
+        pytest==7.4.4 pluggy==1.2.0 iniconfig==2.0.0 packaging==23.2 exceptiongroup==1.2.2 \
+        tomli==2.0.1 importlib_metadata==6.7.0 zipp==3.15.0 typing_extensions==4.7.1
+    touch "$PMTEST_WHEELS/.complete"
+  fi
+
+  PMTEST="pmtest_build/pmtest"
+  mkdir -p "$PMTEST/site" "$PMTEST/tree" "$PMTEST/reports"
+  cp "tools/test_suite/PortMaster Test Suite.sh" pmtest_build/
+  cp tools/test_suite/pmtest/*.py tools/test_suite/pmtest/port.json "$PMTEST/"
+  cp PortMaster.zip "$PMTEST/"
+  touch "$PMTEST/reports/.keep"
+
+  for wheel in "$PMTEST_WHEELS"/*.whl; do
+    python3 -m zipfile -e "$wheel" "$PMTEST/site/"
+  done
+
+  ## The code under test, as stamped above, without what the tests never touch.
+  tar -cf - \
+      --exclude='PortMaster/runtimes' --exclude='PortMaster/libs' --exclude='PortMaster/utils/patcher' \
+      --exclude='PortMaster/7zzs.*' --exclude='PortMaster/innoextract.*' --exclude='PortMaster/astcenc.*' \
+      --exclude='PortMaster/xdelta3*' --exclude='PortMaster/gptokeyb*' --exclude='PortMaster/sdl2imgshow*' \
+      --exclude='PortMaster/portmsg.*' --exclude='PortMaster/*.so' --exclude='PortMaster/pylibs.zip' \
+      --exclude='NotoSans.tar.xz' --exclude='__pycache__' --exclude='tools/test_suite' \
+      PortMaster tests tools pytest.ini | tar -xf - -C "$PMTEST/tree"
+
+  (cd pmtest_build && zip -9qr ../pmtest.zip "PortMaster Test Suite.sh" pmtest)
+  cp pmtest.zip "$DIST_DIR/"
+fi
+
 ## -- version.json: what each channel's PortMaster updates to -----------------------
-if [ "$CHANNEL" = "test" ]; then
+if [ -n "$IS_TEST" ]; then
   echo "$VERSION" > version
 
 else
@@ -226,7 +275,7 @@ fi
 
 cp PortMaster.zip version "$DIST_DIR/"
 
-if [ "$CHANNEL" = "test" ]; then
+if [ -n "$IS_TEST" ]; then
   echo "$VERSION" >> "$TEST_BUILDS"
 fi
 

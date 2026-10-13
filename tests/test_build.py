@@ -182,3 +182,38 @@ def test_cfw_bundles(test_build, tmp_path, script, launcher, stub):
     bundle = next(dist.glob("*.portmaster.zip"))
     with zipfile.ZipFile(bundle) as zf:
         assert zf.read(launcher).decode() == (PM_DIR / stub / "PortMaster.txt").read_text()
+
+
+def test_testsuite_port(tmp_path):
+    ## ./do_release.sh testsuite: the test build plus pmtest.zip, the "PortMaster Test Suite" port.
+    wheels = tmp_path / "wheels"
+    wheels.mkdir()
+    with zipfile.ZipFile(wheels / "fakepytest-1.0-py3-none-any.whl", 'w') as zf:
+        zf.writestr("fakepytest/__init__.py", "")
+
+    dist = tmp_path / "dist"
+    run("do_release.sh", "testsuite", PM_DIST_DIR=str(dist), PM_PMTEST_WHEELS=str(wheels))
+
+    version = (dist / "version").read_text().strip()
+    assert re.fullmatch(r"\d{4}-\d\d-\d\d_\d\d69", version)
+
+    names = zip_names(dist / "pmtest.zip")
+    assert {"PortMaster Test Suite.sh", "pmtest/port.json", "pmtest/suite.py", "pmtest/fifo.py",
+            "pmtest/pmtest_plugin.py", "pmtest/PortMaster.zip", "pmtest/site/fakepytest/__init__.py",
+            "pmtest/tree/pytest.ini", "pmtest/tree/tests/conftest.py", "pmtest/tree/tools/installer.sh",
+            "pmtest/tree/PortMaster/pugwash", "pmtest/tree/PortMaster/pylibs/pugwash/app.py"} <= names
+
+    ## The code under test without what the tests never need.
+    assert [name for name in names if name.startswith(("pmtest/tree/PortMaster/runtimes/", "pmtest/tree/PortMaster/gptokeyb",
+            "pmtest/tree/PortMaster/7zzs", "pmtest/tree/tools/test_suite")) or name.endswith(".so")] == []
+
+    ## The build it installs is the one it was made with, and harbourmaster takes it as a port.
+    with zipfile.ZipFile(dist / "pmtest.zip") as zf:
+        inner = zf.read("pmtest/PortMaster.zip")
+
+    with zipfile.ZipFile(io.BytesIO(inner)) as zf:
+        assert zf.read("PortMaster/version").decode().strip() == version
+
+    from harbourmaster.captain import check_port
+    port_info = check_port("pmtest.zip", dist / "pmtest.zip", {})
+    assert port_info['attr']['title'] == "PortMaster Test Suite"

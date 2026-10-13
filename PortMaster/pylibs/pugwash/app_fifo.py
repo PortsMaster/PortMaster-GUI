@@ -31,7 +31,8 @@ class FifoControlMixin:
                 continue
 
             info_key, info_value = info_datum.split(':', 1)
-            key_info[info_key] = info_value
+            ## One command per line, so newlines come as "\n" (like message / message_box).
+            key_info[info_key] = info_value.replace('\\n', '\n')
 
         fifo_config['done-file'].write_text("DONE")
 

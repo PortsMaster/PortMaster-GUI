@@ -209,3 +209,10 @@ def test_selection_list_button_bar(fifo, gui):
     scene = DialogSelectionList(gui, {'want_cancel': True, 'ok_text': "Pick", 'cancel_text': "Back"}, {'a': {'title': "A"}})
     texts = [item for _, item in scene.tags['button_bar'].bar if isinstance(item, str)]
     assert texts == ["Pick", "Back"]
+
+
+def test_register_set_info_newlines(fifo):
+    fifo.gui.fifo_reg_set_info(fifo.config, ["summary", "pytest", "title:pytest: 1 failed", "description:Failed:\\ntest_one"])
+
+    assert fifo.config['register']['summary']['pytest'] == {'title': "pytest: 1 failed", 'description': "Failed:\ntest_one"}
+    assert fifo.config['done-file'].read_text() == "DONE"
