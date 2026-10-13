@@ -88,6 +88,26 @@ class InstallMixin:
 
         move_bash = self.platform.MOVE_PM_BASH
 
+        ## Check the whole zip before touching anything: a broken download extracted
+        ## part way would leave PortMaster half updated.
+        try:
+            with zipfile.ZipFile(download_file, 'r') as zf:
+                bad_file = zf.testzip()
+
+            if bad_file is not None:
+                raise zipfile.BadZipFile(f"bad CRC for {bad_file}")
+
+        except (zipfile.BadZipFile, OSError, EOFError) as err:
+            logger.error(f"PortMaster.zip is damaged: {err}")
+            self.last_install_error = _("PortMaster.zip is damaged, download it again.")
+            self.callback.message(self.last_install_error)
+            self.callback.message_box(_("Port {download_name} installed failed.").format(download_name="PortMaster"))
+
+            if do_delete:
+                download_file.unlink()
+
+            return 255
+
         try:
             gcd_mode = self.get_gcd_mode()
 
@@ -142,6 +162,28 @@ class InstallMixin:
 
         return 0
 
+    def _install_rollback(self, undo_data):
+        """
+        Remove what a failed install added, newest first.
+        """
+        self._port_attrs_updated = True
+
+        if len(undo_data) == 0:
+            return
+
+        logger.error("Installation failed, removing installed files.")
+        self.callback.message(_("Installation failed, removing files..."))
+
+        for undo_file in undo_data[::-1]:
+            logger.info(f"Removing {str(self._ports_dir_relative_to(undo_file))}")
+            self.callback.message(f"- {str(self._ports_dir_relative_to(self.ports_dir))}")
+
+            if undo_file.is_file():
+                undo_file.unlink()
+
+            elif undo_file.is_dir():
+                shutil.rmtree(undo_file)
+
     def _install_port(self, download_info, do_delete=False):
         """
         Installs a port.
@@ -177,8 +219,7 @@ class InstallMixin:
                         most_likely_an_r36s = _("HELLO.\n\nIT LOOKS LIKE YOU'RE MANUALLY INSTALLING A PORT THAT IS INCOMPATIBLE WITH YOUR DEVICE.\n\nIF YOU HAVE ISSUES, DO NOT REPORT THEM ON DISCORD, YOU WILL BE SUBJECT TO RIDICULE.\n\nARE YOU SURE YOU WANT TO RESUME INSTALLING?")
                         if self.callback.message_box(most_likely_an_r36s, want_cancel=True, cancel_text=_("Okay"), ok_text=_("Cancel")):
                             # HAHA, FUCK YOU.
-                            self.last_install_error = _("Not compatible with this device.")
-                            return 255
+                            raise HarbourException(_("Not compatible with this device."))
 
             # Extra fix
             port_info_file_old = None
@@ -326,34 +367,25 @@ class InstallMixin:
             failure_reason = str(err) or err.__class__.__name__
             logger.exception(f"Installing {port_nice_name} failed: {failure_reason}")
 
+        except BaseException:
+            ## Cancelled / interrupted part way: undo, then let it carry on up.
+            self._install_rollback(undo_data)
+            raise
+
         finally:
             if do_delete:
                 download_info['zip_file'].unlink()
 
-            if not is_successs:
-                if len(undo_data) > 0:
-                    logger.error("Installation failed, removing installed files.")
-                    self.callback.message(_("Installation failed, removing files..."))
+        if not is_successs:
+            self._install_rollback(undo_data)
 
-                    for undo_file in undo_data[::-1]:
-                        logger.info(f"Removing {str(self._ports_dir_relative_to(undo_file))}")
-                        self.callback.message(f"- {str(self._ports_dir_relative_to(self.ports_dir))}")
+            if failure_reason is not None:
+                self.callback.message(_("Installation failed: {reason}").format(reason=failure_reason))
+                self.last_install_error = failure_reason
 
-                        if undo_file.is_file():
-                            undo_file.unlink()
+            self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
 
-                        elif undo_file.is_dir():
-                            shutil.rmtree(undo_file)
-
-                if failure_reason is not None:
-                    self.callback.message(_("Installation failed: {reason}").format(reason=failure_reason))
-                    self.last_install_error = failure_reason
-
-                self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
-
-                self._port_attrs_updated = True
-
-                return 255
+            return 255
 
         # logger.debug(port_info)
         if len(port_info['attr'].get('runtime', [])) > 0:

@@ -635,6 +635,9 @@ msgstr ""
 msgid "PortMaster will now quit so you can run the restoration port."
 msgstr ""
 
+msgid "PortMaster.zip is damaged, download it again."
+msgstr ""
+
 msgid "Porters:"
 msgstr ""
 

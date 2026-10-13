@@ -233,6 +233,26 @@ def test_failure_part_way_rolls_back(failing_extract, hm, hm_dirs, tmp_path, cal
     assert callback.message_boxes[-1] == "Port testport.zip installed failed."
 
 
+def test_interrupted_part_way_rolls_back_and_propagates(hm, hm_dirs, tmp_path, monkeypatch):
+    ## Ctrl+C (or the GUI quitting) mid install: no half installed port, and no swallowing it.
+    real_extract = zipfile.ZipFile.extract
+    calls = []
+
+    def extract(self, member, path=None, pwd=None):
+        calls.append(member)
+        if len(calls) == 3:
+            raise KeyboardInterrupt()
+
+        return real_extract(self, member, path, pwd)
+
+    monkeypatch.setattr(zipfile.ZipFile, "extract", extract)
+
+    with pytest.raises(KeyboardInterrupt):
+        hm.install_port(str(write_port_zip(tmp_path / "testport.zip", basic_port_files())))
+
+    assert ports_left(hm_dirs) == []
+
+
 def test_failure_part_way_is_reported(failing_extract, hm, tmp_path, callback, log_errors):
     zip_file = write_port_zip(tmp_path / "testport.zip", basic_port_files())
 
@@ -277,6 +297,9 @@ def test_incompatible_port_asks_first_in_the_gui(answer, expected, hm_dirs, tmp_
     assert hm.install_port(str(zip_file)) == expected
     assert "INCOMPATIBLE WITH YOUR DEVICE" in callback.message_boxes[0]
     assert bool(ports_left(hm_dirs)) is (expected == 0)
+
+    if expected != 0:
+        assert hm.last_install_error == "Not compatible with this device."
 
 
 ################################################################################
@@ -529,3 +552,38 @@ def test_install_theme_from_url_removes_the_download(url_server):
 
     assert (url_server.hm.themes_dir / "Shiny" / "theme.json").is_file()
     assert list(url_server.hm.temp_dir.iterdir()) == []
+
+
+################################################################################
+## PortMaster.zip itself
+def write_portmaster_zip(zip_path):
+    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_STORED) as zf:
+        zf.writestr("PortMaster/first.txt", "first file " * 100)
+        zf.writestr("PortMaster/second.txt", "second file " * 100)
+
+    return zip_path
+
+
+def test_portmaster_zip_installs(hm, tmp_path):
+    assert hm.install_port(str(write_portmaster_zip(tmp_path / "PortMaster.zip"))) == 0
+    assert (hm.tools_dir / "PortMaster" / "second.txt").is_file()
+
+
+@pytest.mark.parametrize("damage", ["truncated", "bad_crc"])
+def test_damaged_portmaster_zip_installs_nothing(hm, tmp_path, callback, damage):
+    zip_file = write_portmaster_zip(tmp_path / "PortMaster.zip")
+    data = bytearray(zip_file.read_bytes())
+
+    if damage == "truncated":
+        ## eg: a copy that stopped part way.
+        data = data[:len(data) // 2]
+    else:
+        ## Flip a byte inside the second file's contents.
+        data[data.index(b"second file ") + 5] ^= 0xFF
+
+    zip_file.write_bytes(bytes(data))
+
+    assert hm.install_port(str(zip_file)) == 255
+    assert not (hm.tools_dir / "PortMaster" / "first.txt").exists()
+    assert hm.last_install_error == "PortMaster.zip is damaged, download it again."
+    assert callback.message_boxes[-1] == "Port PortMaster installed failed."
