@@ -358,3 +358,46 @@ def test_task_that_opens_messages_is_drawn(gui, presented):
     gui.run_task(work)
 
     assert presented and all(layers[-1] == "messages" for layers in presented)
+
+
+@pytest.fixture
+def bar_progress_theme(gui):
+    """The message window's progress as a bar, like jimmyhat999_grid_dark does it."""
+    import copy
+
+    saved = copy.deepcopy(gui.theme_data['message_window'])
+    progress = gui.theme_data['message_window']['progress_bar']
+    progress.pop('text', None)
+    progress['bar'] = ["{system.progress_text}", None, "{system.progress_amount}"]
+
+    yield gui.theme_data['message_window']['progress_bar']
+
+    gui.theme_data['message_window'] = saved
+
+
+def progress_bar_strings(gui):
+    region = gui.message_box_scene.tags['progress_bar']
+    ## The region lays its bar out as (dest rect, item) pairs.
+    return [item for dest, item in region.bar if isinstance(item, str)]
+
+
+def test_bar_template_filled_on_first_display(gui, bar_progress_theme):
+    gui.progress(None, None, None)
+
+    with gui.enable_messages():
+        assert progress_bar_strings(gui) == ["", ""]
+
+        gui.progress("Downloading", 1, 4, 'data')
+        assert progress_bar_strings(gui) == ["Downloading", "1 B / 4 B"]
+
+
+def test_bar_template_still_updates_in_later_windows(gui, bar_progress_theme):
+    with gui.enable_messages():
+        gui.progress("First", 1, 2)
+
+    ## The theme's own data must not be overwritten with the values.
+    assert bar_progress_theme['bar'] == ["{system.progress_text}", None, "{system.progress_amount}"]
+
+    with gui.enable_messages():
+        gui.progress("Second", 1, 2)
+        assert progress_bar_strings(gui)[0] == "Second"

@@ -195,18 +195,21 @@ class BaseScene:
                     self.update_regions.setdefault(key, []).append(region_name)
 
             if "bar" in region_data:
+                ## Fill in the {templates} for the region, the theme's own list stays as it is
+                ## so the next scene made from it (eg: the next messages window) has them too.
                 found = False
                 text_keys = []
                 bar_copy = region_data["bar"][:]
-                for i in range(len(region_data["bar"])):
-                    bar_item = region_data["bar"][i]
+                new_bar = bar_copy[:]
+                for i, bar_item in enumerate(bar_copy):
                     if not isinstance(bar_item, str) or "{" not in bar_item:
                         continue
 
                     found = True
-                    region_data["bar"][i] = self.gui.format_data(bar_item, text_keys)
+                    new_bar[i] = self.gui.format_data(bar_item, text_keys)
 
                 if found:
+                    region.bar = new_bar
                     self.bar_regions[region_name] = (region, bar_copy)
                     for key in text_keys:
                         self.update_regions.setdefault(key, []).append(region_name)
