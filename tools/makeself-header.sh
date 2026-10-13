@@ -5,7 +5,6 @@ cat << EOF  > "$archname"
 # PORTMASTER: restore.portmaster.zip, Restore PortMaster.sh
 
 exec > >(tee -a "\$HOME/portmaster.log") 2>&1
-exec > >(tee -a "\$HOME/portmaster.log") 2>&1
 
 ORIG_UMASK=\`umask\`
 if test "$KEEP_UMASK" = n; then

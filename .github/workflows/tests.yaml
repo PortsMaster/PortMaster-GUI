@@ -45,7 +45,7 @@ jobs:
             PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests
           # The launchers (shellcheck is preinstalled on the runners)
           cd PortMaster && shellcheck -s bash --severity=error \
-            utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt
+            utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt ../tools/installer.sh
 
       - name: Run tests
         # Coverage must not drop below the floor (3.7 measures ~1% lower than 3.12), raise it as coverage improves.

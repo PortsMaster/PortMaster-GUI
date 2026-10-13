@@ -165,3 +165,12 @@ def test_detect_retrodeck_json(tmp_path):
 
     assert detect(tmp_path)[:3] == (
         Path("/var/data"), Path("/home/deck/retrodeck/PortMaster/ports"), Path("/media/roms/portmaster"))
+
+
+def test_detect_retrodeck_json_portmaster_path(tmp_path):
+    ## Newer RetroDECK writes portmaster_path, not ports_path.
+    make_dirs(tmp_path, "/var/config/retrodeck")
+    (tmp_path / "var/config/retrodeck/retrodeck.json").write_text(json.dumps(
+        {"paths": {"rd_home_path": "/home/deck/retrodeck", "portmaster_path": "/media/pm"}}))
+
+    assert detect(tmp_path)[1] == Path("/media/pm/ports")

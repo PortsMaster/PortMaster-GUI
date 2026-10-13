@@ -167,7 +167,11 @@ def detect_paths(root="/", cwd=None, environ=None, home=None, df_output=None):
         rdhome = Path(rdconfig_data['paths']['rd_home_path'])
 
         roms_folder  = Path(rdconfig_data['paths'].get('roms_path',  rdhome / "roms"))
-        ports_folder = Path(rdconfig_data['paths'].get('ports_path', rdhome / "PortMaster"))
+        ## Newer RetroDECK calls it portmaster_path.
+        ports_folder = Path(
+            rdconfig_data['paths'].get('ports_path') or
+            rdconfig_data['paths'].get('portmaster_path') or
+            rdhome / "PortMaster")
 
         ports_dir   = ports_folder / "ports"
         scripts_dir = roms_folder  / "portmaster"
