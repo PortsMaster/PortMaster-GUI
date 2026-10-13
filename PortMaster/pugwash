@@ -64,10 +64,14 @@ if not (Path(__file__).parent / '.git').is_dir() and not (Path(__file__).parent 
 
 
 if not (PYLIB_PATH / 'resources' / 'NotoSansTC-Regular.ttf').is_file():
-    ## Extract Noto fonts.
-    with tarfile.open(str(PYLIB_PATH / 'resources' / 'NotoSans.tar.xz'), 'r:xz') as tar:
-        # Extract all contents into the specified directory
-        tar.extractall(str(PYLIB_PATH / 'resources'))
+    ## Extract Noto fonts (Chinese, Japanese, Korean). Without them PortMaster still runs.
+    try:
+        with tarfile.open(str(PYLIB_PATH / 'resources' / 'NotoSans.tar.xz'), 'r:xz') as tar:
+            # Extract all contents into the specified directory
+            tar.extractall(str(PYLIB_PATH / 'resources'))
+
+    except (OSError, EOFError, tarfile.TarError) as err:
+        print(f"- unable to extract the Noto fonts: {err}")
 
 
 sys.path.insert(0, str(EXLIB_PATH))

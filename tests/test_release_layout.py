@@ -104,3 +104,28 @@ def test_pugwash_fifo_from_release(release_dir, release_env, tmp_path):
 
     finally:
         gui.kill()
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_pugwash_starts_without_noto_fonts(release_env, tmp_path):
+    ## The CJK fonts come from pylibs/resources/NotoSans.tar.xz on first run; without
+    ## it (or with a broken one) pugwash still has to start, just without those fonts.
+    pm_dir = tmp_path / "release" / "PortMaster"
+    pm_dir.mkdir(parents=True)
+    shutil.copy2(str(PM_DIR / "pugwash"), str(pm_dir / "pugwash"))
+    build_pylibs_zip(pm_dir / "pylibs.zip")
+
+    with zipfile.ZipFile(str(pm_dir / "pylibs.zip")) as zf:
+        zf.extractall(str(pm_dir))
+
+    (pm_dir / "pylibs.zip").unlink()
+    (pm_dir / "pylibs" / "resources" / "NotoSans.tar.xz").unlink()
+
+    gui = start_fifo_gui(pm_dir, pm_dir.parent, release_env, tmp_path)
+    try:
+        assert gui.send("message", "No CJK fonts") == "DONE"
+        assert gui.exit() == 0
+
+    finally:
+        gui.kill()
