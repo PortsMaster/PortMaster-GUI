@@ -15,7 +15,8 @@ import pytest
 from conftest import PM_DIR, REPO_DIR, basic_port_files, start_fifo_gui, write_port_zip
 
 
-pytestmark = pytest.mark.sdl
+## Each test starts its own pugwash: on a real screen nothing else may hold the display.
+pytestmark = [pytest.mark.sdl, pytest.mark.own_display]
 
 @pytest.fixture(params=["device", "git-checkout"])
 def fifo_gui(request, hm_dirs, tmp_path):

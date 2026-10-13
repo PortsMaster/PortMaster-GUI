@@ -90,6 +90,7 @@ def test_commands_after_extraction(release_dir, release_env, tmp_path):
 
 
 @pytest.mark.sdl
+@pytest.mark.own_display
 def test_pugwash_fifo_from_release(release_dir, release_env, tmp_path):
     ## Either script may be the one that extracts pylibs.zip.
     run_hm(release_dir, release_env, "help")

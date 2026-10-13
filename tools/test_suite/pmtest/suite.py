@@ -115,6 +115,41 @@ def junit_summary(result):
     return text, "\n".join(details)
 
 
+def merge_results(results):
+    """Adds up several parse_junit results ({'error': ...} for a run that didn't finish)."""
+    merged = {'tests': 0, 'passed': 0, 'failed': 0, 'errors': 0, 'skipped': 0, 'failures': [], 'skip_reasons': {}, 'error': ""}
+    for result in results:
+        if result is None or 'error' in result:
+            merged['errors'] += 1
+            merged['error'] += (result or {}).get('error', "pytest didn't run") + "\n"
+            continue
+
+        for key in ('tests', 'passed', 'failed', 'errors', 'skipped'):
+            merged[key] += result[key]
+
+        merged['failures'].extend(result['failures'])
+        for reason, count in result['skip_reasons'].items():
+            merged['skip_reasons'][reason] = merged['skip_reasons'].get(reason, 0) + count
+
+    return merged
+
+
+def set_from_results(section, results, suffix=""):
+    """A section's status from pytest runs: FAIL on any failure, SKIP if nothing ran."""
+    result = merge_results(results)
+    text, details = junit_summary(result)
+    if result['error']:
+        details = (result['error'].strip() + "\n" + details).strip()
+
+    if result['failed'] or result['errors']:
+        section.set(FAIL, text + suffix, details)
+    elif result['passed'] == 0:
+        ## Nothing ran (eg: no SDL at all): not a pass.
+        section.set(SKIP, "not run: " + text, details)
+    else:
+        section.set(PASS, text + suffix, details)
+
+
 def summary_entries(sections, report_name):
     """The summary screen: an overall line, one per section, then where the report is."""
     ran = [section for section in sections if section.status in (PASS, FAIL)]
@@ -343,19 +378,30 @@ class Suite:
             "import sdl2, sdl2.sdlimage, sdl2.sdlttf, sdl2.sdlmixer\n"
             "v = sdl2.SDL_version(); sdl2.SDL_GetVersion(v)\n"
             "print('SDL', v.major, v.minor, v.patch)\n"
-            "print('video drivers', [sdl2.SDL_GetVideoDriver(i).decode() for i in range(sdl2.SDL_GetNumVideoDrivers())])\n")
+            "print('DRIVERS', ' '.join(sdl2.SDL_GetVideoDriver(i).decode() for i in range(sdl2.SDL_GetNumVideoDrivers())))\n")
         code, text = self.run(
             [sys.executable, "-c", probe], timeout=60,
             env=self.test_env(PYTHONPATH=str(TREE / "PortMaster" / "exlibs")), output=out / "sdl.txt")
-        self.info['sdl'] = text.strip().replace("\n", "; ") if code == 0 else "not loadable"
+
+        drivers = []
+        for line in text.splitlines():
+            if line.startswith("DRIVERS "):
+                drivers = line.split()[1:]
+
+        self.info['video_drivers'] = drivers
+        self.info['sdl'] = (text.strip().splitlines() or ["?"])[0] if code == 0 else "not loadable"
 
         section.set(INFO, f"{self.info['cfw']} {self.info['cfw_version']} on {self.info['device']} ({self.info['arch']}), Python {self.info['python']}",
-                    f"SDL: {self.info['sdl']}")
+                    f"{self.info['sdl']}, video drivers: {' '.join(drivers) or 'none'}")
 
-    def _pytest(self, section, name, marker, timeout, extra_env=None, label="Testing"):
+    def _pytest(self, name, marker, timeout, extra_env=None, label="Testing"):
+        """Runs pytest on the tree; parse_junit's result, or {'error': ...} if it didn't finish."""
         out = self.work / name
         out.mkdir(parents=True, exist_ok=True)
         progress = self.work / "progress"
+        if progress.exists():
+            progress.unlink()
+
         junit = out / "junit.xml"
 
         command = [
@@ -363,7 +409,7 @@ class Suite:
             "-q", "-rfEs", "--tb=short", "-m", marker, f"--junitxml={junit}"]
 
         env = self.test_env(PMTEST_PROGRESS=str(progress), **(extra_env or {}))
-        self.log("pytest: " + " ".join(command))
+        self.log(f"pytest ({name}): " + " ".join(command) + f" {extra_env or ''}")
         started = time.monotonic()
         with open(str(out / "output.txt"), "w") as output:
             proc = subprocess.Popen(command, cwd=str(TREE), env=env, stdin=subprocess.DEVNULL, stdout=output, stderr=subprocess.STDOUT)
@@ -392,20 +438,9 @@ class Suite:
             self.ui.progress_clear()
 
         if not junit.is_file():
-            section.set(FAIL, f"pytest didn't finish (exit {proc.returncode})", self._tail(out / "output.txt"))
-            return None
+            return {'error': f"pytest didn't finish (exit {proc.returncode})\n" + self._tail(out / "output.txt")}
 
-        result = parse_junit(junit)
-        text, details = junit_summary(result)
-        if result['failed'] or result['errors']:
-            section.set(FAIL, text, details)
-        elif result['passed'] == 0:
-            ## Nothing ran (eg: no SDL at all): not a pass.
-            section.set(SKIP, "not run: " + text, details)
-        else:
-            section.set(PASS, text, details)
-
-        return result
+        return parse_junit(junit)
 
     @staticmethod
     def _tail(path, lines=15):
@@ -416,24 +451,32 @@ class Suite:
 
     def step_pytest(self, section):
         self.say("Running the test suite. This can take a few minutes.")
-        self._pytest(section, "pytest", "not sdl and not network", timeout=2400)
+        set_from_results(section, [self._pytest("pytest", "not sdl and not network", timeout=2400)])
 
     def step_gui(self, section):
-        ## The GUI tests need the screen: pugwash lets go of it first.
-        self.say("Running the GUI tests next, the screen will flicker for a while.")
-        time.sleep(3)
+        drivers = self.info.get('video_drivers', [])
+
+        ## Headless where SDL can, otherwise the real screen: pugwash lets go of it first.
+        if "dummy" in drivers:
+            runs = [("gui", "sdl and not network", {})]
+            how = "headless"
+        elif "offscreen" in drivers:
+            runs = [("gui", "sdl and not network", {'PM_TEST_VIDEODRIVER': "offscreen"})]
+            how = "headless (offscreen)"
+        else:
+            ## One display: tests that start their own pugwash run once the others have closed theirs.
+            real = {'PM_TEST_VIDEODRIVER': ""}
+            runs = [
+                ("gui", "sdl and not own_display and not network", real),
+                ("gui-own-display", "own_display and not network", real),
+                ]
+            how = "on the real screen"
+            self.say("Running the GUI tests next, the screen will flicker for a while.")
+            time.sleep(3)
+
         self.ui_stop()
-
-        result = self._pytest(section, "gui", "sdl and not network", timeout=1500)
-
-        ## No headless video driver on this SDL: run them on the real screen.
-        if result is not None and result['tests'] and result['skipped'] == result['tests'] and \
-                any("video driver" in reason for reason in result['skip_reasons']):
-            self.log("gui: no dummy video driver, using the real screen")
-            shutil.move(str(self.work / "gui"), str(self.work / "gui-headless-skipped"))
-            self._pytest(section, "gui", "sdl and not network", timeout=1500, extra_env={'PM_TEST_VIDEODRIVER': ""})
-            section.summary += " (on the real screen)"
-
+        results = [self._pytest(name, marker, timeout=1500, extra_env=env, label="GUI tests") for name, marker, env in runs]
+        set_from_results(section, results, suffix=f" ({how})")
         self.ui_start()
 
     def step_smoke(self, section):

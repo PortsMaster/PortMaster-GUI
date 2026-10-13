@@ -18,7 +18,8 @@ def zip_bytes(files):
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, 'w') as zf:
         for name, data in files.items():
-            zf.writestr(name, data)
+            ## A fixed date: the same files must give the same zip (and md5), however slow the device.
+            zf.writestr(zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0)), data)
 
     return buffer.getvalue()
 

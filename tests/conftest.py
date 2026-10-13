@@ -59,7 +59,9 @@ TEST_ENV = {
 ## Some SDL builds (eg muOS) have no dummy driver, set PM_TEST_VIDEODRIVER to use
 ## a real one (an empty value lets SDL pick), eg: PM_TEST_VIDEODRIVER= pytest -m sdl
 if "PM_TEST_VIDEODRIVER" in os.environ:
-    del TEST_ENV["SDL_RENDER_DRIVER"]
+    ## offscreen is headless too, the software renderer stays.
+    if os.environ["PM_TEST_VIDEODRIVER"] != "offscreen":
+        del TEST_ENV["SDL_RENDER_DRIVER"]
     if os.environ["PM_TEST_VIDEODRIVER"]:
         TEST_ENV["SDL_VIDEODRIVER"] = os.environ["PM_TEST_VIDEODRIVER"]
     else:
@@ -68,6 +70,15 @@ if "PM_TEST_VIDEODRIVER" in os.environ:
 
 for _dir in ("tools", "ports"):
     (SESSION_DIR / _dir).mkdir()
+
+## Run on a device (eg: by the PortMaster Test Suite port), the environment already
+## describes that device and PortMaster (control.txt, device_info.txt, funcs.txt):
+## only what TEST_ENV says may count.
+_DEVICE_PREFIXES = ("DEVICE_", "CFW_", "DISPLAY_", "ANALOG_", "HM_")
+_DEVICE_KEYS = ("controlfolder", "directory", "PORTMASTER_HOME", "PM_FUNCS_VERSION", "PM_SCRIPTNAME", "PM_PORTNAME", "PM_VERSION")
+for _key in list(os.environ):
+    if _key.startswith(_DEVICE_PREFIXES) or _key in _DEVICE_KEYS:
+        del os.environ[_key]
 
 os.environ.update(TEST_ENV)
 

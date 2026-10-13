@@ -51,6 +51,30 @@ def test_parse_junit(tmp_path):
     assert "- 2 x SDL video driver 'dummy' unavailable" in details
 
 
+def test_set_from_results():
+    ok = {'tests': 2, 'passed': 2, 'failed': 0, 'errors': 0, 'skipped': 0, 'failures': [], 'skip_reasons': {}}
+    broken = {'tests': 1, 'passed': 0, 'failed': 1, 'errors': 0, 'skipped': 0,
+              'failures': [("tests.t::test_x", "boom")], 'skip_reasons': {}}
+    skipped = {'tests': 3, 'passed': 0, 'failed': 0, 'errors': 0, 'skipped': 3, 'failures': [], 'skip_reasons': {"no SDL": 3}}
+
+    section = suite.Section("gui", "GUI tests")
+    suite.set_from_results(section, [ok, ok], suffix=" (on the real screen)")
+    assert (section.status, section.summary) == (suite.PASS, "4 passed, 0 failed, 0 skipped (on the real screen)")
+
+    suite.set_from_results(section, [ok, broken])
+    assert section.status == suite.FAIL
+    assert "tests.t::test_x: boom" in section.details
+
+    suite.set_from_results(section, [skipped])
+    assert section.status == suite.SKIP
+    assert "3 x no SDL" in section.details
+
+    ## A run that never finished is a failure, with why.
+    suite.set_from_results(section, [ok, {'error': "pytest didn't finish (exit -9)"}])
+    assert section.status == suite.FAIL
+    assert "exit -9" in section.details
+
+
 def sections(*states):
     result = []
     for number, (status, summary) in enumerate(states):
@@ -129,6 +153,7 @@ def test_port_zip_layout():
 ################################################################################
 ## The fifo client against a real pugwash.
 @pytest.mark.sdl
+@pytest.mark.own_display
 def test_dialog_drives_pugwash(hm_dirs, tmp_path):
     env = dict(os.environ)
     env.update({

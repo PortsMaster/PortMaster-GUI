@@ -205,7 +205,9 @@ def test_testsuite_port(tmp_path):
 
     ## The code under test without what the tests never need.
     assert [name for name in names if name.startswith(("pmtest/tree/PortMaster/runtimes/", "pmtest/tree/PortMaster/gptokeyb",
-            "pmtest/tree/PortMaster/7zzs", "pmtest/tree/tools/test_suite")) or name.endswith(".so")] == []
+            "pmtest/tree/PortMaster/7zzs")) or name.endswith(".so")] == []
+    ## tests/test_test_suite.py reads it.
+    assert "pmtest/tree/tools/test_suite/pmtest/port.json" in names
 
     ## The build it installs is the one it was made with, and harbourmaster takes it as a port.
     with zipfile.ZipFile(dist / "pmtest.zip") as zf:

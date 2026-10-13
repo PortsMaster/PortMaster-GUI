@@ -250,7 +250,7 @@ if [ "$CHANNEL" = "testsuite" ]; then
       --exclude='PortMaster/7zzs.*' --exclude='PortMaster/innoextract.*' --exclude='PortMaster/astcenc.*' \
       --exclude='PortMaster/xdelta3*' --exclude='PortMaster/gptokeyb*' --exclude='PortMaster/sdl2imgshow*' \
       --exclude='PortMaster/portmsg.*' --exclude='PortMaster/*.so' --exclude='PortMaster/pylibs.zip' \
-      --exclude='NotoSans.tar.xz' --exclude='__pycache__' --exclude='tools/test_suite' \
+      --exclude='NotoSans.tar.xz' --exclude='__pycache__' \
       PortMaster tests tools pytest.ini | tar -xf - -C "$PMTEST/tree"
 
   (cd pmtest_build && zip -9qr ../pmtest.zip "PortMaster Test Suite.sh" pmtest)
