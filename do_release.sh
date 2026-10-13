@@ -255,6 +255,8 @@ if [ "$CHANNEL" = "testsuite" ]; then
 
   (cd pmtest_build && zip -9qr ../pmtest.zip "PortMaster Test Suite.sh" pmtest)
   cp pmtest.zip "$DIST_DIR/"
+  ## harbourmaster checks it when installing <url>/pmtest.zip.md5
+  (cd "$DIST_DIR" && md5sum pmtest.zip > pmtest.zip.md5)
 fi
 
 ## -- version.json: what each channel's PortMaster updates to -----------------------

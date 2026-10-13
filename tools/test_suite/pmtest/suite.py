@@ -353,6 +353,22 @@ def pick_work_dir(candidates, need_bytes=300 * 1024 * 1024):
     return Path(candidates[-1])
 
 
+def os_release_name(path):
+    """PRETTY_NAME from an os-release file, "" without one."""
+    try:
+        text = Path(path).read_text(errors="replace")
+
+    except OSError:
+        return ""
+
+    match = re.search(r"^PRETTY_NAME=(.*)$", text, re.M)
+    if match is None:
+        return ""
+
+    ## knulli's has its quotes escaped: \"Batocera.linux gladiator\"
+    return match.group(1).strip().strip("\"'\\")
+
+
 def launcher_hooks(controlfolder):
     """The hooks folder the installed launcher stub passes to pm_launch.txt (muos, spruce, ...), "" for none."""
     for stub in (Path(controlfolder) / "PortMaster.sh", Path(controlfolder).parent / "launch.sh"):
@@ -545,6 +561,8 @@ class Suite:
         self.info['cfw_version'] = os.environ.get("CFW_VERSION", "")
         self.info['device'] = os.environ.get("DEVICE_NAME", platform.node())
         self.info['arch'] = os.environ.get("DEVICE_ARCH", platform.machine())
+        ## CFW_VERSION is sometimes the base system's (spruce: buildroot 2021.11), so this too.
+        self.info['os'] = os_release_name(Path("/etc/os-release"))
 
         (out / "environment.txt").write_text("".join(
             f"{key}={value}\n" for key, value in sorted((self.base_env or os.environ).items())

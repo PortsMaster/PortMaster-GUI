@@ -69,7 +69,7 @@ Guard tests for restructuring:
 - an online install/uninstall with harbourmaster as the plain platform (CFW hooks such as muOS's catalogue write outside the ports folder)
 - button and portmsg checks
 
-It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `pmtest/reports/<CFW>-<device>-<date>.zip`. It must keep running on Python 3.7 with only the standard library. Tested in `tests/test_test_suite.py` and `tests/test_build.py`.
+It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `pmtest/reports/<CFW>-<device>-<date>.zip`, scrubbed of MAC/private IP addresses, serials, Wi-Fi names and the hostname (`suite.scrub`). pugwash and the GUI tests run in the environment the installed launcher gives the GUI (`pm_launch.txt` with `PM_LAUNCH_ENV_ONLY=Y`). The build also writes `dist/pmtest.zip.md5`, for `harbourmaster install <url>/pmtest.zip.md5`. `python3 -I tools/test_suite/matrix.py <folder of reports> --out DIR` turns collected reports into `matrix.json` and a self-contained `matrix.html` coverage page. It must keep running on Python 3.7 with only the standard library. Tested in `tests/test_test_suite.py` and `tests/test_build.py`.
 
 Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is fixed and the marker should then be removed. pugwash's `main()` is wrapped in `logger.catch`, so it exits 0 even after a crash; check its output for tracebacks rather than relying on the exit code.
 

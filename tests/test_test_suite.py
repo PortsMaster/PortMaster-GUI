@@ -191,6 +191,17 @@ def test_write_report_scrubs(tmp_path):
         assert json.loads(zf.read("summary.json"))['scrubbed'] is True
 
 
+@pytest.mark.parametrize("text, name", [
+    ('NAME=Buildroot\nPRETTY_NAME="Buildroot 2021.11"\n', "Buildroot 2021.11"),
+    ('PRETTY_NAME=\\"Batocera.linux gladiator\\"\n', "Batocera.linux gladiator"),
+    ("NAME=x\n", ""),
+    ])
+def test_os_release_name(tmp_path, text, name):
+    (tmp_path / "os-release").write_text(text)
+    assert suite.os_release_name(tmp_path / "os-release") == name
+    assert suite.os_release_name(tmp_path / "missing") == ""
+
+
 def test_pick_work_dir(tmp_path, monkeypatch):
     first, second = tmp_path / "tmpfs", tmp_path / "sdcard"
 
@@ -342,3 +353,73 @@ def test_dialog_without_pugwash(tmp_path):
     ])
 def test_button_verdict(attempts, problems, notes):
     assert suite.button_verdict(attempts) == (problems, notes)
+
+
+################################################################################
+## tools/test_suite/matrix.py: the coverage matrix from a folder of reports.
+sys.path.insert(0, str(REPO_DIR / "tools" / "test_suite"))
+import matrix  # noqa: E402
+
+
+def make_report(folder, name, info, states):
+    work = folder / ("work-" + name)
+    work.mkdir(parents=True)
+    report_sections = []
+    for key, status, summary, details in states:
+        section = suite.Section(key, key.title())
+        section.set(status, summary, details)
+        report_sections.append(section)
+
+    return suite.write_report(folder / name, work, report_sections, info)
+
+
+def test_matrix(tmp_path):
+    reports = tmp_path / "reports"
+    base = {'cfw': "muOS", 'cfw_version': "2601.0_JACARANDA", 'device': "rg35xx-h", 'arch': "aarch64",
+            'python': "3.11.8", 'sdl': "SDL 2 28 5", 'portmaster': "2026-10-13_0969", 'video_drivers': ["mali"]}
+    failed = "Failed:\n- tests.test_a::test_x: assert 1 == 2\nSkipped:\n- 2 x no shellcheck"
+
+    make_report(reports, "old.zip", dict(base, started="2026-10-13T10:00:00"), [
+        ("install", suite.PASS, "installed", ""),
+        ("pytest", suite.FAIL, "1 passed, 1 failed, 2 skipped", failed)])
+    make_report(reports, "new.zip", dict(base, started="2026-10-13T12:00:00"), [
+        ("install", suite.PASS, "installed", ""),
+        ("gui", suite.PASS, "120 passed, 0 failed, 0 skipped (on the real screen)", "")])
+    make_report(reports, "knulli.zip", dict(base, cfw="knulli", cfw_version="scarab", device="<rg-cubexx>", started="2026-10-13T11:00:00"), [
+        ("pytest", suite.FAIL, "1 passed, 1 failed, 2 skipped", failed),
+        ("gui", suite.PASS, "120 passed, 0 failed, 0 skipped (headless (offscreen))", "")])
+    ## Not reports: skipped.
+    (reports / "junk.zip").write_bytes(b"not a zip")
+    with zipfile.ZipFile(reports / "other.zip", "w") as zf:
+        zf.writestr("readme.txt", "hello")
+
+    rows = matrix.read_reports(reports)
+    assert [row['report'] for row in rows] == ["new.zip", "knulli.zip", "old.zip"]
+    assert rows[0]['gui_how'] == "real screen" and rows[1]['gui_how'] == "headless"
+    assert rows[0]['ok'] and not rows[2]['ok']
+    assert rows[2]['failures'] == [{'section': "pytest", 'test': "tests.test_a::test_x", 'message': "assert 1 == 2"}]
+    assert rows[0]['scrubbed'] is True
+
+    groups = matrix.group_rows(rows)
+    assert list(groups) == [("knulli", "scarab", "<rg-cubexx>"), ("muOS", "2601.0_JACARANDA", "rg35xx-h")]
+    ## Newest run first.
+    assert [row['report'] for row in groups[("muOS", "2601.0_JACARANDA", "rg35xx-h")]] == ["new.zip", "old.zip"]
+
+    (test, message, found), = matrix.failure_index(rows)
+    assert (test, message, len(found)) == ("tests.test_a::test_x", "assert 1 == 2", 2)
+
+    page = matrix.render_html(rows)
+    assert page.startswith("<title>PortMaster Test Matrix</title>")
+    assert "&lt;rg-cubexx&gt;" in page and "<rg-cubexx>" not in page
+    assert "<script" not in page
+
+    assert matrix.main([str(reports), "--out", str(tmp_path / "out")]) == 0
+    assert len(json.loads((tmp_path / "out" / "matrix.json").read_text())) == 3
+    assert (tmp_path / "out" / "matrix.html").is_file()
+
+
+def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
+    monkeypatch.setattr(matrix, "MAX_SUMMARY_BYTES", 10)
+    make_report(tmp_path, "r.zip", {'cfw': "x"}, [("install", suite.PASS, "installed", "")])
+
+    assert matrix.read_report(tmp_path / "r.zip") is None

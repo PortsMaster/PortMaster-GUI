@@ -216,6 +216,10 @@ def test_testsuite_port(tmp_path):
     with zipfile.ZipFile(io.BytesIO(inner)) as zf:
         assert zf.read("PortMaster/version").decode().strip() == version
 
+    ## For `harbourmaster install <url>/pmtest.zip.md5`.
+    md5 = hashlib.md5((dist / "pmtest.zip").read_bytes()).hexdigest()
+    assert (dist / "pmtest.zip.md5").read_text().split() == [md5, "pmtest.zip"]
+
     from harbourmaster.captain import check_port
     port_info = check_port("pmtest.zip", dist / "pmtest.zip", {})
     assert port_info['attr']['title'] == "PortMaster Test Suite"
