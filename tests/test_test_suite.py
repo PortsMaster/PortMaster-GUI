@@ -190,3 +190,27 @@ def test_dialog_without_pugwash(tmp_path):
     assert dialog.start(timeout=5) is False
     assert dialog.message_box("hello", want_cancel=True) is None
     assert dialog.install(tmp_path / "x.zip") is None
+
+
+@pytest.mark.parametrize("attempts, problems, notes", [
+    ## All right first time.
+    ({'labelled_ok': [True], 'labelled_cancel': [False], 'physical_a': [True], 'physical_b': [False]},
+     [], ["The physical A button accepts."]),
+    ## A swapped device: B accepts. Not a problem, it's what the device does.
+    ({'labelled_ok': [True], 'labelled_cancel': [False], 'physical_a': [False], 'physical_b': [True]},
+     [], ["The physical B button accepts."]),
+    ## A slip, then right on the retry: passes, and says so.
+    ({'labelled_ok': [False, True], 'labelled_cancel': [False], 'physical_a': [True], 'physical_b': [False]},
+     [], ["the OKAY button: right on the second try", "The physical A button accepts."]),
+    ## Wrong twice: a real problem.
+    ({'labelled_ok': [True], 'labelled_cancel': [True, True], 'physical_a': [True], 'physical_b': [False]},
+     ["the CANCEL button did not cancel"], ["The physical A button accepts."]),
+    ## A and B did the same, then differed on the retry.
+    ({'labelled_ok': [True], 'labelled_cancel': [False], 'physical_a': [True, True], 'physical_b': [True, False]},
+     [], ["The physical A button accepts.", "A / B: right on the second try"]),
+    ## A and B still the same.
+    ({'labelled_ok': [True], 'labelled_cancel': [False], 'physical_a': [True, True], 'physical_b': [True, True]},
+     ["the A and B buttons did the same thing"], []),
+    ])
+def test_button_verdict(attempts, problems, notes):
+    assert suite.button_verdict(attempts) == (problems, notes)

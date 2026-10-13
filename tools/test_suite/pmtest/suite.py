@@ -115,6 +115,55 @@ def junit_summary(result):
     return text, "\n".join(details)
 
 
+## The button checks: key, what it checks, the explanation shown first, the prompt, and the
+## expected answer (True: accepts, False: cancels, None: the physical A/B pair, which must differ).
+BUTTON_CHECKS = (
+    ("labelled_ok", "the OKAY button",
+     "The bar at the bottom of the next screen shows a button next to OKAY.\n\nPress that button.",
+     "Press the button shown next to OKAY at the bottom of the screen.", True),
+    ("labelled_cancel", "the CANCEL button",
+     "The bar at the bottom of the next screen shows a button next to CANCEL.\n\nPress that button.",
+     "Press the button shown next to CANCEL at the bottom of the screen.", False),
+    ("physical_a", "the A button",
+     "Ignore the bar at the bottom this time.\n\nPress the button with the letter A printed on your device.",
+     "Press the button printed with A on your device.", None),
+    ("physical_b", "the B button",
+     "Ignore the bar at the bottom this time.\n\nPress the button with the letter B printed on your device.",
+     "Press the button printed with B on your device.", None),
+    )
+
+
+def button_verdict(attempts):
+    """
+    attempts: {check key: [answer, ...]}, answers True (accepted) / False (cancelled), a
+    second answer only after a retry. Returns (problems, notes); the last answer counts.
+    """
+    def last(key):
+        return (attempts.get(key) or [None])[-1]
+
+    problems = []
+    notes = []
+
+    for key, name, _, _, expected in BUTTON_CHECKS:
+        if expected is None:
+            continue
+
+        if last(key) is not expected:
+            problems.append(f"{name} did not {'accept' if expected else 'cancel'}")
+        elif len(attempts.get(key, [])) > 1:
+            notes.append(f"{name}: right on the second try")
+
+    physical_a, physical_b = last("physical_a"), last("physical_b")
+    if physical_a is None or physical_b is None or physical_a == physical_b:
+        problems.append("the A and B buttons did the same thing")
+    else:
+        notes.append(f"The physical {'A' if physical_a else 'B'} button accepts.")
+        if len(attempts.get("physical_a", [])) > 1:
+            notes.append("A / B: right on the second try")
+
+    return problems, notes
+
+
 def merge_results(results):
     """Adds up several parse_junit results ({'error': ...} for a run that didn't finish)."""
     merged = {'tests': 0, 'passed': 0, 'failed': 0, 'errors': 0, 'skipped': 0, 'failures': [], 'skip_reasons': {}, 'error': ""}
@@ -297,6 +346,20 @@ class Suite:
         self.log(text)
         if self.has_ui:
             self.ui.message(text)
+
+    def explain(self, heading, text, seconds=5):
+        """A screen of explanation, counting down before the question that follows."""
+        self.log(f"explain: {heading}")
+        self.ui.messages_end()
+        self.ui.messages_begin()
+        self.ui.message(heading)
+        self.ui.message(text)
+
+        for second in range(seconds):
+            self.ui.progress(f"The question comes up in {seconds - second}", second, seconds)
+            time.sleep(1)
+
+        self.ui.progress_clear()
 
     def ui_start(self):
         self.has_ui = (not self.options.no_ui) and self.ui.start("--no-check")
@@ -522,27 +585,38 @@ class Suite:
             return
 
         if not self.ui.message_box(
-                "Last part: a few quick button checks.\n\nPress A to start, or B to skip them.", want_cancel=True):
+                "Last part: four quick button checks.\n\nBefore each one, a screen explains which button to press.\n\n"
+                "Press A to begin, or B to skip them.", want_cancel=True):
             section.set(SKIP, "skipped by the tester")
             return
 
-        answers = {}
-        for key, text in (
-                ("labelled_ok", "Button check 1 of 4\n\nPress the button the bar at the bottom shows next to OKAY."),
-                ("labelled_cancel", "Button check 2 of 4\n\nPress the button the bar at the bottom shows next to CANCEL."),
-                ("physical_a", "Button check 3 of 4\n\nPress the button printed with A on the device."),
-                ("physical_b", "Button check 4 of 4\n\nPress the button printed with B on the device."),
-                ):
-            answers[key] = self.ui.message_box(text, want_cancel=True)
+        attempts = {}
 
-        problems = []
-        if answers['labelled_ok'] is not True:
-            problems.append("the button shown as OKAY did not accept")
-        if answers['labelled_cancel'] is not False:
-            problems.append("the button shown as CANCEL did not cancel")
+        def ask(number, key, retry=False):
+            _, name, explanation, prompt, _ = BUTTON_CHECKS[number]
+            heading = f"Button check {number + 1} of {len(BUTTON_CHECKS)}: {name}"
+            if retry:
+                explanation = f"ARE YOU SURE YOU PRESSED {name.upper()}?!?!?!?!\n\nLet's try that one again.\n\n" + explanation
 
-        accept = "A" if answers['physical_a'] else ("B" if answers['physical_b'] else "neither")
-        details = [f"The physical {accept} button accepts.", f"Answers: {answers}"]
+            self.explain(heading, explanation)
+            attempts.setdefault(key, []).append(self.ui.message_box(prompt, want_cancel=True))
+
+        for number, (key, _, _, _, expected) in enumerate(BUTTON_CHECKS):
+            ask(number, key)
+            if expected is not None and attempts[key][-1] is not expected:
+                ask(number, key, retry=True)
+
+        ## The physical pair has to differ, otherwise ask for both again.
+        if attempts["physical_a"][-1] == attempts["physical_b"][-1]:
+            ask(2, "physical_a", retry=True)
+            ask(3, "physical_b", retry=True)
+
+        problems, details = button_verdict(attempts)
+        details.append(f"Answers (True = accepted): {attempts}")
+        answers = dict(attempts)
+
+        self.ui.messages_end()
+        self.ui.messages_begin()
 
         portmsg = self.controlfolder / f"portmsg.{os.environ.get('DEVICE_ARCH', platform.machine())}"
         if os.access(str(portmsg), os.X_OK):
