@@ -2,49 +2,52 @@
 #
 # SPDX-License-Identifier: MIT
 #
+# retrodeck.portmaster.zip: PortMaster for RetroDECK.
+#
+#   ./do_x86_64_release.sh            from dist/PortMaster.zip (./do_release.sh first)
+#   ./do_x86_64_release.sh CHANNEL from the latest alpha/beta/stable PortMaster.zip on GitHub
+#
+# Writes dist/retrodeck.portmaster.zip.
 
-RESTORE_DIR=$PWD
+set -euo pipefail
 
-rm retrodeck.portmaster.zip
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+DIST_DIR="${PM_DIST_DIR:-$REPO_DIR/dist}"
 
-mkdir retrodeck_build
+BUILD_DIR="$(mktemp -d "${TMPDIR:-/tmp}/pm-retrodeck.XXXXXX")"
+trap 'rm -rf "$BUILD_DIR"' EXIT
+cd "$BUILD_DIR"
 
-cd retrodeck_build
-
-
-case "$1" in
-    alpha|beta|stable)
-        wget "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
-        if [[ ! -f "version.json" ]]; then
-            echo "Missing version.json file."
-            exit 255
-        fi
-        wget "$(jq -r ".$1.url" "version.json")"
-        ;;
+case "${1:-}" in
+  alpha|beta|stable)
+    curl -fL -o version.json "https://github.com/PortsMaster/PortMaster-GUI/releases/latest/download/version.json"
+    curl -fL -o PortMaster.zip "$(jq -r ".$1.url" version.json)"
+    PORTMASTER_ZIP="$BUILD_DIR/PortMaster.zip"
+    ;;
+  *)
+    PORTMASTER_ZIP="$DIST_DIR/PortMaster.zip"
+    ;;
 esac
 
-if [[ -f "$PWD/PortMaster.zip" ]]; then
-    PORTMASTER_ZIP="$PWD/PortMaster.zip"
-elif [[ -f "$RESTORE_DIR/PortMaster.zip" ]]; then
-    PORTMASTER_ZIP="$RESTORE_DIR/PortMaster.zip"
-else
-    echo "Missing PortMaster.zip file."
-    exit 255
+if [[ ! -f "$PORTMASTER_ZIP" ]]; then
+  echo "Missing $PORTMASTER_ZIP, run ./do_release.sh first."
+  exit 255
 fi
 
 mkdir -p RD_PM/
 
-cd RD_PM/
+(
+  cd RD_PM/
+  unzip -q "$PORTMASTER_ZIP"
 
-unzip "$PORTMASTER_ZIP"
+  cd PortMaster
+  cp retrodeck/control.txt control.txt
+  cp retrodeck/PortMaster.txt PortMaster.sh
+  rm -f tasksetter
+  touch tasksetter
+)
 
-cd PortMaster
-cp retrodeck/control.txt control.txt
-cp retrodeck/PortMaster.txt PortMaster.sh
-rm tasksetter
-touch tasksetter
-
-cd ..
-zip -9r "$RESTORE_DIR/retrodeck.portmaster.zip" PortMaster/
-cd $RESTORE_DIR
-rm -fRv retrodeck_build
+mkdir -p "$DIST_DIR"
+rm -f "$DIST_DIR/retrodeck.portmaster.zip"
+(cd RD_PM && zip -9qr "$DIST_DIR/retrodeck.portmaster.zip" PortMaster/)
+echo "Built $DIST_DIR/retrodeck.portmaster.zip"

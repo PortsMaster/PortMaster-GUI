@@ -16,16 +16,16 @@ PortMaster is the bash script that runs on the device, this is not needed for de
 python3 PortMaster/pugwash
 ```
 
-If you have made changes and want to test it on your device you can use the do_release.sh script, this will zip it up correctly to test it on your device.
+If you have made changes and want to test it on your device, make a test build. It is numbered `YYYY-MM-DD_XX69` (`2026-10-13_0069`, then `_0169`, ...), which never clashes with a release and shows it is a test build. Your checkout is left as it is, and only files git knows about go in (so no logs, `config/` or installed ports).
 
 ```bash
-./do_release.sh
+./do_release.sh test
 ```
 
-From there you can just ssh it onto the device and use harbourmaster to install this local version of PortMaster.
+From there you can just ssh `dist/PortMaster.zip` onto the device and use harbourmaster to install this local version of PortMaster.
 
 ```bash
-scp PortMaster.zip ark@rg353v.local:/roms2/tools
+scp dist/PortMaster.zip ark@rg353v.local:/roms2/tools
 ```
 
 Then on device:

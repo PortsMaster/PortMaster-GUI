@@ -25,13 +25,15 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 python3 PortMaster/pugwash                 # run the GUI locally (windowed)
 python3 PortMaster/harbourmaster help      # CLI: list/ports/install/uninstall/runtime_list/device_info/...
 flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests   # the lint CI enforces; full flake8 still reports lots of existing style issues
-./do_release.sh                            # build PortMaster.zip (+ pylibs.zip inside); `./do_release.sh stable` also builds makeself installers
+./do_release.sh test                       # a test build in dist/: version YYYY-MM-DD_XX69 (next free one today), checkout untouched
+./do_release.sh alpha|beta|stable [VER]    # a release in dist/ (+ version.json); stable (or MAKE_INSTALL=Y) also builds the makeself installers
+./do_muos_release.sh [stable]              # dist/muos.portmaster.zip (likewise do_trimui_release.sh, do_x86_64_release.sh)
 ./do_i18n.sh                               # extract strings with xgettext, sync with Crowdin, compile .mo (needs crowdin CLI)
 ```
 
 pugwash flags: `--quiet --no-check --debug --no-colour --force-colour --no-log --offline --no-harbour`.
 
-To test on a device: `./do_release.sh`, copy `PortMaster.zip` over, then on the device run `./PortMaster/harbourmaster --no-check install ./PortMaster.zip` (the `./` prefix makes it install a local file).
+To test on a device: `./do_release.sh test`, copy `dist/PortMaster.zip` over (stream it over ssh: `scp` has truncated files on some devices), then on the device run `./PortMaster/harbourmaster --no-check install ./PortMaster.zip` (the `./` prefix makes it install a local file).
 
 ## Local-dev mode (HM_TESTING)
 
@@ -139,7 +141,7 @@ Use this table to port upstream patches made against the old layout:
 
 ## Versioning and releases
 
-The version lives in the `## -- BEGIN PORTMASTER INFO --` block at the top of the `PortMaster/pugwash` script (and the `HARBOURMASTER INFO` block in `harbourmaster/__init__.py`). `tools/pm_release.py` rewrites that block, and `do_release.sh` reads `PORTMASTER_VERSION = '...'` from the script with awk, so keep both in the script. `do_release.sh` backs up and restores pugwash around this, so the committed value stays a placeholder. Releases are built by the manually triggered GitHub workflows in `.github/workflows/` (alpha/beta/stable); `do_beta.sh` / `do_stable.sh` stamp the version and commit.
+The version lives in the `## -- BEGIN PORTMASTER INFO --` block at the top of the `PortMaster/pugwash` script (and the `HARBOURMASTER INFO` block in `harbourmaster/__init__.py`). `tools/pm_release.py` rewrites that block. `do_release.sh` builds from a copy of the sources in a temp dir (from a checkout: the files `git ls-files` lists, tracked and new-but-not-ignored), stamps the copy, and writes everything to `dist/`; the checkout's pugwash keeps its placeholder. Release versions are `YYYY.MM.DD-HHMM` (UTC), test builds `YYYY-MM-DD_XX69`. Releases are built by the one manually triggered `.github/workflows/release.yaml` (pick alpha/beta/stable); its CFW bundles are always made from the latest stable. `do_beta.sh` / `do_stable.sh` stamp the version in the checkout and commit. `tests/test_build.py` runs the real build; `tests/test_installer.py` runs `tools/installer.sh` (Install.PortMaster.sh, a factory reset that `Restore.PortMaster.zip` relies on) against fake filesystems and checks its detection matches `config.detect_paths()`.
 
 ## Translations
 

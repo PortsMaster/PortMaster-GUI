@@ -1,8 +1,17 @@
-name: GUI Release Beta
+name: GUI Release
 
 on:
   # We only run manually
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Release channel
+        type: choice
+        options:
+          - alpha
+          - beta
+          - stable
+        default: alpha
 
 concurrency:
   group: release # only 1 release at a time
@@ -48,23 +57,27 @@ jobs:
 
       - uses: edgarrc/action-7z@v1
 
+      # The current version.json, do_release.sh updates this channel's entry in it.
       - uses: robinraju/release-downloader@v1.8
         with:
           repository: ${{ github.repository }}
           latest: true
           fileName: "*.json"
 
+      # Only stable builds installers, the others carry the latest ones along.
       - uses: robinraju/release-downloader@v1.8
+        if: ${{ inputs.channel != 'stable' }}
         with:
           repository: ${{ github.repository }}
           latest: true
           fileName: "Install*PortMaster.sh"
+          out-file-path: dist
 
       - name: Get release name for artifacts
         id: version
         run: |
             echo "version=$(date -u +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
-            echo "release=beta" >> $GITHUB_OUTPUT
+            echo "release=${{ inputs.channel }}" >> $GITHUB_OUTPUT
 
       - name: Install gettext
         run: |
@@ -74,13 +87,22 @@ jobs:
         id: create-zip
         run: |
           ./do_release.sh "${{steps.version.outputs.release}}" "${{steps.version.outputs.version}}"
-          ./do_muos_release.sh "stable"
-          ./do_trimui_release.sh "stable"
-          ./do_x86_64_release.sh "stable"
+
+          # The CFW bundles are what CFWs put in their images: always made from stable.
+          if [[ "${{steps.version.outputs.release}}" == "stable" ]]; then
+            BUNDLE_FROM=""
+          else
+            BUNDLE_FROM="stable"
+          fi
+
+          ./do_muos_release.sh $BUNDLE_FROM
+          ./do_trimui_release.sh $BUNDLE_FROM
+          ./do_x86_64_release.sh $BUNDLE_FROM
 
       - name: Create md5 hashes
         id: md5
         run: |
+            cd dist
             for file in *.zip; do
               if [ ! -f "$file" ]; then
                 continue
@@ -99,7 +121,7 @@ jobs:
           replacesArtifacts: false
           omitNameDuringUpdate: true
           body: "Release: ${{steps.version.outputs.version}} (${{steps.version.outputs.release}})"
-          artifacts: "PortMaster.zip, PortMaster.zip.md5, version, version.json, Install*PortMaster.sh, muos.portmaster.zip, muos.portmaster.zip.md5, retrodeck.portmaster.zip, retrodeck.portmaster.zip.md5, trimui.portmaster.zip, trimui.portmaster.zip.md5"
+          artifacts: "dist/PortMaster.zip, dist/PortMaster.zip.md5, dist/version, dist/version.json, dist/Install*PortMaster.sh, dist/muos.portmaster.zip, dist/muos.portmaster.zip.md5, dist/retrodeck.portmaster.zip, dist/retrodeck.portmaster.zip.md5, dist/trimui.portmaster.zip, dist/trimui.portmaster.zip.md5"
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: ${{ steps.env.outputs.RELEASE_REPO }}
           owner: ${{ steps.env.outputs.RELEASE_ORG }}
@@ -120,4 +142,4 @@ jobs:
       - name: Release Info
         id: info
         run: |
-          echo "Published release: ${{steps.version.outputs.version}} to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"
+          echo "Published release: ${{steps.version.outputs.version}} (${{steps.version.outputs.release}}) to: https://github.com/${{ steps.env.outputs.RELEASE_ORG}}/${{ steps.env.outputs.RELEASE_REPO}}"
