@@ -2,6 +2,7 @@
 
 import fnmatch
 import json
+import os
 import shutil
 import subprocess
 import zipfile
@@ -133,7 +134,15 @@ class InstallMixin:
                     dest_file = self.tools_dir / file_info.filename
 
                     # cprint(f"- <b>{file_info.filename!r}</b> <d>[{nice_size(file_info.file_size)} ({compress_saving:.0f}%)]</d>")
-                    zf.extract(file_info, path=self.tools_dir)
+                    if dest_file.name.lower().endswith('.sh') and dest_file.is_file():
+                        ## The launcher may be the script running right now (eg: ROCKNIX runs
+                        ## PortMaster/PortMaster.sh), bash reads scripts as it goes: write a new file.
+                        temp_file = dest_file.with_name(f".{dest_file.name}.new")
+                        temp_file.write_bytes(zf.read(file_info))
+                        os.replace(str(temp_file), str(dest_file))
+
+                    else:
+                        zf.extract(file_info, path=self.tools_dir)
 
                     if move_bash and dest_file.name.lower().endswith('.sh'):
                         move_bash_dir = self.platform.MOVE_PM_BASH_DIR

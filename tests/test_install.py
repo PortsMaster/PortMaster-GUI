@@ -587,3 +587,22 @@ def test_damaged_portmaster_zip_installs_nothing(hm, tmp_path, callback, damage)
     assert not (hm.tools_dir / "PortMaster" / "first.txt").exists()
     assert hm.last_install_error == "PortMaster.zip is damaged, download it again."
     assert callback.message_boxes[-1] == "Port PortMaster installed failed."
+
+
+def test_portmaster_zip_replaces_running_launcher(hm, tmp_path):
+    ## ROCKNIX runs PortMaster/PortMaster.sh from where the zip puts it; a self-update
+    ## must not change the file under the bash that is running it.
+    launcher = hm.tools_dir / "PortMaster" / "PortMaster.sh"
+    launcher.parent.mkdir(parents=True, exist_ok=True)
+    launcher.write_text("old launcher\n")
+
+    zip_file = tmp_path / "PortMaster.zip"
+    with zipfile.ZipFile(zip_file, 'w') as zf:
+        zf.writestr("PortMaster/PortMaster.sh", "new launcher\n")
+
+    with open(launcher) as running:
+        assert hm.install_port(str(zip_file)) == 0
+        assert running.read() == "old launcher\n"
+
+    assert launcher.read_text() == "new launcher\n"
+    assert not any(path.name.endswith(".new") for path in launcher.parent.iterdir())
