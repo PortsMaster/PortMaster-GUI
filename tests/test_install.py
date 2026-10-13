@@ -444,3 +444,88 @@ def test_gui_shows_testing_port_screenshot(hm, hm_dirs, tmp_path):
 
     gui = SimpleNamespace(hm=hm)
     assert PortInfoMixin.get_port_image(gui, "testport.zip") == hm_dirs['ports_dir'] / "testport" / "screenshot.png"
+
+
+################################################################################
+## Installing from a url (harbourmaster install https://..., themes, autoinstall links)
+@pytest.fixture
+def url_server(make_hm, monkeypatch, tmp_path):
+    from harbourmaster.util import net
+
+    server = SimpleNamespace(files={}, md5s={}, downloads=[], hm=make_hm(offline=False))
+
+    def download(file_name, file_url, md5_source=None, md5_result=None, callback=None, no_check=False):
+        server.downloads.append((file_url, md5_source))
+        if file_url not in server.files:
+            return None
+
+        file_name.write_bytes(server.files[file_url])
+        if md5_result is not None:
+            md5_result[0] = hashlib.md5(server.files[file_url]).hexdigest()
+
+        return file_name
+
+    monkeypatch.setattr(net, "download", download)
+    monkeypatch.setattr(net, "fetch_text", lambda url: server.md5s.get(url))
+    return server
+
+
+def test_install_from_url(url_server, hm_dirs):
+    url = "https://example.com/files/testport.zip"
+    url_server.files[url] = zip_bytes(basic_port_files())
+
+    assert url_server.hm.install_port(url) == 0
+
+    url_server.hm.load_ports()
+    status = url_server.hm.installed_ports["testport.zip"]['status']
+    assert status['source'] == "url"
+    assert status['url'] == url
+    assert status['md5'] == hashlib.md5(url_server.files[url]).hexdigest()
+
+
+def test_install_from_md5_url(url_server, hm_dirs):
+    url = "https://example.com/files/testport.zip"
+    url_server.files[url] = zip_bytes(basic_port_files())
+    url_server.md5s[url + ".md5"] = hashlib.md5(url_server.files[url]).hexdigest() + "  testport.zip\n"
+
+    assert url_server.hm.install_port(url + ".md5") == 0
+
+    ## The zip next to the .md5 is downloaded and checked against it.
+    assert url_server.downloads == [(url, hashlib.md5(url_server.files[url]).hexdigest())]
+    assert "Test Port.sh" in ports_left(hm_dirs)
+
+
+def test_install_from_md5_url_without_md5(url_server, callback):
+    assert url_server.hm.install_port("https://example.com/files/testport.zip.md5") == 255
+    assert callback.message_boxes[-1] == "Unable to download verification file."
+    assert url_server.downloads == []
+
+
+def test_install_from_url_not_a_zip(url_server, callback):
+    assert url_server.hm.install_port("https://example.com/files/readme.txt") == 255
+    assert callback.message_boxes[-1] == "Unable to download non zip files."
+
+
+def test_install_from_url_download_fails(url_server, hm_dirs):
+    assert url_server.hm.install_port("https://example.com/files/missing.zip") == 255
+    assert ports_left(hm_dirs) == []
+
+
+def test_install_from_url_cleans_the_file_name(url_server):
+    url = "https://example.com/files/Test%20Port+Deluxe.zip"
+    url_server.files[url] = zip_bytes(basic_port_files())
+
+    assert url_server.hm.install_port(url) == 0
+
+    url_server.hm.load_ports()
+    assert list(url_server.hm.installed_ports) == ["test.port.deluxe.zip"]
+
+
+def test_install_theme_from_url_removes_the_download(url_server):
+    url = "https://example.com/themes/Shiny.theme.zip"
+    url_server.files[url] = zip_bytes({"Shiny/theme.json": json.dumps({"#info": {"name": "Shiny"}})})
+
+    assert url_server.hm.install_port(url) == 0
+
+    assert (url_server.hm.themes_dir / "Shiny" / "theme.json").is_file()
+    assert list(url_server.hm.temp_dir.iterdir()) == []

@@ -20,6 +20,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/pytest                           # all tests except `network`-marked ones
 .venv/bin/pytest -m "not sdl"              # skip tests that start SDL headless (dummy video driver)
 .venv/bin/pytest tests/test_harbour.py -k install   # single file / test
+.venv/bin/pytest --cov --cov-report=term-missing   # with coverage (.coveragerc); CI fails below the floor set in .github/workflows/tests.yaml
 python3 PortMaster/pugwash                 # run the GUI locally (windowed)
 python3 PortMaster/harbourmaster help      # CLI: list/ports/install/uninstall/runtime_list/device_info/...
 flake8 --select=E9,F63,F7,F82 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests   # the lint CI enforces; full flake8 still reports lots of existing style issues
@@ -47,6 +48,11 @@ Device info comes from `harbourmaster.hardware.HardwareDetector`, which reads th
 - `RecordingCallback`: captures messages and message boxes.
 - `pugwash`: the GUI modules (`PortMasterGUI`, scenes) for in-process GUI tests.
 - `start_fifo_gui`: runs a `pugwash` script in `fifo_control` mode and drives it the way `PortMasterDialog.txt` does.
+- `gui`: one headless `PortMasterGUI` for the whole session. SDL keeps class-level state (the default renderer), so a GUI can't be quit and made again in the same process.
+- `log_errors`: loguru ERROR messages logged during a test (pytest's `caplog` doesn't see loguru).
+- `port_files_with` / `write_raw_zip`: build broken or unusual port zips.
+
+Installing is covered in `test_install.py` (bad data, layouts, rollback, runtimes, URLs, themes, artwork), `test_fifo_install.py` (fifo_control installs must always answer `OKAY`/`FAIL`, never stay on `WAIT`) and `test_gui_commands.py`.
 
 Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.

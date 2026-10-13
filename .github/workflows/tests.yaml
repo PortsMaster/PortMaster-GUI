@@ -39,4 +39,5 @@ jobs:
             PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests
 
       - name: Run tests
-        run: pytest -v
+        # Coverage must not drop below the floor, raise it as coverage improves.
+        run: pytest -v --cov --cov-report=term-missing:skip-covered --cov-fail-under=48
