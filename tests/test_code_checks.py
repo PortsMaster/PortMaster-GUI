@@ -69,3 +69,15 @@ def test_check_finds_them():
         "        continue\n")
 
     assert _jumps_out_of_finally(tree) == [5, 12]
+
+
+def test_spruce_marker_does_not_shadow_platform_package():
+    ## pylibs/harbourmaster/platform.py only exists for spruce's launch.sh grep.
+    import harbourmaster.platform
+
+    marker = PM_DIR / "pylibs" / "harbourmaster" / "platform.py"
+    assert "PlatformSpruce" in marker.read_text()
+    assert ast.parse(marker.read_text()).body == []
+
+    assert harbourmaster.platform.__file__.endswith("__init__.py")
+    assert 'spruce' in harbourmaster.platform.HM_PLATFORMS
