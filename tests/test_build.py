@@ -42,8 +42,14 @@ def run(script, *args, check=True, **env):
 
 
 def git_status():
-    return subprocess.check_output(
+    """Everything git sees in the checkout, ignored files too (an old build left .mo files,
+    version, ...). Not coverage data: under pytest-cov any python the build runs writes one."""
+    output = subprocess.check_output(
         ["git", "status", "--porcelain", "--ignored", "--untracked-files=all"], cwd=str(REPO_DIR), universal_newlines=True)
+
+    return sorted(
+        line for line in output.splitlines()
+        if "/.coverage" not in "/" + line[3:] and "__pycache__" not in line)
 
 
 def zip_names(data):
@@ -63,12 +69,16 @@ def test_build(tmp_path_factory):
     return {
         'dist': dist,
         'output': output,
-        'changed': before != git_status() or pugwash != (PM_DIR / "pugwash").read_bytes(),
+        'status': (before, git_status()),
+        'pugwash_changed': pugwash != (PM_DIR / "pugwash").read_bytes(),
         }
 
 
 def test_checkout_untouched(test_build):
-    assert not test_build['changed']
+    before, after = test_build['status']
+    assert sorted(set(after) - set(before)) == []
+    assert sorted(set(before) - set(after)) == []
+    assert not test_build['pugwash_changed']
 
 
 def test_test_version(test_build):
