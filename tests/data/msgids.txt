@@ -412,6 +412,10 @@ msgstr ""
 msgid "Installation failed, removing files..."
 msgstr ""
 
+#, python-brace-format
+msgid "Installation failed: {reason}"
+msgstr ""
+
 msgid "Installed"
 msgstr ""
 
@@ -921,6 +925,20 @@ msgid "Your OS is not supported by PortMaster."
 msgstr ""
 
 msgid "Your device has less than 1GB of RAM."
+msgstr ""
+
+#, python-brace-format
+msgid "illegal file {file_name}"
+msgstr ""
+
+msgid "the port has no directory"
+msgstr ""
+
+msgid "the port has no launch script"
+msgstr ""
+
+#, python-brace-format
+msgid "unable to load {file_name}"
 msgstr ""
 
 msgid "x86 64bit"

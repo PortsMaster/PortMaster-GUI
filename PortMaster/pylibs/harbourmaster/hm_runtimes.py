@@ -128,9 +128,13 @@ class RuntimesMixin:
         logger.info(f"Installing {runtime_name}")
 
         if self.config['offline']:
+            ## Nothing can be checked or downloaded, an installed runtime is the best we can do.
+            if runtime_file.is_file():
+                return 0
+
             cprint(f"Unable to download {runtime} when offline")
             self.callback.message_box(_("Unable do download a runtime when in offline mode."))
-            return 0
+            return 255
 
         if runtime_file.is_file():
             runtime_status = 'Unverified'
@@ -227,19 +231,19 @@ class RuntimesMixin:
                 runtime_url = runtime_remote_info['url']
                 runtime_md5 = runtime_remote_info['md5']
 
-                runtime_file = download(runtime_file, runtime_url, md5_source=runtime_md5, callback=self.callback)
+                ## download() returns None when it fails (http error, md5 mismatch, ...)
+                if download(runtime_file, runtime_url, md5_source=runtime_md5, callback=self.callback) is not None:
+                    self.runtimes_info[runtime]['local'] = {
+                        "arch": self.device['primary_arch'],
+                        "md5": runtime_md5,
+                        "status": "Verified"
+                        }
 
-                self.runtimes_info[runtime]['local'] = {
-                    "arch": self.device['primary_arch'],
-                    "md5": runtime_md5,
-                    "status": "Verified"
-                    }
+                    download_successfull = True
 
-                download_successfull = True
+                    self.platform.runtime_install(runtime, [runtime_file])
 
-                self.platform.runtime_install(runtime, [runtime_file])
-
-                self.save_config()
+                    self.save_config()
 
             if self.callback.was_cancelled or not download_successfull:
                 if runtime_file.is_file():

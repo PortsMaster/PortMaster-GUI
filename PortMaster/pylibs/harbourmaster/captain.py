@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import zipfile
 
+from gettext import gettext as _
 from pathlib import Path
 
 # Included imports
@@ -42,17 +43,17 @@ def check_port(port_name, zip_file, extra_info=None):
             if file_info.filename.startswith('/'):
                 ## Sneaky
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if file_info.filename.startswith('../'):
                 ## Little
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting installation.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if '/../' in file_info.filename:
                 ## Shits
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if '/' in file_info.filename:
                 parts = file_info.filename.split('/')
@@ -104,20 +105,23 @@ def check_port(port_name, zip_file, extra_info=None):
 
         if len(dirs) == 0:
             logger.error(f"Port {port_name} has no directories, aborting.")
-            raise BadPort()
+            raise BadPort(_("the port has no directory"))
 
         if len(scripts) == 0:
             logger.error(f"Port {port_name} has no scripts, aborting.")
-            raise BadPort()
+            raise BadPort(_("the port has no launch script"))
 
         if port_info_file is not None:
             port_info_data = json_safe_loads(zf.read(port_info_file).decode('utf-8'))
 
             if not isinstance(port_info_data, dict):
                 logger.error(f"Unable to load port.json file from {port_info_file}")
-                raise BadPort()
+                raise BadPort(_("unable to load {file_name}").format(file_name=port_info_file))
 
             port_info = port_info_load(port_info_data)
+            if port_info is None:
+                logger.error(f"Unable to use the port.json file from {port_info_file}")
+                raise BadPort(_("unable to load {file_name}").format(file_name=port_info_file))
 
         else:
             port_info_data = None

@@ -182,6 +182,9 @@ class CallbackMixin:
             cancel_text = _("Cancel")
 
         if self.message_box_disable:
+            ## Nobody gets to see the box (eg: fifo_control installs), but the messages window still can.
+            self.message(message)
+
             if want_cancel:
                 return False
 

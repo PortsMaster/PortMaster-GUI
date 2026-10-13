@@ -256,10 +256,18 @@ class FifoControlMixin:
             fifo_config['done-file'].write_text("FAIL")
             return
 
-        with self.enable_messages():
-            with self.enable_cancellable(False):
-                result = self.run_task(self.hm.check_runtime, args[0])
-                fifo_config['done-file'].write_text(result and "FAIL" or "OKAY")
+        ## Always answer, the shell script waits until the done file changes.
+        result = 255
+        try:
+            with self.enable_messages():
+                with self.enable_cancellable(False):
+                    result = self.run_task(self.hm.check_runtime, args[0])
+
+        except Exception:
+            logger.exception(f"fifo: check_runtime {args[0]} failed")
+
+        finally:
+            fifo_config['done-file'].write_text(result == 0 and "OKAY" or "FAIL")
 
     def fifo_install(self, fifo_config, args):
         if self.hm is None:
@@ -271,12 +279,21 @@ class FifoControlMixin:
             fifo_config['done-file'].write_text("FAIL")
             return
 
-        with self.enable_messages():
-            with self.enable_cancellable(False):
-                with self.disable_messagebox():
-                    result = self.run_task(self.hm.install_port, args[0])
-                    logger.debug(f"result: {result}")
-                    fifo_config['done-file'].write_text(result and "FAIL" or "OKAY")
+        ## Always answer, the shell script waits until the done file changes. A cancelled
+        ## install (CancelEvent is swallowed by enable_cancellable) leaves result as a failure.
+        result = 255
+        try:
+            with self.enable_messages():
+                with self.enable_cancellable(False):
+                    with self.disable_messagebox():
+                        result = self.run_task(self.hm.install_port, args[0])
+                        logger.debug(f"result: {result}")
+
+        except Exception:
+            logger.exception(f"fifo: install {args[0]} failed")
+
+        finally:
+            fifo_config['done-file'].write_text(result == 0 and "OKAY" or "FAIL")
 
     fifo_commands = {
         'register_set_info': fifo_reg_set_info,

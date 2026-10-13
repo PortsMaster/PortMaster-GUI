@@ -150,6 +150,7 @@ class InstallMixin:
         """
         undo_data = []
         is_successs = False
+        failure_reason = None
 
         port_nice_name = download_info.get('attr', {}).get('title', download_info['name'])
         if port_nice_name == '':
@@ -315,7 +316,14 @@ class InstallMixin:
 
         except HarbourException as err:
             is_successs = False
-            pass
+            failure_reason = str(err) or err.__class__.__name__
+            logger.error(f"Installing {port_nice_name} failed: {failure_reason}")
+
+        except Exception as err:
+            ## Anything else (not a zip, disk full, ...), keep the traceback for the log.
+            is_successs = False
+            failure_reason = str(err) or err.__class__.__name__
+            logger.exception(f"Installing {port_nice_name} failed: {failure_reason}")
 
         finally:
             if do_delete:
@@ -335,6 +343,9 @@ class InstallMixin:
 
                         elif undo_file.is_dir():
                             shutil.rmtree(undo_file)
+
+                if failure_reason is not None:
+                    self.callback.message(_("Installation failed: {reason}").format(reason=failure_reason))
 
                 self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
 
@@ -560,10 +571,10 @@ class InstallMixin:
                         item_path.unlink()
 
         except OSError as err:
+            logger.error(f"Uninstalling {port_info_name} failed: {err}")
             self.callback.message_box(_("Error uninstalling {port_name}\n\n{error}").format(port_name=port_info_name, error=str(err)))
             del port_loc[port_name.casefold()]
             return 1
 
-        finally:
-            self.callback.message_box(_("Successfully uninstalled {port_name}").format(port_name=port_info_name))
-            return 0
+        self.callback.message_box(_("Successfully uninstalled {port_name}").format(port_name=port_info_name))
+        return 0

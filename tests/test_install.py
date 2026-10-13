@@ -65,7 +65,6 @@ def test_unusable_port_is_rejected(case, hm, hm_dirs, tmp_path, callback):
     assert hm.installed_ports == {}
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: install failures are not logged or explained, only a generic message box")
 @pytest.mark.parametrize("case", sorted(UNUSABLE))
 def test_unusable_port_reason_is_reported(case, hm, tmp_path, callback, log_errors):
     zip_file = UNUSABLE[case](tmp_path)
@@ -93,16 +92,7 @@ ODD_TYPES = {
     'genres_mixed':  {"attr": {"genres": ["puzzle", 7, None]}},
     }
 
-## Currently rejected or breaking the ports list.
-ODD_TYPES_BROKEN = {
-    'genres_text', 'porter_number', 'runtime_number', 'reqs_text', 'arch_text', 'desc_number',
-    'image_text', 'genres_mixed'}
-
-
-@pytest.mark.parametrize("case", [
-    pytest.param(case, marks=pytest.mark.xfail(strict=True, reason="BUG: port.json with odd types is rejected or breaks the ports list"))
-    if case in ODD_TYPES_BROKEN else case
-    for case in sorted(ODD_TYPES)])
+@pytest.mark.parametrize("case", sorted(ODD_TYPES))
 def test_odd_port_json_types(case, hm, hm_dirs, tmp_path):
     zip_file = write_port_zip(tmp_path / "testport.zip", port_files_with(**ODD_TYPES[case]))
 
@@ -243,7 +233,6 @@ def test_failure_part_way_rolls_back(failing_extract, hm, hm_dirs, tmp_path, cal
     assert callback.message_boxes[-1] == "Port testport.zip installed failed."
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: install failures are not logged or explained, only a generic message box")
 def test_failure_part_way_is_reported(failing_extract, hm, tmp_path, callback, log_errors):
     zip_file = write_port_zip(tmp_path / "testport.zip", basic_port_files())
 
@@ -336,7 +325,6 @@ def test_runtime_already_verified_is_not_downloaded(online_hm, runtime_port, run
     assert any(m.startswith("Verified ") for m in callback.messages)
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: a failed runtime download is reported as a success and marked Verified")
 def test_runtime_download_failure_is_reported(online_hm, runtime_port, runtime_server, callback):
     runtime_server.result = None
 
@@ -356,7 +344,6 @@ def test_unknown_runtime(online_hm, tmp_path, callback, log_errors):
     assert any("Unknown runtime" in e for e in log_errors)
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: offline, a missing runtime is reported as installed")
 def test_runtime_missing_while_offline(online_hm, runtime_port, runtime_server, callback):
     online_hm.config['offline'] = True
 
@@ -409,10 +396,6 @@ def test_install_theme(hm, tmp_path, callback):
 ################################################################################
 ## Artwork of ports that are not in any source (testing ports): real port zips ship
 ## <port dir>/screenshot.png but their own port.json has an empty "image".
-ARTWORK_BUG = pytest.mark.xfail(strict=True, reason="BUG: ports not in a source never show their own screenshot")
-
-
-@ARTWORK_BUG
 @pytest.mark.parametrize("image_name", ["screenshot.png", "screenshot.jpg"])
 def test_testing_port_screenshot(image_name, hm, hm_dirs, tmp_path):
     files = port_files_with(attr={"image": {}}, extra={f"testport/{image_name}": b"image data"})
@@ -424,7 +407,6 @@ def test_testing_port_screenshot(image_name, hm, hm_dirs, tmp_path):
     assert images == {'screenshot': hm_dirs['ports_dir'] / "testport" / image_name}
 
 
-@ARTWORK_BUG
 def test_testing_port_screenshot_from_port_json(hm, hm_dirs, tmp_path):
     files = port_files_with(attr={"image": {"screenshot": "art/shot.png"}}, extra={"testport/art/shot.png": b"image data"})
     assert hm.install_port(str(write_port_zip(tmp_path / "testport.zip", files))) == 0
@@ -453,7 +435,6 @@ def test_source_port_keeps_the_source_screenshot(online_hm, hm_dirs):
     assert online_hm.port_images("100liljumps.zip") == {'screenshot': source_image}
 
 
-@ARTWORK_BUG
 def test_gui_shows_testing_port_screenshot(hm, hm_dirs, tmp_path):
     from pugwash.app_ports import PortInfoMixin
 

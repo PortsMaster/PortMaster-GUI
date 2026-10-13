@@ -71,7 +71,6 @@ def test_install_bad_zip_fails(make_zip, fifo, hm_dirs, tmp_path):
     assert list(hm_dirs['ports_dir'].iterdir()) == []
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: in fifo mode message boxes are off, so why an install failed is never shown")
 def test_install_failure_reason_is_shown(fifo, tmp_path):
     fifo.install(str(write_raw_zip(tmp_path / "testport.zip", b"garbage")))
 
@@ -92,7 +91,6 @@ def test_install_without_harbourmaster(fifo):
     assert fifo.install("/some/port.zip") == "FAIL"
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: an exception during a fifo install leaves the done file on WAIT")
 @pytest.mark.parametrize("error", [
     RuntimeError("something broke"),
     harbourmaster.CancelEvent(),
@@ -124,7 +122,6 @@ def test_check_runtime_without_arguments(fifo):
     assert fifo.check_runtime() == "FAIL"
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: an exception during a fifo runtime check leaves the done file on WAIT")
 def test_check_runtime_error_always_answers(fifo, press_a, monkeypatch):
     def check_runtime(runtime, port_name=None, in_install=False):
         raise RuntimeError("something broke")

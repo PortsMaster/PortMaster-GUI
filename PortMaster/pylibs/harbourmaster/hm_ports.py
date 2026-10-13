@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 import json
+from pathlib import Path
 from gettext import gettext as _
 from loguru import logger
 from . import config as hm_config
@@ -916,6 +917,41 @@ class PortsMixin:
                 return {
                     image_type: (source._images_dir / image_file)
                     for image_type, image_file in source.images[name_cleaner(port_name)].items()}
+
+        return self._installed_port_images(port_name)
+
+    def _installed_port_images(self, port_name):
+        """
+        The screenshot shipped inside an installed port, for ports no source has
+        images for (eg: testing ports). Port zips carry <port dir>/screenshot.png,
+        but their own port.json usually leaves "image" empty.
+        """
+        port_info = self.installed_ports.get(name_cleaner(port_name))
+        if port_info is None:
+            return None
+
+        port_json = port_info.get('files', {}).get('port.json')
+        if not isinstance(port_json, str):
+            return None
+
+        port_dir = self._ports_dir_file(port_json).parent
+
+        candidates = []
+        image = port_info.get('attr', {}).get('image', {})
+        if isinstance(image, dict) and isinstance(image.get('screenshot'), str):
+            candidates.append(image['screenshot'])
+
+        candidates += ['screenshot.png', 'screenshot.jpg']
+
+        for candidate in candidates:
+            candidate_path = Path(candidate)
+
+            ## Stay inside the port's own directory.
+            if candidate_path.is_absolute() or '..' in candidate_path.parts:
+                continue
+
+            if (port_dir / candidate_path).is_file():
+                return {'screenshot': port_dir / candidate_path}
 
         return None
 

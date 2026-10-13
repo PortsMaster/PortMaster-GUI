@@ -114,7 +114,6 @@ def test_uninstall_unknown(hm, callback):
     assert callback.message_boxes[-1] == "Unknown port missing.zip"
 
 
-@pytest.mark.xfail(strict=True, reason="BUG: uninstall_port's `finally: return 0` hides errors and always reports success")
 def test_uninstall_error_is_reported(hm, hm_dirs, port_zip, monkeypatch):
     hm.install_port(str(port_zip))
     hm.load_ports()
