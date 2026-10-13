@@ -5,7 +5,7 @@
 import json
 import os
 from pathlib import Path
-from pugwash import tasks
+from pugwash import autoinstall, tasks
 from loguru import logger
 from pugwash.scenes import DialogSelectionList
 from gettext import gettext as _
@@ -15,6 +15,8 @@ class FifoControlMixin:
     """
     PortMasterGUI methods: fifo_control: shell scripts drive the GUI through a named pipe (see PortMasterDialog.txt).
     """
+
+    SELECTION_CANCELLED = object()
 
     ## Fifo Control
     def fifo_reg_set_info(self, fifo_config, args):
@@ -114,6 +116,21 @@ class FifoControlMixin:
                 logger.warning(f"unknown option {args[i]}")
                 del args[i]
 
+        if register is None:
+            register = {}
+
+        selected = self.show_selection_list(config, register)
+        if selected is self.SELECTION_CANCELLED:
+            fifo_config['done-file'].write_text("CANCEL")
+            return
+
+        fifo_config['done-file'].write_text(str(selected))
+
+    def show_selection_list(self, config, register):
+        """
+        Shows a DialogSelectionList until A (returns the selected key) or, with
+        config['want_cancel'], B (returns SELECTION_CANCELLED).
+        """
         ## This fixes a bug :D
         self.events.handle_events()
 
@@ -124,21 +141,17 @@ class FifoControlMixin:
             try:
                 while True:
                     if self.events.was_pressed('A'):
-                        temp = selection_list.selected_option()
-                        logger.debug(temp)
-                        fifo_config['done-file'].write_text(str(temp))
-                        return
+                        selected = selection_list.selected_option()
+                        logger.debug(selected)
+                        return selected
 
-                    if config['want_cancel'] and self.events.was_pressed('B'):
-                        fifo_config['done-file'].write_text("CANCEL")
-                        return
+                    if config.get('want_cancel', False) and self.events.was_pressed('B'):
+                        return self.SELECTION_CANCELLED
 
                     self.do_loop()
 
             finally:
                 self.pop_scene()
-
-        fifo_config['done-file'].write_text("FAIL")
 
     def fifo_messages_begin(self, fifo_config, args):
         if self.message_box_depth > 0:
@@ -301,6 +314,48 @@ class FifoControlMixin:
         finally:
             fifo_config['done-file'].write_text(result == 0 and "OKAY" or "FAIL")
 
+    def fifo_autoinstall(self, fifo_config, args):
+        """
+        autoinstall <dir> [<dir>...]
+
+        Installs everything in the autoinstall directories, then shows a summary until A is
+        pressed. Answers OKAY (all installed), FAIL (something failed) or NONE (nothing to do).
+        """
+        if self.hm is None:
+            logger.debug("autoinstall requested with no harbourmaster.")
+            fifo_config['done-file'].write_text("FAIL")
+            return
+
+        ## Always answer, the shell script waits until the done file changes.
+        answer = "FAIL"
+        try:
+            if not autoinstall.has_autoinstall_files(args):
+                answer = "NONE"
+                return
+
+            results = []
+            with self.enable_messages():
+                with self.enable_cancellable(False):
+                    with self.disable_messagebox():
+                        results = self.run_task(autoinstall.run_autoinstall, self.hm, self, args)
+
+            if any(result.ok for result in results):
+                self.request_frontend_refresh()
+
+            if len(results) > 0 and all(result.ok for result in results):
+                answer = "OKAY"
+
+            self.show_selection_list({
+                'want_description': True,
+                'title': _("Auto-installation"),
+                }, autoinstall.summary_register(results))
+
+        except Exception:
+            logger.exception(f"fifo: autoinstall {args} failed")
+
+        finally:
+            fifo_config['done-file'].write_text(answer)
+
     fifo_commands = {
         'register_set_info': fifo_reg_set_info,
         'register_clear_info': fifo_reg_clear_info,
@@ -319,6 +374,7 @@ class FifoControlMixin:
         'message_box': fifo_message_box,
         'check_runtime': fifo_check_runtime,
         'install': fifo_install,
+        'autoinstall': fifo_autoinstall,
         }
 
     def do_fifo_control(self, config, argv):

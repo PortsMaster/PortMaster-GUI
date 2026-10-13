@@ -1,0 +1,155 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# The PortMaster launcher, shared by every CFW.
+#
+# The PortMaster.sh / <cfw>/PortMaster.txt stubs only set $controlfolder and source this
+# file, naming the folder with that CFW's hooks (if it has any):
+#
+#   source "$controlfolder/utils/pm_launch.txt" [muos|miyoo|spruce|trimui|retrodeck]
+#
+# Everything here ships in PortMaster.zip and is updated with it, the stubs are copied
+# into place by the platform hooks (pylibs/harbourmaster/platform) and rarely change.
+#
+# Each step that differs between CFWs is a pm_hook_* function. The defaults below are
+# what the generic PortMaster.sh (ArkOS, ROCKNIX, JELOS, knulli, ...) does,
+# <cfw>/launch_hooks.txt redefines the ones that CFW needs.
+
+PM_LAUNCH_CFW="$1"
+
+## -- 1. Default hooks.
+
+## Where ESUDO, CFW_NAME, DEVICE_ARCH, directory and friends come from.
+pm_hook_env() {
+  source "$controlfolder/control.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+
+  get_controls
+}
+
+## The autoinstall directories, one per line.
+pm_hook_autoinstall_dirs() {
+  echo "$controlfolder/autoinstall"
+  echo "/$directory/ports/autoinstall"
+}
+
+## After the log and splash are up, before autoinstall.
+pm_hook_pre_launch() {
+  export TERM=linux
+  $ESUDO chmod 666 $CUR_TTY
+  printf "\033c" > $CUR_TTY
+
+  echo "Starting PortMaster." > $CUR_TTY
+
+  $ESUDO chmod -R +x .
+}
+
+## One run of the GUI, called again while it asks for a restart (.pugwash-reboot).
+pm_hook_run_pugwash() {
+  export PYSDL2_DLL_PATH="/usr/lib"
+  $ESUDO ./pugwash $PORTMASTER_CMDS
+}
+
+## After the GUI has quit for good (or autoinstall finished with no internet).
+pm_hook_post_launch() {
+  $ESUDO systemctl restart oga_events &
+  printf "\033c" > $CUR_TTY
+}
+
+## Let the frontend see added / removed ports, pugwash leaves a .<frontend>-refresh marker.
+pm_hook_frontend_refresh() {
+  if [ -f "${controlfolder}/.emustation-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.emustation-refresh"
+    $ESUDO systemctl restart emustation
+  elif [ -f "${controlfolder}/.weston-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.weston-refresh"
+    $ESUDO systemctl restart ${UI_SERVICE}
+  elif [ -f "${controlfolder}/.sway-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.sway-refresh"
+    $ESUDO systemctl restart ${UI_SERVICE}
+  elif [ -f "${controlfolder}/.emulationstation-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.emulationstation-refresh"
+    $ESUDO systemctl restart emulationstation
+  elif [ -f "${controlfolder}/.batocera-es-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.batocera-es-refresh"
+    # BROKEN :(
+    # batocera-es-swissknife --restart
+    curl http://localhost:1234/reloadgames
+  fi
+}
+
+## Set to run the GUI once, ignoring .pugwash-reboot (spruce relaunches PortMaster itself).
+PM_RUN_ONCE=""
+
+## -- 2. The CFW's own hooks.
+if [ -n "$PM_LAUNCH_CFW" ]; then
+  source "$controlfolder/$PM_LAUNCH_CFW/launch_hooks.txt"
+fi
+
+## -- 3. Setup.
+pm_hook_env
+
+## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
+CUR_TTY="${PM_CUR_TTY:-/dev/tty0}"
+
+cd "$controlfolder"
+
+> "$controlfolder/log.txt" && exec > >(tee "$controlfolder/log.txt") 2>&1
+
+source "$controlfolder/utils/pmsplash.txt"
+
+pm_hook_pre_launch
+
+## -- 4. Autoinstall: installs whatever is in the autoinstall directories. pugwash does the
+##       work (fifo command "autoinstall", see pugwash/autoinstall.py) and shows a summary.
+PM_AUTOINSTALL_DIRS=()
+while IFS= read -r autoinstall_dir; do
+  [ -z "$autoinstall_dir" ] && continue
+  mkdir -p "$autoinstall_dir" 2>/dev/null
+  PM_AUTOINSTALL_DIRS+=("$autoinstall_dir")
+done < <(pm_hook_autoinstall_dirs)
+
+if [ -n "$(find "${PM_AUTOINSTALL_DIRS[@]}" -maxdepth 1 -type f \( -iname '*.zip' -o -iname '*.squashfs' \) 2>/dev/null)" ]; then
+  source "$controlfolder/PortMasterDialog.txt"
+
+  GW=$(PortMasterIPCheck)
+  PortMasterDialogInit "no-check"
+
+  ## Waits until the summary is closed.
+  PortMasterDialog "autoinstall" "${PM_AUTOINSTALL_DIRS[@]}"
+
+  PortMasterDialogExit
+
+  if [ -z "$GW" ]; then
+    ## No internet, so nothing else PortMaster can do.
+    pm_hook_post_launch
+    pm_hook_frontend_refresh
+    exit 0
+  fi
+fi
+
+## -- 5. The GUI. It leaves .pugwash-reboot behind when it wants to be restarted (self-update, theme change).
+
+## To help with testing.
+# export PORTMASTER_CMDS="--debug"
+# export HM_PERFTEST="Y"
+
+$ESUDO rm -f "${controlfolder}/.pugwash-reboot"
+while true; do
+  pm_hook_run_pugwash
+
+  if [ -n "$PM_RUN_ONCE" ] || [ ! -f "${controlfolder}/.pugwash-reboot" ]; then
+    break
+  fi
+
+  $ESUDO rm -f "${controlfolder}/.pugwash-reboot"
+done
+
+## -- 6. Tidy up.
+unset LD_LIBRARY_PATH
+unset SDL_GAMECONTROLLERCONFIG
+[ -n "$OLD_PATH" ] && PATH="$OLD_PATH"
+
+pm_hook_post_launch
+pm_hook_frontend_refresh

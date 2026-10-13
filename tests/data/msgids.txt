@@ -11,6 +11,14 @@ msgstr ""
 msgid "** NO PORTS FOUND **"
 msgstr ""
 
+#, python-brace-format
+msgid "- FAILURE: {name}"
+msgstr ""
+
+#, python-brace-format
+msgid "- SUCCESS: {name}"
+msgstr ""
+
 msgid ""
 "A special port has been installed called \"Restore PortMaster.sh\"\n"
 "\n"
@@ -115,6 +123,9 @@ msgid "Auto"
 msgstr ""
 
 msgid "Auto Update."
+msgstr ""
+
+msgid "Auto-installation"
 msgstr ""
 
 msgid "Availability:"
@@ -301,6 +312,9 @@ msgstr ""
 msgid "Esperanto"
 msgstr ""
 
+msgid "Everything installed successfully."
+msgstr ""
+
 msgid "Exit"
 msgstr ""
 
@@ -308,6 +322,10 @@ msgid "Experimental"
 msgstr ""
 
 msgid "Experimental Ports: "
+msgstr ""
+
+#, python-brace-format
+msgid "FAILED: {name}"
 msgstr ""
 
 msgid "Featured Ports"
@@ -342,6 +360,9 @@ msgid "Fetching latest porters info."
 msgstr ""
 
 msgid "Fetching latest ports info data."
+msgstr ""
+
+msgid "File not found."
 msgstr ""
 
 msgid "Files Required"
@@ -412,11 +433,18 @@ msgstr ""
 msgid "Installation failed, removing files..."
 msgstr ""
 
+msgid "Installation failed, see log.txt for details."
+msgstr ""
+
 #, python-brace-format
 msgid "Installation failed: {reason}"
 msgstr ""
 
 msgid "Installed"
+msgstr ""
+
+#, python-brace-format
+msgid "Installed {download_name}."
 msgstr ""
 
 msgid "Installing"
@@ -435,6 +463,12 @@ msgid "Installing {port_name}"
 msgstr ""
 
 msgid "Interface"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"It is for the wrong architecture ({zip_arch}, this device is {device_arch}), "
+"it was deleted."
 msgstr ""
 
 msgid "Italian"
@@ -523,6 +557,13 @@ msgid "Not Installed"
 msgstr ""
 
 msgid "Not Used"
+msgstr ""
+
+msgid "Not compatible with this device."
+msgstr ""
+
+#, python-brace-format
+msgid "OK: {name}"
 msgstr ""
 
 msgid "Okay"
@@ -732,6 +773,11 @@ msgstr ""
 msgid "Simulation"
 msgstr ""
 
+msgid ""
+"Some files failed to install, select them to see why. They were left in the "
+"autoinstall directory."
+msgstr ""
+
 msgid "Sort:"
 msgstr ""
 
@@ -781,6 +827,9 @@ msgid ""
 msgstr ""
 
 msgid "This can break stuff, don't touch unless you know what you are doing."
+msgstr ""
+
+msgid "This is not a valid zip file."
 msgstr ""
 
 msgid ""
@@ -945,11 +994,26 @@ msgid "x86 64bit"
 msgstr ""
 
 #, python-brace-format
+msgid "{installed} installed, {failed} failed"
+msgstr ""
+
+#, python-brace-format
 msgid "{item_name} (Selected)"
 msgstr ""
 
 #, python-brace-format
 msgid "{lang_name} (Selected)"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"{name} failed to install:\n"
+"\n"
+"{reason}"
+msgstr ""
+
+#, python-brace-format
+msgid "{name} installed successfully."
 msgstr ""
 
 #, python-brace-format

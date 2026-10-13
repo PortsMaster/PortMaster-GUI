@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# muOS launcher hooks, sourced by utils/pm_launch.txt (see there for what each hook does).
+
+## Python lives in /opt/python, and there's no control.txt: device_info.txt + mod_muOS.txt.
+pm_hook_env() {
+  if [ ! -z "$(df | grep '/mnt/sdcard')" ]; then
+    directory="mnt/sdcard"
+  else
+    directory="mnt/mmc"
+  fi
+
+  OLD_PATH="$PATH"
+  export PATH="/opt/python/bin:$PATH"
+  export LD_LIBRARY_PATH="/opt/python/lib:$LD_LIBRARY_PATH"
+  ESUDO=""
+  ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k"
+  export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+  # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+  source "$controlfolder/device_info.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+}
+
+pm_hook_pre_launch() {
+  export TERM=linux
+
+  echo "Starting PortMaster." > $CUR_TTY
+
+  $ESUDO chmod -R +x .
+}
+
+pm_hook_run_pugwash() {
+  $ESUDO ./pugwash $PORTMASTER_CMDS
+
+  # Do it twice, it's just as nice!
+  cat /dev/zero > /dev/fb0 2>/dev/null
+  cat /dev/zero > /dev/fb0 2>/dev/null
+}
+
+pm_hook_post_launch() {
+  :
+}
+
+pm_hook_frontend_refresh() {
+  if [ -f "${controlfolder}/.muos-refresh" ]; then
+    rm -f "${controlfolder}/.muos-refresh"
+    # HULK SMASH
+    "${controlfolder}/muos/image_smash.txt"
+  fi
+}

@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# spruce launcher hooks, sourced by utils/pm_launch.txt (see there for what each hook does).
+
+pm_hook_env() {
+  export HOME="/mnt/SDCARD"
+  export PATH="/mnt/SDCARD/Persistent/portmaster/bin/:$PATH"
+  export LD_LIBRARY_PATH="/mnt/SDCARD/Persistent/portmaster/lib:$LD_LIBRARY_PATH"
+  PM_PYTHON="/mnt/SDCARD/Persistent/portmaster/bin/python3"
+  export LD_PRELOAD=""
+  directory="/mnt/SDCARD/Roms/"
+
+  # Device-specific settings live on the spruce card.
+  [ -f /mnt/SDCARD/spruce/portmaster/portmaster.txt ] && source /mnt/SDCARD/spruce/portmaster/portmaster.txt
+
+  ESUDO=""
+  ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k"
+  export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+  # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+  source "$controlfolder/device_info.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+  export HOME="/mnt/SDCARD"
+}
+
+## spruce only has the one.
+pm_hook_autoinstall_dirs() {
+  echo "$controlfolder/autoinstall"
+}
+
+pm_hook_pre_launch() {
+  export TERM=linux
+
+  echo "Starting PortMaster."
+
+  $ESUDO chmod -R +x .
+}
+
+pm_hook_run_pugwash() {
+  if [ -x "$PM_PYTHON" ]; then
+    $ESUDO "$PM_PYTHON" ./pugwash $PORTMASTER_CMDS
+  else
+    $ESUDO ./pugwash $PORTMASTER_CMDS
+  fi
+}
+
+pm_hook_post_launch() {
+  :
+}
+
+pm_hook_frontend_refresh() {
+  :
+}
+
+# Run once; a self-update asks for a restart, spruce relaunches instead.
+PM_RUN_ONCE="Y"

@@ -177,6 +177,7 @@ class InstallMixin:
                         most_likely_an_r36s = _("HELLO.\n\nIT LOOKS LIKE YOU'RE MANUALLY INSTALLING A PORT THAT IS INCOMPATIBLE WITH YOUR DEVICE.\n\nIF YOU HAVE ISSUES, DO NOT REPORT THEM ON DISCORD, YOU WILL BE SUBJECT TO RIDICULE.\n\nARE YOU SURE YOU WANT TO RESUME INSTALLING?")
                         if self.callback.message_box(most_likely_an_r36s, want_cancel=True, cancel_text=_("Okay"), ok_text=_("Cancel")):
                             # HAHA, FUCK YOU.
+                            self.last_install_error = _("Not compatible with this device.")
                             return 255
 
             # Extra fix
@@ -346,6 +347,7 @@ class InstallMixin:
 
                 if failure_reason is not None:
                     self.callback.message(_("Installation failed: {reason}").format(reason=failure_reason))
+                    self.last_install_error = failure_reason
 
                 self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
 
@@ -378,6 +380,8 @@ class InstallMixin:
         return 0
 
     def install_port(self, port_name, md5_source=None):
+        self.last_install_error = None
+
         # Special HTTP download code.
         if port_name.startswith('http'):
             if self.config['offline']:
@@ -405,6 +409,7 @@ class InstallMixin:
             port_file = Path(port_name)
             if not port_file.is_file():
                 logger.error(f"Unable to find local file {port_name} for installation.")
+                self.last_install_error = _("File not found.")
                 return 255
 
             md5_result = hash_file(port_file)

@@ -91,6 +91,9 @@ class HarbourMaster(InfoMixin, PortsMixin, FeaturedMixin, InstallMixin, Runtimes
         self.runtimes_file = self.cfg_dir / "runtimes.json"
         self.need_restart  = False
 
+        ## Why the last install_port failed, for autoinstall's summary.
+        self.last_install_error = None
+
         self.sources = {}
         self.config = {
             'no-check': config.get('no-check', False),

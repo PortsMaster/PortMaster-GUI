@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# Miyoo launcher hooks, sourced by utils/pm_launch.txt (see there for what each hook does).
+
+pm_hook_env() {
+  ## HRMMM
+  if [ -d "/mnt/sdcard/spruce" ]; then
+    export HOME="/mnt/sdcard"
+    export PATH="/mnt/sdcard/Roms/.portmaster/bin/:$PATH"
+    export LD_LIBRARY_PATH="/mnt/sdcard/Roms/.portmaster/lib:$LD_LIBRARY_PATH"
+    export LD_PRELOAD=""
+    directory="/mnt/sdcard/Roms/PORTS64/"
+    export PYSDL2_DLL_PATH="/mnt/sdcard/Roms/.portmaster/lib/"
+  else
+    export HOME="/root"
+    export LD_PRELOAD=""
+    directory="/mnt/sdcard/MIYOO_EX"
+
+    # MIYOO_EXtra shit i need.
+    export PATH="/mnt/sdcard/MIYOO_EX/bin:$PATH"
+    export LD_LIBRARY_PATH="/mnt/sdcard/MIYOO_EX/lib:$LD_LIBRARY_PATH"
+    export PYSDL2_DLL_PATH="/mnt/sdcard/MIYOO_EX/lib/"
+
+    ## Python 3 runtime.
+    mkdir -p $HOME/python3
+    if [ -d $HOME/python3/bin ]; then
+      umount $HOME/python3
+    fi
+
+    mount /mnt/sdcard/MIYOO_EX/python_3.11.squashfs $HOME/python3
+    source $HOME/python3/bin/activate
+  fi
+
+  ESUDO=""
+  ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k"
+  export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+  # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+  source "$controlfolder/device_info.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+}
+
+pm_hook_pre_launch() {
+  export TERM=linux
+
+  pm_message "Starting PortMaster."
+
+  $ESUDO chmod -R +x .
+}
+
+pm_hook_run_pugwash() {
+  $ESUDO ./pugwash $PORTMASTER_CMDS
+}
+
+pm_hook_post_launch() {
+  :
+}
+
+pm_hook_frontend_refresh() {
+  :
+}

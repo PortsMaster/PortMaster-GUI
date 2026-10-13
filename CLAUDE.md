@@ -8,6 +8,7 @@ PortMaster is a port manager for Linux handheld devices (ArkOS, ROCKNIX, muOS, K
 
 - **Python app**: an SDL2 GUI (the `pugwash` package) plus a CLI (`harbourmaster.cli`), both built on the `harbourmaster` library. All of it lives in `PortMaster/pylibs/`. The device-facing entry points are the extension-less scripts `PortMaster/pugwash` and `PortMaster/harbourmaster`.
 - **Device-side shell layer**: `PortMaster/PortMaster.sh`, `control.txt`, `device_info.txt`, `mod_<CFW>.txt`, `libgl_<CFW>.txt` and per-CFW folders (`muos/`, `trimui/`, `batocera/`, `knulli/`, `miyoo/`, `spruce/`, `retrodeck/`). Ports' own launch scripts `source` `control.txt` on the device, so changes here affect every installed port, not just the GUI.
+- **Launchers**: `PortMaster/PortMaster.sh` and `<cfw>/PortMaster.txt` are stubs. They only set `$controlfolder`, then source `utils/pm_launch.txt`, the one shared launcher body: setup, autoinstall, the pugwash restart loop and the frontend refresh. A stub can name a CFW, and `<cfw>/launch_hooks.txt` then overrides that CFW's `pm_hook_*` functions. Platform hooks copy the stubs into place, so keep them tiny and put fixes in `pm_launch.txt` / `launch_hooks.txt`, which ship with every PortMaster.zip. Don't put hooks in `mod_<CFW>.txt`, because every port sources those. `tests/test_launchers.py` runs the launcher against a fake controlfolder.
 
 Everything ships as a zip. Bundled binaries (`gptokeyb*`, `xdelta3*`, `7zzs.*`, `innoextract.*`, `sdl2imgshow.*`, ...) are prebuilt; `BUILDING_STUFF.md` documents how to rebuild some of them.
 
@@ -98,7 +99,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 - `tasks.py`: threading helpers (dispatcher, `Task`, `DirectoryScanner`, `FifoReader`, `FrameStats`). It doesn't import SDL.
 - `sdl/`: the low-level SDL2 widget and rendering layer. It's pySDL2gui (port_gui), split by class group; `Region` in `sdl/region.py` is the themeable widget.
 
-**FIFO control**: `pugwash fifo_control` and `harbourmaster fifo_control` let shell scripts (e.g. `PortMasterDialog.txt`, used by `PortMaster.sh` for autoinstall) drive dialogs, progress, installs and runtime checks through a named pipe. See `pugwash/app_fifo.py`; a `tasks.FifoReader` thread reads the pipe.
+**FIFO control**: `pugwash fifo_control` and `harbourmaster fifo_control` let shell scripts (e.g. `PortMasterDialog.txt`, used by `PortMaster.sh` for autoinstall) drive dialogs, progress, installs and runtime checks through a named pipe. See `pugwash/app_fifo.py`; a `tasks.FifoReader` thread reads the pipe. Autoinstall is the fifo command `autoinstall <dir>...` (`pugwash/autoinstall.py`). It installs PortMaster.zip, then runtimes, squashfs and ports, then shows a summary page (a `selection_list_description` scene) and answers `OKAY`, `FAIL` or `NONE`.
 
 ## Threading model (GUI)
 
