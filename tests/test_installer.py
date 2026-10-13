@@ -309,6 +309,50 @@ def test_unreachable_target_changes_nothing(tmp_path, portmaster_zip):
     assert installer.calls() == []
 
 
+def run_failing(installer):
+    run_env = dict(installer.env, HOME=installer.home)
+    result = subprocess.run(
+        ["bash", str(INSTALLER)], cwd=str(installer.work), env=run_env, timeout=120,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+
+    assert result.returncode == 1, result.stdout
+    assert "Finished installing" not in result.stdout
+    return result.stdout
+
+
+def test_broken_unzip_changes_nothing(tmp_path, portmaster_zip, old_install):
+    ## spruce put an unzip needing glibc 2.34 first on PATH (TrimUI Smart Pro S, Brick):
+    ## the reset deleted PortMaster, unpacked nothing, and said "Finished".
+    installer = Installer(tmp_path, "arkos")
+    put_zip(installer, portmaster_zip)
+    pm = old_install(installer, "/opt/system/Tools")
+    write_exe(tmp_path / "bin" / "unzip", 'echo "unzip: /lib/libc.so.6: version \\`GLIBC_2.34\' not found" >&2\nexit 1\n')
+
+    output = run_failing(installer)
+
+    assert "nothing was installed" in output
+    assert "GLIBC_2.34" in output
+    assert (pm / "config" / "config.json").is_file()
+    assert (pm / "libs" / "godot.squashfs").read_text() == "runtime"
+    assert installer.calls() == []
+
+
+def test_unzip_that_unpacks_nothing(tmp_path, portmaster_zip, old_install):
+    ## Reads the zip fine but extracts nothing: stop before the reboot, runtimes kept.
+    installer = Installer(tmp_path, "rocknix")
+    put_zip(installer, portmaster_zip)
+    pm = old_install(installer, "/roms/ports")
+    real_unzip = shutil.which("unzip")
+    write_exe(tmp_path / "bin" / "unzip", f'[ "$1" = "-l" ] && exec "{real_unzip}" "$@"\nexit 0\n')
+
+    output = run_failing(installer)
+
+    assert "PortMaster is NOT installed" in output
+    assert (pm / "libs" / "godot.squashfs").read_text() == "runtime"
+    assert not (pm.parent / "temp_runtimes").exists()
+    assert "shutdown -r now" not in installer.calls()
+
+
 def test_full_installer_adds_runtimes(tmp_path, portmaster_zip):
     installer = Installer(tmp_path, "arkos")
     put_zip(installer, portmaster_zip)

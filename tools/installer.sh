@@ -215,6 +215,15 @@ esac
 $ESUDO chmod 666 $CUR_TTY
 printf "\033c" > $CUR_TTY
 
+## Everything below needs a working unzip, check it before anything is deleted. (spruce
+## put an unzip needing glibc 2.34 first on PATH, and the TrimUI Brick's BusyBox has
+## none: the reset went ahead, nothing was unpacked, and it still said "Finished".)
+if ! UNZIP_ERROR="$($ESUDO unzip -l "$TEMP_DIR/PortMaster.zip" 2>&1 > /dev/null)"; then
+  echo "Unable to read PortMaster.zip with unzip ($(command -v unzip || echo "no unzip found")), nothing was installed:" | tee -a $CUR_TTY
+  echo "$UNZIP_ERROR" | tee -a $CUR_TTY
+  exit 1
+fi
+
 ## Everything below works relative to here, never carry on from anywhere else.
 $ESUDO mkdir -p "$R$controlfolder"
 if ! cd "$R$controlfolder"; then
@@ -258,6 +267,15 @@ if [[ "${OS_NAME}" == "JELOS" ]] || [[ "${OS_NAME}" == "ROCKNIX" ]]; then
 fi
 
 $ESUDO unzip -o "$TEMP_DIR/PortMaster.zip" | tee -a $CUR_TTY
+
+if [ ! -f "$R$controlfolder/PortMaster/pugwash" ]; then
+  ## Don't leave the runtimes stranded in temp_runtimes/, nor carry on as if it worked.
+  $ESUDO mkdir -p "$R$controlfolder/PortMaster/libs"
+  $ESUDO mv "$R$controlfolder"/temp_runtimes/*.squashfs "$R$controlfolder/PortMaster/libs/" 2>/dev/null
+  $ESUDO rm -fR "$R$controlfolder/temp_runtimes/"
+  echo "Unpacking PortMaster.zip failed, PortMaster is NOT installed. Run the installer again, or install PortMaster another way." | tee -a $CUR_TTY
+  exit 1
+fi
 
 ## -- This CFW's own launcher and control.txt ------------------------------------
 PORTMASTER_DIR="$R$controlfolder/PortMaster"
