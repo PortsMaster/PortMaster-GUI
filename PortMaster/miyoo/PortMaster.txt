@@ -11,4 +11,4 @@ else
   controlfolder="/mnt/sdcard/MIYOO_EX/PortMaster"
 fi
 
-source "$controlfolder/utils/pm_launch.txt" miyoo
+source "$controlfolder/utils/pm_launch.txt" miyoo; exit $?

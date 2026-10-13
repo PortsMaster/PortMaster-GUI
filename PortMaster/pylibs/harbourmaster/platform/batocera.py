@@ -6,6 +6,7 @@ import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from loguru import logger
+from ..util import replace_file
 from .base import PlatformBase
 
 
@@ -20,46 +21,34 @@ class PlatformBatocera(PlatformBase):
         ]
     BATOCERA_CONFIG = None
 
-    def portmaster_install(self, bash_files):
-        super().portmaster_install(bash_files)
+    def _move_launcher(self):
         """
-        Just move PortMaster.sh from `PortMaster/` to `/userdata/roms/ports/`.
-        """
+        PortMaster.sh goes in `/userdata/roms/ports/`, where the frontend runs it.
 
-        PM_LOCATION   = self.hm.tools_dir   / "PortMaster" / "PortMaster.sh"
-        BAD_LOCATION  = self.hm.tools_dir   / "PortMaster.sh"
+        It arrives in `PortMaster/` with each PortMaster.zip; old installs used
+        `MOVE_PM_BASH`, which left it in the tools dir instead.
+        """
         GOOD_LOCATION = self.hm.scripts_dir / "PortMaster.sh"
 
-        try:
-            if PM_LOCATION.is_file():
-                shutil.copy2(PM_LOCATION, GOOD_LOCATION)
-                PM_LOCATION.unlink()
+        for old_location in (
+                self.hm.tools_dir / "PortMaster" / "PortMaster.sh",
+                self.hm.tools_dir / "PortMaster.sh"):
+            try:
+                if old_location.is_file():
+                    logger.debug(f"Move {old_location} -> {GOOD_LOCATION}")
+                    replace_file(old_location, GOOD_LOCATION)
+                    old_location.unlink()
 
-            # Delete this file so we don't trigger the `post_install` action below.
-            if BAD_LOCATION.is_file():
-                BAD_LOCATION.unlink()
-
-        except OSError as e:
-            logger.error(f"Error during file operation: {e}")
+            except OSError as e:
+                logger.error(f"Error during file operation: {e}")
 
     def portmaster_post_install(self):
+        """
+        Also on the first launch after an update: the update may have been installed by
+        an older harbourmaster, whose portmaster_install never moved PortMaster.sh.
+        """
         super().portmaster_post_install()
-        """
-        Old installs use `MOVE_PM_BASH`, so it will move the PortMaster.sh to `BAD_LOCATION`
-        and the above `portmaster_install` code will not have been run, this means that we need to move
-        `BAD_LOCATION` to `GOOD_LOCATION`.
-
-        On newer/future updates this won't matter as PortMaster.sh should not be present at `BAD_LOCATION`.
-        """
-        BAD_LOCATION  = self.hm.tools_dir   / "PortMaster.sh"
-        GOOD_LOCATION = self.hm.scripts_dir / "PortMaster.sh"
-
-        try:
-            if BAD_LOCATION.is_file():
-                shutil.copy2(BAD_LOCATION, GOOD_LOCATION)
-                BAD_LOCATION.unlink()
-        except OSError as e:
-            logger.error(f"Error during file operation: {e}")
+        self._move_launcher()
 
     """
     Taken from Mikhailzrick's getInvertButtonsValue
@@ -146,6 +135,8 @@ class PlatformBatocera(PlatformBase):
         Move files into place.
         """
         super().portmaster_install(bash_files)
+
+        self._move_launcher()
 
         TL_DIR = self.hm.tools_dir / "PortMaster"
         BC_DIR = TL_DIR / "batocera"

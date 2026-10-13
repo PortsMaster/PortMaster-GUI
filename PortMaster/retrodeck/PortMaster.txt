@@ -9,4 +9,4 @@ XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
 controlfolder="$XDG_DATA_HOME/PortMaster"
 
-source "$controlfolder/utils/pm_launch.txt" retrodeck
+source "$controlfolder/utils/pm_launch.txt" retrodeck; exit $?

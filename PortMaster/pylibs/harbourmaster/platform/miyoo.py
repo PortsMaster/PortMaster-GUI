@@ -6,6 +6,7 @@ import os
 import shutil
 from pathlib import Path
 from loguru import logger
+from ..util import replace_file
 from .base import PlatformBase
 
 
@@ -30,7 +31,7 @@ class PlatformMiyoo(PlatformBase):
 
         # ACTIVATE THE PORTMASTER
         logger.debug(f'Copy {MY_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
-        shutil.copy(MY_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+        replace_file(MY_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         bash_files.append(PM_DIR / "PortMaster.sh")
 
@@ -62,7 +63,7 @@ class PlatformSpruce(PlatformBase):
         shutil.copy(SP_DIR / "control.txt", PM_DIR / "control.txt")
 
         logger.debug(f'Copy {SP_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
-        shutil.copy(SP_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+        replace_file(SP_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         bash_files.append(PM_DIR / "PortMaster.sh")
 

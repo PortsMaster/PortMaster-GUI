@@ -119,7 +119,7 @@ class Launcher:
         if stub is not None:
             command = ["bash", str(PM_DIR / stub)]
         else:
-            command = ["bash", "-c", f'controlfolder="{self.pm}"; source "$controlfolder/utils/pm_launch.txt" {cfw or ""}']
+            command = ["bash", "-c", f'controlfolder="{self.pm}"; source "$controlfolder/utils/pm_launch.txt" {cfw or ""}; exit $?']
 
         result = subprocess.run(
             command, env=run_env, cwd=str(self.root), timeout=60,
@@ -129,11 +129,19 @@ class Launcher:
         assert result.returncode == 0, result.stdout
         return self.calls()
 
+    OGA_RESTART = "systemctl restart oga_events"
+
     def calls(self):
+        """
+        What ran, in order. The oga_events restart runs in the background, so it is
+        left out (it can land anywhere), self.oga_restarted says if it happened.
+        """
         if not self.calls_file.is_file():
             return []
 
-        return self.calls_file.read_text().splitlines()
+        calls = self.calls_file.read_text().splitlines()
+        self.oga_restarted = self.OGA_RESTART in calls
+        return [call for call in calls if call != self.OGA_RESTART]
 
     def markers(self, *names):
         return " ".join(str(self.pm / name) for name in names)
@@ -169,7 +177,9 @@ def test_stub_sources_shared_launcher(stub, cfw):
         expected += f" {cfw}"
         assert (PM_DIR / cfw / "launch_hooks.txt").is_file()
 
-    assert lines[-1] == expected
+    ## Exits on the same line: bash reads scripts as it goes, nothing after it may run,
+    ## even if an update replaced this file while PortMaster was running.
+    assert lines[-1] == expected + "; exit $?"
     assert sum(1 for line in lines if not line.startswith('#')) < 15, "stubs only find $controlfolder"
 
 
@@ -178,7 +188,8 @@ def test_stub_sources_shared_launcher(stub, cfw):
 def test_generic_stub_runs_gui(launcher):
     calls = launcher.run(stub="PortMaster.sh")
 
-    assert calls == ["get_controls", "pugwash ", "systemctl restart oga_events"]
+    assert calls == ["get_controls", "pugwash "]
+    assert launcher.oga_restarted
     assert (launcher.pm / "log.txt").is_file()
 
 
@@ -187,6 +198,22 @@ def test_generic_without_oga_events(launcher):
     calls = launcher.run(FAKE_UNITS="")
 
     assert calls == ["get_controls", "pugwash "]
+    assert not launcher.oga_restarted
+
+
+def test_stub_overwritten_while_running(launcher):
+    ## An older harbourmaster updating PortMaster from the GUI overwrites the running
+    ## launcher in place. Bash then reads on from where it was, in the new file.
+    stub = launcher.root / "PortMaster.sh"
+    shutil.copy(PM_DIR / "PortMaster.sh", stub)
+
+    write_exe(launcher.pm / "pugwash", LOG + (
+        f'printf "%0{stub.stat().st_size + 100}d\\necho SHOULD-NOT-RUN >> \\"$FAKE_CALLS\\"\\n" 0 > "{stub}"\n'))
+
+    calls = launcher.run(stub=str(stub))
+
+    assert "SHOULD-NOT-RUN" not in calls
+    assert launcher.oga_restarted
 
 
 def test_generic_restarts_gui_on_request(launcher):
@@ -249,7 +276,7 @@ def test_generic_autoinstall_offline_skips_gui(launcher):
     calls = launcher.run(FAKE_GW="", FAKE_MARKERS="")
     ## Autoinstall leaves the marker itself, the frontend is still refreshed.
     assert "pugwash " not in calls
-    assert calls[-1] == "systemctl restart oga_events"
+    assert launcher.oga_restarted
 
     (launcher.pm / ".emulationstation-refresh").touch()
     launcher.calls_file.unlink()
@@ -264,7 +291,7 @@ def test_muos(launcher):
 
     assert "get_controls" not in calls
     assert "pugwash " in calls
-    assert "systemctl restart oga_events" not in calls
+    assert not launcher.oga_restarted
     assert calls[-1] == "image_smash.txt "
     assert not (launcher.pm / ".muos-refresh").exists()
 

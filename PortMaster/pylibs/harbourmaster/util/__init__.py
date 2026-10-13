@@ -26,6 +26,7 @@ from .text import (
     )
 from .files import (
     load_pm_signature,
+    replace_file,
     add_pm_signature,
     remove_pm_signature,
     hash_file,
@@ -73,6 +74,7 @@ __all__ = (
     'json_safe_loads',
     'list_to_tuple',
     'load_pm_signature',
+    'replace_file',
     'make_temp_directory',
     'match_requirements',
     'name_cleaner',

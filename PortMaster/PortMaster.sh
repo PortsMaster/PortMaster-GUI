@@ -16,4 +16,4 @@ else
   controlfolder="/roms/ports/PortMaster"
 fi
 
-source "$controlfolder/utils/pm_launch.txt"
+source "$controlfolder/utils/pm_launch.txt"; exit $?

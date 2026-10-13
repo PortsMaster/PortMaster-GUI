@@ -207,6 +207,22 @@ def test_pm_signature_binary_script(tmp_path, log_errors, signed):
     assert log_errors == []
 
 
+def test_replace_file_is_a_new_file(tmp_path):
+    ## A running bash script keeps reading the old file.
+    target = tmp_path / "PortMaster.sh"
+    target.write_text("old launcher\n")
+    source = tmp_path / "new.txt"
+    source.write_text("new launcher\n")
+
+    with open(target) as running:
+        util.replace_file(source, target)
+
+        assert running.read() == "old launcher\n"
+
+    assert target.read_text() == "new launcher\n"
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["PortMaster.sh", "new.txt"]
+
+
 ################################################################################
 ## download()
 class FakeResponse:

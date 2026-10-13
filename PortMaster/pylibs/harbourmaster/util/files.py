@@ -4,6 +4,7 @@
 
 import contextlib
 import hashlib
+import os
 import shutil
 import re
 import subprocess
@@ -12,6 +13,22 @@ from pathlib import Path
 import pathlib
 from loguru import logger
 from ..config import HM_TESTING
+
+
+def replace_file(source, target):
+    """
+    Copy `source` over `target` as a new file (written next to it, then renamed).
+
+    Launchers must be replaced like this: bash reads a script as it runs it, so
+    overwriting the one that is running (eg: during a self-update) changes what it
+    runs next. After a rename it keeps reading the old file.
+    """
+    source = Path(source)
+    target = Path(target)
+    temp_file = target.with_name(f".{target.name}.new")
+
+    shutil.copy2(source, temp_file)
+    os.replace(str(temp_file), str(target))
 
 
 def load_pm_signature(file_name):

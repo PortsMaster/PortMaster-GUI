@@ -7,4 +7,4 @@
 
 controlfolder="/mnt/mmc/MUOS/PortMaster"
 
-source "$controlfolder/utils/pm_launch.txt" muos
+source "$controlfolder/utils/pm_launch.txt" muos; exit $?

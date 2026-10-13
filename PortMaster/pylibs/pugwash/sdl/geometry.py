@@ -288,7 +288,7 @@ class Rect:
     def topcenter(self):
         return self.midtop
 
-    @midtop.setter
+    @topcenter.setter
     def topcenter(self, v):
         self.midtop = v
 
@@ -358,7 +358,7 @@ class Rect:
     def bottomcenter(self):
         return self.midbottom
 
-    @midbottom.setter
+    @bottomcenter.setter
     def bottomcenter(self, v):
         self.midbottom = v
 
@@ -367,7 +367,7 @@ class Rect:
         return self.x + self.width, self.y + self.height
 
     @bottomright.setter
-    def botomright(self, v):
+    def bottomright(self, v):
         x, y = v
         self.x = x - self.width
         self.y = y - self.height

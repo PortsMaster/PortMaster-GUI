@@ -7,4 +7,4 @@
 
 controlfolder="/mnt/SDCARD/Persistent/portmaster/PortMaster"
 
-source "$controlfolder/utils/pm_launch.txt" spruce
+source "$controlfolder/utils/pm_launch.txt" spruce; exit $?

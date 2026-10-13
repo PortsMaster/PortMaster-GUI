@@ -6,7 +6,7 @@ import shutil
 from gettext import gettext as _
 from pathlib import Path
 from loguru import logger
-from ..util import json_safe_load
+from ..util import json_safe_load, replace_file
 from .base import PlatformBase
 
 
@@ -158,14 +158,14 @@ class PlatformRetroDECK(PlatformBase):
 
         # PEBKAC RD
         logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
-        shutil.copy(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+        replace_file(RD_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         logger.debug(f'Move {RD_DIR / "PortMaster.txt"} -> {SC_DIR / "PortMaster.sh"}')
         if (SC_DIR / "PortMaster.sh").is_symlink():
             # XARGONNNNNNNN
             (SC_DIR / "PortMaster.sh").unlink()
 
-        shutil.copy(RD_DIR / "PortMaster.txt", SC_DIR / "PortMaster.sh")
+        replace_file(RD_DIR / "PortMaster.txt", SC_DIR / "PortMaster.sh")
 
         # Fix perms
         bash_files.append(SC_DIR / "PortMaster.sh")

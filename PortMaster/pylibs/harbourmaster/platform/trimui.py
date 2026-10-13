@@ -7,7 +7,7 @@ import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from loguru import logger
-from ..util import name_cleaner
+from ..util import name_cleaner, replace_file
 from .base import PlatformBase, SPECIAL_GAMELIST_CODE
 
 
@@ -55,7 +55,7 @@ class PlatformTrimUI(PlatformBase):
 
         # PEBKAC
         logger.debug(f'Move {TU_DIR / "PortMaster.txt"} -> {self.hm.tools_dir / "launch.sh"}')
-        shutil.copy(TU_DIR / "PortMaster.txt", self.hm.tools_dir / "launch.sh")
+        replace_file(TU_DIR / "PortMaster.txt", self.hm.tools_dir / "launch.sh")
 
         bash_files.append(self.hm.tools_dir / "launch.sh")
 

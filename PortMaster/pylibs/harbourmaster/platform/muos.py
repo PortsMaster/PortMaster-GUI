@@ -6,6 +6,7 @@ import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from loguru import logger
+from ..util import replace_file
 from .base import PlatformBase, SPECIAL_GAMELIST_CODE
 
 
@@ -209,7 +210,7 @@ class PlatformmuOS(PlatformBase):
 
         # PEBKAC
         logger.debug(f'Move {MU_DIR / "PortMaster.txt"} -> {PM_DIR / "PortMaster.sh"}')
-        shutil.copy(MU_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
+        replace_file(MU_DIR / "PortMaster.txt", PM_DIR / "PortMaster.sh")
 
         bash_files.append(PM_DIR / "PortMaster.sh")
 
