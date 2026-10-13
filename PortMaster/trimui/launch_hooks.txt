@@ -33,8 +33,11 @@ pm_hook_pre_launch() {
   chmod -R +x .
 }
 
-pm_hook_run_pugwash() {
+pm_hook_gui_env() {
   export PYSDL2_DLL_PATH="/usr/trimui/lib"
+}
+
+pm_hook_run_pugwash() {
   ./pugwash --debug $PORTMASTER_CMDS
 }
 

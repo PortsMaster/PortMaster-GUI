@@ -5,6 +5,7 @@
 
 import json
 import os
+import shutil
 import sys
 import zipfile
 
@@ -140,6 +141,76 @@ def test_pick_work_dir(tmp_path, monkeypatch):
 
     ## Not enough room anywhere: the last one.
     assert suite.pick_work_dir([first, second], need_bytes=1 << 62) == second
+
+
+@pytest.mark.parametrize("stub, hooks", [
+    ("PortMaster.sh", ""),
+    ("spruce/PortMaster.txt", "spruce"),
+    ("muos/PortMaster.txt", "muos"),
+    ])
+def test_launcher_hooks(tmp_path, stub, hooks):
+    pm = tmp_path / "PortMaster"
+    pm.mkdir()
+    shutil.copy(str(PM_DIR / stub), str(pm / "PortMaster.sh"))
+
+    assert suite.launcher_hooks(pm) == hooks
+
+
+def test_launcher_hooks_trimui(tmp_path):
+    ## TrimUI's stub is launch.sh next to the PortMaster folder.
+    (tmp_path / "PortMaster").mkdir()
+    shutil.copy(str(PM_DIR / "trimui" / "PortMaster.txt"), str(tmp_path / "launch.sh"))
+
+    assert suite.launcher_hooks(tmp_path / "PortMaster") == "trimui"
+
+
+def fake_controlfolder(tmp_path, cfw=None):
+    pm = tmp_path / "PortMaster"
+    (pm / "utils").mkdir(parents=True)
+    shutil.copy(str(PM_DIR / "utils" / "pm_launch.txt"), str(pm / "utils" / "pm_launch.txt"))
+    shutil.copy(str(PM_DIR / ((cfw + "/PortMaster.txt") if cfw else "PortMaster.sh")), str(pm / "PortMaster.sh"))
+    if cfw:
+        (pm / cfw).mkdir()
+        shutil.copy(str(PM_DIR / cfw / "launch_hooks.txt"), str(pm / cfw / "launch_hooks.txt"))
+
+    control = 'CFW_NAME="Test"\nESUDO=""\nexport PMTEST_FAKE="from control.txt"\nget_controls() { :; }\n'
+    (pm / "control.txt").write_text(control)
+    (pm / "device_info.txt").write_text(control)
+    pugwash = pm / "pugwash"
+    pugwash.write_text("#!/bin/sh\ntouch ran-pugwash\n")
+    pugwash.chmod(0o755)
+    return pm
+
+
+@pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")
+def test_launcher_env(tmp_path, monkeypatch):
+    monkeypatch.delenv("PYSDL2_DLL_PATH", raising=False)
+    pm = fake_controlfolder(tmp_path)
+
+    env = suite.launcher_env(pm)
+
+    assert env['PYSDL2_DLL_PATH'] == "/usr/lib"
+    assert env['PMTEST_FAKE'] == "from control.txt"
+    assert "PM_LAUNCH_ENV_ONLY" not in env
+    ## Nothing launched.
+    assert not (pm / "ran-pugwash").exists()
+    assert not (pm / "log.txt").exists()
+
+
+@pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")
+def test_launcher_env_trimui(tmp_path):
+    env = suite.launcher_env(fake_controlfolder(tmp_path, "trimui"))
+    assert env['PYSDL2_DLL_PATH'] == "/usr/trimui/lib"
+
+
+def test_launcher_env_old_portmaster(tmp_path):
+    ## A PortMaster from before PM_LAUNCH_ENV_ONLY would run the whole launcher: not asked.
+    pm = fake_controlfolder(tmp_path)
+    launch = pm / "utils" / "pm_launch.txt"
+    launch.write_text(launch.read_text().replace("PM_LAUNCH_ENV_ONLY", "PM_SOMETHING_ELSE"))
+
+    assert suite.launcher_env(pm) is None
+    assert suite.launcher_env(tmp_path / "nowhere") is None
 
 
 def test_port_zip_layout():

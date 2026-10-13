@@ -38,6 +38,11 @@ pm_hook_pre_launch() {
   $ESUDO chmod -R +x .
 }
 
+## pm_hook_env picks the SDL2 (spruce/portmaster/portmaster.txt).
+pm_hook_gui_env() {
+  :
+}
+
 pm_hook_run_pugwash() {
   if [ -x "$PM_PYTHON" ]; then
     $ESUDO "$PM_PYTHON" ./pugwash $PORTMASTER_CMDS

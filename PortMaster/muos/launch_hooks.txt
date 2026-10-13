@@ -32,6 +32,11 @@ pm_hook_pre_launch() {
   $ESUDO chmod -R +x .
 }
 
+## pm_hook_env sets everything.
+pm_hook_gui_env() {
+  :
+}
+
 pm_hook_run_pugwash() {
   $ESUDO ./pugwash $PORTMASTER_CMDS
 

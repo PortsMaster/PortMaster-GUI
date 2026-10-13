@@ -15,6 +15,9 @@
 # Each step that differs between CFWs is a pm_hook_* function. The defaults below are
 # what the generic PortMaster.sh (ArkOS, ROCKNIX, JELOS, knulli, ...) does,
 # <cfw>/launch_hooks.txt redefines the ones that CFW needs.
+#
+# With PM_LAUNCH_ENV_ONLY=Y it only sets up the environment the GUI runs in and returns,
+# for scripts that start pugwash themselves (the PortMaster Test Suite).
 
 PM_LAUNCH_CFW="$1"
 
@@ -26,6 +29,11 @@ pm_hook_env() {
   [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
   get_controls
+}
+
+## Which SDL2 the GUI loads (pysdl2), after pm_hook_env.
+pm_hook_gui_env() {
+  export PYSDL2_DLL_PATH="/usr/lib"
 }
 
 ## The autoinstall directories, one per line.
@@ -47,7 +55,6 @@ pm_hook_pre_launch() {
 
 ## One run of the GUI, called again while it asks for a restart (.pugwash-reboot).
 pm_hook_run_pugwash() {
-  export PYSDL2_DLL_PATH="/usr/lib"
   $ESUDO ./pugwash $PORTMASTER_CMDS
 }
 
@@ -93,6 +100,11 @@ fi
 
 ## -- 3. Setup.
 pm_hook_env
+pm_hook_gui_env
+
+if [ "$PM_LAUNCH_ENV_ONLY" = "Y" ]; then
+  return 0
+fi
 
 ## TODO: Change to PortMaster/tty when Johnnyonflame merges the changes in,
 CUR_TTY="${PM_CUR_TTY:-/dev/tty0}"

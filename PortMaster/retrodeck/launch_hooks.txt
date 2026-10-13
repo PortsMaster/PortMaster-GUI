@@ -23,6 +23,11 @@ pm_hook_pre_launch() {
   # chmod -R +x . ## WHO DID THIS????
 }
 
+## pm_hook_env sets everything.
+pm_hook_gui_env() {
+  :
+}
+
 pm_hook_run_pugwash() {
   ./pugwash $PORTMASTER_CMDS
 }

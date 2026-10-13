@@ -370,3 +370,33 @@ def test_sandboxed_stub_keeps_its_logic(launcher):
     assert "/opt/system/Tools/PortMaster/" in copy
     assert '"/opt/system/Tools/' not in copy
     assert copy.splitlines()[-1] == original.splitlines()[-1]
+
+
+## -- PM_LAUNCH_ENV_ONLY: the GUI's environment, nothing run (the PortMaster Test Suite uses it)
+
+@pytest.mark.parametrize("cfw, sdl_path", [
+    (None, "/usr/lib"),
+    ("trimui", "/usr/trimui/lib"),
+    ("retrodeck", ""),
+    ])
+def test_env_only(launcher, cfw, sdl_path):
+    calls = launcher.run(cfw, PM_LAUNCH_ENV_ONLY="Y", FAKE_REBOOT_ONCE="")
+    assert "pugwash " not in calls
+    assert not any(call.startswith("pugwash") for call in calls)
+
+    result = subprocess.run(
+        ["bash", "-c", f'controlfolder="{launcher.pm}"; source "$controlfolder/utils/pm_launch.txt" {cfw or ""}; echo "SDL=$PYSDL2_DLL_PATH"'],
+        env=dict(launcher.env, PM_LAUNCH_ENV_ONLY="Y"), cwd=str(launcher.root), timeout=60,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+
+    assert f"SDL={sdl_path}" in result.stdout.splitlines()
+
+
+def test_spruce_gui_env_keeps_its_sdl(launcher):
+    ## spruce's pm_hook_env picks the SDL2 (from the card), pm_hook_gui_env must leave it.
+    result = subprocess.run(
+        ["bash", "-c", f'controlfolder="{launcher.pm}"; source "$controlfolder/utils/pm_launch.txt" spruce; echo "SDL=$PYSDL2_DLL_PATH"'],
+        env=dict(launcher.env, PM_LAUNCH_ENV_ONLY="Y", PYSDL2_DLL_PATH="/card/lib/"), cwd=str(launcher.root), timeout=60,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+
+    assert "SDL=/card/lib/" in result.stdout.splitlines()

@@ -273,6 +273,63 @@ def pick_work_dir(candidates, need_bytes=300 * 1024 * 1024):
     return Path(candidates[-1])
 
 
+def launcher_hooks(controlfolder):
+    """The hooks folder the installed launcher stub passes to pm_launch.txt (muos, spruce, ...), "" for none."""
+    for stub in (Path(controlfolder) / "PortMaster.sh", Path(controlfolder).parent / "launch.sh"):
+        try:
+            text = stub.read_text(errors="replace")
+
+        except OSError:
+            continue
+
+        match = re.search(r'pm_launch\.txt"?[ \t]+([a-z]+)', text)
+        if match:
+            return match.group(1)
+
+        if "pm_launch.txt" in text:
+            return ""
+
+    return ""
+
+
+def launcher_env(controlfolder, python=None, timeout=60):
+    """
+    The environment PortMaster's launcher runs pugwash in (pm_launch.txt with
+    PM_LAUNCH_ENV_ONLY=Y), eg: which SDL2 it loads. None if that PortMaster can't say.
+    """
+    controlfolder = Path(controlfolder)
+    try:
+        if "PM_LAUNCH_ENV_ONLY" not in (controlfolder / "utils" / "pm_launch.txt").read_text(errors="replace"):
+            return None
+
+    except OSError:
+        return None
+
+    hooks = launcher_hooks(controlfolder)
+    if hooks == "miyoo":
+        ## Its pm_hook_env (re)mounts the python we may be running on.
+        return None
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        dump = Path(temp_dir) / "env.json"
+        script = (
+            'controlfolder="$1"; cd "$controlfolder" || exit 1\n'
+            'source "$controlfolder/utils/pm_launch.txt" "$2" > /dev/null 2>&1 < /dev/null\n'
+            '"$3" -c "import json, os, sys; json.dump(dict(os.environ), open(sys.argv[1], \'w\'))" "$4"\n')
+        try:
+            subprocess.run(
+                ["bash", "-c", script, "pmtest", str(controlfolder), hooks, python or sys.executable, str(dump)],
+                env=dict(os.environ, PM_LAUNCH_ENV_ONLY="Y"), timeout=timeout,
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            env = json.loads(dump.read_text())
+
+        except (OSError, ValueError, subprocess.SubprocessError):
+            return None
+
+    env.pop("PM_LAUNCH_ENV_ONLY", None)
+    return env
+
+
 ################################################################################
 ## The run
 class Suite:
@@ -298,6 +355,8 @@ class Suite:
 
         self.ui = Dialog(self.controlfolder, self.work / "fifo", log=self.log)
         self.has_ui = False
+        self.base_env = None
+        self.use_launcher_env()
 
     ## Helpers.
     def log(self, text):
@@ -352,8 +411,19 @@ class Suite:
 
         self.has_ui = False
 
+    def use_launcher_env(self):
+        """pugwash and the tests run in the launcher's environment, once the installed PortMaster can tell it."""
+        env = launcher_env(self.controlfolder)
+        if env is None:
+            self.log("launcher environment: not available, using the port's")
+            return
+
+        self.base_env = env
+        self.ui.env = env
+        self.log(f"launcher environment: PYSDL2_DLL_PATH={env.get('PYSDL2_DLL_PATH', '')!r}, LD_LIBRARY_PATH={env.get('LD_LIBRARY_PATH', '')!r}")
+
     def test_env(self, **extra):
-        env = dict(os.environ)
+        env = dict(self.base_env or os.environ)
         env["PYTHONPATH"] = os.pathsep.join([str(SITE), str(HERE)] + ([env["PYTHONPATH"]] if env.get("PYTHONPATH") else []))
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         env.setdefault("PYSDL2_DLL_PATH", "/usr/lib")
@@ -376,6 +446,7 @@ class Suite:
 
         ## The new PortMaster's pugwash from here on (its first run does the post-install step).
         self.ui_stop()
+        self.use_launcher_env()
         self.ui_start()
 
         now = (self.controlfolder / "version").read_text().strip() if (self.controlfolder / "version").is_file() else "?"
@@ -396,7 +467,7 @@ class Suite:
         self.info['arch'] = os.environ.get("DEVICE_ARCH", platform.machine())
 
         (out / "environment.txt").write_text("".join(
-            f"{key}={value}\n" for key, value in sorted(os.environ.items())
+            f"{key}={value}\n" for key, value in sorted((self.base_env or os.environ).items())
             if key.split("_")[0] in ("CFW", "DEVICE", "DISPLAY", "SDL", "PYSDL2", "LD", "PATH", "ESUDO", "ANALOG", "XDG", "HOME", "PM", "controlfolder", "directory", "CUR")))
 
         for name, command in (
