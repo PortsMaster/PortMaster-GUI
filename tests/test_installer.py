@@ -418,6 +418,20 @@ def test_rocknix(tmp_path, portmaster_zip):
     assert installer.calls() == ["shutdown -r now"]
 
 
+def test_rocknix_without_jelos_files(tmp_path, portmaster_zip):
+    ## Newer ROCKNIX ships only control.txt and mapper.txt in /usr/config/PortMaster.
+    installer = Installer(tmp_path, "rocknix")
+    installer.path("/usr/config/PortMaster/PortMaster.sh").unlink()
+    installer.path("/usr/config/PortMaster/portmaster.gptk").unlink()
+    put_zip(installer, portmaster_zip)
+
+    output = installer.run()
+
+    assert "can't stat" not in output and "cannot stat" not in output
+    assert installer.path("/storage/.config/PortMaster/control.txt").read_text() == "rocknix control.txt\n"
+    assert installer.path("/storage/roms/ports/PortMaster/PortMaster.sh").read_text() == stub()
+
+
 @pytest.mark.parametrize("cfw", ["retrodeck", "retrodeck_outside"])
 def test_retrodeck(tmp_path, portmaster_zip, cfw):
     installer = Installer(tmp_path, cfw)

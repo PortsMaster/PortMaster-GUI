@@ -240,9 +240,10 @@ if [[ "${OS_NAME}" == "JELOS" ]] || [[ "${OS_NAME}" == "ROCKNIX" ]]; then
 
   cd "$R/storage/.config/PortMaster" || exit 1
 
-  # Grab the latest PortMaster.sh script
-  cp -v "$R/usr/config/PortMaster/PortMaster.sh" PortMaster.sh | tee -a $CUR_TTY
-  cp -v "$R/usr/config/PortMaster/control.txt" control.txt | tee -a $CUR_TTY
+  # Grab the latest PortMaster.sh script and control.txt (newer ROCKNIX has no PortMaster.sh here)
+  for config_file in PortMaster.sh control.txt; do
+    [ -f "$R/usr/config/PortMaster/$config_file" ] && cp -v "$R/usr/config/PortMaster/$config_file" "$config_file" | tee -a $CUR_TTY
+  done
 
   # Use our gamecontrollerdb.txt
   rm -f gamecontrollerdb.txt
@@ -251,7 +252,7 @@ if [[ "${OS_NAME}" == "JELOS" ]] || [[ "${OS_NAME}" == "ROCKNIX" ]]; then
   # Use our gptokeyb
   rm -f gptokeyb
   ln -svf /usr/bin/gptokeyb gptokeyb | tee -a $CUR_TTY
-  cp -v "$R/usr/config/PortMaster/portmaster.gptk" portmaster.gptk | tee -a $CUR_TTY
+  [ -f "$R/usr/config/PortMaster/portmaster.gptk" ] && cp -v "$R/usr/config/PortMaster/portmaster.gptk" portmaster.gptk | tee -a $CUR_TTY
 
   cd "$R$controlfolder" || exit 1
 fi
