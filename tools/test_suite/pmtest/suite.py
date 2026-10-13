@@ -353,6 +353,37 @@ def pick_work_dir(candidates, need_bytes=300 * 1024 * 1024):
     return Path(candidates[-1])
 
 
+def device_details(probe_output, env):
+    """
+    model, display and RAM from harbourmaster's device info (the probe's
+    PMTEST_DEVICE_INFO line), and spruce's PLATFORM. DEVICE_NAME alone can't tell
+    devices apart: on TrimUI SoCs it's the SoC (sun50iw10: Brick and MagicX Zero28).
+    """
+    details = {}
+    for line in probe_output.splitlines():
+        if line.startswith("PMTEST_DEVICE_INFO "):
+            try:
+                data = json.loads(line.split(" ", 1)[1])
+
+            except ValueError:
+                break
+
+            if data.get('model'):
+                details['model'] = str(data['model'])
+
+            resolution = data.get('resolution')
+            if isinstance(resolution, (list, tuple)) and len(resolution) == 2:
+                details['display'] = f"{resolution[0]}x{resolution[1]}"
+
+            if data.get('ram'):
+                details['ram_mb'] = str(data['ram'])
+
+    if env.get("PLATFORM"):
+        details['platform'] = env["PLATFORM"]
+
+    return details
+
+
 def os_release_name(path):
     """PRETTY_NAME from an os-release file, "" without one."""
     try:
@@ -569,7 +600,7 @@ class Suite:
 
         (out / "environment.txt").write_text("".join(
             f"{key}={value}\n" for key, value in sorted((self.base_env or os.environ).items())
-            if key.split("_")[0] in ("CFW", "DEVICE", "DISPLAY", "SDL", "PYSDL2", "LD", "PATH", "ESUDO", "ANALOG", "XDG", "HOME", "PM", "controlfolder", "directory", "CUR")))
+            if key.split("_")[0] in ("CFW", "DEVICE", "DISPLAY", "SDL", "PYSDL2", "LD", "PATH", "ESUDO", "ANALOG", "XDG", "HOME", "PM", "PLATFORM", "controlfolder", "directory", "CUR")))
 
         for name, command in (
                 ("os-release", ["cat", "/etc/os-release"]),
@@ -582,9 +613,15 @@ class Suite:
                 ):
             self.run(command, timeout=30, output=out / f"{name}.txt")
 
-        self.run(
-            [sys.executable, self.controlfolder / "harbourmaster", "--no-check", "device_info"],
-            timeout=120, cwd=self.controlfolder, output=out / "harbourmaster-device_info.txt")
+        ## What PortMaster itself makes of this device (the dict pugwash logs at startup).
+        probe = (
+            "import json, sys\n"
+            f"sys.path[:0] = [{str(self.controlfolder / 'pylibs')!r}, {str(self.controlfolder / 'exlibs')!r}]\n"
+            "from harbourmaster import hardware\n"
+            "print('PMTEST_DEVICE_INFO ' + json.dumps(hardware.device_info(), default=str, sort_keys=True))\n")
+        code, text = self.run([sys.executable, "-c", probe], timeout=120, cwd=self.controlfolder,
+                              env=self.test_env(), output=out / "device_info.txt")
+        self.info.update(device_details(text, self.base_env or os.environ))
 
         ## Which SDL libraries load, through the same sdl2 package pugwash uses.
         probe = (
@@ -604,8 +641,10 @@ class Suite:
         self.info['video_drivers'] = drivers
         self.info['sdl'] = (text.strip().splitlines() or ["?"])[0] if code == 0 else "not loadable"
 
-        section.set(INFO, f"{self.info['cfw']} {self.info['cfw_version']} on {self.info['device']} ({self.info['arch']}), Python {self.info['python']}",
-                    f"{self.info['sdl']}, video drivers: {' '.join(drivers) or 'none'}")
+        device = self.info['device'] + (f" ({self.info['platform']})" if self.info.get('platform') else "")
+        section.set(INFO, f"{self.info['cfw']} {self.info['cfw_version']} on {device} ({self.info['arch']}), Python {self.info['python']}",
+                    f"{self.info['sdl']}, video drivers: {' '.join(drivers) or 'none'}, "
+                    f"display {self.info.get('display', '?')}, RAM {self.info.get('ram_mb', '?')} MB")
 
     def _pytest(self, name, marker, timeout, extra_env=None, label="Testing"):
         """Runs pytest on the tree; parse_junit's result, or {'error': ...} if it didn't finish."""

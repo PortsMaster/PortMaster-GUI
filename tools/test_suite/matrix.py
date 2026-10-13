@@ -22,6 +22,7 @@ from pathlib import Path
 
 MAX_ZIP_BYTES = 64 * 1024 * 1024
 MAX_SUMMARY_BYTES = 1024 * 1024
+MAX_ENVIRONMENT_BYTES = 256 * 1024
 
 ## The suite's sections, in its order, with short column names.
 SECTIONS = (
@@ -69,6 +70,21 @@ def _gui_how(summary):
     return "real screen" if match.group(1) == "on the real screen" else "headless"
 
 
+def _environment(zf):
+    """KEY=value pairs from the report's device/environment.txt, {} without one."""
+    try:
+        member = zf.getinfo("device/environment.txt")
+        if member.file_size > MAX_ENVIRONMENT_BYTES:
+            return {}
+
+        text = zf.read(member).decode("utf-8", "replace")
+
+    except KeyError:
+        return {}
+
+    return dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
+
+
 def read_report(zip_path):
     """One matrix row from a report zip, or None if it isn't a usable report."""
     zip_path = Path(zip_path)
@@ -82,6 +98,7 @@ def read_report(zip_path):
                 return None
 
             data = json.loads(zf.read(member).decode("utf-8"))
+            environment = _environment(zf)
 
     except (OSError, KeyError, ValueError, zipfile.BadZipFile, UnicodeDecodeError):
         return None
@@ -92,6 +109,13 @@ def read_report(zip_path):
     info = data['info']
     row = {key: _text(info.get(key)) for key in INFO_KEYS}
     row['video_drivers'] = [_text(driver, 40) for driver in info.get('video_drivers', []) if isinstance(driver, str)][:20]
+    ## Telling devices apart: DEVICE_NAME is just the SoC on some (sun50iw10: TrimUI Brick
+    ## and MagicX Zero28). Reports from before the suite recorded these: environment.txt.
+    row['platform'] = _text(info.get('platform') or environment.get("PLATFORM"), 60)
+    row['model'] = _text(info.get('model'), 80)
+    width, height = environment.get("DISPLAY_WIDTH"), environment.get("DISPLAY_HEIGHT")
+    row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
+    row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
     row['report'] = zip_path.name
     row['scrubbed'] = data.get('scrubbed') is True
     row['sections'] = {}
@@ -130,11 +154,16 @@ def read_reports(folder):
     return rows
 
 
+def device_key(row):
+    """The device as the matrix tells them apart: name, spruce's platform, display and RAM."""
+    return " ".join(part for part in (row['device'], row['platform'], row['display'], row['ram_mb']) if part)
+
+
 def group_rows(rows):
-    """{(cfw, cfw_version, device): [rows, newest first]}, sorted by CFW then device."""
+    """{(cfw, cfw_version, device key): [rows, newest first]}, sorted by CFW then device."""
     groups = {}
     for row in rows:
-        groups.setdefault((row['cfw'], row['cfw_version'], row['device']), []).append(row)
+        groups.setdefault((row['cfw'], row['cfw_version'], device_key(row)), []).append(row)
 
     return dict(sorted(groups.items(), key=lambda item: tuple(part.lower() for part in item[0])))
 
@@ -224,8 +253,25 @@ def _e(text):
     return html.escape(str(text))
 
 
+def _device_name(row):
+    ## spruce's platform name (Brick, Flip, SmartProS) beats a SoC or board name.
+    if row['platform'] and row['platform'].lower() not in row['device'].lower():
+        return f"{row['device']} ({row['platform']})"
+
+    return row['device']
+
+
+def _hardware(row):
+    ram = ""
+    if row['ram_mb'].isdigit():
+        ram_mb = int(row['ram_mb'])
+        ram = f"{ram_mb // 1024} GB" if ram_mb >= 1024 else f"{ram_mb} MB"
+
+    return " · ".join(part for part in (row['arch'], row['display'], ram) if part)
+
+
 def _device_label(row):
-    return f"{row['device']} · {row['cfw']} {row['cfw_version']}".strip()
+    return f"{_device_name(row)} · {row['cfw']} {row['cfw_version']}".strip()
 
 
 def render_html(rows, title="PortMaster Test Matrix", built=None):
@@ -233,7 +279,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
     groups = group_rows(rows)
     failures = failure_index(rows)
     cfws = sorted({row['cfw'] for row in rows}, key=str.lower)
-    devices = {row['device'] for row in rows}
+    devices = {device_key(row) for row in rows}
     builds = sorted({row['portmaster'] for row in rows if row['portmaster']})
     passing = sum(1 for runs in groups.values() if runs[0]['ok'])
 
@@ -264,7 +310,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
     add("<th>GUI ran</th><th>Build</th><th>Runs</th></tr></thead><tbody>")
 
     current_cfw = None
-    for (cfw, cfw_version, device), runs in groups.items():
+    for (cfw, cfw_version, _), runs in groups.items():
         if cfw != current_cfw:
             current_cfw = cfw
             add(f'<tr class="cfw"><th colspan="{len(SECTIONS) + 7}" scope="colgroup">{_e(cfw or "Unknown CFW")}</th></tr>')
@@ -274,7 +320,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
         if row['os'] and row['os'].lower() not in (cfw_version.lower(), f"{cfw} {cfw_version}".lower()):
             version += f'<br><span class="muted">{_e(row["os"])}</span>'
 
-        add(f'<tr><th scope="row">{_e(device)}<br><span class="muted data">{_e(row["arch"])}</span></th><td>{version}</td>')
+        add(f'<tr><th scope="row">{_e(_device_name(row))}<br><span class="muted data">{_e(_hardware(row))}</span></th><td>{version}</td>')
         add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"].replace("SDL ", "").replace(" ", "."))}</td>')
         for key, _ in SECTIONS:
             section = row['sections'].get(key)

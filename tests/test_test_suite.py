@@ -362,9 +362,13 @@ sys.path.insert(0, str(REPO_DIR / "tools" / "test_suite"))
 import matrix  # noqa: E402
 
 
-def make_report(folder, name, info, states):
+def make_report(folder, name, info, states, environment=None):
     work = folder / ("work-" + name)
     work.mkdir(parents=True)
+    if environment is not None:
+        (work / "device").mkdir()
+        (work / "device" / "environment.txt").write_text(environment)
+
     report_sections = []
     for key, status, summary, details in states:
         section = suite.Section(key, key.title())
@@ -443,3 +447,32 @@ def test_dialog_waits_through_an_empty_done_file(tmp_path):
 
     finally:
         writer.cancel()
+
+
+def test_matrix_tells_same_soc_devices_apart(tmp_path):
+    ## The TrimUI Brick and the MagicX Zero28 both say DEVICE_NAME=sun50iw10 on spruce.
+    info = {'cfw': "spruce", 'cfw_version': "Unknown", 'device': "sun50iw10", 'arch': "aarch64"}
+    states = [("install", suite.PASS, "installed", "")]
+    make_report(tmp_path, "brick.zip", dict(info, started="1"), states,
+                environment="DEVICE_NAME=sun50iw10\nDISPLAY_WIDTH=1024\nDISPLAY_HEIGHT=768\nDEVICE_RAM_MB=1024\n")
+    make_report(tmp_path, "zero28.zip", dict(info, started="2"), states,
+                environment="DEVICE_NAME=sun50iw10\nDISPLAY_WIDTH=640\nDISPLAY_HEIGHT=480\nDEVICE_RAM_MB=2048\n")
+    ## Newer reports carry it in info, spruce's PLATFORM too.
+    make_report(tmp_path, "flip.zip", dict(info, started="3", device="MIYOO RK3566 355 V10 Board", platform="Flip",
+                                           display="640x480", ram_mb="1024"), states)
+
+    rows = matrix.read_reports(tmp_path)
+    assert len(matrix.group_rows(rows)) == 3
+
+    page = matrix.render_html(rows)
+    assert "1024x768 · 1 GB" in page and "640x480 · 2 GB" in page
+    assert "MIYOO RK3566 355 V10 Board (Flip)" in page
+
+
+def test_device_details():
+    output = 'some logging\nPMTEST_DEVICE_INFO {"model": "Powkiddy x55", "resolution": [1280, 720], "ram": 4096}\n'
+    assert suite.device_details(output, {'PLATFORM': "Brick"}) == {
+        'model': "Powkiddy x55", 'display': "1280x720", 'ram_mb': "4096", 'platform': "Brick"}
+
+    assert suite.device_details("crashed\n", {}) == {}
+    assert suite.device_details("PMTEST_DEVICE_INFO {not json\n", {}) == {}
