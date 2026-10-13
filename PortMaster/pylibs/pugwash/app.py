@@ -409,6 +409,12 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             if not self.updated:
                 return
 
+            ## While a task runs, only draw its own window (messages / message box). Redrawing the
+            ## scene underneath just flashes it up, eg: the empty first scene over the splash
+            ## screen while PortMaster checks for updates and loads its sources.
+            if self.task is not None and self.scenes[-1][0] not in self.TASK_INPUT_LAYERS:
+                return
+
             if not self.timers.elapsed('maximum_draw', 20, run_first=True):
                 return
 

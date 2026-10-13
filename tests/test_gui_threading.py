@@ -310,3 +310,51 @@ def test_unloading_while_decoding_is_safe(gui, tmp_path, monkeypatch):
     assert image_file not in gui.images.images
     assert image_file not in gui.images.textures
     assert not image.loaded
+
+
+@pytest.fixture
+def presented(gui, monkeypatch):
+    """Counts frames actually put on screen."""
+    count = []
+    real_present = gui.renderer.present
+
+    def present():
+        count.append(gui.scene_list())
+        real_present()
+
+    monkeypatch.setattr(gui.renderer, "present", present)
+    return count
+
+
+def test_task_without_its_own_window_does_not_redraw(gui, presented):
+    ## Startup (version check, loading sources) runs as tasks over the empty first scene,
+    ## drawing that scene just flashes a blank screen over the splash.
+    gui.updated = True
+
+    gui.run_task(time.sleep, 0.3)
+
+    assert presented == []
+
+
+def test_task_redraws_its_messages_window(gui, presented):
+    with gui.enable_messages():
+        def work():
+            for i in range(5):
+                gui.progress("Working", i, 5)
+                time.sleep(0.05)
+
+        gui.run_task(work)
+
+    assert presented and all(layers[-1] == "messages" for layers in presented)
+
+
+def test_task_that_opens_messages_is_drawn(gui, presented):
+    ## HarbourMaster's startup opens the messages window from the worker.
+    def work():
+        with gui.enable_messages():
+            gui.message("Loading...")
+            time.sleep(0.2)
+
+    gui.run_task(work)
+
+    assert presented and all(layers[-1] == "messages" for layers in presented)
