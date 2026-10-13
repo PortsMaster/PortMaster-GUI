@@ -155,7 +155,7 @@ if [ -n "$AUTOINSTALL_FILES" ]; then
     PortMasterDialogExit
     exit 0
   else
-    PortMasterDialogMessageBox "Finished running autoinstall."
+    PortMasterDialogMessageBox "Finished running autoinstall, update your games list to see the new games. \n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory"
     PortMasterDialogExit
   fi
 fi
