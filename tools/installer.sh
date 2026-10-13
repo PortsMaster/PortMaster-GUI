@@ -125,7 +125,7 @@ elif [ -d "$R/userdata/roms/ports" ]; then
   mkdir -pv "$R$controlfolder/PortMaster"
 
 elif [ -d "$R/opt/muos" ] || [ -d "$R/mnt/mmc/MUOS" ]; then
-  ## muOS
+  ## muOS: found, but not installed to, see below.
   controlfolder="/mnt/mmc/MUOS"
   OS_NAME_OVERRIDE="muOS"
   CUR_TTY="${PM_CUR_TTY:-/dev/null}"
@@ -185,6 +185,15 @@ if [ "$PM_INSTALL_DETECT" = "Y" ]; then
   exit 0
 fi
 
+## muOS includes PortMaster, with its own way to restore it (or muos.portmaster.zip).
+## Don't touch anything there: on muOS releases that read the SD card through
+## exfat-fuse (2410 Banana, 2601 Jacaranda), deleting this script while it runs
+## crashes the card's driver and every bit of content disappears until a reboot.
+if [ "$OS_NAME" = "muOS" ]; then
+  echo "muOS includes PortMaster, restore it from muOS or install muos.portmaster.zip. Nothing was changed."
+  exit 1
+fi
+
 echo "-- Installing on $OS_NAME --"
 
 if [ "$NO_SUDO" = "N" ]; then
@@ -196,7 +205,7 @@ fi
 ## The launcher moves out of PortMaster/ to where the frontend runs it, except here:
 RELOCATE_PM=""
 case "${OS_NAME}" in
-  JELOS|UnofficialOS|ROCKNIX|muOS|retrodeck|spruce|trimui) ;;
+  JELOS|UnofficialOS|ROCKNIX|retrodeck|spruce|trimui) ;;
   *) RELOCATE_PM="Y" ;;
 esac
 
@@ -272,11 +281,6 @@ if [ "$OS_NAME" = "retrodeck" ]; then
   $ESUDO mv -vf PortMaster/PortMaster.sh "$R/${roms_folder}/portmaster/PortMaster.sh" | tee -a $CUR_TTY
 fi
 
-if [ "$OS_NAME" = "muOS" ]; then
-  mkdir -p "$R/roms/ports/PortMaster"
-  cp -f "$PORTMASTER_DIR/control.txt" "$R/roms/ports/PortMaster/control.txt"
-fi
-
 ## -- Runtimes: the ones that were here, then the Full installer's. --------------
 $ESUDO mv temp_runtimes/*.squashfs PortMaster/libs/ 2>/dev/null
 $ESUDO rm -fR temp_runtimes/
@@ -307,11 +311,6 @@ if [ -f "$R$HOME/no_es_restart" ]; then
 
 elif [ -n "$NO_FRONTEND_RESTART" ]; then
   :
-
-elif [ "$OS_NAME" = "muOS" ]; then
-  # YEET
-  "$R/opt/muos/script/mux/quit.sh" reboot frontend &
-  sleep "${PM_INSTALL_SLEEP:-3}"
 
 elif [ "$OS_NAME" = "ROCKNIX" ]; then
   ## This is for the best.

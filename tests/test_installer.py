@@ -330,18 +330,27 @@ def test_no_es_restart_file(tmp_path, portmaster_zip):
     assert not no_restart.exists()
 
 
-def test_muos(tmp_path, portmaster_zip, old_install):
+def test_muos_is_left_alone(tmp_path, portmaster_zip, old_install):
+    ## muOS includes PortMaster (and a way to restore it). On releases with exfat-fuse
+    ## (Banana, Jacaranda) the installer deleting itself crashes the SD card's driver,
+    ## so it changes nothing at all there, itself included.
     installer = Installer(tmp_path, "muos")
     put_zip(installer, portmaster_zip)
     pm = old_install(installer, "/mnt/mmc/MUOS")
+    me = write(installer.root, "/mnt/mmc/ROMS/Ports/Install.PortMaster.sh", "installer")
+    before = sorted(str(path) for path in installer.root.rglob("*"))
 
-    installer.run()
+    run_env = dict(installer.env, HOME=installer.home)
+    result = subprocess.run(
+        ["bash", str(INSTALLER)], cwd=str(installer.work), env=run_env,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
-    assert (pm / "PortMaster.sh").read_text() == stub("muos")
-    assert (pm / "control.txt").read_text() == (PM_DIR / "muos" / "control.txt").read_text()
-    assert installer.path("/roms/ports/PortMaster/control.txt").read_text() == (PM_DIR / "muos" / "control.txt").read_text()
-    assert (pm / "libs" / "godot.squashfs").is_file()
-    assert installer.calls() == ["quit.sh reboot frontend"]
+    assert result.returncode == 1
+    assert "muOS includes PortMaster" in result.stdout
+    assert sorted(str(path) for path in installer.root.rglob("*")) == before
+    assert (pm / "config" / "config.json").is_file()
+    assert me.is_file()
+    assert installer.calls() == []
 
 
 @pytest.mark.parametrize("old_style", [False, True])
