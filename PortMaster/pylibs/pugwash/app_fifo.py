@@ -289,6 +289,12 @@ class FifoControlMixin:
                         result = self.run_task(self.hm.install_port, args[0])
                         logger.debug(f"result: {result}")
 
+            ## Autoinstall adds ports here, the launcher restarts the frontend after
+            ## PortMaster if this marker exists. Do it now: after "exit" the shell
+            ## script kills this process straight away.
+            if result == 0:
+                self.request_frontend_refresh()
+
         except Exception:
             logger.exception(f"fifo: install {args[0]} failed")
 

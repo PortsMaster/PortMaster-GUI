@@ -136,10 +136,7 @@ def main(argv):
                     if pm.hm.platform.ES_NAME == 'show-refresh':
                         pm.message_box(_("Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones." + pm.hm.platform.ROMS_REFRESH_TEXT))
                     else:
-                        refresh_file = (pm.hm.tools_dir / "PortMaster" / f".{pm.hm.platform.ES_NAME}-refresh")
-                        logger.debug(f"{refresh_file}")
-
-                        refresh_file.touch(0o644, exist_ok=True)
+                        pm.request_frontend_refresh()
 
         # if harbourmaster.HM_TESTING:
         #     for key, value in pm.text_data.items():

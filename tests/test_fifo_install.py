@@ -129,3 +129,31 @@ def test_check_runtime_error_always_answers(fifo, press_a, monkeypatch):
     monkeypatch.setattr(fifo.gui.hm, "check_runtime", check_runtime)
 
     assert fifo.check_runtime("ags_3.6.squashfs") == "FAIL"
+
+
+################################################################################
+## Autoinstall adds ports in this fifo_control process, the launcher script then
+## restarts the frontend (EmulationStation etc.) if it finds the refresh marker.
+@pytest.fixture
+def frontend(fifo, monkeypatch):
+    monkeypatch.setattr(harbourmaster, "HM_TESTING", False)
+    monkeypatch.setattr(fifo.gui.hm.platform, "ES_NAME", "emulationstation")
+    return fifo.gui.hm.tools_dir / "PortMaster" / ".emulationstation-refresh"
+
+
+def test_install_asks_for_a_frontend_refresh(fifo, frontend, tmp_path):
+    assert fifo.install(str(write_port_zip(tmp_path / "testport.zip", basic_port_files()))) == "OKAY"
+    assert frontend.is_file()
+
+
+def test_failed_install_does_not_refresh(fifo, frontend, tmp_path):
+    assert fifo.install(str(write_raw_zip(tmp_path / "testport.zip", b"garbage"))) == "FAIL"
+    assert not frontend.exists()
+
+
+@pytest.mark.parametrize("es_name", [None, "show-refresh"])
+def test_no_refresh_marker_without_a_frontend_to_restart(es_name, fifo, frontend, tmp_path, monkeypatch):
+    monkeypatch.setattr(fifo.gui.hm.platform, "ES_NAME", es_name)
+
+    assert fifo.install(str(write_port_zip(tmp_path / "testport.zip", basic_port_files()))) == "OKAY"
+    assert list(frontend.parent.glob(".*-refresh")) == []

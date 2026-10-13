@@ -14,6 +14,27 @@ class CommandsMixin:
     PortMasterGUI methods: GUI front ends for HarbourMaster operations, run on a worker thread.
     """
 
+    def request_frontend_refresh(self):
+        """
+        Leave the marker that tells the launcher script (PortMaster.sh etc.) to refresh or
+        restart the frontend once PortMaster exits, so added / removed ports show up.
+
+        Returns True if a marker was written. Platforms with ES_NAME 'show-refresh' have
+        no frontend to restart, the user is told to refresh it themselves instead.
+        """
+        platform = self.hm.platform
+
+        if harbourmaster.HM_TESTING or platform.ES_NAME in (None, 'show-refresh'):
+            return False
+
+        if not platform.ports_changed():
+            return False
+
+        refresh_file = (self.hm.tools_dir / "PortMaster" / f".{platform.ES_NAME}-refresh")
+        logger.debug(f"{refresh_file}")
+        refresh_file.touch(0o644, exist_ok=True)
+        return True
+
     ## Gamelist xml updater
     def update_gamelist_xml(self):
         self.run_task(self._update_gamelist_xml)
