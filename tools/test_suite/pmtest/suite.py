@@ -115,21 +115,13 @@ def junit_summary(result):
     return text, "\n".join(details)
 
 
-## The button checks: key, what it checks, the explanation shown first, the prompt, and the
-## expected answer (True: accepts, False: cancels, None: the physical A/B pair, which must differ).
+## The button checks: key, what it checks, the prompt, and the expected answer
+## (True: accepts, False: cancels, None: the physical A/B pair, which must differ).
 BUTTON_CHECKS = (
-    ("labelled_ok", "the OKAY button",
-     "The bar at the bottom of the next screen shows a button next to OKAY.\n\nPress that button.",
-     "Press the button shown next to OKAY at the bottom of the screen.", True),
-    ("labelled_cancel", "the CANCEL button",
-     "The bar at the bottom of the next screen shows a button next to CANCEL.\n\nPress that button.",
-     "Press the button shown next to CANCEL at the bottom of the screen.", False),
-    ("physical_a", "the A button",
-     "Ignore the bar at the bottom this time.\n\nPress the button with the letter A printed on your device.",
-     "Press the button printed with A on your device.", None),
-    ("physical_b", "the B button",
-     "Ignore the bar at the bottom this time.\n\nPress the button with the letter B printed on your device.",
-     "Press the button printed with B on your device.", None),
+    ("labelled_ok", "the OKAY button", "Press the button shown next to OKAY at the bottom of the screen.", True),
+    ("labelled_cancel", "the CANCEL button", "Press the button shown next to CANCEL at the bottom of the screen.", False),
+    ("physical_a", "the A button", "Press the button printed with A on your device.", None),
+    ("physical_b", "the B button", "Press the button printed with B on your device.", None),
     )
 
 
@@ -144,7 +136,7 @@ def button_verdict(attempts):
     problems = []
     notes = []
 
-    for key, name, _, _, expected in BUTTON_CHECKS:
+    for key, name, _, expected in BUTTON_CHECKS:
         if expected is None:
             continue
 
@@ -346,20 +338,6 @@ class Suite:
         self.log(text)
         if self.has_ui:
             self.ui.message(text)
-
-    def explain(self, heading, text, seconds=5):
-        """A screen of explanation, counting down before the question that follows."""
-        self.log(f"explain: {heading}")
-        self.ui.messages_end()
-        self.ui.messages_begin()
-        self.ui.message(heading)
-        self.ui.message(text)
-
-        for second in range(seconds):
-            self.ui.progress(f"The question comes up in {seconds - second}", second, seconds)
-            time.sleep(1)
-
-        self.ui.progress_clear()
 
     def ui_start(self):
         self.has_ui = (not self.options.no_ui) and self.ui.start("--no-check")
@@ -585,7 +563,11 @@ class Suite:
             return
 
         if not self.ui.message_box(
-                "Last part: four quick button checks.\n\nBefore each one, a screen explains which button to press.\n\n"
+                "Last part: four quick button checks, one after the other. Read each question before pressing:\n\n"
+                "1. the button the bottom bar shows next to OKAY\n"
+                "2. the button the bottom bar shows next to CANCEL\n"
+                "3. the button printed with A on your device\n"
+                "4. the button printed with B on your device\n\n"
                 "Press A to begin, or B to skip them.", want_cancel=True):
             section.set(SKIP, "skipped by the tester")
             return
@@ -593,15 +575,14 @@ class Suite:
         attempts = {}
 
         def ask(number, key, retry=False):
-            _, name, explanation, prompt, _ = BUTTON_CHECKS[number]
-            heading = f"Button check {number + 1} of {len(BUTTON_CHECKS)}: {name}"
+            _, name, prompt, _ = BUTTON_CHECKS[number]
+            text = f"Button check {number + 1} of {len(BUTTON_CHECKS)}\n\n{prompt}"
             if retry:
-                explanation = f"ARE YOU SURE YOU PRESSED {name.upper()}?!?!?!?!\n\nLet's try that one again.\n\n" + explanation
+                text = f"ARE YOU SURE YOU PRESSED {name.upper()}?!?!?!?!\n\nOnce more:\n\n{prompt}"
 
-            self.explain(heading, explanation)
-            attempts.setdefault(key, []).append(self.ui.message_box(prompt, want_cancel=True))
+            attempts.setdefault(key, []).append(self.ui.message_box(text, want_cancel=True))
 
-        for number, (key, _, _, _, expected) in enumerate(BUTTON_CHECKS):
+        for number, (key, _, _, expected) in enumerate(BUTTON_CHECKS):
             ask(number, key)
             if expected is not None and attempts[key][-1] is not expected:
                 ask(number, key, retry=True)
