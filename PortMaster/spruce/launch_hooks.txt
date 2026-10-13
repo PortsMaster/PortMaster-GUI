@@ -8,7 +8,7 @@ pm_hook_env() {
   export HOME="/mnt/SDCARD"
   export PATH="/mnt/SDCARD/Persistent/portmaster/bin/:$PATH"
   export LD_LIBRARY_PATH="/mnt/SDCARD/Persistent/portmaster/lib:$LD_LIBRARY_PATH"
-  PM_PYTHON="/mnt/SDCARD/Persistent/portmaster/bin/python3"
+  PM_PYTHON="${PM_PYTHON:-/mnt/SDCARD/Persistent/portmaster/bin/python3}"
   export LD_PRELOAD=""
   directory="/mnt/SDCARD/Roms/"
 

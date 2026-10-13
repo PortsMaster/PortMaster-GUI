@@ -309,7 +309,8 @@ def test_spruce_runs_once_with_one_autoinstall_dir(launcher):
     (launcher.pm / "autoinstall").mkdir()
     (launcher.pm / "autoinstall" / "port.zip").write_bytes(b"zip")
 
-    calls = launcher.run("spruce")
+    ## (On a real spruce device its python3 exists, keep the test off it.)
+    calls = launcher.run("spruce", PM_PYTHON=str(launcher.root / "no-python"))
 
     assert f"PortMasterDialog autoinstall {launcher.pm / 'autoinstall'}" in calls
     assert calls.count("pugwash ") == 1
@@ -332,3 +333,13 @@ def test_retrodeck_reload_disabled(launcher):
     calls = launcher.run("retrodeck", FAKE_MARKERS=launcher.markers(".es-de-refresh"), portmaster_reload_esde="false")
 
     assert "pkill -f es-de" not in calls
+
+
+def test_spruce_uses_its_own_python(launcher):
+    python = launcher.root / "python3"
+    write_exe(python, 'echo "python3 $*" >> "$FAKE_CALLS"\n')
+
+    calls = launcher.run("spruce", PM_PYTHON=str(python))
+
+    assert "python3 ./pugwash" in calls
+    assert "pugwash " not in calls
