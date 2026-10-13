@@ -14,6 +14,7 @@ import threading
 import time
 
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from loguru import logger
 
@@ -314,6 +315,34 @@ class DirectoryScanner:
     def shutdown(self):
         self.clear_all()
         self.executor.shutdown(wait=False)
+
+
+class DoneFile:
+    """
+    fifo_control's answer file. Written whole (a temp file renamed over it), so the
+    shell scripts polling it never read it empty halfway through a write and take
+    that as the answer.
+    """
+
+    def __init__(self, path):
+        self.path = Path(path)
+
+    def write_text(self, text):
+        temp_file = self.path.with_name(self.path.name + ".tmp")
+        temp_file.write_text(text)
+        os.replace(str(temp_file), str(self.path))
+
+    def read_text(self):
+        return self.path.read_text()
+
+    def exists(self):
+        return self.path.exists()
+
+    def unlink(self):
+        self.path.unlink()
+
+    def __str__(self):
+        return str(self.path)
 
 
 class FifoReader:

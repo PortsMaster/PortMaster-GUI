@@ -533,6 +533,8 @@ class Suite:
         self.say(f"Installing PortMaster {version}, this takes a minute.")
 
         installed = self.ui.install(PM_ZIP) if self.has_ui else None
+        if installed is not None:
+            self.log(f"install: pugwash answered {self.ui.last_answer!r}")
         if installed is None:
             ## No screen: the installed harbourmaster does it.
             code, text = self.run(
@@ -549,7 +551,8 @@ class Suite:
         if installed and now == version:
             section.set(PASS, f"PortMaster {version} installed")
         else:
-            section.set(FAIL, f"PortMaster {version} did not install (now {now})", "See install/ and the PortMaster logs in the report.")
+            section.set(FAIL, f"PortMaster {version} did not install (now {now})",
+                        f"pugwash answered {self.ui.last_answer!r}. See install/ and the PortMaster logs in the report.")
 
     def step_device(self, section):
         out = self.work / "device"

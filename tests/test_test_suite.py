@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import sys
+import threading
 import zipfile
 
 import pytest
@@ -423,3 +424,22 @@ def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
     make_report(tmp_path, "r.zip", {'cfw': "x"}, [("install", suite.PASS, "installed", "")])
 
     assert matrix.read_report(tmp_path / "r.zip") is None
+
+
+def test_dialog_waits_through_an_empty_done_file(tmp_path):
+    ## Older pugwash truncates the done file before writing: empty isn't an answer (x55, 2026-10-13).
+    class Running:
+        def poll(self):
+            return None
+
+    dialog = Dialog(tmp_path / "nowhere", tmp_path)
+    dialog.proc = Running()
+    dialog.done.write_text("")
+
+    writer = threading.Timer(0.3, lambda: dialog.done.write_text("OKAY"))
+    writer.start()
+    try:
+        assert dialog._wait_done(timeout=10) == "OKAY"
+
+    finally:
+        writer.cancel()

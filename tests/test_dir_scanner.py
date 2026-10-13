@@ -144,3 +144,21 @@ def test_fifo_reader(tmp_path):
         reader.close()
 
     assert not reader.thread.is_alive()
+
+
+################################################################################
+## DoneFile: fifo_control's answer file is never seen half-written.
+def test_done_file_is_replaced_whole(tmp_path):
+    done = pugtask.DoneFile(tmp_path / "pm_done")
+    done.write_text("WAIT")
+    inode = (tmp_path / "pm_done").stat().st_ino
+
+    done.write_text("OKAY")
+
+    assert done.read_text() == "OKAY"
+    ## A new file renamed over the old one, not the old one truncated and rewritten.
+    assert (tmp_path / "pm_done").stat().st_ino != inode
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["pm_done"]
+
+    done.unlink()
+    assert not done.exists()

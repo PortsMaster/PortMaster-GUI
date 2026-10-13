@@ -24,6 +24,7 @@ class Dialog:
         self.proc = None
         self.log = log or (lambda text: None)
         self.python = python or sys.executable
+        self.last_answer = None
 
     @property
     def running(self):
@@ -115,7 +116,8 @@ class Dialog:
         finally:
             os.close(fd)
 
-        return self._wait_done(timeout)
+        self.last_answer = self._wait_done(timeout)
+        return self.last_answer
 
     def _wait(self, test, timeout):
         deadline = None if timeout is None else time.monotonic() + timeout
@@ -137,7 +139,8 @@ class Dialog:
             except OSError:
                 return False
 
-            if text == "WAIT":
+            ## Empty: caught halfway through a write (pugwash before DoneFile truncates first).
+            if text in ("", "WAIT"):
                 return False
 
             result.append(text)

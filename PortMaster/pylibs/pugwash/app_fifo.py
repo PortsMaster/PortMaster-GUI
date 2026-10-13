@@ -399,7 +399,7 @@ class FifoControlMixin:
         logger.info("-- Beginning Fifo Control --")
 
         fifo_file = Path(argv[0])
-        done_file = Path(argv[1])
+        done_file = tasks.DoneFile(argv[1])
 
         if fifo_file.exists():
             fifo_file.unlink()
