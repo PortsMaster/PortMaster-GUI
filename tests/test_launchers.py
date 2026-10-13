@@ -11,6 +11,7 @@ import os
 import shutil
 import stat
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -117,7 +118,7 @@ class Launcher:
         run_env.update(env)
 
         if stub is not None:
-            command = ["bash", str(PM_DIR / stub)]
+            command = ["bash", str(self.sandboxed(PM_DIR / stub))]
         else:
             command = ["bash", "-c", f'controlfolder="{self.pm}"; source "$controlfolder/utils/pm_launch.txt" {cfw or ""}; exit $?']
 
@@ -130,6 +131,21 @@ class Launcher:
         return self.calls()
 
     OGA_RESTART = "systemctl restart oga_events"
+
+    ## Where the generic stub looks before $XDG_DATA_HOME: on a real ArkOS / dArkOS
+    ## device these exist, and the test would run the device's own PortMaster.
+    DEVICE_PATHS = ("/opt/system/Tools/", "/opt/tools/", "/roms/ports/")
+
+    def sandboxed(self, stub):
+        """A copy of `stub` that looks for those under the fake root instead."""
+        text = Path(stub).read_text()
+        for device_path in self.DEVICE_PATHS:
+            text = text.replace(f'"{device_path}', f'"{self.root / "device"}{device_path}')
+
+        copy = self.root / "stubs" / Path(stub).name
+        copy.parent.mkdir(exist_ok=True)
+        copy.write_text(text)
+        return copy
 
     def calls(self):
         """
@@ -205,7 +221,7 @@ def test_stub_overwritten_while_running(launcher):
     ## An older harbourmaster updating PortMaster from the GUI overwrites the running
     ## launcher in place. Bash then reads on from where it was, in the new file.
     stub = launcher.root / "PortMaster.sh"
-    shutil.copy(PM_DIR / "PortMaster.sh", stub)
+    shutil.copy(str(launcher.sandboxed(PM_DIR / "PortMaster.sh")), str(stub))
 
     write_exe(launcher.pm / "pugwash", LOG + (
         f'printf "%0{stub.stat().st_size + 100}d\\necho SHOULD-NOT-RUN >> \\"$FAKE_CALLS\\"\\n" 0 > "{stub}"\n'))
@@ -343,3 +359,14 @@ def test_spruce_uses_its_own_python(launcher):
 
     assert "python3 ./pugwash" in calls
     assert "pugwash " not in calls
+
+
+def test_sandboxed_stub_keeps_its_logic(launcher):
+    ## Only the paths move: the copy must still be the real stub otherwise.
+    copy = launcher.sandboxed(PM_DIR / "PortMaster.sh").read_text()
+    original = (PM_DIR / "PortMaster.sh").read_text()
+
+    assert copy.count("\n") == original.count("\n")
+    assert "/opt/system/Tools/PortMaster/" in copy
+    assert '"/opt/system/Tools/' not in copy
+    assert copy.splitlines()[-1] == original.splitlines()[-1]
