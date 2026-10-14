@@ -634,6 +634,13 @@ def test_send_report(tmp_path, receiver):
     assert not ok and why
 
 
+def test_ssl_context():
+    ## PortMaster's certifi bundle, not the device's: some CFWs have none.
+    context = suite.ssl_context()
+    assert context.verify_mode == suite.ssl.CERT_REQUIRED
+    assert len(context.get_ca_certs()) > 100
+
+
 def test_summary_entries_sent():
     sections = [suite.Section("install", "Install PortMaster")]
     sections[0].set(suite.PASS, "installed")

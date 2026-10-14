@@ -17,6 +17,7 @@ import platform
 import re
 import shutil
 import socket
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -210,14 +211,28 @@ def upload_url(path=UPLOAD_FILE):
     return None
 
 
+def ssl_context():
+    """PortMaster's own certifi bundle: some CFWs ship old or no CA certificates."""
+    for cafile in (TREE / "PortMaster" / "exlibs" / "certifi" / "cacert.pem",
+                   HERE.parents[2] / "PortMaster" / "exlibs" / "certifi" / "cacert.pem"):
+        if cafile.is_file():
+            return ssl.create_default_context(cafile=str(cafile))
+
+    return ssl.create_default_context()
+
+
 def send_report(url, zip_path, timeout=60):
-    """POSTs the report zip to url (tools/test_suite/receive.py). (True, "") or (False, why)."""
+    """
+    POSTs the report zip to url: tools/test_suite/receive.py on the LAN, or the
+    pmtest-reports Worker. (True, "") or (False, why).
+    """
     zip_path = Path(zip_path)
     request = urllib.request.Request(
         url, data=zip_path.read_bytes(), method="POST",
-        headers={'Content-Type': "application/zip", 'X-Report-Name': zip_path.name})
+        headers={'Content-Type': "application/zip", 'X-Report-Name': zip_path.name, 'User-Agent': "PortMaster-Test-Suite"})
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        context = ssl_context() if url.lower().startswith("https:") else None
+        with urllib.request.urlopen(request, timeout=timeout, context=context) as response:
             if 200 <= response.status < 300:
                 return True, ""
 
@@ -947,17 +962,21 @@ class Suite:
         self.ui_start()
         if self.has_ui and "install" not in skip:
             version = zipfile.ZipFile(str(PM_ZIP)).read("PortMaster/version").decode().strip()
-            sends = ""
-            if upload:
-                sends = f"When it's done it sends the report to {urllib.parse.urlsplit(upload).hostname}. "
-
             if not self.ui.message_box(
                     f"PortMaster Test Suite\n\nThis installs PortMaster {version} and tests it on this device. "
-                    "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n" + sends +
+                    "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n"
                     "Press A to start, or B to quit.", want_cancel=True):
                 self.log("cancelled by the tester")
                 self.ui_stop()
                 return 0
+
+            if upload and not self.ui.message_box(
+                    f"Send the report to {urllib.parse.urlsplit(upload).hostname} when it's done?\n\n"
+                    "Addresses, serial numbers and network names are taken out first. "
+                    "It's saved on this device either way.\n\n"
+                    "Press A to send it, or B to keep it here.", want_cancel=True):
+                self.log("the tester chose not to send the report")
+                upload = None
 
         for key in STEPS:
             section = self.section(key)
