@@ -416,6 +416,18 @@ def test_install_theme(hm, tmp_path, callback):
     assert "installed successfully" in callback.message_boxes[-1]
 
 
+def test_install_theme_zipped_on_windows(hm, tmp_path):
+    ## Backslashes between folders, as in the first jimmyhat999 grid theme zips.
+    theme_zip = write_port_zip(tmp_path / "Shiny.theme.zip", {
+        "Shiny\\theme.json": json.dumps({"#info": {"name": "Shiny"}}),
+        "Shiny\\screenshot.png": b"png",
+        })
+
+    assert hm.install_port(str(theme_zip)) == 0
+    theme_dir = hm.themes_dir / "Shiny"
+    assert sorted(p.name for p in theme_dir.iterdir()) == ["screenshot.png", "theme.json", "theme.md5"]
+
+
 ################################################################################
 ## Artwork of ports that are not in any source (testing ports): real port zips ship
 ## <port dir>/screenshot.png but their own port.json has an empty "image".

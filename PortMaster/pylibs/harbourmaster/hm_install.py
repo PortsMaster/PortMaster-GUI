@@ -58,13 +58,15 @@ class InstallMixin:
 
             total_files = len(zf.infolist())
             for file_number, file_info in enumerate(zf.infolist()):
-                if file_info.filename.endswith('/'):
+                ## Zips made on Windows can use \ between folders (jimmyhat999's grid themes did).
+                zip_name = file_info.filename.replace('\\', '/')
+                if zip_name.endswith('/'):
                     continue
 
                 self.callback.progress(_("Installing"), file_number+1, total_files, '%')
-                self.callback.message(f"- {file_info.filename}")
+                self.callback.message(f"- {zip_name}")
 
-                file_name = theme_dir / file_info.filename.rsplit('/', 1)[-1]
+                file_name = theme_dir / zip_name.rsplit('/', 1)[-1]
                 with open(file_name, 'wb') as fh:
                     fh.write(zf.read(file_info.filename))
 
