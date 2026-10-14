@@ -36,6 +36,16 @@ if [ -z "$PM_VERSION" ] && [ -f "$CONTROL_DIR/version" ]; then
 fi
 [ -z "$PM_VERSION" ] && export PM_VERSION="Unknown"
 
+# spruce writes its version, model name and stick count here at every boot (spruce
+# 4b90fb865, nightlies from 2026-10-13 on). Older spruce: the probes and the spruce
+# fallbacks in 3b / 3h below.
+load_spruce_info() {
+    [ "$CFW_NAME" = "spruce" ] && [ -f /tmp/spruce_device_info.env ] || return 0
+    set -a
+    . /tmp/spruce_device_info.env
+    set +a
+}
+
 # ------------------------------------------------------------------------------
 # 1. FAST HOST IDENTITY PROBE (CFW & DEVICE NAME)
 # ------------------------------------------------------------------------------
@@ -107,6 +117,8 @@ for dfile in \
     fi
 done
 
+load_spruce_info
+
 if [ "$DEVICE_NAME" = "Unknown" ]; then
     if [ -f "/sys/devices/virtual/dmi/id/product_name" ]; then
         DMI_NAME="$(tr -d '\r\n' < /sys/devices/virtual/dmi/id/product_name 2>/dev/null)"
@@ -126,8 +138,10 @@ if [ "$DEVICE_NAME" = "Unknown" ]; then
     fi
 fi
 
-SAFE_CFW="$(echo "$CFW_NAME" | tr '[:upper:] ' '[:lower:]_')"
-SAFE_DEV="$(echo "$DEVICE_NAME" | tr '[:upper:] ' '[:lower:]_')"
+## The alphabet spelled out, here and below: some BusyBox tr builds take [:upper:] as
+## literal characters (the TrimUI Brick's turns spruce into swrlce).
+SAFE_CFW="$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ' 'abcdefghijklmnopqrstuvwxyz_')"
+SAFE_DEV="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ' 'abcdefghijklmnopqrstuvwxyz_')"
 CACHED_ENV="$CONTROL_DIR/device_info_${SAFE_CFW}_${SAFE_DEV}.env"
 
 # ------------------------------------------------------------------------------
@@ -139,6 +153,7 @@ if [ "$FORCE_REFRESH" -eq 0 ] && [ -f "$CACHED_ENV" ] && [ -s "$CACHED_ENV" ]; t
         set -a
         . "$CACHED_ENV"
         set +a
+        load_spruce_info
 
         if [ "$SOURCED" -eq 0 ]; then
             echo "========================================"
@@ -381,7 +396,7 @@ detect_dynamic_gpu() {
         done
     fi
 
-    local cpu_l="$(echo "$DEVICE_CPU" | tr '[:upper:]' '[:lower:]')"
+    local cpu_l="$(echo "$DEVICE_CPU" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
     if [ "$GPU_DRIVER" = "Unknown" ]; then
         case "$cpu_l" in
             *qcs*|*sm8*|*sm7*|*sm6*|*sd8*|*sd7*|*sd6*|*snapdragon*)
@@ -815,6 +830,7 @@ if [ "$CFW_NAME" = "spruce" ]; then
         [0-2]) export ANALOG_STICKS="$SPRUCE_STICKS" ;;
     esac
 fi
+load_spruce_info
 
 # Pure Dynamic Touchscreen Detection (Live Active Evdev Nodes Only)
 detect_dynamic_touchscreen() {
@@ -827,7 +843,7 @@ detect_dynamic_touchscreen() {
         local dev_props="$(_read_line "$input_dir/properties")"
         local dev_abs="$(_read_line "$input_dir/capabilities/abs")"
         local dev_key="$(_read_line "$input_dir/capabilities/key")"
-        local name_lower="$(echo "$dev_name" | tr '[:upper:]' '[:lower:]')"
+        local name_lower="$(echo "$dev_name" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
         # 1. Ignore non-touch devices (Gamepads, Buttons, Headsets, Keyboards)
         case "$name_lower" in
@@ -878,7 +894,7 @@ detect_dynamic_rumble() {
     for input_dir in /sys/class/input/input*; do
         [ -d "$input_dir" ] || continue
         local dev_name="$(_read_line "$input_dir/name")"
-        local dev_name_l="$(echo "$dev_name" | tr '[:upper:]' '[:lower:]')"
+        local dev_name_l="$(echo "$dev_name" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
         case "$dev_name_l" in
             *loong*|*vibrat*|*rumble*|*haptic*|*ffsm*|*drv2605*|*gamepad*|*joypad*|*retrogame_joypad*|*odroidgo*|*trimui*|*odin*|*dualsense*)
@@ -932,7 +948,7 @@ detect_dynamic_rumble() {
         done
     fi
 
-    local dev_l="$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')"
+    local dev_l="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
     case "$dev_l" in
         *miniloong*|*rgb30*|*rgb10*|*rgb20*|*rk2023*|*x55*|*rg35*|*rg40*|*rg50*|*rg55*|*smart_pro*|*brick*|*retroid*|*odin*|*steam_deck*|*rog_ally*|*legion_go*)
             export DEVICE_HAS_RUMBLE="Y"
@@ -981,7 +997,7 @@ for vk_path in /usr/lib*/libvulkan.so* /usr/lib/*/libvulkan.so* /usr/share/vulka
     if [ -e "$vk_path" ]; then CAPS+=("vulkan"); break; fi
 done
 
-CPU_LOWER="$(echo "$DEVICE_CPU" | tr '[:upper:]' '[:lower:]')"
+CPU_LOWER="$(echo "$DEVICE_CPU" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
 case "$CPU_LOWER" in
     *rk3326*|*px30*)
