@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.0"
+export DEVICE_INFO_VERSION="0.2.1"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -241,6 +241,12 @@ elif [ "$CFW_NAME" = "knulli" ]; then
         if [ -f "$kver" ]; then export CFW_VERSION="$(tr -d '\r\n' < "$kver" 2>/dev/null)"; break; fi
     done
     [ "$CFW_VERSION" = "Unknown" ] && export CFW_VERSION="scarab"
+elif [ "$CFW_NAME" = "spruce" ]; then
+    ## spruce's own version; os-release is the base system's (Miyoo/TrimUI stock, Debian on dArkMoss).
+    if [ -f "/mnt/SDCARD/spruce/spruce" ]; then
+        export CFW_VERSION="$(head -n1 /mnt/SDCARD/spruce/spruce 2>/dev/null | tr -d '\r\n ')"
+        [ -z "$CFW_VERSION" ] && export CFW_VERSION="Unknown"
+    fi
 fi
 
 if [ "$CFW_VERSION" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
@@ -425,15 +431,25 @@ detect_dynamic_gpu() {
             /usr/lib*/libgbm.so*; do
             [ -f "$lib" ] || continue
 
+            ## One pass over the library for both versions, through strings where there is
+            ## one: BusyBox grep -a took ~30s per pass over the Miyoo Flip's 45MB libmali.
+            local candidates
+            if command -v strings >/dev/null 2>&1; then
+                candidates="$(strings -n 4 "$lib" 2>/dev/null | grep -E 'Mesa [0-9]|[gr][0-9]+p[0-9]+')"
+            else
+                candidates="$(grep -aE 'Mesa [0-9]|[gr][0-9]+p[0-9]+' "$lib" 2>/dev/null)"
+            fi
+            [ -n "$candidates" ] || continue
+
             local mesa_ver
-            mesa_ver="$(grep -aoE 'Mesa [0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9a-zA-Z.]+)?' "$lib" 2>/dev/null | head -n1)"
+            mesa_ver="$(printf '%s\n' "$candidates" | grep -aoE 'Mesa [0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9a-zA-Z.]+)?' | head -n1)"
             if [ -n "$mesa_ver" ]; then
                 export GPU_DRIVER_VERSION="${mesa_ver#Mesa }"
                 break
             fi
 
             local mali_ver
-            mali_ver="$(grep -aoE '\b[gr][0-9]+p[0-9]+(-[0-9a-zA-Z]+)?\b' "$lib" 2>/dev/null | head -n1)"
+            mali_ver="$(printf '%s\n' "$candidates" | grep -aoE '\b[gr][0-9]+p[0-9]+(-[0-9a-zA-Z]+)?\b' | head -n1)"
             if [ -n "$mali_ver" ]; then
                 export GPU_DRIVER_VERSION="$mali_ver"
                 break
@@ -464,7 +480,6 @@ if [ -d "/sys/class/drm" ]; then
                 fi
             fi
             if [ -f "$card_dir/vrefresh" ]; then
-                local hz
                 hz="$(cat "$card_dir/vrefresh" 2>/dev/null)"
                 [ -n "$hz" ] && [ "$hz" -gt 0 ] 2>/dev/null && export DEVICE_REFRESH_RATE="$hz"
             fi
@@ -784,6 +799,22 @@ detect_dynamic_controls() {
     export ANALOG_TRIGGERS
 }
 detect_dynamic_controls
+
+## spruce states each device's stick count in its platform config
+## (spruce/scripts/platform/<PLATFORM>.cfg), take that over probing: the Miyoo Flip's
+## sticks come through miyoo_inputd's virtual pad, which the probe doesn't trust (0).
+## Ports have it in their environment; otherwise helperFunctions.sh sets it (it only
+## sets variables).
+if [ "$CFW_NAME" = "spruce" ]; then
+    SPRUCE_STICKS="$DEVICE_NUM_ANALOG_STICKS"
+    if [ -z "$SPRUCE_STICKS" ] && [ -f "/mnt/SDCARD/spruce/scripts/helperFunctions.sh" ]; then
+        SPRUCE_STICKS="$(. /mnt/SDCARD/spruce/scripts/helperFunctions.sh > /dev/null 2>&1; echo "$DEVICE_NUM_ANALOG_STICKS")"
+    fi
+
+    case "$SPRUCE_STICKS" in
+        [0-2]) export ANALOG_STICKS="$SPRUCE_STICKS" ;;
+    esac
+fi
 
 # Pure Dynamic Touchscreen Detection (Live Active Evdev Nodes Only)
 detect_dynamic_touchscreen() {
