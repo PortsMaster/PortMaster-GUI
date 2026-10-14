@@ -95,3 +95,55 @@ def test_expand_info_override_resolution():
 def test_find_device_by_resolution():
     assert harbourmaster.find_device_by_resolution((640, 480)) == "testing"
     assert harbourmaster.find_device_by_resolution((1, 1)) == "default"
+
+
+def _no_device_env(monkeypatch):
+    for key in ("DEVICE_NAME", "DEVICE_CPU", "CFW_NAME", "DISPLAY_WIDTH", "DISPLAY_HEIGHT", "DEVICE_ARCH", "DEVICE_CAPABILITIES"):
+        monkeypatch.delenv(key, raising=False)
+
+
+def _cache(folder, version, model, name="device_info_rocknix_rp5.env"):
+    (folder / name).write_text(
+        f'DEVICE_INFO_VERSION="{version}"\nCFW_NAME="ROCKNIX"\nDEVICE_NAME="{model}"\n'
+        'DEVICE_CAPABILITIES="aarch64 1920x1080"\n')
+
+
+def test_device_info_current_cache_skips_the_probe(tmp_path, monkeypatch):
+    _no_device_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.2"\n')
+    _cache(tmp_path, "0.2.2", "Retroid Pocket 5")
+
+    def no_probe(*args, **kwargs):
+        raise AssertionError("probed although the cache is current")
+
+    monkeypatch.setattr(hardware.subprocess, "run", no_probe)
+    assert hardware.HardwareDetector(tmp_path).get_info()['model'] == "Retroid Pocket 5"
+
+
+def test_device_info_stale_cache_is_probed_again(tmp_path, monkeypatch):
+    ## ROCKNIX 20250517's own control.txt never sources device_info.txt, so only
+    ## harbourmaster can notice a cache an older device_info.txt wrote.
+    _no_device_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.2"\n')
+    _cache(tmp_path, "0.2.1", "Old Answer")
+    probes = []
+
+    def probe(command, **kwargs):
+        probes.append(command)
+        _cache(tmp_path, "0.2.2", "New Answer")
+
+    monkeypatch.setattr(hardware.subprocess, "run", probe)
+    assert hardware.HardwareDetector(tmp_path).get_info()['model'] == "New Answer"
+    assert probes and probes[0][-1] == "-f"
+
+
+def test_device_info_stale_cache_when_the_probe_fails(tmp_path, monkeypatch):
+    _no_device_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.2"\n')
+    _cache(tmp_path, "0.2.1", "Old Answer")
+
+    def probe(command, **kwargs):
+        raise hardware.subprocess.TimeoutExpired(command, 60)
+
+    monkeypatch.setattr(hardware.subprocess, "run", probe)
+    assert hardware.HardwareDetector(tmp_path).get_info()['model'] == "Old Answer"
