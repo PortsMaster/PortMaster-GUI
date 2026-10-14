@@ -384,6 +384,25 @@ def device_details(probe_output, env):
     return details
 
 
+def sdl_summary(probe_output):
+    """
+    ("SDL 2 30 8" or "broken", a short warning or "") from the SDL probe's output.
+    pysdl2 prints a DLLWarning before the version when it skips a library (spruce on the
+    TrimUI Brick: a zero-byte libSDL2 placeholder), which isn't the version.
+    """
+    version = "broken"
+    warning = ""
+    for line in probe_output.splitlines():
+        if re.match(r"SDL \d+ \d+ \d+$", line.strip()):
+            version = line.strip()
+
+        elif "Warning" in line and not warning:
+            match = re.search(r"OSError\('([^':]+): ([^']+)'\)", line)
+            warning = f"{os.path.basename(match.group(1))}: {match.group(2)}" if match else line.strip()[-120:]
+
+    return version, warning
+
+
 def os_release_name(path):
     """PRETTY_NAME from an os-release file, "" without one."""
     try:
@@ -642,7 +661,9 @@ class Suite:
                 drivers = line.split()[1:]
 
         self.info['video_drivers'] = drivers
-        self.info['sdl'] = (text.strip().splitlines() or ["?"])[0] if code == 0 else "not loadable"
+        self.info['sdl'], warning = sdl_summary(text if code == 0 else "")
+        if warning:
+            self.info['sdl_warning'] = warning
 
         device = self.info['device'] + (f" ({self.info['platform']})" if self.info.get('platform') else "")
         section.set(INFO, f"{self.info['cfw']} {self.info['cfw_version']} on {device} ({self.info['arch']}), Python {self.info['python']}",

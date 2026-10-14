@@ -85,6 +85,26 @@ def _environment(zf):
     return dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
 
 
+def _small_text(zf, name, limit=64 * 1024):
+    try:
+        member = zf.getinfo(name)
+
+    except KeyError:
+        return ""
+
+    return zf.read(member).decode("utf-8", "replace") if member.file_size <= limit else ""
+
+
+def _sdl(info, probe_output):
+    """("2.30.8" or "broken", warned): reports before the suite parsed it kept the probe's first line."""
+    for text in (info.get('sdl'), *probe_output.splitlines()):
+        match = re.match(r"SDL (\d+) (\d+) (\d+)$", str(text or "").strip())
+        if match:
+            return ".".join(match.groups()), bool(info.get('sdl_warning')) or "Warning" in probe_output or "Warning" in str(info.get('sdl'))
+
+    return "broken", True
+
+
 def read_report(zip_path):
     """One matrix row from a report zip, or None if it isn't a usable report."""
     zip_path = Path(zip_path)
@@ -99,6 +119,7 @@ def read_report(zip_path):
 
             data = json.loads(zf.read(member).decode("utf-8"))
             environment = _environment(zf)
+            sdl_probe = _small_text(zf, "device/sdl.txt")
 
     except (OSError, KeyError, ValueError, zipfile.BadZipFile, UnicodeDecodeError):
         return None
@@ -116,6 +137,7 @@ def read_report(zip_path):
     width, height = environment.get("DISPLAY_WIDTH"), environment.get("DISPLAY_HEIGHT")
     row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
     row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
+    row['sdl'], row['sdl_warned'] = _sdl(info, sdl_probe)
     row['report'] = zip_path.name
     row['scrubbed'] = data.get('scrubbed') is True
     row['sections'] = {}
@@ -321,7 +343,8 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
             version += f'<br><span class="muted">{_e(row["os"])}</span>'
 
         add(f'<tr><th scope="row">{_e(_device_name(row))}<br><span class="muted data">{_e(_hardware(row))}</span></th><td>{version}</td>')
-        add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"].replace("SDL ", "").replace(" ", "."))}</td>')
+        sdl_note = '<br><span class="muted">warning</span>' if row['sdl_warned'] and row['sdl'] != "broken" else ""
+        add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"])}{sdl_note}</td>')
         for key, _ in SECTIONS:
             section = row['sections'].get(key)
             add(f"<td>{_chip(section['status'] if section else 'none')}</td>")
@@ -346,7 +369,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
     for row in rows:
         add(f"<details><summary>{_chip('pass' if row['ok'] else 'fail')}<strong>{_e(_device_label(row))}</strong>"
             f'<span class="muted data">{_e(row["started"])} · {_e(row["portmaster"])} · {_e(row["report"])}</span></summary>')
-        add(f'<p class="muted">Python {_e(row["python"])}, {_e(row["sdl"])}, video drivers: {_e(" ".join(row["video_drivers"]) or "none")}'
+        add(f'<p class="muted">Python {_e(row["python"])}, SDL {_e(row["sdl"])}{" (with a load warning)" if row["sdl_warned"] and row["sdl"] != "broken" else ""}, video drivers: {_e(" ".join(row["video_drivers"]) or "none")}'
             f'{"" if row["scrubbed"] else ". Not scrubbed (made before scrubbing)"}</p>')
         for key, section in row['sections'].items():
             add(f"<h3>{_chip(section['status'])} {_e(key)}: {_e(section['summary'])}</h3>")

@@ -476,3 +476,35 @@ def test_device_details():
 
     assert suite.device_details("crashed\n", {}) == {}
     assert suite.device_details("PMTEST_DEVICE_INFO {not json\n", {}) == {}
+
+
+BRICK_WARNING = ("/mnt/SDCARD/Roms/ports/pmtest/tree/PortMaster/exlibs/sdl2/dll.py:299: DLLWarning: "
+                 "OSError('/mnt/SDCARD/spruce/brick/sdl2/libSDL2-2.0.so.0.3200.6: file too short')")
+
+
+@pytest.mark.parametrize("output, summary", [
+    ("SDL 2 30 8\nDRIVERS mali\n", ("SDL 2 30 8", "")),
+    ## pysdl2 skipped a broken library first: the version is the next line (spruce, TrimUI Brick).
+    (BRICK_WARNING + "\n  warn(...)\nSDL 2 30 8\nDRIVERS mali\n", ("SDL 2 30 8", "libSDL2-2.0.so.0.3200.6: file too short")),
+    ("Traceback (most recent call last):\nOSError: could not find any library for SDL2\n", ("broken", "")),
+    ("", ("broken", "")),
+    ])
+def test_sdl_summary(output, summary):
+    assert suite.sdl_summary(output) == summary
+
+
+def test_matrix_sdl_column(tmp_path):
+    states = [("install", suite.PASS, "installed", "")]
+    ## A report from before sdl_summary: info['sdl'] is the warning, the version is in device/sdl.txt.
+    old = make_report(tmp_path, "old.zip", {'cfw': "spruce", 'device': "Brick", 'sdl': BRICK_WARNING}, states)
+    with zipfile.ZipFile(old, "a") as zf:
+        zf.writestr("device/sdl.txt", BRICK_WARNING + "\nSDL 2 30 8\nDRIVERS mali\n")
+
+    make_report(tmp_path, "new.zip", {'cfw': "muOS", 'device': "rg35xx-h", 'sdl': "SDL 2 28 5"}, states)
+    make_report(tmp_path, "broken.zip", {'cfw': "x", 'device': "y", 'sdl': "broken"}, states)
+
+    rows = {row['report']: row for row in matrix.read_reports(tmp_path)}
+    assert (rows["old.zip"]['sdl'], rows["old.zip"]['sdl_warned']) == ("2.30.8", True)
+    assert (rows["new.zip"]['sdl'], rows["new.zip"]['sdl_warned']) == ("2.28.5", False)
+    assert rows["broken.zip"]['sdl'] == "broken"
+    assert "file too short" not in matrix.render_html(list(rows.values()))
