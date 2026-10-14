@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.1"
+export DEVICE_INFO_VERSION="0.2.2"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -140,8 +140,8 @@ fi
 
 ## The alphabet spelled out, here and below: some BusyBox tr builds take [:upper:] as
 ## literal characters (the TrimUI Brick's turns spruce into swrlce).
-SAFE_CFW="$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ' 'abcdefghijklmnopqrstuvwxyz_')"
-SAFE_DEV="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ' 'abcdefghijklmnopqrstuvwxyz_')"
+SAFE_CFW="$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ /' 'abcdefghijklmnopqrstuvwxyz__')"
+SAFE_DEV="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ /' 'abcdefghijklmnopqrstuvwxyz__')"
 CACHED_ENV="$CONTROL_DIR/device_info_${SAFE_CFW}_${SAFE_DEV}.env"
 
 # ------------------------------------------------------------------------------
@@ -959,13 +959,16 @@ detect_dynamic_rumble() {
 detect_dynamic_rumble
 
 # 3i. Capabilities & Tags
-CAPS=()
+# A plain string, not a bash array: some firmwares have BusyBox as /bin/bash
+# (TrimUI Smart Pro 1.0.4), and ports run this through it.
+CAPS=""
+add_cap() { CAPS="$CAPS $1"; }
 
-CAPS+=("$DEVICE_ARCH")
-[ "$DEVICE_HAS_ARMHF" = "Y" ] && CAPS+=("armhf")
-[ "$DEVICE_HAS_AARCH64" = "Y" ] && CAPS+=("aarch64")
-[ "$DEVICE_HAS_X86" = "Y" ] && CAPS+=("x86")
-[ "$DEVICE_HAS_X86_64" = "Y" ] && CAPS+=("x86_64")
+add_cap "$DEVICE_ARCH"
+[ "$DEVICE_HAS_ARMHF" = "Y" ] && add_cap "armhf"
+[ "$DEVICE_HAS_AARCH64" = "Y" ] && add_cap "aarch64"
+[ "$DEVICE_HAS_X86" = "Y" ] && add_cap "x86"
+[ "$DEVICE_HAS_X86_64" = "Y" ] && add_cap "x86_64"
 
 HAS_DESKTOP_GL="N"
 HAS_DRI_DRIVERS="N"
@@ -991,10 +994,10 @@ if [ "$HAS_DRI_DRIVERS" = "Y" ]; then
     done
 fi
 
-[ "$HAS_DESKTOP_GL" = "Y" ] && CAPS+=("opengl")
+[ "$HAS_DESKTOP_GL" = "Y" ] && add_cap "opengl"
 
 for vk_path in /usr/lib*/libvulkan.so* /usr/lib/*/libvulkan.so* /usr/share/vulkan/icd.d/*.json /etc/vulkan/icd.d/*.json; do
-    if [ -e "$vk_path" ]; then CAPS+=("vulkan"); break; fi
+    if [ -e "$vk_path" ]; then add_cap "vulkan"; break; fi
 done
 
 CPU_LOWER="$(echo "$DEVICE_CPU" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
@@ -1003,7 +1006,7 @@ case "$CPU_LOWER" in
     *rk3326*|*px30*)
         ;;
     *)
-        CAPS+=("power")
+        add_cap "power"
         ;;
 esac
 
@@ -1012,45 +1015,47 @@ if [ "$DEVICE_RAM" -ge 4 ]; then
         *rk3326*|*h700*|*a133*|*a133plus*|*a527*|*px30*|*sun50iw9*|*sun50iw10*)
             ;;
         *)
-            CAPS+=("ultra")
+            add_cap "ultra"
             ;;
     esac
 fi
 
-CAPS+=("${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}")
-CAPS+=("${ASPECT_X}:${ASPECT_Y}")
-[ "$ASPECT_X" -eq 16 ] && [ "$ASPECT_Y" -eq 10 ] && CAPS+=("16:9")
+add_cap "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}"
+add_cap "${ASPECT_X}:${ASPECT_Y}"
+[ "$ASPECT_X" -eq 16 ] && [ "$ASPECT_Y" -eq 10 ] && add_cap "16:9"
 
 if [ "$DISPLAY_WIDTH" -ge 960 ] || [ "$DISPLAY_HEIGHT" -ge 720 ]; then
-    CAPS+=("hires")
+    add_cap "hires"
 elif [ "$DISPLAY_WIDTH" -lt 640 ] || [ "$DISPLAY_HEIGHT" -lt 480 ]; then
-    CAPS+=("lowres")
+    add_cap "lowres"
 fi
 if [ "$ASPECT_X" -ge 16 ] || [ $(( ASPECT_X * 10 / ASPECT_Y )) -ge 15 ]; then
-    CAPS+=("wide")
+    add_cap "wide"
 elif [ "$ASPECT_X" -eq "$ASPECT_Y" ]; then
-    CAPS+=("square")
+    add_cap "square"
 fi
 
-for ((i=0; i<=$ANALOG_STICKS; i++)); do
-    CAPS+=("analog_$i")
+i=0
+while [ "$i" -le "${ANALOG_STICKS:-0}" ]; do
+    add_cap "analog_$i"
+    i=$((i + 1))
 done
-[ "$ANALOG_TRIGGERS" = "Y" ] && CAPS+=("analog_triggers")
-[ "$DEVICE_TOUCH" = "Y" ] && CAPS+=("touch")
-[ "$DEVICE_HAS_RUMBLE" = "Y" ] && CAPS+=("rumble")
+[ "$ANALOG_TRIGGERS" = "Y" ] && add_cap "analog_triggers"
+[ "$DEVICE_TOUCH" = "Y" ] && add_cap "touch"
+[ "$DEVICE_HAS_RUMBLE" = "Y" ] && add_cap "rumble"
 
 for tier in 1 2 4 8 16 32; do
-    if [ "$DEVICE_RAM" -ge "$tier" ]; then CAPS+=("${tier}gb"); fi
+    if [ "$DEVICE_RAM" -ge "$tier" ]; then add_cap "${tier}gb"; fi
 done
 
 for sav_dir in /userdata/saves /storage/roms/ports /roms/ports /mnt/SDCARD/Roms/PORTS "$HOME/.local/share"; do
     if [ -d "$sav_dir" ] && [ -w "$sav_dir" ]; then
-        CAPS+=("restore")
+        add_cap "restore"
         break
     fi
 done
 
-export DEVICE_CAPABILITIES="$(echo "${CAPS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/[ \t]*$//')"
+export DEVICE_CAPABILITIES="$(printf '%s\n' $CAPS | sort -u | tr '\n' ' ' | sed 's/[ \t]*$//')"
 
 # ------------------------------------------------------------------------------
 # 4. SAVE CACHED ENVIRONMENT & OUTPUT (No redundant device_info.env)

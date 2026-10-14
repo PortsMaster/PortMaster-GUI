@@ -147,9 +147,9 @@ class HardwareDetector:
             except Exception:
                 pass
 
-        # Match bash translation: tr -d '\0\r\n' | tr '[:upper:] ' '[:lower:]_'
-        safe_cfw = _clean_str(cfw_name).lower().replace(" ", "_")
-        safe_dev = _clean_str(dev_name).lower().replace(" ", "_")
+        # Match device_info.txt: lower case, spaces and slashes ("Debian GNU/Linux") to _
+        safe_cfw = _clean_str(cfw_name).lower().replace(" ", "_").replace("/", "_")
+        safe_dev = _clean_str(dev_name).lower().replace(" ", "_").replace("/", "_")
         return safe_cfw, safe_dev
 
     def _load_raw_data(self, force_refresh: bool = False) -> Dict[str, str]:

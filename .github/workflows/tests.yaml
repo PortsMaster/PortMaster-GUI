@@ -35,8 +35,8 @@ jobs:
       - name: Install dev requirements
         run: |
           pip install -r requirements-dev.txt
-          # xgettext, for the translatable strings snapshot test
-          sudo apt-get install -y gettext
+          # xgettext for the translatable strings snapshot test, busybox for device_info.txt under ash
+          sudo apt-get install -y gettext busybox
 
       - name: Lint (errors only)
         run: |
