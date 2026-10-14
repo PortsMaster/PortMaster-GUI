@@ -3,6 +3,7 @@
 # The PortMaster Test Suite port (tools/test_suite): its results, summary and report,
 # and its fifo client driving a real pugwash.
 
+import io
 import json
 import os
 import shutil
@@ -826,3 +827,35 @@ def test_main_restores_logs(tmp_path, monkeypatch):
         CrashingSuite().main()
 
     assert (pm / "pugwash.txt").read_text() == "theirs\n"
+
+
+def test_step_smoke_fetches_the_port_list(tmp_path, monkeypatch):
+    ## A PortMaster that was never opened has no port list, so the online test can't use --no-check.
+    commands = []
+
+    class SmokeSuite(suite.Suite):
+        def __init__(self):
+            self.work = tmp_path
+            self.controlfolder = tmp_path / "PortMaster"
+
+        def say(self, text):
+            pass
+
+        def test_env(self, **extra):
+            return dict(extra)
+
+        def run(self, command, timeout=600, env=None, cwd=None, output=None):
+            commands.append([str(arg) for arg in command])
+            if command[-2:] == ["install", suite.SMOKE_PORT]:
+                (Path(env["HM_PORTS_DIR"]) / suite.SMOKE_SCRIPT).write_text("")
+            elif command[-2:] == ["uninstall", suite.SMOKE_PORT]:
+                (Path(env["HM_PORTS_DIR"]) / suite.SMOKE_SCRIPT).unlink()
+            return 0, ""
+
+    monkeypatch.setattr(suite.socket, "create_connection", lambda *args, **kwargs: io.BytesIO())
+    section = suite.Section("smoke", "Online install test")
+    SmokeSuite().step_smoke(section)
+
+    assert section.status == suite.PASS, section.details
+    assert len(commands) == 4
+    assert not any("--no-check" in command for command in commands)

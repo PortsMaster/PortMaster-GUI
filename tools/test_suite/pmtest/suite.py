@@ -972,8 +972,10 @@ class Suite:
 
         ## The installed PortMaster and its cache, ports into a scratch folder, and the plain
         ## platform: CFW hooks (eg: muOS's catalogue) would write outside that folder.
+        ## No --no-check: a PortMaster that has never been opened has no port list yet, so it
+        ## has to fetch one (AmberELEC MLP1: "Unable to find a source for unlevel.zip").
         env = self.test_env(HM_PORTS_DIR=str(ports), HM_SCRIPTS_DIR=str(ports), CFW_NAME="default")
-        harbourmaster = [sys.executable, self.controlfolder / "harbourmaster", "--no-check", "--no-colour"]
+        harbourmaster = [sys.executable, self.controlfolder / "harbourmaster", "--no-colour"]
 
         steps = []
         for name, args, check in (
