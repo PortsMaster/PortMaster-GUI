@@ -881,7 +881,7 @@ class Suite:
                 ("gui-own-display", "own_display and not network", real),
                 ]
             how = "on the real screen"
-            self.say("Running the GUI tests next, the screen will flicker for a while.")
+            self.say("Running the GUI tests next, the screen will flicker for a while. If it goes dark, press any button.")
             time.sleep(3)
             self.ui_stop()
 
@@ -1051,7 +1051,8 @@ class Suite:
                 intro = f"PortMaster Test Suite\n\nThis installs PortMaster {version} and tests it on this device. "
 
             if not self.ui.message_box(
-                    intro + "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n"
+                    intro + "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests. "
+                    "If the screen goes dark, press any button to wake it: the tests keep running.\n\n"
                     "Press A to start, or B to quit.", want_cancel=True):
                 self.log("cancelled by the tester")
                 self.ui_stop()
