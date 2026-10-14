@@ -123,10 +123,14 @@ def junit_summary(result):
 ## The button checks: key, what it checks, the prompt, and the expected answer
 ## (True: accepts, False: cancels, None: the physical A/B pair, which must differ).
 BUTTON_CHECKS = (
-    ("labelled_ok", "the OKAY button", "Press the button shown next to OKAY at the bottom of the screen.", True),
-    ("labelled_cancel", "the CANCEL button", "Press the button shown next to CANCEL at the bottom of the screen.", False),
-    ("physical_a", "the A button", "Press the button printed with A on your device.", None),
-    ("physical_b", "the B button", "Press the button printed with B on your device.", None),
+    ("labelled_ok", "the OKAY button",
+     "Look at the bottom of the screen and find the word OKAY.\n\nPress the button shown next to it.", True),
+    ("labelled_cancel", "the CANCEL button",
+     "Look at the bottom of the screen and find the word CANCEL.\n\nPress the button shown next to it.", False),
+    ("physical_a", "the A button",
+     "Find the button on your device with the letter A on it.\n\nPress that button. Do not look at the screen for this one.", None),
+    ("physical_b", "the B button",
+     "Find the button on your device with the letter B on it.\n\nPress that button. Do not look at the screen for this one.", None),
     )
 
 
@@ -937,22 +941,21 @@ class Suite:
             return
 
         if not self.ui.message_box(
-                "Last part: four quick button checks, one after the other. Read each question before pressing:\n\n"
-                "1. the button the bottom bar shows next to OKAY\n"
-                "2. the button the bottom bar shows next to CANCEL\n"
-                "3. the button printed with A on your device\n"
-                "4. the button printed with B on your device\n\n"
-                "Press A to begin, or B to skip them.", want_cancel=True):
+                "Last step: a button test.\n\n"
+                "You will see 4 screens. Each screen asks you to press one button. "
+                "Read each screen before you press anything.\n\n"
+                "To begin, press the button shown next to START at the bottom of the screen.", want_cancel=True,
+                ok_text="Start", cancel_text="Skip"):
             section.set(SKIP, "skipped by the tester")
             return
 
         attempts = {}
 
         def ask(number, key, retry=False):
-            _, name, prompt, _ = BUTTON_CHECKS[number]
-            text = f"Button check {number + 1} of {len(BUTTON_CHECKS)}\n\n{prompt}"
+            prompt = BUTTON_CHECKS[number][2]
+            text = f"Button test {number + 1} of {len(BUTTON_CHECKS)}\n\n{prompt}"
             if retry:
-                text = f"ARE YOU SURE YOU PRESSED {name.upper()}?!?!?!?!\n\nOnce more:\n\n{prompt}"
+                text = f"Button test {number + 1} of {len(BUTTON_CHECKS)}, again\n\nLet's try this one again. Please read carefully.\n\n{prompt}"
 
             attempts.setdefault(key, []).append(self.ui.message_box(text, want_cancel=True))
 
@@ -987,7 +990,8 @@ class Suite:
             self.ui_start()
 
             seen = self.ui.message_box(
-                "Did you just see a message titled \"PortMaster Test Suite\"?", want_cancel=True, ok_text="Yes", cancel_text="No")
+                "A message with the title \"PortMaster Test Suite\" should have been on the screen for a few seconds.\n\n"
+                "Did you see it?", want_cancel=True, ok_text="Yes", cancel_text="No")
             answers['portmsg'] = seen
             if not seen:
                 problems.append(f"the portmsg message wasn't seen (exit {code})")
