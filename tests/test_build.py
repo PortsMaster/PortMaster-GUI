@@ -192,7 +192,7 @@ def test_testsuite_port(tmp_path):
         zf.writestr("fakepytest/__init__.py", "")
 
     dist = tmp_path / "dist"
-    run("do_release.sh", "testsuite", PM_DIST_DIR=str(dist), PM_PMTEST_WHEELS=str(wheels))
+    run("do_release.sh", "testsuite", PM_DIST_DIR=str(dist), PM_PMTEST_WHEELS=str(wheels), PM_PMTEST_UPLOAD="")
 
     version = (dist / "version").read_text().strip()
     assert re.fullmatch(r"\d{4}-\d\d-\d\d_\d\d69", version)
@@ -208,6 +208,8 @@ def test_testsuite_port(tmp_path):
             "pmtest/tree/PortMaster/7zzs")) or name.endswith(".so")] == []
     ## tests/test_test_suite.py reads it.
     assert "pmtest/tree/tools/test_suite/pmtest/port.json" in names
+    ## Reports are only sent from builds made with PM_PMTEST_UPLOAD.
+    assert "pmtest/upload.txt" not in names
 
     ## The build it installs is the one it was made with, and harbourmaster takes it as a port.
     with zipfile.ZipFile(dist / "pmtest.zip") as zf:

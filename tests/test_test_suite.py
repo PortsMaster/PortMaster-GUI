@@ -390,6 +390,7 @@ def test_button_verdict(attempts, problems, notes):
 ## tools/test_suite/matrix.py: the coverage matrix from a folder of reports.
 sys.path.insert(0, str(REPO_DIR / "tools" / "test_suite"))
 import matrix  # noqa: E402
+import receive  # noqa: E402
 
 
 def make_report(folder, name, info, states, environment=None):
@@ -577,3 +578,75 @@ def test_step_gui_dialog(monkeypatch, drivers, stops):
     assert (("start", None) in events) == stops
     assert [has_ui for kind, has_ui in events if kind == "pytest"] == [not stops] * (2 if stops else 1)
     assert section.status == suite.PASS
+
+
+################################################################################
+## Sending reports: suite.send_report and tools/test_suite/receive.py.
+def test_upload_url(tmp_path):
+    upload = tmp_path / "upload.txt"
+    assert suite.upload_url(upload) is None
+
+    upload.write_text("# where reports go\n\n  http://192.168.1.2:8770/ \n")
+    assert suite.upload_url(upload) == "http://192.168.1.2:8770/"
+
+
+def test_receive_clean_name():
+    assert receive.clean_name("ROCKNIX-x55-20261013-1500.zip") == "ROCKNIX-x55-20261013-1500.zip"
+    assert receive.clean_name("../../etc/passwd") == "passwd.zip"
+    assert receive.clean_name("a b/c d?.zip") == "c_d_.zip"
+    assert receive.clean_name("..").startswith("report-")
+    assert receive.clean_name(None).startswith("report-")
+
+
+@pytest.fixture
+def receiver(tmp_path):
+    import http.server
+
+    lines = []
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), receive.make_handler(tmp_path / "got", log=lines.append))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    yield f"http://127.0.0.1:{server.server_address[1]}/", tmp_path / "got", lines
+    server.shutdown()
+    server.server_close()
+
+
+def test_send_report(tmp_path, receiver):
+    url, got, lines = receiver
+    report = make_report(tmp_path, "knulli-RG35XX-H-20261014-0348.zip", {'cfw': "knulli", 'device': "RG35XX-H"},
+                         [("install", suite.PASS, "installed", "")])
+
+    assert suite.send_report(url, report) == (True, "")
+    assert suite.send_report(url, report) == (True, "")
+    assert sorted(path.name for path in got.iterdir()) == ["knulli-RG35XX-H-20261014-0348-1.zip", "knulli-RG35XX-H-20261014-0348.zip"]
+    assert (got / "knulli-RG35XX-H-20261014-0348.zip").read_bytes() == report.read_bytes()
+    assert "knulli" in lines[0] and "install=pass" in lines[0]
+
+    ## Not a report: refused, nothing saved.
+    junk = tmp_path / "junk.zip"
+    junk.write_bytes(b"not a zip")
+    ok, why = suite.send_report(url, junk)
+    assert not ok and "400" in why
+    assert len(list(got.iterdir())) == 2
+
+    ## Nobody listening.
+    ok, why = suite.send_report("http://127.0.0.1:9/", report, timeout=5)
+    assert not ok and why
+
+
+def test_summary_entries_sent():
+    sections = [suite.Section("install", "Install PortMaster")]
+    sections[0].set(suite.PASS, "installed")
+
+    def texts(sent):
+        entries = {key: desc for key, title, desc in suite.summary_entries(sections, "r.zip", sent)}
+        return entries["#overall"], entries["#report"]
+
+    overall, report = texts(None)
+    assert "Please send the report" in overall and "Sent" not in report
+
+    overall, report = texts((True, ""))
+    assert "has been sent" in overall and "Please send" not in overall and report.endswith("Sent.")
+
+    overall, report = texts((False, "timed out"))
+    assert "Please send the report" in overall and "Couldn't send it (timed out)" in report

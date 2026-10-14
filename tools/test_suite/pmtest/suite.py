@@ -22,6 +22,8 @@ import sys
 import tempfile
 import time
 import traceback
+import urllib.parse
+import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
@@ -35,6 +37,8 @@ TREE = HERE / "tree"
 SITE = HERE / "site"
 PM_ZIP = HERE / "PortMaster.zip"
 REPORTS = HERE / "reports"
+## Only in builds made with PM_PMTEST_UPLOAD: where finished reports are sent.
+UPLOAD_FILE = HERE / "upload.txt"
 
 STEPS = ("install", "device", "pytest", "gui", "smoke", "interactive")
 
@@ -192,18 +196,55 @@ def set_from_results(section, results, suffix=""):
         section.set(PASS, text + suffix, details)
 
 
-def summary_entries(sections, report_name):
-    """The summary screen: an overall line, one per section, then where the report is."""
+def upload_url(path=UPLOAD_FILE):
+    """The URL in upload.txt, if the build has one."""
+    try:
+        for line in Path(path).read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                return line
+
+    except OSError:
+        pass
+
+    return None
+
+
+def send_report(url, zip_path, timeout=60):
+    """POSTs the report zip to url (tools/test_suite/receive.py). (True, "") or (False, why)."""
+    zip_path = Path(zip_path)
+    request = urllib.request.Request(
+        url, data=zip_path.read_bytes(), method="POST",
+        headers={'Content-Type': "application/zip", 'X-Report-Name': zip_path.name})
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            if 200 <= response.status < 300:
+                return True, ""
+
+            return False, f"HTTP {response.status}"
+
+    except Exception as err:
+        return False, str(err)
+
+
+def summary_entries(sections, report_name, sent=None):
+    """
+    The summary screen: an overall line, one per section, then where the report is.
+    sent: None if the build doesn't send reports, else (ok, why) from send_report.
+    """
     ran = [section for section in sections if section.status in (PASS, FAIL)]
     failed = [section for section in ran if section.status == FAIL]
+    if sent is not None and sent[0]:
+        report = "The report has been sent."
+    else:
+        report = f"Please send the report to whoever gave you the Test Suite:\n{report_name}"
 
     if failed:
         overall = f"{len(failed)} of {len(ran)} checks failed"
-        overall_desc = "Failed: " + ", ".join(section.name for section in failed) + \
-            f".\n\nPlease send the report to whoever gave you the Test Suite:\n{report_name}"
+        overall_desc = "Failed: " + ", ".join(section.name for section in failed) + ".\n\n" + report
     else:
         overall = f"All {len(ran)} checks passed"
-        overall_desc = f"Thanks for testing! Please send the report to whoever gave you the Test Suite:\n{report_name}"
+        overall_desc = "Thanks for testing! " + report
 
     entries = [("#overall", overall, overall_desc)]
     for section in sections:
@@ -215,7 +256,8 @@ def summary_entries(sections, report_name):
 
     entries.append(("#report", "Report", (
         f"Saved as:\n{report_name}\n\nIn the PortMaster Test Suite's reports folder (ports/pmtest/reports). "
-        "Addresses, serial numbers and network names have been taken out, so it's safe to share.")))
+        "Addresses, serial numbers and network names have been taken out, so it's safe to share." +
+        ("" if sent is None else "\n\nSent." if sent[0] else f"\n\nCouldn't send it ({sent[1]}), please send it by hand."))))
     return entries
 
 
@@ -901,12 +943,17 @@ class Suite:
         skip = set(self.options.skip)
         self.log(f"PortMaster Test Suite, controlfolder {self.controlfolder}, work {self.work}, python {sys.executable}")
 
+        upload = upload_url()
         self.ui_start()
         if self.has_ui and "install" not in skip:
             version = zipfile.ZipFile(str(PM_ZIP)).read("PortMaster/version").decode().strip()
+            sends = ""
+            if upload:
+                sends = f"When it's done it sends the report to {urllib.parse.urlsplit(upload).hostname}. "
+
             if not self.ui.message_box(
                     f"PortMaster Test Suite\n\nThis installs PortMaster {version} and tests it on this device. "
-                    "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n"
+                    "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n" + sends +
                     "Press A to start, or B to quit.", want_cancel=True):
                 self.log("cancelled by the tester")
                 self.ui_stop()
@@ -940,9 +987,15 @@ class Suite:
             ], names=private_names(platform.node(), self.info, (self.base_env or os.environ).get("DEVICE_CPU", "")))
         self.log(f"report: {report}")
 
+        sent = None
+        if upload:
+            self.say("Sending the report.")
+            sent = send_report(upload, report)
+            self.log(f"report sent to {upload}" if sent[0] else f"report not sent to {upload}: {sent[1]}")
+
         if self.has_ui:
             self.ui.messages_end()
-            self.ui.selection_list("pmtest", summary_entries(self.sections, name))
+            self.ui.selection_list("pmtest", summary_entries(self.sections, name, sent))
 
         self.ui_stop()
         print(summary_text(self.sections, self.info))

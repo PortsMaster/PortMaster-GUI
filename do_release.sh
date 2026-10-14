@@ -27,6 +27,7 @@
 #   PM_TEST_CHANNEL  the release channel a test build updates from (default: beta)
 #   PM_VERSION_JSON  the version.json to update (default: ./version.json, else the latest release's)
 #   PM_PMTEST_WHEELS a folder of pytest wheels for pmtest.zip (default: downloaded into PM_CACHE_DIR)
+#   PM_PMTEST_UPLOAD a URL pmtest.zip sends its reports to (tools/test_suite/receive.py); none by default
 
 set -euo pipefail
 
@@ -239,6 +240,9 @@ if [ "$CHANNEL" = "testsuite" ]; then
   cp tools/test_suite/pmtest/*.py tools/test_suite/pmtest/port.json "$PMTEST/"
   cp PortMaster.zip "$PMTEST/"
   touch "$PMTEST/reports/.keep"
+  if [ -n "${PM_PMTEST_UPLOAD:-}" ]; then
+    echo "$PM_PMTEST_UPLOAD" > "$PMTEST/upload.txt"
+  fi
 
   for wheel in "$PMTEST_WHEELS"/*.whl; do
     python3 -m zipfile -e "$wheel" "$PMTEST/site/"
