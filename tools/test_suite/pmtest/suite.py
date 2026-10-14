@@ -243,6 +243,53 @@ def send_report(url, zip_path, timeout=60):
         return False, str(err)
 
 
+def report_marker(report, state):
+    """report.zip.uploaded once it's been uploaded, report.zip.kept if the tester said no."""
+    return Path(report).with_name(Path(report).name + "." + state)
+
+
+def mark_report(report, state):
+    for other in ("uploaded", "kept"):
+        marker = report_marker(report, other)
+        if other != state and marker.exists():
+            marker.unlink()
+
+    report_marker(report, state).write_text(datetime.datetime.now().isoformat(timespec='seconds') + "\n")
+
+
+def report_version(report):
+    """The PortMaster version a report tested, or None."""
+    try:
+        with zipfile.ZipFile(str(report)) as zf:
+            if zf.getinfo("summary.json").file_size > 1024 * 1024:
+                return None
+
+            return json.loads(zf.read("summary.json").decode("utf-8")).get('info', {}).get('portmaster')
+
+    except Exception:
+        return None
+
+
+def pending_reports(folder=None):
+    """Reports not uploaded yet, oldest first: [(path, version, kept)]; kept if the tester said no."""
+    reports = sorted((path for path in Path(folder or REPORTS).glob("*.zip") if path.is_file()), key=lambda path: path.stat().st_mtime)
+    return [
+        (report, report_version(report), report_marker(report, "kept").exists())
+        for report in reports if not report_marker(report, "uploaded").exists()]
+
+
+def upload_question(pending):
+    """What to ask about reports from earlier runs that weren't uploaded."""
+    if len(pending) == 1:
+        report, version, kept = pending[0]
+        what = f"PortMaster {version}" if version else "the Test Suite"
+        why = "chose not to upload it" if kept else "the report couldn't be uploaded"
+        return f"I see you've already run {what} and {why}.\n\nWould you like to upload it now?"
+
+    return (f"I see {len(pending)} earlier runs of the Test Suite whose reports weren't uploaded.\n\n"
+            "Would you like to upload them now?")
+
+
 def summary_entries(sections, report_name, sent=None):
     """
     The summary screen: an overall line, one per section, then where the report is.
@@ -587,6 +634,7 @@ class Suite:
 
         self.ui = Dialog(self.controlfolder, self.work / "fifo", log=self.log)
         self.has_ui = False
+        self.keep_report = False
         self.base_env = None
         self.use_launcher_env()
 
@@ -955,6 +1003,36 @@ class Suite:
             section.set(PASS, "buttons and messages work", "\n".join(details))
 
     ## The whole run.
+    def offer_pending_uploads(self, upload):
+        """Earlier runs' reports that weren't uploaded: offers to upload them first."""
+        pending = pending_reports()
+        if not pending:
+            return
+
+        self.log(f"{len(pending)} earlier report(s) not uploaded")
+        if not self.ui.message_box(upload_question(pending), want_cancel=True, ok_text="Upload", cancel_text="Not now"):
+            self.log("the tester chose not to upload them")
+            for report, version, kept in pending:
+                mark_report(report, "kept")
+
+            return
+
+        failed = []
+        for report, version, kept in pending:
+            self.say(f"Uploading {report.name}.")
+            ok, why = send_report(upload, report)
+            self.log(f"uploaded {report.name}" if ok else f"{report.name} not uploaded: {why}")
+            if ok:
+                mark_report(report, "uploaded")
+            else:
+                failed.append(why)
+
+        if failed:
+            self.ui.message_box(f"Couldn't upload {len(failed)} of {len(pending)} report(s): {failed[0]}\n\n"
+                                "They're still on this device, and the Test Suite will offer to upload them next time.")
+        else:
+            self.ui.message_box("Uploaded, thanks!" if len(pending) == 1 else f"Uploaded {len(pending)} reports, thanks!")
+
     def main(self):
         skip = set(self.options.skip)
         self.log(f"PortMaster Test Suite, controlfolder {self.controlfolder}, work {self.work}, python {sys.executable}")
@@ -963,9 +1041,17 @@ class Suite:
         self.ui_start()
         if self.has_ui and "install" not in skip:
             version = zipfile.ZipFile(str(PM_ZIP)).read("PortMaster/version").decode().strip()
+            if upload:
+                self.offer_pending_uploads(upload)
+
+            if any(report_version(report) == version for report in REPORTS.glob("*.zip") if report.is_file()):
+                intro = (f"PortMaster Test Suite\n\nYou've already run PortMaster {version} on this device. "
+                         "Would you like to run it again?\n\n")
+            else:
+                intro = f"PortMaster Test Suite\n\nThis installs PortMaster {version} and tests it on this device. "
+
             if not self.ui.message_box(
-                    f"PortMaster Test Suite\n\nThis installs PortMaster {version} and tests it on this device. "
-                    "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n"
+                    intro + "It takes 5 to 15 minutes, and the screen will flicker during the GUI tests.\n\n"
                     "Press A to start, or B to quit.", want_cancel=True):
                 self.log("cancelled by the tester")
                 self.ui_stop()
@@ -976,10 +1062,12 @@ class Suite:
                     "It's uploaded to be processed with the other test results. Addresses, serial numbers "
                     "and network names are taken out first, and nothing that could identify you, this device "
                     "or your network is kept.\n\n"
-                    "It's saved on this device either way.\n\n"
-                    "Press A to upload it, or B to keep it here only.", want_cancel=True):
+                    "The report is also saved on this device for you to review. If you don't upload it now, "
+                    "you can run the Test Suite again later to upload it.", want_cancel=True,
+                    ok_text="Upload", cancel_text="Not now"):
                 self.log("the tester chose not to upload the report")
                 upload = None
+                self.keep_report = True
 
         for key in STEPS:
             section = self.section(key)
@@ -1014,6 +1102,11 @@ class Suite:
             self.say("Uploading the report.")
             sent = send_report(upload, report)
             self.log("report uploaded" if sent[0] else f"report not uploaded: {sent[1]}")
+            if sent[0]:
+                mark_report(report, "uploaded")
+
+        elif self.keep_report:
+            mark_report(report, "kept")
 
         if self.has_ui:
             self.ui.messages_end()

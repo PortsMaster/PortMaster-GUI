@@ -657,3 +657,98 @@ def test_summary_entries_sent():
 
     overall, report = texts((False, "timed out"))
     assert "Please send the report" in overall and "Couldn't upload it (timed out)" in report
+
+
+def test_pending_reports(tmp_path):
+    ## Reports from earlier runs: uploaded ones are done, kept/failed ones are offered again.
+    first = make_report(tmp_path, "a.zip", {'portmaster': "2026-10-14_0169"}, [("install", suite.PASS, "installed", "")])
+    second = make_report(tmp_path, "b.zip", {'portmaster': "2026-10-14_0469"}, [("install", suite.PASS, "installed", "")])
+    os.utime(str(first), (1000, 1000))
+    (tmp_path / "junk.zip").write_bytes(b"not a zip")
+    os.utime(str(tmp_path / "junk.zip"), (2000, 2000))
+
+    assert suite.report_version(second) == "2026-10-14_0469"
+    assert suite.report_version(tmp_path / "junk.zip") is None
+    assert suite.pending_reports(tmp_path) == [(first, "2026-10-14_0169", False), (tmp_path / "junk.zip", None, False), (second, "2026-10-14_0469", False)]
+
+    suite.mark_report(first, "kept")
+    suite.mark_report(tmp_path / "junk.zip", "uploaded")
+    assert suite.pending_reports(tmp_path) == [(first, "2026-10-14_0169", True), (second, "2026-10-14_0469", False)]
+
+    ## Uploading later replaces "kept".
+    suite.mark_report(first, "uploaded")
+    assert not suite.report_marker(first, "kept").exists()
+    assert suite.pending_reports(tmp_path) == [(second, "2026-10-14_0469", False)]
+
+
+def test_upload_question():
+    report = Path("r.zip")
+    assert suite.upload_question([(report, "2026-10-14_0469", True)]) == (
+        "I see you've already run PortMaster 2026-10-14_0469 and chose not to upload it.\n\nWould you like to upload it now?")
+    assert "couldn't be uploaded" in suite.upload_question([(report, "2026-10-14_0469", False)])
+    assert suite.upload_question([(report, None, True)]).startswith("I see you've already run the Test Suite and")
+    assert suite.upload_question([(report, "a", True), (report, "b", False)]).startswith("I see 2 earlier runs")
+
+
+class FakeUI:
+    def __init__(self, answers):
+        self.answers = list(answers)
+        self.boxes = []
+
+    def message_box(self, text, **kwargs):
+        self.boxes.append(text)
+        return self.answers.pop(0) if self.answers else True
+
+
+def offer_suite(ui):
+    class OfferSuite(suite.Suite):
+        def __init__(self):
+            self.ui = ui
+            self.has_ui = True
+
+        def log(self, text):
+            pass
+
+        def say(self, text):
+            pass
+
+    return OfferSuite()
+
+
+def test_offer_pending_uploads(tmp_path, monkeypatch, receiver):
+    url, got, lines = receiver
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    monkeypatch.setattr(suite, "REPORTS", reports)
+    report = make_report(reports, "old.zip", {'portmaster': "2026-10-14_0469"}, [("install", suite.PASS, "installed", "")])
+    suite.mark_report(report, "kept")
+
+    ## Not now: stays pending, asked again next time.
+    ui = FakeUI([False])
+    offer_suite(ui).offer_pending_uploads(url)
+    assert ui.boxes == [suite.upload_question([(report, "2026-10-14_0469", True)])]
+    assert not got.exists() and suite.pending_reports(reports)
+
+    ## Upload: sent, marked, and asked no more.
+    ui = FakeUI([True])
+    offer_suite(ui).offer_pending_uploads(url)
+    assert ui.boxes[-1] == "Uploaded, thanks!"
+    assert [path.name for path in got.iterdir()] == ["old.zip"]
+    assert suite.pending_reports(reports) == []
+
+    ui = FakeUI([])
+    offer_suite(ui).offer_pending_uploads(url)
+    assert ui.boxes == []
+
+
+def test_offer_pending_uploads_fails(tmp_path, monkeypatch):
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    monkeypatch.setattr(suite, "REPORTS", reports)
+    make_report(reports, "old.zip", {}, [("install", suite.PASS, "installed", "")])
+    monkeypatch.setattr(suite, "send_report", lambda url, report: (False, "no internet"))
+
+    ui = FakeUI([True])
+    offer_suite(ui).offer_pending_uploads("https://example.invalid/")
+    assert ui.boxes[-1].startswith("Couldn't upload 1 of 1 report(s): no internet")
+    assert len(suite.pending_reports(reports)) == 1
