@@ -9,6 +9,7 @@ import shutil
 import sys
 import threading
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -208,8 +209,37 @@ def test_pick_work_dir(tmp_path, monkeypatch):
 
     assert suite.pick_work_dir([first, second], need_bytes=1) == first
 
-    ## Not enough room anywhere: the last one.
-    assert suite.pick_work_dir([first, second], need_bytes=1 << 62) == second
+    ## Not enough room anywhere: the first that can hold a fifo.
+    assert suite.pick_work_dir([first, second], need_bytes=1 << 62) == first
+    assert not list(first.iterdir())
+
+
+def test_pick_work_dir_no_fifo(tmp_path, monkeypatch):
+    ## The suite on a FAT card with a small /tmp (CubeXX on spruce): /tmp, not the card.
+    small, sdcard = tmp_path / "tmpfs", tmp_path / "sdcard"
+    real_mkfifo = os.mkfifo
+
+    def mkfifo(path, *args, **kwargs):
+        if Path(path).parent == sdcard:
+            raise PermissionError(1, "Operation not permitted")
+
+        return real_mkfifo(path, *args, **kwargs)
+
+    monkeypatch.setattr(suite.os, "mkfifo", mkfifo)
+    small.mkdir()
+    sdcard.mkdir()
+    assert not suite.holds_fifo(sdcard)
+    assert suite.holds_fifo(small)
+
+    assert suite.pick_work_dir([sdcard, small], need_bytes=1) == small
+    assert suite.pick_work_dir([small, sdcard], need_bytes=1 << 62) == small
+
+    ## Nowhere can: the last one, as before.
+    def no_mkfifo(path, *args, **kwargs):
+        raise OSError("no fifos here")
+
+    monkeypatch.setattr(suite.os, "mkfifo", no_mkfifo)
+    assert suite.pick_work_dir([small, sdcard], need_bytes=1) == sdcard
 
 
 @pytest.mark.parametrize("stub, hooks", [
@@ -508,3 +538,42 @@ def test_matrix_sdl_column(tmp_path):
     assert (rows["new.zip"]['sdl'], rows["new.zip"]['sdl_warned']) == ("2.28.5", False)
     assert rows["broken.zip"]['sdl'] == "broken"
     assert "file too short" not in matrix.render_html(list(rows.values()))
+
+
+@pytest.mark.parametrize("drivers, stops", [
+    (["dummy", "x11"], False),
+    (["offscreen", "kmsdrm"], False),
+    (["kmsdrm"], True),
+    ])
+def test_step_gui_dialog(monkeypatch, drivers, stops):
+    ## Headless GUI tests keep the dialog up with a message; on the real screen pugwash lets go of it.
+    events = []
+
+    class FakeSuite(suite.Suite):
+        def __init__(self):
+            self.info = {'video_drivers': drivers}
+            self.has_ui = True
+
+        def say(self, text):
+            events.append(("say", self.has_ui))
+
+        def ui_stop(self):
+            events.append(("stop", None))
+            self.has_ui = False
+
+        def ui_start(self):
+            events.append(("start", None))
+            self.has_ui = True
+
+        def _pytest(self, name, marker, timeout, extra_env=None, label=""):
+            events.append(("pytest", self.has_ui))
+            return {'tests': 1, 'passed': 1, 'failed': 0, 'errors': 0, 'skipped': 0, 'failures': [], 'skip_reasons': {}}
+
+    monkeypatch.setattr(suite.time, "sleep", lambda seconds: None)
+    section = suite.Section("gui", "GUI tests")
+    FakeSuite().step_gui(section)
+
+    assert (("stop", None) in events) == stops
+    assert (("start", None) in events) == stops
+    assert [has_ui for kind, has_ui in events if kind == "pytest"] == [not stops] * (2 if stops else 1)
+    assert section.status == suite.PASS

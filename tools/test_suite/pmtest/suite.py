@@ -338,16 +338,44 @@ def write_report(zip_path, work_dir, sections, info, extra_files=(), names=()):
     return zip_path
 
 
-def pick_work_dir(candidates, need_bytes=300 * 1024 * 1024):
-    """The first candidate directory with room, the last one otherwise."""
+def holds_fifo(folder):
+    """False on FAT cards and the like: pugwash's fifo_control needs a fifo."""
+    check = Path(folder) / ".pmtest-fifo"
+    try:
+        if check.exists() or check.is_symlink():
+            check.unlink()
+
+        os.mkfifo(str(check))
+        check.unlink()
+        return True
+
+    except OSError:
+        return False
+
+
+def pick_work_dir(candidates, need_bytes=128 * 1024 * 1024):
+    """
+    The first candidate with room that can hold a fifo, else the first that can hold
+    a fifo, else the last one. A 1 GB device's /tmp is often a 256 MB tmpfs, and the
+    suite on a FAT card can't run pugwash's dialogs from there.
+    """
+    usable = []
     for candidate in candidates:
         try:
             Path(candidate).mkdir(parents=True, exist_ok=True)
+            if not holds_fifo(candidate):
+                continue
+
             if shutil.disk_usage(str(candidate)).free >= need_bytes:
                 return Path(candidate)
 
+            usable.append(Path(candidate))
+
         except OSError:
             continue
+
+    if usable:
+        return usable[0]
 
     Path(candidates[-1]).mkdir(parents=True, exist_ok=True)
     return Path(candidates[-1])
@@ -749,11 +777,16 @@ class Suite:
             how = "on the real screen"
             self.say("Running the GUI tests next, the screen will flicker for a while.")
             time.sleep(3)
+            self.ui_stop()
 
-        self.ui_stop()
+        if self.has_ui:
+            ## Headless: the dialog stays up, or the screen looks frozen for minutes.
+            self.say("Running the GUI tests. This takes a few minutes, and nothing on the screen changes until they finish.")
+
         results = [self._pytest(name, marker, timeout=1500, extra_env=env, label="GUI tests") for name, marker, env in runs]
         set_from_results(section, results, suffix=f" ({how})")
-        self.ui_start()
+        if not self.has_ui:
+            self.ui_start()
 
     def step_smoke(self, section):
         try:
