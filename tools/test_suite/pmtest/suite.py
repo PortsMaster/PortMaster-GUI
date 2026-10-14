@@ -37,6 +37,9 @@ TREE = HERE / "tree"
 SITE = HERE / "site"
 PM_ZIP = HERE / "PortMaster.zip"
 REPORTS = HERE / "reports"
+## PortMaster's own logs: the tester's are set aside during a run, so a report holds only the run's.
+PM_LOGS = ("pugwash.txt", "harbourmaster.txt", "log.txt")
+SAVED_LOGS = HERE / "saved-logs"
 ## Only in builds made with PM_PMTEST_UPLOAD: where finished reports are sent.
 UPLOAD_FILE = HERE / "upload.txt"
 
@@ -245,6 +248,43 @@ def send_report(url, zip_path, timeout=60):
 
     except Exception as err:
         return False, str(err)
+
+
+def restore_logs(controlfolder, saved=None, keep_new=False):
+    """
+    Puts the tester's logs back from saved/ (SAVED_LOGS). keep_new: add what was logged
+    since to the end (a run that crashed, then PortMaster was used) instead of dropping it.
+    """
+    saved = Path(saved or SAVED_LOGS)
+    for name in PM_LOGS:
+        old, current = saved / name, Path(controlfolder) / name
+        if not old.is_file():
+            continue
+
+        if keep_new and current.is_file():
+            with open(str(old), "ab") as fh:
+                fh.write(current.read_bytes())
+
+        shutil.copyfile(str(old), str(current))
+        old.unlink()
+
+    shutil.rmtree(str(saved), ignore_errors=True)
+
+
+def set_aside_logs(controlfolder, saved=None):
+    """Moves the tester's logs to saved/ (SAVED_LOGS); PortMaster starts new ones for the run."""
+    saved = Path(saved or SAVED_LOGS)
+    if saved.is_dir():
+        ## Left by a run that didn't finish.
+        restore_logs(controlfolder, saved, keep_new=True)
+
+    saved.mkdir(parents=True, exist_ok=True)
+    for name in PM_LOGS:
+        current = Path(controlfolder) / name
+        if current.is_file():
+            ## Copy then truncate: works across filesystems, and pugwash keeps the same file.
+            shutil.copyfile(str(current), str(saved / name))
+            current.write_bytes(b"")
 
 
 def report_marker(report, state):
@@ -1038,6 +1078,16 @@ class Suite:
             self.ui.message_box("Uploaded, thanks!" if len(pending) == 1 else f"Uploaded {len(pending)} reports, thanks!")
 
     def main(self):
+        ## The tester's own PortMaster logs stay out of the report, and come back afterwards.
+        set_aside_logs(self.controlfolder)
+        try:
+            return self.run_suite()
+
+        finally:
+            self.ui_stop()
+            restore_logs(self.controlfolder)
+
+    def run_suite(self):
         skip = set(self.options.skip)
         self.log(f"PortMaster Test Suite, controlfolder {self.controlfolder}, work {self.work}, python {sys.executable}")
 
@@ -1096,9 +1146,7 @@ class Suite:
 
         name = report_name(self.info, self.started)
         report = write_report(REPORTS / name, self.work, self.sections, self.info, extra_files=[
-            (self.controlfolder / "pugwash.txt", "portmaster/pugwash.txt"),
-            (self.controlfolder / "harbourmaster.txt", "portmaster/harbourmaster.txt"),
-            (self.controlfolder / "log.txt", "portmaster/log.txt"),
+            (self.controlfolder / log, f"portmaster/{log}") for log in PM_LOGS
             ], names=private_names(platform.node(), self.info, (self.base_env or os.environ).get("DEVICE_CPU", "")))
         self.log(f"report: {report}")
 

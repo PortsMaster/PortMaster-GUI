@@ -752,3 +752,59 @@ def test_offer_pending_uploads_fails(tmp_path, monkeypatch):
     offer_suite(ui).offer_pending_uploads("https://example.invalid/")
     assert ui.boxes[-1].startswith("Couldn't upload 1 of 1 report(s): no internet")
     assert len(suite.pending_reports(reports)) == 1
+
+
+def test_logs_set_aside(tmp_path):
+    ## The tester's PortMaster logs stay out of the report and come back afterwards.
+    pm, saved = tmp_path / "PortMaster", tmp_path / "pmtest" / "saved-logs"
+    pm.mkdir()
+    (pm / "pugwash.txt").write_text("two years of history\n")
+    (pm / "log.txt").write_text("last launch\n")
+
+    suite.set_aside_logs(pm, saved)
+    assert (pm / "pugwash.txt").read_text() == "" and (pm / "log.txt").read_text() == ""
+    assert not (pm / "harbourmaster.txt").exists()
+
+    ## The run logs things, then everything is put back as it was.
+    (pm / "pugwash.txt").write_text("the run\n")
+    (pm / "harbourmaster.txt").write_text("the run\n")
+    suite.restore_logs(pm, saved)
+    assert (pm / "pugwash.txt").read_text() == "two years of history\n"
+    assert (pm / "log.txt").read_text() == "last launch\n"
+    assert (pm / "harbourmaster.txt").read_text() == "the run\n"
+    assert not saved.exists()
+
+
+def test_logs_after_a_crash(tmp_path):
+    ## A run that never restored them: the next run does, keeping what was logged since.
+    pm, saved = tmp_path / "PortMaster", tmp_path / "saved-logs"
+    pm.mkdir()
+    (pm / "pugwash.txt").write_text("old\n")
+    suite.set_aside_logs(pm, saved)
+    (pm / "pugwash.txt").write_text("crashed run, then PortMaster used\n")
+
+    suite.set_aside_logs(pm, saved)
+    assert (pm / "pugwash.txt").read_text() == ""
+    suite.restore_logs(pm, saved)
+    assert (pm / "pugwash.txt").read_text() == "old\ncrashed run, then PortMaster used\n"
+
+
+def test_main_restores_logs(tmp_path, monkeypatch):
+    pm = tmp_path / "PortMaster"
+    pm.mkdir()
+    (pm / "pugwash.txt").write_text("theirs\n")
+    monkeypatch.setattr(suite, "SAVED_LOGS", tmp_path / "saved-logs")
+
+    class CrashingSuite(suite.Suite):
+        def __init__(self):
+            self.controlfolder = pm
+            self.has_ui = False
+
+        def run_suite(self):
+            assert (pm / "pugwash.txt").read_text() == ""
+            raise RuntimeError("boom")
+
+    with pytest.raises(RuntimeError):
+        CrashingSuite().main()
+
+    assert (pm / "pugwash.txt").read_text() == "theirs\n"
