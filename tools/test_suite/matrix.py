@@ -373,7 +373,8 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
             f'{"" if row["scrubbed"] else ". Not scrubbed (made before scrubbing)"}</p>')
         for key, section in row['sections'].items():
             add(f"<h3>{_chip(section['status'])} {_e(key)}: {_e(section['summary'])}</h3>")
-            if section['details']:
+            ## The device section's details repeat the line above (older ones with pysdl2's warnings).
+            if section['details'] and key != "device":
                 add(f"<pre>{_e(section['details'])}</pre>")
         add("</details>")
     add("</div></section>")
