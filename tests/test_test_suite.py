@@ -302,6 +302,23 @@ def test_launcher_env_trimui(tmp_path):
     assert env['PYSDL2_DLL_PATH'] == "/usr/trimui/lib"
 
 
+@pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")
+def test_launcher_env_rocknix(tmp_path, monkeypatch):
+    ## ROCKNIX's control.txt sets no CFW_NAME, so mod_.txt runs device_info.txt. The port
+    ## script already ran the old one; its CFW_NAME mustn't skip the new one.
+    pm = fake_controlfolder(tmp_path)
+    (pm / "control.txt").write_text('ESUDO=""\nget_controls() { :; }\n')
+    (pm / "mod_.txt").write_text('source "$controlfolder/device_info.txt"\n')
+    (pm / "device_info.txt").write_text('export CFW_NAME="ROCKNIX"\nexport DEVICE_INFO_VERSION="new"\n')
+    for key, value in (("CFW_NAME", "ROCKNIX"), ("DEVICE_INFO_VERSION", "old"), ("DISPLAY_WIDTH", "1"), ("PM_VERSION", "old")):
+        monkeypatch.setenv(key, value)
+
+    env = suite.launcher_env(pm)
+
+    assert env['DEVICE_INFO_VERSION'] == "new"
+    assert "DISPLAY_WIDTH" not in env and "PM_VERSION" not in env
+
+
 def test_launcher_env_old_portmaster(tmp_path):
     ## A PortMaster from before PM_LAUNCH_ENV_ONLY would run the whole launcher: not asked.
     pm = fake_controlfolder(tmp_path)

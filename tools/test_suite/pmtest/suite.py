@@ -615,6 +615,22 @@ def launcher_hooks(controlfolder):
     return ""
 
 
+## What device_info.txt exports, left over from the port script's own preamble.
+DEVICE_INFO_VARS = ("CFW_", "DEVICE_", "DISPLAY_", "ASPECT_", "ANALOG_", "GPU_")
+
+
+def fresh_launch_env(environ):
+    """
+    environ as the frontend gives it to PortMaster.sh, without what the suite's port
+    script got from the old PortMaster's device_info.txt. On ROCKNIX, whose control.txt
+    sets no CFW_NAME, an inherited CFW_NAME sends the launcher to mod_ROCKNIX.txt
+    instead of mod_.txt, which is what runs device_info.txt there.
+    """
+    return {
+        key: value for key, value in environ.items()
+        if not key.startswith(DEVICE_INFO_VARS) and key != "PM_VERSION"}
+
+
 def launcher_env(controlfolder, python=None, timeout=60):
     """
     The environment PortMaster's launcher runs pugwash in (pm_launch.txt with
@@ -642,7 +658,7 @@ def launcher_env(controlfolder, python=None, timeout=60):
         try:
             subprocess.run(
                 ["bash", "-c", script, "pmtest", str(controlfolder), hooks, python or sys.executable, str(dump)],
-                env=dict(os.environ, PM_LAUNCH_ENV_ONLY="Y"), timeout=timeout,
+                env=dict(fresh_launch_env(os.environ), PM_LAUNCH_ENV_ONLY="Y"), timeout=timeout,
                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             env = json.loads(dump.read_text())
 
