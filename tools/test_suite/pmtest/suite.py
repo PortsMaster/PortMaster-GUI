@@ -951,8 +951,11 @@ class Suite:
 
         results = [self._pytest(name, marker, timeout=1500, extra_env=env, label="GUI tests") for name, marker, env in runs]
         set_from_results(section, results, suffix=f" ({how})")
-        if not self.has_ui:
-            self.ui_start()
+
+        ## A fresh dialog either way: on spruce's CubeXX (SDL on Mali fbdev) the one kept up
+        ## through the headless tests came back black, with only newly drawn parts showing.
+        self.ui_stop()
+        self.ui_start()
 
     def step_smoke(self, section):
         try:

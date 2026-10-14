@@ -565,6 +565,7 @@ def test_matrix_sdl_column(tmp_path):
     ])
 def test_step_gui_dialog(monkeypatch, drivers, stops):
     ## Headless GUI tests keep the dialog up with a message; on the real screen pugwash lets go of it.
+    ## Either way the dialog after them is a new one.
     events = []
 
     class FakeSuite(suite.Suite):
@@ -591,9 +592,9 @@ def test_step_gui_dialog(monkeypatch, drivers, stops):
     section = suite.Section("gui", "GUI tests")
     FakeSuite().step_gui(section)
 
-    assert (("stop", None) in events) == stops
-    assert (("start", None) in events) == stops
     assert [has_ui for kind, has_ui in events if kind == "pytest"] == [not stops] * (2 if stops else 1)
+    ## A fresh dialog afterwards either way (Mali fbdev lost the kept one's images).
+    assert events[-2:] == [("stop", None), ("start", None)]
     assert section.status == suite.PASS
 
 
