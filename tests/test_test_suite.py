@@ -650,10 +650,10 @@ def test_summary_entries_sent():
         return entries["#overall"], entries["#report"]
 
     overall, report = texts(None)
-    assert "Please send the report" in overall and "Sent" not in report
+    assert "Please send the report" in overall and "Uploaded" not in report
 
     overall, report = texts((True, ""))
-    assert "has been sent" in overall and "Please send" not in overall and report.endswith("Sent.")
+    assert "uploaded to be processed" in overall and "Please send" not in overall and report.endswith("Uploaded.")
 
     overall, report = texts((False, "timed out"))
-    assert "Please send the report" in overall and "Couldn't send it (timed out)" in report
+    assert "Please send the report" in overall and "Couldn't upload it (timed out)" in report

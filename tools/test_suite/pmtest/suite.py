@@ -23,7 +23,6 @@ import sys
 import tempfile
 import time
 import traceback
-import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
@@ -252,7 +251,7 @@ def summary_entries(sections, report_name, sent=None):
     ran = [section for section in sections if section.status in (PASS, FAIL)]
     failed = [section for section in ran if section.status == FAIL]
     if sent is not None and sent[0]:
-        report = "The report has been sent."
+        report = "The report has been uploaded to be processed."
     else:
         report = f"Please send the report to whoever gave you the Test Suite:\n{report_name}"
 
@@ -274,7 +273,7 @@ def summary_entries(sections, report_name, sent=None):
     entries.append(("#report", "Report", (
         f"Saved as:\n{report_name}\n\nIn the PortMaster Test Suite's reports folder (ports/pmtest/reports). "
         "Addresses, serial numbers and network names have been taken out, so it's safe to share." +
-        ("" if sent is None else "\n\nSent." if sent[0] else f"\n\nCouldn't send it ({sent[1]}), please send it by hand."))))
+        ("" if sent is None else "\n\nUploaded." if sent[0] else f"\n\nCouldn't upload it ({sent[1]}), please send it by hand."))))
     return entries
 
 
@@ -973,11 +972,13 @@ class Suite:
                 return 0
 
             if upload and not self.ui.message_box(
-                    f"Send the report to {urllib.parse.urlsplit(upload).hostname} when it's done?\n\n"
-                    "Addresses, serial numbers and network names are taken out first. "
+                    "Upload the report when it's done?\n\n"
+                    "It's uploaded to be processed with the other test results. Addresses, serial numbers "
+                    "and network names are taken out first, and nothing that could identify you, this device "
+                    "or your network is kept.\n\n"
                     "It's saved on this device either way.\n\n"
-                    "Press A to send it, or B to keep it here.", want_cancel=True):
-                self.log("the tester chose not to send the report")
+                    "Press A to upload it, or B to keep it here only.", want_cancel=True):
+                self.log("the tester chose not to upload the report")
                 upload = None
 
         for key in STEPS:
@@ -1010,9 +1011,9 @@ class Suite:
 
         sent = None
         if upload:
-            self.say("Sending the report.")
+            self.say("Uploading the report.")
             sent = send_report(upload, report)
-            self.log(f"report sent to {upload}" if sent[0] else f"report not sent to {upload}: {sent[1]}")
+            self.log("report uploaded" if sent[0] else f"report not uploaded: {sent[1]}")
 
         if self.has_ui:
             self.ui.messages_end()
