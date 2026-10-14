@@ -213,8 +213,10 @@ def upload_url(path=UPLOAD_FILE):
 
 def ssl_context():
     """PortMaster's own certifi bundle: some CFWs ship old or no CA certificates."""
-    for cafile in (TREE / "PortMaster" / "exlibs" / "certifi" / "cacert.pem",
-                   HERE.parents[2] / "PortMaster" / "exlibs" / "certifi" / "cacert.pem"):
+    ## The suite's copy of the code, or the checkout's (tools/test_suite/pmtest).
+    roots = [TREE] + ([HERE.parents[2]] if len(HERE.parents) > 2 else [])
+    for root in roots:
+        cafile = root / "PortMaster" / "exlibs" / "certifi" / "cacert.pem"
         if cafile.is_file():
             return ssl.create_default_context(cafile=str(cafile))
 
