@@ -401,3 +401,107 @@ def test_bar_template_still_updates_in_later_windows(gui, bar_progress_theme):
     with gui.enable_messages():
         gui.progress("Second", 1, 2)
         assert progress_bar_strings(gui)[0] == "Second"
+
+
+################################################################################
+## Port screenshots: no stale image when a ports list opens, and neighbours load ahead.
+@pytest.fixture
+def screenshot_ports(gui, tmp_path, monkeypatch):
+    """A fake hm with 12 ports, each with its own screenshot."""
+    from types import SimpleNamespace
+
+    ports = {}
+    images = {}
+    for i in range(12):
+        name = f"port{i:02}.zip"
+        images[name] = str(write_png(tmp_path / f"port{i:02}.png"))
+        ports[name] = {'name': name, 'attr': {
+            'title': f"Port {i}", 'desc': "", 'inst': "", 'genres': [], 'porter': ["someone"],
+            'rtr': True, 'runtime': []}}
+
+    hm = SimpleNamespace(
+        port_images=lambda name: {'screenshot': images[name]},
+        port_download_size=lambda name: 0,
+        libs_dir=tmp_path)
+    monkeypatch.setattr(gui, "hm", hm)
+    monkeypatch.setattr(gui.images, "max_images", gui.images.max_images)
+    return SimpleNamespace(ports=ports, images=images)
+
+
+def featured_scene(gui, ports):
+    from pugwash.scenes.ports import FeaturedPortsScene
+    return FeaturedPortsScene(gui, {'name': "Test", 'description': "", 'image': "NO_IMAGE", 'ports': ports})
+
+
+def test_ports_list_opens_with_its_own_screenshot(gui, screenshot_ports):
+    ## The previous list's port must not be what the new list draws first.
+    gui.set_data("port_info.image", screenshot_ports.images["port11.zip"])
+    gui.set_data("port_info.title", "Port 11")
+
+    scene = featured_scene(gui, screenshot_ports.ports)
+
+    assert gui.get_data("port_info.image") == screenshot_ports.images["port00.zip"]
+    assert gui.get_data("port_info.title") == "Port 0"
+
+    scene.update_data(set(gui.changed_keys))
+    shown = [region.image for region, text in scene.image_regions.values() if "port_info.image" in text]
+    assert shown and all(image is gui.images.images[screenshot_ports.images["port00.zip"]] for image in shown)
+
+
+def test_list_loads_neighbouring_screenshots(gui, screenshot_ports):
+    scene = featured_scene(gui, screenshot_ports.ports)
+    assert scene.tags['ports_list'].list_columns == 1
+
+    for name in screenshot_ports.images.values():
+        gui.images.images.pop(name, None)
+        gui.images.cache = [cached for cached in gui.images.cache if cached != name]
+
+    scene.tags['ports_list'].selected = 5
+    scene.show_selected_port()
+    ## The scene isn't pushed, so hand it the changed keys like do_update would.
+    scene.update_data(set(gui.changed_keys))
+
+    loaded = {i for i in range(12) if screenshot_ports.images[f"port{i:02}.zip"] in gui.images.images}
+    assert loaded == set(range(2, 9))
+    ## The selected port's image is the newest in the cache.
+    assert gui.images.cache[0] == screenshot_ports.images["port05.zip"]
+
+
+def test_grid_keeps_rows_either_side_loaded(gui, tmp_path, monkeypatch):
+    from pugwash import sdl
+
+    files = [str(write_png(tmp_path / f"tile{i:02}.png")) for i in range(60)]
+    monkeypatch.setattr(gui.images, "max_images", gui.images.max_images)
+    region = sdl.Region(gui, {"area": [0.0, 0.0, 1.0, 0.5], "font": "DejaVuSans.ttf", "list-columns": 3, "item-size": 60})
+    region.list = [f"Tile {i}" for i in range(60)]
+    region.list_image = lambda i: files[i] if i < len(files) else None
+
+    def loaded():
+        return {i for i, name in enumerate(files) if name in gui.images.images}
+
+    region.draw(region.area)
+    page = region.page_size
+    preload = sdl.Region.GRID_PRELOAD_ROWS * 3
+    assert 0 < page and page + preload * 2 < 60
+    assert loaded() == set(range(page + preload))
+    assert gui.images.max_images >= page + preload * 2
+
+    ## Halfway down the list the rows above stay loaded too.
+    region.selected = 30
+    region.draw(region.area)
+    start = region.grid_start_row * 3
+    assert loaded() >= set(range(start - preload, start + page + preload))
+
+    gui.images._clean()
+    assert set(range(start - preload, start + page + preload)) <= loaded()
+
+
+def test_image_keep_only_raises():
+    from pugwash.sdl.images import ImageManager
+
+    images = ImageManager.__new__(ImageManager)
+    images.max_images = 30
+    images.keep(40)
+    assert images.max_images == 40 + ImageManager.MAX_IMAGES // 2
+    images.keep(5)
+    assert images.max_images == 40 + ImageManager.MAX_IMAGES // 2

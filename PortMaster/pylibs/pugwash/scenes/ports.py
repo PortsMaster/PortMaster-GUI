@@ -10,6 +10,9 @@ from .port_info import PortInfoScene
 
 
 class PortListBaseScene():
+    ## How many ports either side of the selection have their images loaded ahead in a plain list.
+    LIST_PRELOAD = 3
+
     def set_port_images(self):
         ## Grid themes draw each port's image; the grid looks them up only for the tiles on screen.
         if self.tags['ports_list'].list_columns > 1:
@@ -88,6 +91,24 @@ class PortListBaseScene():
         self.last_port = self.tags['ports_list'].selected + 1
         self.ready = True
 
+    def show_selected_port(self):
+        ## Port info for the selected port. Scenes call this as they are made too, so their first
+        ## frame doesn't show the port_info.* (screenshot and all) of the port shown before.
+        if len(self.port_list) == 0:
+            return
+
+        self.last_port = self.tags['ports_list'].selected
+        self.gui.set_data('ports_list.position', str(self.last_port + 1))
+
+        if self.tags['ports_list'].list_columns == 1:
+            ## Get the neighbours' screenshots decoding before they are scrolled to.
+            for offset in range(1, self.LIST_PRELOAD + 1):
+                for index in (self.last_port + offset, self.last_port - offset):
+                    self.gui.images.load(self.port_image(index % len(self.port_list)))
+
+        port_name = self.port_list[self.last_port]
+        self.gui.set_port_info(port_name, self.all_ports[port_name], self.options['mode'] != 'install')
+
     def try_to_select(self, port_name, port_title):
         ## Try and select a port
         if port_name in self.port_list:
@@ -146,17 +167,7 @@ class PortListBaseScene():
                 return True
 
         if len(self.port_list) > 0 and self.last_port != self.tags['ports_list'].selected:
-            self.last_port = self.tags['ports_list'].selected
-            self.gui.set_data('ports_list.position', str(self.last_port + 1))
-
-            port_name = self.port_list[self.last_port]
-            port_info = self.all_ports[port_name]
-
-            self.gui.set_port_info(port_name, port_info, self.options['mode'] != 'install')
-            # print(json.dumps(port_info, indent=4))
-
-            # if 'port_image' in self.tags:
-            #     self.tags['port_image'].image = self.gui.get_port_image(port_name)
+            self.show_selected_port()
 
         if self.options['mode'] in ('install', 'uninstall') and events.was_pressed('X'):
             self.button_activate()
@@ -225,8 +236,7 @@ class FeaturedPortsScene(PortListBaseScene, BaseScene):
             self.all_ports[port_name]['attr']['title']
             for port_name in self.port_list]
         self.set_port_images()
-
-        self.last_port = self.tags['ports_list'].selected + 1
+        self.show_selected_port()
 
         self.set_buttons({'A': _('Show Info'), 'B': _('Back')})
 
@@ -251,6 +261,7 @@ class PortsListScene(PortListBaseScene, BaseScene):
 
         self.ready = False
         self.update_ports()
+        self.show_selected_port()
 
         if self.options['mode'] == 'install':
             self.set_buttons({'A': _('Show Info'), 'B': _('Back'), 'X': _('Filters')})

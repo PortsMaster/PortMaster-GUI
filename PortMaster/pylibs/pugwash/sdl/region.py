@@ -113,6 +113,9 @@ class Region:
 
     DATA = {}
 
+    ## Rows above and below the visible ones whose images a grid keeps loaded.
+    GRID_PRELOAD_ROWS = 2
+
     def __init__(self, gui, data, name=None, number=0, rects=None):
         'Create a new Region for future drawing.'
         self._dict = deep_merge(self.DATA, data)
@@ -673,6 +676,7 @@ class Region:
 
         self.grid_start_row = max(0, min(self.grid_start_row, total_rows - rows))
         start = self.grid_start_row * columns
+        visible_rows = rows
 
         for i, t in enumerate(self.list[start: start + self.page_size], start):
             row, column = divmod(i - start, columns)
@@ -754,6 +758,22 @@ class Region:
 
             with texture.with_color_mod(color):
                 texture.draw_in(label_area, clip=True)
+
+        if self.list_image is not None:
+            self._preload_grid(start, visible_rows, columns)
+
+    def _preload_grid(self, start, rows, columns):
+        '''
+        Load the images of the GRID_PRELOAD_ROWS rows either side of the visible ones, after
+        the visible tiles so those decode first, and keep room for all of them in the cache.
+        Used internally
+        '''
+        preload = self.GRID_PRELOAD_ROWS * columns
+        self.images.keep(rows * columns + preload * 2)
+
+        end = start + rows * columns
+        for i in list(range(end, min(end + preload, len(self.list)))) + list(range(max(start - preload, 0), start)):
+            self.images.load(self.list_image(i))
 
     def _corner_cuts(self, radius):
         '''

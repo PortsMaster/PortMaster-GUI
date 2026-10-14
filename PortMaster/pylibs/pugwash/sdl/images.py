@@ -418,6 +418,14 @@ class ImageManager():
             self.async_executor.shutdown(wait=False)
             self.async_executor = None
 
+    def keep(self, count):
+        '''
+        Make room in the cache for count images that are in use at once (eg: a grid's tiles
+        plus the rows it loads ahead), so they aren't unloaded while still on screen.
+        Only ever raises max_images.
+        '''
+        self.max_images = max(self.max_images, count + self.MAX_IMAGES // 2)
+
     def _decode(self, filename, res_filename, image):
         # Worker thread: only CPU side work here.
         try:
