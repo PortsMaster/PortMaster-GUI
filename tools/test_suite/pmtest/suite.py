@@ -591,10 +591,13 @@ class Suite:
 
         self.info['python'] = platform.python_version()
         self.info['uname'] = " ".join(platform.uname())
-        self.info['cfw'] = os.environ.get("CFW_NAME", "unknown")
-        self.info['cfw_version'] = os.environ.get("CFW_VERSION", "")
-        self.info['device'] = os.environ.get("DEVICE_NAME", platform.node())
-        self.info['arch'] = os.environ.get("DEVICE_ARCH", platform.machine())
+        ## From the launcher's environment once the new PortMaster is in: the port started
+        ## with the old one's device_info.txt.
+        env = self.base_env or os.environ
+        self.info['cfw'] = env.get("CFW_NAME", "unknown")
+        self.info['cfw_version'] = env.get("CFW_VERSION", "")
+        self.info['device'] = env.get("DEVICE_NAME", platform.node())
+        self.info['arch'] = env.get("DEVICE_ARCH", platform.machine())
         ## CFW_VERSION is sometimes the base system's (spruce: buildroot 2021.11), so this too.
         self.info['os'] = os_release_name(Path("/etc/os-release"))
 
