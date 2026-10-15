@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.2"
+export DEVICE_INFO_VERSION="0.2.3"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -251,11 +251,23 @@ elif [ "$CFW_NAME" = "ROCKNIX" ] || [ "$CFW_NAME" = "JELOS" ]; then
     fi
 elif [ "$CFW_NAME" = "muOS" ]; then
     [ -f "/opt/muos/config/system/version" ] && export CFW_VERSION="$(tr -d '\r\n' < /opt/muos/config/system/version 2>/dev/null)"
-elif [ "$CFW_NAME" = "knulli" ]; then
+elif [ "$CFW_NAME" = "knulli" ] || [ "$CFW_NAME" = "Batocera.linux" ]; then
     for kver in /etc/knulli.version /boot/knulli.version /userdata/system/knulli.version; do
         if [ -f "$kver" ]; then export CFW_VERSION="$(tr -d '\r\n' < "$kver" 2>/dev/null)"; break; fi
     done
-    [ "$CFW_VERSION" = "Unknown" ] && export CFW_VERSION="scarab"
+    ## Otherwise the Batocera release it's built from ("gladiator", "42", "44-dev"). os-release's
+    ## VERSION_ID is Buildroot's (2024.11), so the generic lookup below would pick the wrong one.
+    if [ "$CFW_VERSION" = "Unknown" ]; then
+        for OS_F in /etc/os-release /usr/lib/os-release; do
+            val="$(grep -E '^VERSION=' "$OS_F" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\\\r ')"
+            if [ -n "$val" ]; then export CFW_VERSION="$val"; break; fi
+        done
+    fi
+    if [ "$CFW_VERSION" = "Unknown" ] && [ -f "/usr/share/batocera/batocera.version" ]; then
+        val="$(head -n1 /usr/share/batocera/batocera.version 2>/dev/null | cut -d' ' -f1 | tr -d '\r')"
+        [ -n "$val" ] && export CFW_VERSION="$val"
+    fi
+    [ -z "$CFW_VERSION" ] && export CFW_VERSION="Unknown"
 elif [ "$CFW_NAME" = "spruce" ]; then
     ## spruce's own version; os-release is the base system's (Miyoo/TrimUI stock, Debian on dArkMoss).
     if [ -f "/mnt/SDCARD/spruce/spruce" ]; then
