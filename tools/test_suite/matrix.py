@@ -125,7 +125,7 @@ def release_date(cfw, cfw_version, os_release):
         if found:
             return found
 
-    match = re.match(r"(\d\d)(\d\d)(?:\.\d+)?(?:_|$)", cfw_version)
+    match = re.match(r"(\d\d)(\d\d)(?:\.\d+)?(?:[_ ]|$)", cfw_version)
     if cfw.lower() == "muos" and match:
         found = _date(f"20{match.group(1)}", match.group(2))
         if found:
@@ -150,25 +150,63 @@ def version_key(version):
     return [(0, int(part), "") if part.isdigit() else (1, 0, part.lower()) for part in re.findall(r"\d+|[^\d.\-_]+", version)]
 
 
-## knulli releases by the Batocera release they're built on, and the day each came out
-## (github.com/knulli-cfw/knulli-linux/releases). Builds on that base from before it are
-## its alphas ("alpha 2025/11/28" in a Smart Pro's knulli.version).
-KNULLI_RELEASES = {
-    "42": ("2026-05-11", "scarab"),
+## knulli's releases and the day each came out (github.com/knulli-cfw/distribution and
+## knulli-linux releases). A build gets the newest release out by its build date; alphas
+## and dev builds call themselves "alpha" or by a Batocera version ("42", "44-dev").
+KNULLI_RELEASES = (
+    ("2024-05-09", "20240509"),
+    ("2024-05-17", "20240517"),
+    ("2024-05-30", "20240530"),
+    ("2024-07-21", "20240721"),
+    ("2024-12-04", "firefly"),
+    ("2025-05-05", "gladiator"),
+    ("2025-08-13", "gladiator II"),
+    ("2026-05-11", "scarab"),
+    )
+
+
+def knulli_release(built):
+    """(release name, its date) for a knulli built on `built` ("YYYY-MM-DD"), ("", "") if unknown."""
+    found = ("", "")
+    for released, name in KNULLI_RELEASES:
+        if built and built >= released:
+            found = (name, released)
+
+    return found
+
+
+## muOS's release names by version (muos.dev/release).
+MUOS_RELEASES = {
+    "2403.0": "Origin",
+    "2405.0": "Beans", "2405.1": "Refried Beans", "2405.2": "Baked Beans",
+    "2410.1": "Banana", "2410.2": "Big Banana", "2410.3": "AW Banana",
+    "2502.0": "Pixie",
+    "2508.0": "Goose", "2508.1": "Canada Goose", "2508.2": "Silly Goose", "2508.3": "Golden Goose", "2508.4": "Loose Goose",
+    "2601.0": "Jacaranda", "2601.1": "Funky Jacaranda",
+    "2606.0": "Andromeda",
     }
 
 
-def knulli_release(batocera_version, built):
-    """knulli's own name for a report that only has os-release: Batocera's VERSION= and the build date."""
-    if batocera_version in KNULLI_RELEASES:
-        released, name = KNULLI_RELEASES[batocera_version]
-        return name if built and built >= released else "alpha"
+def muos_release(cfw_version, os_name):
+    """ "2601.0 Jacaranda" for 2601.0_JACARANDA; "2410 Banana" for 2410 (os: "muOS 2410 Banana")."""
+    match = re.match(r"(\d{4})(?:\.(\d+))?", cfw_version)
+    if not match:
+        return cfw_version
 
-    if batocera_version.endswith("-dev"):
-        ## The next release, not out yet.
-        return "dev"
+    if match.group(2) is not None:
+        number = f"{match.group(1)}.{match.group(2)}"
+        name = MUOS_RELEASES.get(number)
+    else:
+        number = match.group(1)
+        ## No point release: the name the system gives, if it's one of that release's.
+        names = {name for version, name in MUOS_RELEASES.items() if version.startswith(number + ".")}
+        name = next((name for name in sorted(names, key=len, reverse=True) if name.lower() in os_name.lower()), None)
+        ## Else the family, when they're all one (Banana, Big Banana, AW Banana).
+        family = min(names, key=len) if names else None
+        if name is None and family and all(other.endswith(family) for other in names):
+            name = family
 
-    return _text(batocera_version, 40)
+    return f"{number} {name}" if name else cfw_version
 
 
 def read_report(zip_path):
@@ -207,17 +245,21 @@ def read_report(zip_path):
     row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
     row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
     row['sdl'], row['sdl_warned'] = _sdl(info, sdl_probe)
-    ## knulli's own version file ("scarab 2026/08/19 16:06"), in reports since the suite
-    ## collected it. Before that, device_info.txt older than 0.2.3 called every knulli
-    ## "scarab": Batocera's VERSION= is the closest the report has.
-    knulli_file = re.search(r"knulli\.version: (\S+)(?: (\d{4})/(\d\d)/(\d\d))?", cfw_files)
-    knulli_version = re.search(r"^VERSION=\"?([^\"\n]+)", os_release, re.M)
+    ## knulli: the release its build date falls in. The date from knulli's own version file
+    ## ("scarab 2026/08/19 16:06", collected since 0669), Batocera's on gladiator and older,
+    ## else os-release's OS_DATE. What the device called itself ("scarab" from device_info.txt
+    ## before 0.2.3 whatever it was, "42", "alpha") isn't a release name.
     knulli_date = ""
-    if row['cfw'].lower() == "knulli" and knulli_file:
-        row['cfw_version'] = _text(knulli_file.group(1), 40)
-        knulli_date = _date(*knulli_file.group(2, 3, 4)) if knulli_file.group(2) else ""
-    elif row['cfw'].lower() == "knulli" and row['cfw_version'] in ("scarab", "42", "44-dev") and knulli_version:
-        row['cfw_version'] = knulli_release(knulli_version.group(1).strip(), release_date(row['cfw'], "", os_release))
+    if row['cfw'].lower() == "knulli":
+        version_file = re.search(r"(?:knulli|batocera)\.version: \S+ (\d{4})/(\d\d)/(\d\d)", cfw_files)
+        built = _date(*version_file.groups()) if version_file else release_date(row['cfw'], "", os_release)
+        name, knulli_date = knulli_release(built)
+        if name:
+            row['cfw_version'] = name
+
+    if row['cfw'].lower() == "muos":
+        row['cfw_version'] = _text(muos_release(row['cfw_version'], row['os']), 40)
+
     ## Before spruce's own version file, device_info.txt fell back to the base system's
     ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
     if row['cfw'].lower() == "spruce" and not re.match(r"\d+\.\d+\.\d+", row['cfw_version']):
@@ -278,7 +320,7 @@ def device_key(row):
 
 def version_dates(groups):
     """{(cfw, cfw_version): sorted release dates of its devices' newest runs}: one version
-    name can be several builds (knulli 42)."""
+    name can be several builds (knulli scarab)."""
     dates = {}
     for (cfw, cfw_version, _), runs in groups.items():
         dates.setdefault((cfw, cfw_version), set())
@@ -475,7 +517,8 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
             current_version = cfw_version
             dates = released[(cfw, cfw_version)]
             notes = [f"released {dates[0]}" if len(dates) == 1 else f"builds from {dates[0]} to {dates[-1]}" if dates else ""]
-            if row['os'] and row['os'].lower() not in (cfw_version.lower(), f"{cfw} {cfw_version}".lower()):
+            ## (knulli's os-release names the Batocera it's built on, not knulli.)
+            if row['os'] and cfw.lower() != "knulli" and cfw_version.split(" ")[0].lower() not in row['os'].lower():
                 notes.append(row['os'])
             note = " · ".join(_e(part) for part in notes if part)
             add(f'<tr class="version"><th colspan="{columns}" scope="colgroup">{_e(cfw_version or "Unknown version")}'

@@ -459,9 +459,9 @@ def test_matrix(tmp_path):
     assert rows[0]['scrubbed'] is True
 
     groups = matrix.group_rows(rows)
-    assert list(groups) == [("knulli", "scarab", "<rg-cubexx>"), ("muOS", "2601.0_JACARANDA", "rg35xx-h")]
+    assert list(groups) == [("knulli", "scarab", "<rg-cubexx>"), ("muOS", "2601.0 Jacaranda", "rg35xx-h")]
     ## Newest run first.
-    assert [row['report'] for row in groups[("muOS", "2601.0_JACARANDA", "rg35xx-h")]] == ["new.zip", "old.zip"]
+    assert [row['report'] for row in groups[("muOS", "2601.0 Jacaranda", "rg35xx-h")]] == ["new.zip", "old.zip"]
 
     (test, message, found), = matrix.failure_index(rows)
     assert (test, message, len(found)) == ("tests.test_a::test_x", "assert 1 == 2", 2)
@@ -493,15 +493,33 @@ def test_matrix_release_date(cfw, version, os_release, expected):
     assert matrix.release_date(cfw, version, os_release) == expected
 
 
-@pytest.mark.parametrize("version, built, expected", [
-    ("42", "2026-08-19", "scarab"),   ## Brick Pro: "scarab 2026/08/19" in knulli.version
-    ("42", "2026-05-11", "scarab"),   ## the release itself
-    ("42", "2025-11-28", "alpha"),    ## Smart Pro: "alpha 2025/11/28"
-    ("44-dev", "2026-10-12", "dev"),
-    ("gladiator", "2025-05-06", "gladiator"),
+@pytest.mark.parametrize("version, os_name, expected", [
+    ("2601.0_JACARANDA", "MustardOS 2601.0 (JACARANDA)", "2601.0 Jacaranda"),
+    ("2606.0_ANDROMEDA", "MustardOS 2606.0 (ANDROMEDA)", "2606.0 Andromeda"),
+    ("2601.1_FUNKY_JACARANDA", "", "2601.1 Funky Jacaranda"),
+    ("2410", "muOS 2410 Banana", "2410 Banana"),
+    ("2410", "", "2410 Banana"),
+    ("2508", "", "2508 Goose"),
+    ("9999.0", "", "9999.0"),
     ])
-def test_matrix_knulli_release(version, built, expected):
-    assert matrix.knulli_release(version, built) == expected
+def test_matrix_muos_release(version, os_name, expected):
+    assert matrix.muos_release(version, os_name) == expected
+    if expected[:4] in ("2601", "2410"):
+        assert matrix.release_date("muOS", expected, "") == f"20{expected[:2]}-{expected[2:4]}"
+
+
+@pytest.mark.parametrize("built, expected", [
+    ("2026-08-19", ("scarab", "2026-05-11")),        ## Brick Pro: "scarab 2026/08/19"
+    ("2026-05-11", ("scarab", "2026-05-11")),
+    ("2026-10-12", ("scarab", "2026-05-11")),        ## Batocera 44-dev builds
+    ("2025-11-28", ("gladiator II", "2025-08-13")),  ## Smart Pro: "alpha 2025/11/28"
+    ("2025-05-05", ("gladiator", "2025-05-05")),
+    ("2024-07-30", ("20240721", "2024-07-21")),
+    ("2024-01-01", ("", "")),
+    ("", ("", "")),
+    ])
+def test_matrix_knulli_release(built, expected):
+    assert matrix.knulli_release(built) == expected
 
 
 def test_matrix_by_cfw_then_version(tmp_path):
@@ -514,7 +532,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
             ("rocknix-old.zip", dict(cfw="ROCKNIX", cfw_version="20250517", device="rp5"), ""),
             ("rocknix-new.zip", dict(cfw="ROCKNIX", cfw_version="20261010", device="rp5"), ""),
             ("knulli-old.zip", dict(cfw="knulli", cfw_version="scarab", device="rg-cubexx"), "VERSION=gladiator\nOS_DATE=20250506\n"),
-            ("knulli-tsp.zip", dict(cfw="knulli", cfw_version="42", device="trimui-smart-pro"), "VERSION=42\nOS_DATE=20251128\n"),
+            ("knulli-tsp.zip", dict(cfw="knulli", cfw_version="42", device="trimui-smart-pro", os="Batocera.linux 42"), "VERSION=42\nOS_DATE=20251128\n"),
             ("knulli-brick.zip", dict(cfw="knulli", cfw_version="42", device="trimui-brick-pro"), "VERSION=42\nOS_DATE=20260819\n"),
             ("knulli-cube.zip", dict(cfw="knulli", cfw_version="42", device="rgcubexx-h"), "VERSION=42\nOS_DATE=20260511\n"),
             ("spruce-new.zip", dict(cfw="spruce", cfw_version="4.5.5", device="Miyoo Flip"), ""),
@@ -531,19 +549,19 @@ def test_matrix_by_cfw_then_version(tmp_path):
             versions.append((cfw, version))
 
     assert versions == [
-        ("knulli", "scarab"), ("knulli", "alpha"), ("knulli", "gladiator"),
+        ("knulli", "scarab"), ("knulli", "gladiator II"), ("knulli", "gladiator"),
         ("RetroDECK", "0.10.10b"), ("RetroDECK", "0.10.0b"),
         ("ROCKNIX", "20261010"), ("ROCKNIX", "20250517"),
         ("spruce", "4.5.5"), ("spruce", "Unknown")]
 
     page = matrix.render_html(rows)
-    assert "builds from 2026-05-11 to 2026-08-19" in page
+    assert "released 2026-05-11" in page and "released 2025-08-13" in page and "Batocera" not in page
 
     ## knulli's own version file beats os-release: the Brick Pro is scarab, on Batocera 42.
     make_report(tmp_path, "knulli-scarab.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
                 passed, os_release="VERSION=42\nOS_DATE=20260819\n", cfw_files="/usr/share/knulli/knulli.version: scarab 2026/08/19 16:06\n")
     row = matrix.read_report(tmp_path / "knulli-scarab.zip")
-    assert (row['cfw_version'], row['released']) == ("scarab", "2026-08-19")
+    assert (row['cfw_version'], row['released']) == ("scarab", "2026-05-11")
 
     ## The device line in "Every run" says the corrected version too.
     make_report(tmp_path, "knulli-device.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
@@ -553,7 +571,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
 
     rows[0]['portmaster'], rows[1]['portmaster'] = "2026-10-13_0469", "2026-10-15_0569"
     assert ' 3 test builds, <span class="data">2026-10-13_0469</span> to <span class="data">2026-10-15_0569</span>.' in matrix.render_html(rows)
-    assert "released 2025-05-06" in page and "released 2025-11-28" in page
+    assert "released 2025-05-05" in page and "alpha" not in page and ">42<" not in page
 
 
 def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
