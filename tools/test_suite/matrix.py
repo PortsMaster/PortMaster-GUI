@@ -267,7 +267,7 @@ def read_report(zip_path):
         row['cfw_version'] = "Unknown"
     ## Likewise ArkOS's and dArkOS's version is its release date (05102026), from the boot
     ## splash since device_info.txt 0.2.5. Older ones fell back to Ubuntu's or Debian's.
-    if row['cfw'].lower() in ("arkos", "darkos") and not re.match(r"\d{8}(-\d+)?$", row['cfw_version']):
+    if row['cfw'].lower() in ("arkos", "darkos", "darkosre") and not re.match(r"\d{8}(-\d+)?$", row['cfw_version']):
         row['cfw_version'] = "Unknown"
     row['released'] = knulli_date or release_date(row['cfw'], row['cfw_version'], os_release)
     row['report'] = zip_path.name
@@ -322,7 +322,7 @@ def device_key(row):
 
 ## CFWs whose versions are dates (ROCKNIX 20261010, ArkOS 02012025-3, AmberELEC
 ## prerelease-20261003_1121): too many to list one by one, so they're grouped by month.
-DATE_VERSIONED = ("arkos", "darkos", "rocknix", "jelos", "amberelec")
+DATE_VERSIONED = ("arkos", "darkos", "darkosre", "rocknix", "jelos", "amberelec")
 
 
 def version_group(row):
