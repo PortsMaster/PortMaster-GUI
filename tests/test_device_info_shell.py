@@ -89,7 +89,15 @@ def test_knulli_version_files(shell, tmp_path):
     assert run_version_block(command, tmp_path, "knulli") == "41"
 
     (tmp_path / "etc").mkdir()
-    (tmp_path / "etc" / "knulli.version").write_text("scarab\r\n")
+    (tmp_path / "etc" / "os-release").write_text(KNULLI_OS_RELEASE.format("42"))
+    assert run_version_block(command, tmp_path, "knulli") == "42"
+
+    (tmp_path / "etc" / "knulli.version").write_text("gladiator\r\n")
+    assert run_version_block(command, tmp_path, "knulli") == "gladiator"
+
+    ## Where knulli keeps it (TrimUI Brick Pro): its own name, not Batocera's 42.
+    (tmp_path / "usr" / "share" / "knulli").mkdir(parents=True)
+    (tmp_path / "usr" / "share" / "knulli" / "knulli.version").write_text("scarab 2026/08/19 16:06\n")
     assert run_version_block(command, tmp_path, "knulli") == "scarab"
 
 

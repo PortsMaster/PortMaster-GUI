@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.3"
+export DEVICE_INFO_VERSION="0.2.4"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -71,7 +71,7 @@ elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|ark
     elif echo "$PLY_TITLE" | grep -qi "arkos"; then
         export CFW_NAME="ArkOS"
     fi
-elif [ -f "/boot/boot/knulli.board" ] || [ -f "/boot/knulli.board" ] || [ -f "/etc/knulli.version" ] || grep -qi 'knulli' /etc/os-release /usr/lib/os-release 2>/dev/null; then
+elif [ -f "/usr/share/knulli/knulli.version" ] || [ -f "/boot/boot/knulli.board" ] || [ -f "/boot/knulli.board" ] || [ -f "/etc/knulli.version" ] || grep -qi 'knulli' /etc/os-release /usr/lib/os-release 2>/dev/null; then
     export CFW_NAME="knulli"
 elif [ -f "/etc/retrooz_version" ]; then
     export CFW_NAME="RetroOZ"
@@ -252,8 +252,13 @@ elif [ "$CFW_NAME" = "ROCKNIX" ] || [ "$CFW_NAME" = "JELOS" ]; then
 elif [ "$CFW_NAME" = "muOS" ]; then
     [ -f "/opt/muos/config/system/version" ] && export CFW_VERSION="$(tr -d '\r\n' < /opt/muos/config/system/version 2>/dev/null)"
 elif [ "$CFW_NAME" = "knulli" ] || [ "$CFW_NAME" = "Batocera.linux" ]; then
-    for kver in /etc/knulli.version /boot/knulli.version /userdata/system/knulli.version; do
-        if [ -f "$kver" ]; then export CFW_VERSION="$(tr -d '\r\n' < "$kver" 2>/dev/null)"; break; fi
+    ## knulli's own release name: "scarab 2026/08/19 16:06" on a Brick Pro (scarab is built on Batocera 42).
+    for kver in /usr/share/knulli/knulli.version /etc/knulli.version /boot/knulli.version /userdata/system/knulli.version; do
+        if [ -f "$kver" ]; then
+            val="$(head -n1 "$kver" 2>/dev/null | cut -d' ' -f1 | tr -d '\r\n')"
+            [ -n "$val" ] && export CFW_VERSION="$val"
+            break
+        fi
     done
     ## Otherwise the Batocera release it's built from ("gladiator", "42", "44-dev"). os-release's
     ## VERSION_ID is Buildroot's (2024.11), so the generic lookup below would pick the wrong one.

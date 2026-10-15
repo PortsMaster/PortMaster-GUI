@@ -820,6 +820,10 @@ class Suite:
 
         for name, command in (
                 ("os-release", ["cat", "/etc/os-release"]),
+                ## The CFW's own version files, os-release is often the base system's.
+                ("cfw-version", ["sh", "-c", "for f in /usr/share/knulli/knulli.version /etc/knulli.version /usr/share/batocera/batocera.version "
+                                 "/etc/arkos_version /etc/darkos_version /opt/muos/config/system/version /mnt/SDCARD/spruce/spruce; do "
+                                 '[ -f "$f" ] && echo "$f: $(head -n1 "$f")"; done; true']),
                 ("uname", ["uname", "-a"]),
                 ("mounts", ["cat", "/proc/mounts"]),
                 ("df", ["df", "-h"]),

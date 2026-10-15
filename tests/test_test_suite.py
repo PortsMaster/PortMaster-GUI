@@ -411,7 +411,7 @@ import matrix  # noqa: E402
 import receive  # noqa: E402
 
 
-def make_report(folder, name, info, states, environment=None, os_release=None):
+def make_report(folder, name, info, states, environment=None, os_release=None, cfw_files=None):
     work = folder / ("work-" + name)
     work.mkdir(parents=True)
     (work / "device").mkdir()
@@ -419,6 +419,8 @@ def make_report(folder, name, info, states, environment=None, os_release=None):
         (work / "device" / "environment.txt").write_text(environment)
     if os_release is not None:
         (work / "device" / "os-release.txt").write_text(os_release)
+    if cfw_files is not None:
+        (work / "device" / "cfw-version.txt").write_text(cfw_files)
 
     report_sections = []
     for key, status, summary, details in states:
@@ -523,6 +525,12 @@ def test_matrix_by_cfw_then_version(tmp_path):
 
     page = matrix.render_html(rows)
     assert "builds from 2025-11-28 to 2026-08-19" in page
+
+    ## knulli's own version file beats os-release: the Brick Pro is scarab, on Batocera 42.
+    make_report(tmp_path, "knulli-scarab.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
+                passed, os_release="VERSION=42\nOS_DATE=20260819\n", cfw_files="/usr/share/knulli/knulli.version: scarab 2026/08/19 16:06\n")
+    row = matrix.read_report(tmp_path / "knulli-scarab.zip")
+    assert (row['cfw_version'], row['released']) == ("scarab", "2026-08-19")
 
     rows[0]['portmaster'], rows[1]['portmaster'] = "2026-10-13_0469", "2026-10-15_0569"
     assert ' 3 test builds, <span class="data">2026-10-13_0469</span> to <span class="data">2026-10-15_0569</span>.' in matrix.render_html(rows)

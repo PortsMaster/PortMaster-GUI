@@ -166,6 +166,7 @@ def read_report(zip_path):
             environment = _environment(zf)
             sdl_probe = _small_text(zf, "device/sdl.txt")
             os_release = _small_text(zf, "device/os-release.txt")
+            cfw_files = _small_text(zf, "device/cfw-version.txt")
 
     except (OSError, KeyError, ValueError, zipfile.BadZipFile, UnicodeDecodeError):
         return None
@@ -184,9 +185,16 @@ def read_report(zip_path):
     row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
     row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
     row['sdl'], row['sdl_warned'] = _sdl(info, sdl_probe)
-    ## device_info.txt before 0.2.3 called every knulli without a knulli.version "scarab".
+    ## knulli's own version file ("scarab 2026/08/19 16:06"), in reports since the suite
+    ## collected it. Before that, device_info.txt older than 0.2.3 called every knulli
+    ## "scarab": Batocera's VERSION= is the closest the report has.
+    knulli_file = re.search(r"knulli\.version: (\S+)(?: (\d{4})/(\d\d)/(\d\d))?", cfw_files)
     knulli_version = re.search(r"^VERSION=\"?([^\"\n]+)", os_release, re.M)
-    if row['cfw'].lower() == "knulli" and row['cfw_version'] == "scarab" and knulli_version:
+    knulli_date = ""
+    if row['cfw'].lower() == "knulli" and knulli_file:
+        row['cfw_version'] = _text(knulli_file.group(1), 40)
+        knulli_date = _date(*knulli_file.group(2, 3, 4)) if knulli_file.group(2) else ""
+    elif row['cfw'].lower() == "knulli" and row['cfw_version'] == "scarab" and knulli_version:
         row['cfw_version'] = _text(knulli_version.group(1).strip(), 40)
     ## Before spruce's own version file, device_info.txt fell back to the base system's
     ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
@@ -195,7 +203,7 @@ def read_report(zip_path):
     ## Likewise dArkOS's version is its build date (05102026), older ones fell back to Debian's.
     if row['cfw'].lower() == "darkos" and not re.match(r"\d{8}$", row['cfw_version']):
         row['cfw_version'] = "Unknown"
-    row['released'] = release_date(row['cfw'], row['cfw_version'], os_release)
+    row['released'] = knulli_date or release_date(row['cfw'], row['cfw_version'], os_release)
     row['report'] = zip_path.name
     row['scrubbed'] = data.get('scrubbed') is True
     row['sections'] = {}
