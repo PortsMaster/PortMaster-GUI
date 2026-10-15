@@ -104,3 +104,35 @@ def test_knulli_version_files(shell, tmp_path):
 @pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
 def test_knulli_version_unknown(shell, tmp_path):
     assert run_version_block(shell_or_skip(shell), tmp_path, "knulli") == "Unknown"
+
+
+def run_cfw_blocks(command, root):
+    ## CFW detection and the CFW_VERSION section, absolute paths moved under root.
+    text = (PM_DIR / "device_info.txt").read_text()
+    detect = text[text.index('export CFW_NAME="Unknown"'):text.index('if [ "$CFW_NAME" = "Unknown" ] && ')]
+    version = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
+    script = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt|app|storage)/', lambda m: f"{root}/{m.group(1)}/", detect + version)
+    result = subprocess.run(command + ["-c", script + '\necho "$CFW_NAME|$CFW_VERSION"\n'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    assert result.returncode == 0, result.stdout
+    return result.stdout.strip().splitlines()[-1]
+
+
+@pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
+@pytest.mark.parametrize("title, expected", [
+    ("ArkOS 2.0 (08242025)", "ArkOS|08242025"),
+    ("dArkOS (05102026)", "dArkOS|05102026"),
+    ("dArkOSRE (09022026)", "dArkOSRE|09022026"),       ## mod_dArkOSRE.txt
+    ("ArkOS wuMMLe (08242025)", "ArkOS wuMMLe|08242025"),  ## "mod_ArkOS wuMMLe.txt"
+    ("ArkOS AeUX (08242025)", "ArkOS AeUX|08242025"),
+    ("Welcome to ArkOS", "ArkOS|19.10"),               ## no date: Ubuntu's, as before
+    ("TheRA (12012024)", "TheRA|19.10"),
+    ])
+def test_arkos_name_and_version_from_boot_splash(shell, title, expected, tmp_path):
+    command = shell_or_skip(shell)
+    (tmp_path / "usr" / "share" / "plymouth" / "themes").mkdir(parents=True)
+    (tmp_path / "usr" / "share" / "plymouth" / "themes" / "text.plymouth").write_text(f"[script]\ntitle={title}\r\n")
+    (tmp_path / "etc").mkdir()
+    (tmp_path / "etc" / "os-release").write_text('NAME="Ubuntu"\nVERSION_ID="19.10"\n')
+
+    assert run_cfw_blocks(command, tmp_path) == expected

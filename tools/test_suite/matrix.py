@@ -117,11 +117,12 @@ def release_date(cfw, cfw_version, os_release):
     """When the CFW version was released, "YYYY-MM-DD" (or "YYYY-MM"), "" if nothing says.
 
     From the version where it is a date (ROCKNIX 20260925, AmberELEC prerelease-20261003_1121,
-    dArkOS 05102026, muOS 2601.0_JACARANDA), else the build date in os-release (knulli's
+    dArkOS 05102026 = 10 May, muOS 2601.0_JACARANDA), else the build date in os-release (knulli's
     OS_DATE, BUILD_DATE). spruce and RetroDECK have neither, and sort by version."""
     for match in re.finditer(r"(?<!\d)(\d{8})(?!\d)", cfw_version):
         digits = match.group(1)
-        found = _date(digits[:4], digits[4:6], digits[6:]) or _date(digits[4:], digits[2:4], digits[:2])
+        ## YYYYMMDD, or ArkOS and dArkOS's MMDDYYYY (their tags: v01302026 is 30 January).
+        found = _date(digits[:4], digits[4:6], digits[6:]) or _date(digits[4:], digits[:2], digits[2:4])
         if found:
             return found
 
@@ -264,8 +265,9 @@ def read_report(zip_path):
     ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
     if row['cfw'].lower() == "spruce" and not re.match(r"\d+\.\d+\.\d+", row['cfw_version']):
         row['cfw_version'] = "Unknown"
-    ## Likewise dArkOS's version is its build date (05102026), older ones fell back to Debian's.
-    if row['cfw'].lower() == "darkos" and not re.match(r"\d{8}$", row['cfw_version']):
+    ## Likewise ArkOS's and dArkOS's version is its release date (05102026), from the boot
+    ## splash since device_info.txt 0.2.5. Older ones fell back to Ubuntu's or Debian's.
+    if row['cfw'].lower() in ("arkos", "darkos") and not re.match(r"\d{8}$", row['cfw_version']):
         row['cfw_version'] = "Unknown"
     row['released'] = knulli_date or release_date(row['cfw'], row['cfw_version'], os_release)
     row['report'] = zip_path.name

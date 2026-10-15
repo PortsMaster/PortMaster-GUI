@@ -480,7 +480,9 @@ def test_matrix(tmp_path):
 @pytest.mark.parametrize("cfw, version, os_release, expected", [
     ("ROCKNIX", "20260925", 'BUILD_DATE="Fri Sep 25 09:06:26 UTC 2026"\n', "2026-09-25"),
     ("AmberELEC", "prerelease-20261003_1121", "", "2026-10-03"),
-    ("dArkOS", "05102026", "", "2026-10-05"),
+    ("dArkOS", "05102026", "", "2026-05-10"),
+    ("dArkOS", "01302026", "", "2026-01-30"),
+    ("ArkOS", "08242025", "", "2025-08-24"),
     ("muOS", "2601.0_JACARANDA", "VERSION_ID=2601.0\n", "2026-01"),
     ("muOS", "2410", "", "2024-10"),
     ("knulli", "42", "VERSION=42\nVERSION_ID=2024.11\nOS_DATE=20251128\n", "2025-11-28"),

@@ -44,7 +44,10 @@ from .miyoo import (
 
 HM_PLATFORMS = {
     'arkos':     PlatformArkOS,
+    'arkos wummle': PlatformArkOS,
+    'arkos aeux': PlatformArkOS,
     'darkos':    PlatformdArkOS,
+    'darkosre':  PlatformdArkOS,
     'amberelec': PlatformAmberELEC,
     'emuelec':   PlatformEmuELEC,
     'unofficialos': PlatformUOS,

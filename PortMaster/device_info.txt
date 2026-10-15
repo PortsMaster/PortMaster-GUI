@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.4"
+export DEVICE_INFO_VERSION="0.2.5"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -51,6 +51,7 @@ load_spruce_info() {
 # ------------------------------------------------------------------------------
 export CFW_NAME="Unknown"
 export DEVICE_NAME="Unknown"
+PLY_VERSION=""
 
 if [ -f "/app/bin/retrodeck" ] || [ -f "/app/bin/retrodeck.sh" ] || [ "$FLATPAK_ID" = "net.retrodeck.retrodeck" ]; then
     export CFW_NAME="RetroDECK"
@@ -62,15 +63,29 @@ elif [ -f "/opt/muos/config/system/version" ] || [ -f "/opt/muos/config/version.
     export CFW_NAME="muOS"
 elif [ -d "/mnt/SDCARD/spruce" ]; then
     export CFW_NAME="spruce"
-elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
-    PLY_TITLE="$(grep -i "title=" /usr/share/plymouth/themes/text.plymouth 2>/dev/null)"
-    if echo "$PLY_TITLE" | grep -qi "darkos"; then
-        export CFW_NAME="dArkOS"
-    elif echo "$PLY_TITLE" | grep -qi "thera"; then
-        export CFW_NAME="TheRA"
-    elif echo "$PLY_TITLE" | grep -qi "arkos"; then
-        export CFW_NAME="ArkOS"
-    fi
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera|retrooz)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
+    ## The boot splash title names ArkOS and family, with the version as a date (MMDDYYYY):
+    ## "ArkOS 2.0 (08242025)", "dArkOS (05102026)", "dArkOSRE (...)", plus wuMMLe / AeUX
+    ## builds. The name is the title's first word, as mod_dArkOSRE.txt / "mod_ArkOS wuMMLe.txt" expect.
+    PLY_TITLE="$(grep -a -i -m1 "title=" /usr/share/plymouth/themes/text.plymouth 2>/dev/null | cut -d= -f2- | tr -d '\r')"
+    PLY_LETTERS="$(echo "$PLY_TITLE" | tr -cd 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
+    PLY_VERSION="$(echo "$PLY_TITLE" | sed -n 's/^.*(\([0-9]\{8\}\)[^)]*).*$/\1/p')"
+    case "$PLY_LETTERS" in
+        *thera*)   CFW_NAME="TheRA"; PLY_VERSION="" ;;
+        *retrooz*) CFW_NAME="RetroOZ"; PLY_VERSION="" ;;
+        *arkos*)
+            CFW_NAME="$(echo "$PLY_TITLE" | cut -d' ' -f1)"
+            case "$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')" in
+                *arkos*) ;;
+                *) case "$PLY_LETTERS" in *darkos*) CFW_NAME="dArkOS" ;; *) CFW_NAME="ArkOS" ;; esac ;;
+            esac
+            case "$PLY_LETTERS" in
+                *wummle*) CFW_NAME="$CFW_NAME wuMMLe" ;;
+                *aeux*)   CFW_NAME="$CFW_NAME AeUX" ;;
+            esac
+            ;;
+    esac
+    export CFW_NAME
 elif [ -f "/usr/share/knulli/knulli.version" ] || [ -f "/boot/boot/knulli.board" ] || [ -f "/boot/knulli.board" ] || [ -f "/etc/knulli.version" ] || grep -qi 'knulli' /etc/os-release /usr/lib/os-release 2>/dev/null; then
     export CFW_NAME="knulli"
 elif [ -f "/etc/retrooz_version" ]; then
@@ -280,6 +295,9 @@ elif [ "$CFW_NAME" = "spruce" ]; then
         [ -z "$CFW_VERSION" ] && export CFW_VERSION="Unknown"
     fi
 fi
+
+## ArkOS and family: the date in the boot splash title (Ubuntu's or Debian's version otherwise).
+[ "$CFW_VERSION" = "Unknown" ] && [ -n "$PLY_VERSION" ] && export CFW_VERSION="$PLY_VERSION"
 
 if [ "$CFW_VERSION" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
     OS_FILE="/etc/os-release"; [ ! -f "$OS_FILE" ] && OS_FILE="/usr/lib/os-release"
