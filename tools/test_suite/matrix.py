@@ -150,6 +150,27 @@ def version_key(version):
     return [(0, int(part), "") if part.isdigit() else (1, 0, part.lower()) for part in re.findall(r"\d+|[^\d.\-_]+", version)]
 
 
+## knulli releases by the Batocera release they're built on, and the day each came out
+## (github.com/knulli-cfw/knulli-linux/releases). Builds on that base from before it are
+## its alphas ("alpha 2025/11/28" in a Smart Pro's knulli.version).
+KNULLI_RELEASES = {
+    "42": ("2026-05-11", "scarab"),
+    }
+
+
+def knulli_release(batocera_version, built):
+    """knulli's own name for a report that only has os-release: Batocera's VERSION= and the build date."""
+    if batocera_version in KNULLI_RELEASES:
+        released, name = KNULLI_RELEASES[batocera_version]
+        return name if built and built >= released else "alpha"
+
+    if batocera_version.endswith("-dev"):
+        ## The next release, not out yet.
+        return "dev"
+
+    return _text(batocera_version, 40)
+
+
 def read_report(zip_path):
     """One matrix row from a report zip, or None if it isn't a usable report."""
     zip_path = Path(zip_path)
@@ -194,8 +215,8 @@ def read_report(zip_path):
     if row['cfw'].lower() == "knulli" and knulli_file:
         row['cfw_version'] = _text(knulli_file.group(1), 40)
         knulli_date = _date(*knulli_file.group(2, 3, 4)) if knulli_file.group(2) else ""
-    elif row['cfw'].lower() == "knulli" and row['cfw_version'] == "scarab" and knulli_version:
-        row['cfw_version'] = _text(knulli_version.group(1).strip(), 40)
+    elif row['cfw'].lower() == "knulli" and row['cfw_version'] in ("scarab", "42", "44-dev") and knulli_version:
+        row['cfw_version'] = knulli_release(knulli_version.group(1).strip(), release_date(row['cfw'], "", os_release))
     ## Before spruce's own version file, device_info.txt fell back to the base system's
     ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
     if row['cfw'].lower() == "spruce" and not re.match(r"\d+\.\d+\.\d+", row['cfw_version']):

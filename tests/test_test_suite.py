@@ -493,6 +493,17 @@ def test_matrix_release_date(cfw, version, os_release, expected):
     assert matrix.release_date(cfw, version, os_release) == expected
 
 
+@pytest.mark.parametrize("version, built, expected", [
+    ("42", "2026-08-19", "scarab"),   ## Brick Pro: "scarab 2026/08/19" in knulli.version
+    ("42", "2026-05-11", "scarab"),   ## the release itself
+    ("42", "2025-11-28", "alpha"),    ## Smart Pro: "alpha 2025/11/28"
+    ("44-dev", "2026-10-12", "dev"),
+    ("gladiator", "2025-05-06", "gladiator"),
+    ])
+def test_matrix_knulli_release(version, built, expected):
+    assert matrix.knulli_release(version, built) == expected
+
+
 def test_matrix_by_cfw_then_version(tmp_path):
     ## CFW, then its versions newest release first (version number when there's no date,
     ## Unknown last), then devices.
@@ -504,6 +515,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
             ("knulli-old.zip", dict(cfw="knulli", cfw_version="scarab", device="rg-cubexx"), "VERSION=gladiator\nOS_DATE=20250506\n"),
             ("knulli-tsp.zip", dict(cfw="knulli", cfw_version="42", device="trimui-smart-pro"), "VERSION=42\nOS_DATE=20251128\n"),
             ("knulli-brick.zip", dict(cfw="knulli", cfw_version="42", device="trimui-brick-pro"), "VERSION=42\nOS_DATE=20260819\n"),
+            ("knulli-cube.zip", dict(cfw="knulli", cfw_version="42", device="rgcubexx-h"), "VERSION=42\nOS_DATE=20260511\n"),
             ("spruce-new.zip", dict(cfw="spruce", cfw_version="4.5.5", device="Miyoo Flip"), ""),
             ("spruce-old.zip", dict(cfw="spruce", cfw_version="2022.05", device="sun55iw3"), ""),
             ("retrodeck-a.zip", dict(cfw="RetroDECK", cfw_version="0.10.0b", device="Steam Deck"), ""),
@@ -518,13 +530,13 @@ def test_matrix_by_cfw_then_version(tmp_path):
             versions.append((cfw, version))
 
     assert versions == [
-        ("knulli", "42"), ("knulli", "gladiator"),
+        ("knulli", "scarab"), ("knulli", "alpha"), ("knulli", "gladiator"),
         ("RetroDECK", "0.10.10b"), ("RetroDECK", "0.10.0b"),
         ("ROCKNIX", "20261010"), ("ROCKNIX", "20250517"),
         ("spruce", "4.5.5"), ("spruce", "Unknown")]
 
     page = matrix.render_html(rows)
-    assert "builds from 2025-11-28 to 2026-08-19" in page
+    assert "builds from 2026-05-11 to 2026-08-19" in page
 
     ## knulli's own version file beats os-release: the Brick Pro is scarab, on Batocera 42.
     make_report(tmp_path, "knulli-scarab.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
@@ -534,7 +546,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
 
     rows[0]['portmaster'], rows[1]['portmaster'] = "2026-10-13_0469", "2026-10-15_0569"
     assert ' 3 test builds, <span class="data">2026-10-13_0469</span> to <span class="data">2026-10-15_0569</span>.' in matrix.render_html(rows)
-    assert "released 2025-05-06" in page and "scarab" not in page
+    assert "released 2025-05-06" in page and "released 2025-11-28" in page
 
 
 def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
