@@ -125,6 +125,8 @@ def run_cfw_blocks(command, root):
     ("ArkOS 2.0 (01152023-1)", "ArkOS|01152023-1"),
     ("dArkOS (05102026)", "dArkOS|05102026"),
     ("dArkOSRE (09022026)", "dArkOSRE|09022026"),       ## mod_dArkOSRE.txt
+    ("dArkOSen (09302026)", "dArkOS|09302026"),          ## an RG351MP's
+    ("Welcome to dArkOS (09302026)", "dArkOS|09302026"),
     ("ArkOS wuMMLe (08242025)", "ArkOS wuMMLe|08242025"),  ## "mod_ArkOS wuMMLe.txt"
     ("ArkOS AeUX (08242025)", "ArkOS AeUX|08242025"),
     ("Welcome to ArkOS", "ArkOS|19.10"),               ## no date: Ubuntu's, as before

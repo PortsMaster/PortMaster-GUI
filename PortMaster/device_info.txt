@@ -66,7 +66,7 @@ elif [ -d "/mnt/SDCARD/spruce" ]; then
 elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera|retrooz)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
     ## The boot splash title names ArkOS and family, with the version as a date (MMDDYYYY):
     ## "ArkOS 2.0 (02012025)-3", "dArkOS (05102026)", "dArkOSRE (...)", plus wuMMLe / AeUX
-    ## builds. The name is the title's first word, as mod_dArkOSRE.txt / "mod_ArkOS wuMMLe.txt" expect.
+    ## builds, named as mod_dArkOSRE.txt / "mod_ArkOS wuMMLe.txt" expect.
     PLY_TITLE="$(grep -a -i -m1 "title=" /usr/share/plymouth/themes/text.plymouth 2>/dev/null | cut -d= -f2- | tr -d '\r')"
     PLY_LETTERS="$(echo "$PLY_TITLE" | tr -cd 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
     ## The update number can follow the date, inside or after the brackets: "(02012025)-3" is 02012025-3.
@@ -75,10 +75,11 @@ elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|ark
         *thera*)   CFW_NAME="TheRA"; PLY_VERSION="" ;;
         *retrooz*) CFW_NAME="RetroOZ"; PLY_VERSION="" ;;
         *arkos*)
-            CFW_NAME="$(echo "$PLY_TITLE" | cut -d' ' -f1)"
-            case "$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')" in
-                *arkos*) ;;
-                *) case "$PLY_LETTERS" in *darkos*) CFW_NAME="dArkOS" ;; *) CFW_NAME="ArkOS" ;; esac ;;
+            ## One of the names the mod_*.txt files know: titles say more ("dArkOSen" on an RG351MP).
+            case "$(echo "$PLY_TITLE" | cut -d' ' -f1 | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')" in
+                darkosre*) CFW_NAME="dArkOSRE" ;;
+                *darkos*)  CFW_NAME="dArkOS" ;;
+                *)         case "$PLY_LETTERS" in *darkos*) CFW_NAME="dArkOS" ;; *) CFW_NAME="ArkOS" ;; esac ;;
             esac
             case "$PLY_LETTERS" in
                 *wummle*) CFW_NAME="$CFW_NAME wuMMLe" ;;
