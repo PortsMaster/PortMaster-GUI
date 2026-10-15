@@ -247,6 +247,15 @@ def test_detection_matches_harbourmaster(tmp_path, cfw):
     assert installer.path(controlfolder).resolve() == installer.path(tools_dir).resolve()
 
 
+@pytest.mark.parametrize("cfw", sorted(CFWS))
+def test_detection_changes_nothing(tmp_path, cfw):
+    installer = Installer(tmp_path, cfw)
+    before = sorted(installer.root.rglob("*"))
+    installer.detect()
+
+    assert sorted(installer.root.rglob("*")) == before
+
+
 ################################################################################
 ## Installing.
 @pytest.fixture

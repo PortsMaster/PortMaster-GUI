@@ -125,7 +125,6 @@ elif [ -d "$R/userdata/roms/ports" ]; then
   ## Only a default: knulli's os-release says OS_NAME="knulli" (and so gets knulli/control.txt).
   OS_NAME="batocera"
   BATOCERA_LIKE="Y"
-  mkdir -pv "$R$controlfolder/PortMaster"
 
 elif [ -d "$R/opt/muos" ] || [ -d "$R/mnt/mmc/MUOS" ]; then
   ## muOS: found, but not installed to, see below.
