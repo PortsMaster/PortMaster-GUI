@@ -105,6 +105,51 @@ def _sdl(info, probe_output):
     return "broken", True
 
 
+def _date(year, month, day=None):
+    try:
+        return datetime.date(int(year), int(month), int(day or 1)).isoformat()[:10 if day else 7]
+
+    except ValueError:
+        return ""
+
+
+def release_date(cfw, cfw_version, os_release):
+    """When the CFW version was released, "YYYY-MM-DD" (or "YYYY-MM"), "" if nothing says.
+
+    From the version where it is a date (ROCKNIX 20260925, AmberELEC prerelease-20261003_1121,
+    dArkOS 05102026, muOS 2601.0_JACARANDA), else the build date in os-release (knulli's
+    OS_DATE, BUILD_DATE). spruce and RetroDECK have neither, and sort by version."""
+    for match in re.finditer(r"(?<!\d)(\d{8})(?!\d)", cfw_version):
+        digits = match.group(1)
+        found = _date(digits[:4], digits[4:6], digits[6:]) or _date(digits[4:], digits[2:4], digits[:2])
+        if found:
+            return found
+
+    match = re.match(r"(\d\d)(\d\d)(?:\.\d+)?(?:_|$)", cfw_version)
+    if cfw.lower() == "muos" and match:
+        found = _date(f"20{match.group(1)}", match.group(2))
+        if found:
+            return found
+
+    values = dict(line.split("=", 1) for line in os_release.splitlines() if "=" in line)
+    os_date = values.get("OS_DATE", "").strip('"\\ ')
+    if re.match(r"\d{8}$", os_date):
+        found = _date(os_date[:4], os_date[4:6], os_date[6:])
+        if found:
+            return found
+
+    try:
+        return datetime.datetime.strptime(" ".join(values.get("BUILD_DATE", "").strip('"\\ ').split()), "%a %b %d %H:%M:%S %Z %Y").date().isoformat()
+
+    except ValueError:
+        return ""
+
+
+def version_key(version):
+    """Natural order: 4.5.10 after 4.5.9."""
+    return [(0, int(part), "") if part.isdigit() else (1, 0, part.lower()) for part in re.findall(r"\d+|[^\d.\-_]+", version)]
+
+
 def read_report(zip_path):
     """One matrix row from a report zip, or None if it isn't a usable report."""
     zip_path = Path(zip_path)
@@ -120,6 +165,7 @@ def read_report(zip_path):
             data = json.loads(zf.read(member).decode("utf-8"))
             environment = _environment(zf)
             sdl_probe = _small_text(zf, "device/sdl.txt")
+            os_release = _small_text(zf, "device/os-release.txt")
 
     except (OSError, KeyError, ValueError, zipfile.BadZipFile, UnicodeDecodeError):
         return None
@@ -138,6 +184,18 @@ def read_report(zip_path):
     row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
     row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
     row['sdl'], row['sdl_warned'] = _sdl(info, sdl_probe)
+    ## device_info.txt before 0.2.3 called every knulli without a knulli.version "scarab".
+    knulli_version = re.search(r"^VERSION=\"?([^\"\n]+)", os_release, re.M)
+    if row['cfw'].lower() == "knulli" and row['cfw_version'] == "scarab" and knulli_version:
+        row['cfw_version'] = _text(knulli_version.group(1).strip(), 40)
+    ## Before spruce's own version file, device_info.txt fell back to the base system's
+    ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
+    if row['cfw'].lower() == "spruce" and not re.match(r"\d+\.\d+\.\d+", row['cfw_version']):
+        row['cfw_version'] = "Unknown"
+    ## Likewise dArkOS's version is its build date (05102026), older ones fell back to Debian's.
+    if row['cfw'].lower() == "darkos" and not re.match(r"\d{8}$", row['cfw_version']):
+        row['cfw_version'] = "Unknown"
+    row['released'] = release_date(row['cfw'], row['cfw_version'], os_release)
     row['report'] = zip_path.name
     row['scrubbed'] = data.get('scrubbed') is True
     row['sections'] = {}
@@ -181,13 +239,37 @@ def device_key(row):
     return " ".join(part for part in (row['device'], row['platform'], row['display'], row['ram_mb']) if part)
 
 
+def version_dates(groups):
+    """{(cfw, cfw_version): sorted release dates of its devices' newest runs}: one version
+    name can be several builds (knulli 42)."""
+    dates = {}
+    for (cfw, cfw_version, _), runs in groups.items():
+        dates.setdefault((cfw, cfw_version), set())
+        if runs[0].get('released'):
+            dates[(cfw, cfw_version)].add(runs[0]['released'])
+
+    return {key: sorted(found) for key, found in dates.items()}
+
+
 def group_rows(rows):
-    """{(cfw, cfw_version, device key): [rows, newest first]}, sorted by CFW then device."""
+    """{(cfw, cfw_version, device key): [rows, newest first]}: by CFW, its newest version first,
+    then device. Versions go by release date, those without one after by version number, and
+    an Unknown version last."""
     groups = {}
     for row in rows:
         groups.setdefault((row['cfw'], row['cfw_version'], device_key(row)), []).append(row)
 
-    return dict(sorted(groups.items(), key=lambda item: tuple(part.lower() for part in item[0])))
+    released = version_dates(groups)
+
+    def newest_first(item):
+        cfw, cfw_version, _ = item[0]
+        dates = released[(cfw, cfw_version)]
+        return (cfw_version not in ("", "Unknown"), dates[-1] if dates else "", version_key(cfw_version))
+
+    ordered = sorted(groups.items(), key=lambda item: item[0][2].lower())
+    ordered.sort(key=newest_first, reverse=True)
+    ordered.sort(key=lambda item: item[0][0].lower())
+    return dict(ordered)
 
 
 def failure_index(rows):
@@ -244,7 +326,10 @@ table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
 th, td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
 thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; white-space: nowrap; }
 tbody tr:last-child td { border-bottom: 0; }
-tr.cfw th { background: var(--bg); font-family: var(--font-display); font-size: 0.95rem; color: var(--accent); }
+tr.cfw th { background: var(--bg); font-family: var(--font-display); font-size: 1.05rem; color: var(--accent); padding-top: 14px; }
+tr.version th { font-family: var(--font-data); font-size: 0.82rem; font-weight: 600; padding-left: 18px; }
+tr.version .muted { font-family: var(--font-body); font-weight: 400; margin-left: 8px; }
+th.device { padding-left: 32px; }
 .data { font-family: var(--font-data); font-size: 0.8rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .muted { color: var(--muted); }
 .chip { display: inline-block; min-width: 3.4em; text-align: center; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
@@ -326,23 +411,32 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
 
     ## Coverage
     add('<section aria-labelledby="coverage"><h2 id="coverage">Coverage</h2>')
-    add('<p class="lede">One row per CFW version and device, from its newest report. GUI shows whether those tests ran on the real screen or headless.</p>')
-    add('<div class="scroll"><table><thead><tr><th>Device</th><th>Version</th><th>Python</th><th>SDL</th>')
+    add('<p class="lede">Each CFW, its versions newest release first, then one row per device from its newest report. '
+        'GUI shows whether those tests ran on the real screen or headless.</p>')
+    add('<div class="scroll"><table><thead><tr><th>Device</th><th>Python</th><th>SDL</th>')
     add("".join(f"<th>{_e(name)}</th>" for _, name in SECTIONS))
     add("<th>GUI ran</th><th>Build</th><th>Runs</th></tr></thead><tbody>")
 
-    current_cfw = None
+    columns = len(SECTIONS) + 6
+    released = version_dates(groups)
+    current_cfw = current_version = None
     for (cfw, cfw_version, _), runs in groups.items():
-        if cfw != current_cfw:
-            current_cfw = cfw
-            add(f'<tr class="cfw"><th colspan="{len(SECTIONS) + 7}" scope="colgroup">{_e(cfw or "Unknown CFW")}</th></tr>')
-
         row = runs[0]
-        version = _e(cfw_version)
-        if row['os'] and row['os'].lower() not in (cfw_version.lower(), f"{cfw} {cfw_version}".lower()):
-            version += f'<br><span class="muted">{_e(row["os"])}</span>'
+        if cfw != current_cfw:
+            current_cfw, current_version = cfw, None
+            add(f'<tr class="cfw"><th colspan="{columns}" scope="colgroup">{_e(cfw or "Unknown CFW")}</th></tr>')
 
-        add(f'<tr><th scope="row">{_e(_device_name(row))}<br><span class="muted data">{_e(_hardware(row))}</span></th><td>{version}</td>')
+        if cfw_version != current_version:
+            current_version = cfw_version
+            dates = released[(cfw, cfw_version)]
+            notes = [f"released {dates[0]}" if len(dates) == 1 else f"builds from {dates[0]} to {dates[-1]}" if dates else ""]
+            if row['os'] and row['os'].lower() not in (cfw_version.lower(), f"{cfw} {cfw_version}".lower()):
+                notes.append(row['os'])
+            note = " · ".join(_e(part) for part in notes if part)
+            add(f'<tr class="version"><th colspan="{columns}" scope="colgroup">{_e(cfw_version or "Unknown version")}'
+                f'{f" <span class=muted>{note}</span>" if note else ""}</th></tr>')
+
+        add(f'<tr><th scope="row" class="device">{_e(_device_name(row))}<br><span class="muted data">{_e(_hardware(row))}</span></th>')
         sdl_note = '<br><span class="muted">warning</span>' if row['sdl_warned'] and row['sdl'] != "broken" else ""
         add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"])}{sdl_note}</td>')
         for key, _ in SECTIONS:

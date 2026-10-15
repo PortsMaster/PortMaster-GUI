@@ -411,12 +411,14 @@ import matrix  # noqa: E402
 import receive  # noqa: E402
 
 
-def make_report(folder, name, info, states, environment=None):
+def make_report(folder, name, info, states, environment=None, os_release=None):
     work = folder / ("work-" + name)
     work.mkdir(parents=True)
+    (work / "device").mkdir()
     if environment is not None:
-        (work / "device").mkdir()
         (work / "device" / "environment.txt").write_text(environment)
+    if os_release is not None:
+        (work / "device" / "os-release.txt").write_text(os_release)
 
     report_sections = []
     for key, status, summary, details in states:
@@ -470,6 +472,57 @@ def test_matrix(tmp_path):
     assert matrix.main([str(reports), "--out", str(tmp_path / "out")]) == 0
     assert len(json.loads((tmp_path / "out" / "matrix.json").read_text())) == 3
     assert (tmp_path / "out" / "matrix.html").is_file()
+
+
+@pytest.mark.parametrize("cfw, version, os_release, expected", [
+    ("ROCKNIX", "20260925", 'BUILD_DATE="Fri Sep 25 09:06:26 UTC 2026"\n', "2026-09-25"),
+    ("AmberELEC", "prerelease-20261003_1121", "", "2026-10-03"),
+    ("dArkOS", "05102026", "", "2026-10-05"),
+    ("muOS", "2601.0_JACARANDA", "VERSION_ID=2601.0\n", "2026-01"),
+    ("muOS", "2410", "", "2024-10"),
+    ("knulli", "42", "VERSION=42\nVERSION_ID=2024.11\nOS_DATE=20251128\n", "2025-11-28"),
+    ("AmberELEC", "2021.01", 'BUILD_DATE="Sat Oct  3 11:36:04 UTC 2026"\n', "2026-10-03"),
+    ("spruce", "4.5.5", "VERSION_ID=2021.11\n", ""),
+    ("spruce", "2021.11", "", ""),
+    ("RetroDECK", "0.10.0b", 'VERSION_ID="6.10"\n', ""),
+    ])
+def test_matrix_release_date(cfw, version, os_release, expected):
+    assert matrix.release_date(cfw, version, os_release) == expected
+
+
+def test_matrix_by_cfw_then_version(tmp_path):
+    ## CFW, then its versions newest release first (version number when there's no date,
+    ## Unknown last), then devices.
+    base = {'arch': "aarch64", 'python': "3.11.8", 'sdl': "SDL 2 28 5", 'portmaster': "2026-10-15_0369"}
+    passed = [("install", suite.PASS, "installed", "")]
+    for name, info, os_release in (
+            ("rocknix-old.zip", dict(cfw="ROCKNIX", cfw_version="20250517", device="rp5"), ""),
+            ("rocknix-new.zip", dict(cfw="ROCKNIX", cfw_version="20261010", device="rp5"), ""),
+            ("knulli-old.zip", dict(cfw="knulli", cfw_version="scarab", device="rg-cubexx"), "VERSION=gladiator\nOS_DATE=20250506\n"),
+            ("knulli-tsp.zip", dict(cfw="knulli", cfw_version="42", device="trimui-smart-pro"), "VERSION=42\nOS_DATE=20251128\n"),
+            ("knulli-brick.zip", dict(cfw="knulli", cfw_version="42", device="trimui-brick-pro"), "VERSION=42\nOS_DATE=20260819\n"),
+            ("spruce-new.zip", dict(cfw="spruce", cfw_version="4.5.5", device="Miyoo Flip"), ""),
+            ("spruce-old.zip", dict(cfw="spruce", cfw_version="2022.05", device="sun55iw3"), ""),
+            ("retrodeck-a.zip", dict(cfw="RetroDECK", cfw_version="0.10.0b", device="Steam Deck"), ""),
+            ("retrodeck-b.zip", dict(cfw="RetroDECK", cfw_version="0.10.10b", device="Steam Deck"), ""),
+            ):
+        make_report(tmp_path, name, dict(base, started="2026-10-15T01:00:00", **info), passed, os_release=os_release)
+
+    rows = matrix.read_reports(tmp_path)
+    versions = []
+    for cfw, version, _ in matrix.group_rows(rows):
+        if (cfw, version) not in versions:
+            versions.append((cfw, version))
+
+    assert versions == [
+        ("knulli", "42"), ("knulli", "gladiator"),
+        ("RetroDECK", "0.10.10b"), ("RetroDECK", "0.10.0b"),
+        ("ROCKNIX", "20261010"), ("ROCKNIX", "20250517"),
+        ("spruce", "4.5.5"), ("spruce", "Unknown")]
+
+    page = matrix.render_html(rows)
+    assert "builds from 2025-11-28 to 2026-08-19" in page
+    assert "released 2025-05-06" in page and "scarab" not in page
 
 
 def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
