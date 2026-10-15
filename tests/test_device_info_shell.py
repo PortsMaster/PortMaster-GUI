@@ -130,7 +130,11 @@ def run_cfw_blocks(command, root):
     ("ArkOS wuMMLe (08242025)", "ArkOS wuMMLe|08242025"),  ## "mod_ArkOS wuMMLe.txt"
     ("ArkOS AeUX (08242025)", "ArkOS AeUX|08242025"),
     ("Welcome to ArkOS", "ArkOS|19.10"),               ## no date: Ubuntu's, as before
-    ("TheRA (12012024)", "TheRA|19.10"),
+    ## From the old PortMaster hardware_info collection:
+    ("ArkOS 2.0 (05242024)(AeUX)", "ArkOS AeUX|05242024"),
+    ("ArkOS 351P/M wuMMLe (11052023)", "ArkOS wuMMLe|11052023"),
+    (" *TheRA RC 1*", "TheRA|RC 1"),
+    ("The R.A RC 1", "TheRA|RC 1"),
     ])
 def test_arkos_name_and_version_from_boot_splash(shell, title, expected, tmp_path):
     command = shell_or_skip(shell)
@@ -140,3 +144,26 @@ def test_arkos_name_and_version_from_boot_splash(shell, title, expected, tmp_pat
     (tmp_path / "etc" / "os-release").write_text('NAME="Ubuntu"\nVERSION_ID="19.10"\n')
 
     assert run_cfw_blocks(command, tmp_path) == expected
+
+
+@pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
+@pytest.mark.parametrize("os_release, expected", [
+    ## UnofficialOS names itself only in OS_NAME / OS_VERSION.
+    ('OS_NAME="UnofficialOS"\nOS_VERSION="20230427"\nBUILD_ID="ed8922fe"\n', "UnofficialOS|20230427"),
+    ## AmberELEC's own VERSION, not CoreELEC's VERSION_ID.
+    ('NAME="AmberELEC"\nVERSION="20211122"\nID="coreelec"\nVERSION_ID="2021.01"\n', "AmberELEC|20211122"),
+    ('NAME="AmberELEC"\nVERSION="prerelease-20261003_1121"\nVERSION_ID=""\n', "AmberELEC|prerelease-20261003_1121"),
+    ('NAME="EmuELEC"\nVERSION="4.7"\nVERSION_ID="4.7"\n', "EmuELEC|4.7"),
+    ])
+def test_name_and_version_from_os_release(shell, os_release, expected, tmp_path):
+    command = shell_or_skip(shell)
+    (tmp_path / "etc").mkdir()
+    (tmp_path / "etc" / "os-release").write_text(os_release)
+
+    text = (PM_DIR / "device_info.txt").read_text()
+    detect = text[text.index('export CFW_NAME="Unknown"'):text.index("for dfile in")]
+    version = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
+    script = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt|app|storage)/', lambda m: f"{tmp_path}/{m.group(1)}/", detect + version)
+    result = subprocess.run(command + ["-c", script + '\necho "$CFW_NAME|$CFW_VERSION"\n'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    assert result.stdout.strip().splitlines()[-1] == expected

@@ -261,6 +261,11 @@ def read_report(zip_path):
     if row['cfw'].lower() == "muos":
         row['cfw_version'] = _text(muos_release(row['cfw_version'], row['os']), 40)
 
+    ## AmberELEC's own VERSION (20211122) where older device_info.txt took CoreELEC's VERSION_ID (2021.01).
+    amber_version = re.search(r'^VERSION="?([^"\n]+)', os_release, re.M)
+    if row['cfw'].lower() == "amberelec" and amber_version:
+        row['cfw_version'] = _text(amber_version.group(1).strip(), 60)
+
     ## Before spruce's own version file, device_info.txt fell back to the base system's
     ## (Buildroot 2021.11, Debian 13): not spruce's, the os column still shows it.
     if row['cfw'].lower() == "spruce" and not re.match(r"\d+\.\d+\.\d+", row['cfw_version']):

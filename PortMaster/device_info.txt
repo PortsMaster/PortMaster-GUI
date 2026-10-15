@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.5"
+export DEVICE_INFO_VERSION="0.2.6"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -63,7 +63,7 @@ elif [ -f "/opt/muos/config/system/version" ] || [ -f "/opt/muos/config/version.
     export CFW_NAME="muOS"
 elif [ -d "/mnt/SDCARD/spruce" ]; then
     export CFW_NAME="spruce"
-elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera|retrooz)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera|the r\.a|retrooz)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
     ## The boot splash title names ArkOS and family, with the version as a date (MMDDYYYY):
     ## "ArkOS 2.0 (02012025)-3", "dArkOS (05102026)", "dArkOSRE (...)", plus wuMMLe / AeUX
     ## builds, named as mod_dArkOSRE.txt / "mod_ArkOS wuMMLe.txt" expect.
@@ -72,7 +72,9 @@ elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|ark
     ## The update number can follow the date, inside or after the brackets: "(02012025)-3" is 02012025-3.
     PLY_VERSION="$(echo "$PLY_TITLE" | sed -n 's/^.*(\([0-9]\{8\}\)\(-[0-9][0-9]*\)\{0,1\}[^)]*)\(-[0-9][0-9]*\)\{0,1\}.*$/\1\2\3/p')"
     case "$PLY_LETTERS" in
-        *thera*)   CFW_NAME="TheRA"; PLY_VERSION="" ;;
+        ## " *TheRA RC 1*", "The R.A RC 1": the rest of the title is its version.
+        *thera*)   CFW_NAME="TheRA"
+                   PLY_VERSION="$(echo "$PLY_TITLE" | tr -d '*' | sed -e 's/[Tt][Hh][Ee] *[Rr]\.*[Aa]//' -e 's/^ *//' -e 's/ *$//')" ;;
         *retrooz*) CFW_NAME="RetroOZ"; PLY_VERSION="" ;;
         *arkos*)
             ## One of the names the mod_*.txt files know: titles say more ("dArkOSen" on an RG351MP).
@@ -104,7 +106,11 @@ fi
 
 if [ "$CFW_NAME" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
     OS_FILE="/etc/os-release"; [ ! -f "$OS_FILE" ] && OS_FILE="/usr/lib/os-release"
-    CFW_NAME="$(grep -E '^(NAME|ID)=' "$OS_FILE" | head -n1 | cut -d= -f2 | tr -d '"\r')"
+    ## OS_NAME is the distribution's own (UnofficialOS, JELOS) where NAME is the base's or missing.
+    for key in OS_NAME NAME ID; do
+        val="$(grep -E "^${key}=" "$OS_FILE" | head -n1 | cut -d= -f2 | tr -d '"\r')"
+        if [ -n "$val" ]; then CFW_NAME="$val"; break; fi
+    done
 fi
 
 for dfile in \
@@ -266,6 +272,11 @@ elif [ "$CFW_NAME" = "ROCKNIX" ] || [ "$CFW_NAME" = "JELOS" ]; then
             export CFW_VERSION="$(tr -d '\r\n' < /etc/jelos-release 2>/dev/null)"
         fi
     fi
+elif [ "$CFW_NAME" = "AmberELEC" ]; then
+    ## Its own VERSION (20211122, prerelease-20261003_1121): VERSION_ID is CoreELEC's (2021.01).
+    OS_F="/etc/os-release"; [ ! -f "$OS_F" ] && OS_F="/usr/lib/os-release"
+    val="$(grep -E '^VERSION=' "$OS_F" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\r ')"
+    [ -n "$val" ] && export CFW_VERSION="$val"
 elif [ "$CFW_NAME" = "muOS" ]; then
     [ -f "/opt/muos/config/system/version" ] && export CFW_VERSION="$(tr -d '\r\n' < /opt/muos/config/system/version 2>/dev/null)"
 elif [ "$CFW_NAME" = "knulli" ] || [ "$CFW_NAME" = "Batocera.linux" ]; then
@@ -303,7 +314,7 @@ fi
 
 if [ "$CFW_VERSION" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
     OS_FILE="/etc/os-release"; [ ! -f "$OS_FILE" ] && OS_FILE="/usr/lib/os-release"
-    for key in VERSION_ID VERSION LIBREELEC_VERSION BUILD_ID; do
+    for key in OS_VERSION VERSION_ID VERSION LIBREELEC_VERSION BUILD_ID; do
         val="$(grep -iE "^${key}=" "$OS_FILE" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\r ')"
         if [ -n "$val" ]; then export CFW_VERSION="$val"; break; fi
     done

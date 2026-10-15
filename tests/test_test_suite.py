@@ -486,7 +486,7 @@ def test_matrix(tmp_path):
     ("muOS", "2601.0_JACARANDA", "VERSION_ID=2601.0\n", "2026-01"),
     ("muOS", "2410", "", "2024-10"),
     ("knulli", "42", "VERSION=42\nVERSION_ID=2024.11\nOS_DATE=20251128\n", "2025-11-28"),
-    ("AmberELEC", "2021.01", 'BUILD_DATE="Sat Oct  3 11:36:04 UTC 2026"\n', "2026-10-03"),
+    ("AmberELEC", "20211122", 'BUILD_DATE="Sat Oct  3 11:36:04 UTC 2026"\n', "2021-11-22"),
     ("spruce", "4.5.5", "VERSION_ID=2021.11\n", ""),
     ("spruce", "2021.11", "", ""),
     ("RetroDECK", "0.10.0b", 'VERSION_ID="6.10"\n', ""),
