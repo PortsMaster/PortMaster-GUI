@@ -320,7 +320,7 @@ def test_trimui(launcher):
     assert calls[-1] == "image_smash.txt "
 
 
-def test_spruce_runs_once_with_one_autoinstall_dir(launcher):
+def test_spruce_runs_once_after_autoinstall(launcher):
     (launcher.root / "reboot-once").touch()
     (launcher.pm / "autoinstall").mkdir()
     (launcher.pm / "autoinstall" / "port.zip").write_bytes(b"zip")
@@ -328,7 +328,7 @@ def test_spruce_runs_once_with_one_autoinstall_dir(launcher):
     ## (On a real spruce device its python3 exists, keep the test off it.)
     calls = launcher.run("spruce", PM_PYTHON=str(launcher.root / "no-python"))
 
-    assert f"PortMasterDialog autoinstall {launcher.pm / 'autoinstall'}" in calls
+    assert f"PortMasterDialog autoinstall {launcher.pm / 'autoinstall'} {launcher.ports_dir / 'autoinstall'}" in calls
     assert calls.count("pugwash ") == 1
 
 
