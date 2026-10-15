@@ -55,15 +55,23 @@ def test_device_info_same_in_busybox(tmp_path):
     assert "/" not in bash[0]
 
 
+def run_fragment(command, script, root):
+    """Run part of device_info.txt: in root, with nothing from this process's environment
+    (in RetroDECK's Flatpak FLATPAK_ID makes it RetroDECK), stdout only (bash warns on stderr
+    when pytest has already removed the folder it was started in)."""
+    result = subprocess.run(command + ["-c", script], cwd=str(root), env={'PATH': "/usr/bin:/bin:/usr/sbin:/sbin"},
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    assert result.returncode == 0, result.stderr
+    return result.stdout.strip().splitlines()[-1]
+
+
 def run_version_block(command, root, cfw_name):
     ## Just the CFW_VERSION section, with its absolute paths moved under root.
     text = (PM_DIR / "device_info.txt").read_text()
     block = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
     block = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt)/', lambda m: f"{root}/{m.group(1)}/", block)
     script = f'CFW_NAME="{cfw_name}"\n{block}\necho "$CFW_VERSION"\n'
-    result = subprocess.run(command + ["-c", script], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    assert result.returncode == 0, result.stdout
-    return result.stdout.strip()
+    return run_fragment(command, script, root)
 
 
 KNULLI_OS_RELEASE = 'NAME=Batocera.linux\nPRETTY_NAME=\\"Batocera.linux {0}\\"\nVERSION={0}\nID=buildroot\nVERSION_ID=2024.11\nOS_NAME="knulli"\n'
@@ -112,10 +120,7 @@ def run_cfw_blocks(command, root):
     detect = text[text.index('export CFW_NAME="Unknown"'):text.index('if [ "$CFW_NAME" = "Unknown" ] && ')]
     version = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
     script = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt|app|storage)/', lambda m: f"{root}/{m.group(1)}/", detect + version)
-    result = subprocess.run(command + ["-c", script + '\necho "$CFW_NAME|$CFW_VERSION"\n'],
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    assert result.returncode == 0, result.stdout
-    return result.stdout.strip().splitlines()[-1]
+    return run_fragment(command, script + '\necho "$CFW_NAME|$CFW_VERSION"\n', root)
 
 
 @pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
@@ -164,6 +169,4 @@ def test_name_and_version_from_os_release(shell, os_release, expected, tmp_path)
     detect = text[text.index('export CFW_NAME="Unknown"'):text.index("for dfile in")]
     version = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
     script = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt|app|storage)/', lambda m: f"{tmp_path}/{m.group(1)}/", detect + version)
-    result = subprocess.run(command + ["-c", script + '\necho "$CFW_NAME|$CFW_VERSION"\n'],
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    assert result.stdout.strip().splitlines()[-1] == expected
+    assert run_fragment(command, script + '\necho "$CFW_NAME|$CFW_VERSION"\n', tmp_path) == expected
