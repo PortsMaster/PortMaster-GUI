@@ -197,6 +197,7 @@ def read_report(zip_path):
 
     info = data['info']
     row = {key: _text(info.get(key)) for key in INFO_KEYS}
+    reported_version = row['cfw_version']
     row['video_drivers'] = [_text(driver, 40) for driver in info.get('video_drivers', []) if isinstance(driver, str)][:20]
     ## Telling devices apart: DEVICE_NAME is just the SoC on some (sun50iw10: TrimUI Brick
     ## and MagicX Zero28). Reports from before the suite recorded these: environment.txt.
@@ -246,6 +247,13 @@ def read_report(zip_path):
         if section.get('status') == "fail":
             failures = _failures(details) or [("", summary)]
             row['failures'].extend({'section': key, 'test': test, 'message': message[:300]} for test, message in failures)
+
+    ## The device line says what the device reported ("knulli 42 on trimui-brick-pro"):
+    ## the version corrected above instead.
+    device = row['sections'].get('device')
+    reported = f"{row['cfw']} {reported_version} "
+    if device and row['cfw_version'] != reported_version and device['summary'].startswith(reported):
+        device['summary'] = f"{row['cfw']} {row['cfw_version']} (reported as {reported_version}) " + device['summary'][len(reported):]
 
     row['gui_how'] = _gui_how(row['sections'].get('gui', {}).get('summary', ""))
     row['ok'] = not any(section['status'] == "fail" for section in row['sections'].values())

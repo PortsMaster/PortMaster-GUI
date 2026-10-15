@@ -509,6 +509,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
     ## Unknown last), then devices.
     base = {'arch': "aarch64", 'python': "3.11.8", 'sdl': "SDL 2 28 5", 'portmaster': "2026-10-15_0369"}
     passed = [("install", suite.PASS, "installed", "")]
+    passed_with_device = passed + [("device", suite.INFO, "knulli 42 on trimui-brick-pro (aarch64), Python 3.12.8", "")]
     for name, info, os_release in (
             ("rocknix-old.zip", dict(cfw="ROCKNIX", cfw_version="20250517", device="rp5"), ""),
             ("rocknix-new.zip", dict(cfw="ROCKNIX", cfw_version="20261010", device="rp5"), ""),
@@ -543,6 +544,12 @@ def test_matrix_by_cfw_then_version(tmp_path):
                 passed, os_release="VERSION=42\nOS_DATE=20260819\n", cfw_files="/usr/share/knulli/knulli.version: scarab 2026/08/19 16:06\n")
     row = matrix.read_report(tmp_path / "knulli-scarab.zip")
     assert (row['cfw_version'], row['released']) == ("scarab", "2026-08-19")
+
+    ## The device line in "Every run" says the corrected version too.
+    make_report(tmp_path, "knulli-device.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
+                passed_with_device, os_release="VERSION=42\nOS_DATE=20260819\n")
+    row = matrix.read_report(tmp_path / "knulli-device.zip")
+    assert row['sections']['device']['summary'] == "knulli scarab (reported as 42) on trimui-brick-pro (aarch64), Python 3.12.8"
 
     rows[0]['portmaster'], rows[1]['portmaster'] = "2026-10-13_0469", "2026-10-15_0569"
     assert ' 3 test builds, <span class="data">2026-10-13_0469</span> to <span class="data">2026-10-15_0569</span>.' in matrix.render_html(rows)
