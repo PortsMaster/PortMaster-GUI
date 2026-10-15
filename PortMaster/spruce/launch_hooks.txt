@@ -26,12 +26,10 @@ pm_hook_env() {
 }
 
 ## PortMaster's folder (Persistent/portmaster) is hidden away, so Roms/ports/autoinstall
-## too, where people look for it. Only if it's there: it isn't made, it would show up
-## in the ports list.
+## too, where people look for it. spruce's games list doesn't show folders or zips there.
 pm_hook_autoinstall_dirs() {
   echo "$controlfolder/autoinstall"
-  [ -d "${directory%/}/ports/autoinstall" ] && echo "${directory%/}/ports/autoinstall"
-  return 0
+  echo "${directory%/}/ports/autoinstall"
 }
 
 pm_hook_pre_launch() {
