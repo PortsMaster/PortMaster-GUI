@@ -510,6 +510,22 @@ def test_matrix_muos_release(version, os_name, expected):
         assert matrix.release_date("muOS", expected, "") == f"20{expected[:2]}-{expected[2:4]}"
 
 
+def test_matrix_groups_date_versions_by_month(tmp_path):
+    ## ArkOS 02012025-3 and 02012025 are separate releases, one heading for February 2025.
+    base = {'arch': "aarch64", 'python': "3.7.5", 'sdl': "SDL 2 26 2", 'portmaster': "2026-10-15_0669", 'cfw': "ArkOS"}
+    passed = [("install", suite.PASS, "installed", "")]
+    make_report(tmp_path, "a.zip", dict(base, cfw_version="02012025-3", device="RG353M", started="2026-10-15T01:00:00"), passed)
+    make_report(tmp_path, "b.zip", dict(base, cfw_version="02012025", device="RG353V", started="2026-10-15T02:00:00"), passed)
+    make_report(tmp_path, "c.zip", dict(base, cfw_version="01152023-1", device="RG351MP", started="2026-10-15T03:00:00"), passed)
+
+    rows = matrix.read_reports(tmp_path)
+    assert [key[1] for key in matrix.group_rows(rows)] == ["2025-02", "2025-02", "2023-01"]
+
+    page = matrix.render_html(rows)
+    assert "2025-02 <span class=muted>02012025-3, 02012025</span>" in page
+    assert "aarch64 · 02012025-3</span>" in page and "aarch64 · 01152023-1</span>" in page
+
+
 @pytest.mark.parametrize("built, expected", [
     ("2026-08-19", ("scarab", "2026-05-11")),        ## Brick Pro: "scarab 2026/08/19"
     ("2026-05-11", ("scarab", "2026-05-11")),
@@ -553,7 +569,7 @@ def test_matrix_by_cfw_then_version(tmp_path):
     assert versions == [
         ("knulli", "scarab"), ("knulli", "gladiator II"), ("knulli", "gladiator"),
         ("RetroDECK", "0.10.10b"), ("RetroDECK", "0.10.0b"),
-        ("ROCKNIX", "20261010"), ("ROCKNIX", "20250517"),
+        ("ROCKNIX", "2026-10"), ("ROCKNIX", "2025-05"),
         ("spruce", "4.5.5"), ("spruce", "Unknown")]
 
     page = matrix.render_html(rows)

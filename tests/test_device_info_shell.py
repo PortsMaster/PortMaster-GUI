@@ -121,6 +121,8 @@ def run_cfw_blocks(command, root):
 @pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
 @pytest.mark.parametrize("title, expected", [
     ("ArkOS 2.0 (08242025)", "ArkOS|08242025"),
+    ("ArkOS 2.0 (02012025)-3", "ArkOS|02012025-3"),      ## RG353M
+    ("ArkOS 2.0 (01152023-1)", "ArkOS|01152023-1"),
     ("dArkOS (05102026)", "dArkOS|05102026"),
     ("dArkOSRE (09022026)", "dArkOSRE|09022026"),       ## mod_dArkOSRE.txt
     ("ArkOS wuMMLe (08242025)", "ArkOS wuMMLe|08242025"),  ## "mod_ArkOS wuMMLe.txt"

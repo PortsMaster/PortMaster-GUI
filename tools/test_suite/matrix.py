@@ -267,7 +267,7 @@ def read_report(zip_path):
         row['cfw_version'] = "Unknown"
     ## Likewise ArkOS's and dArkOS's version is its release date (05102026), from the boot
     ## splash since device_info.txt 0.2.5. Older ones fell back to Ubuntu's or Debian's.
-    if row['cfw'].lower() in ("arkos", "darkos") and not re.match(r"\d{8}$", row['cfw_version']):
+    if row['cfw'].lower() in ("arkos", "darkos") and not re.match(r"\d{8}(-\d+)?$", row['cfw_version']):
         row['cfw_version'] = "Unknown"
     row['released'] = knulli_date or release_date(row['cfw'], row['cfw_version'], os_release)
     row['report'] = zip_path.name
@@ -320,6 +320,19 @@ def device_key(row):
     return " ".join(part for part in (row['device'], row['platform'], row['display'], row['ram_mb']) if part)
 
 
+## CFWs whose versions are dates (ROCKNIX 20261010, ArkOS 02012025-3, AmberELEC
+## prerelease-20261003_1121): too many to list one by one, so they're grouped by month.
+DATE_VERSIONED = ("arkos", "darkos", "rocknix", "jelos", "amberelec")
+
+
+def version_group(row):
+    """The version heading a row goes under: its version, or its release month ("2026-10")."""
+    if row['cfw'].lower() in DATE_VERSIONED and row.get('released') and re.search(r"\d{8}", row['cfw_version']):
+        return row['released'][:7]
+
+    return row['cfw_version']
+
+
 def version_dates(groups):
     """{(cfw, cfw_version): sorted release dates of its devices' newest runs}: one version
     name can be several builds (knulli scarab)."""
@@ -333,12 +346,12 @@ def version_dates(groups):
 
 
 def group_rows(rows):
-    """{(cfw, cfw_version, device key): [rows, newest first]}: by CFW, its newest version first,
+    """{(cfw, version group, device key): [rows, newest first]}: by CFW, its newest version first,
     then device. Versions go by release date, those without one after by version number, and
     an Unknown version last."""
     groups = {}
     for row in rows:
-        groups.setdefault((row['cfw'], row['cfw_version'], device_key(row)), []).append(row)
+        groups.setdefault((row['cfw'], version_group(row), device_key(row)), []).append(row)
 
     released = version_dates(groups)
 
@@ -515,18 +528,27 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
             current_cfw, current_version = cfw, None
             add(f'<tr class="cfw"><th colspan="{columns}" scope="colgroup">{_e(cfw or "Unknown CFW")}</th></tr>')
 
+        by_month = cfw_version != row['cfw_version']
         if cfw_version != current_version:
             current_version = cfw_version
             dates = released[(cfw, cfw_version)]
-            notes = [f"released {dates[0]}" if len(dates) == 1 else f"builds from {dates[0]} to {dates[-1]}" if dates else ""]
+            if by_month:
+                ## Every version tested that month, newest first.
+                versions = sorted({run[0]['cfw_version'] for (other_cfw, group, _), run in groups.items() if (other_cfw, group) == (cfw, cfw_version)},
+                                  key=version_key, reverse=True)
+                versions.sort(key=lambda version: release_date(cfw, version, ""), reverse=True)
+                notes = [", ".join(versions)]
+            else:
+                notes = [f"released {dates[0]}" if len(dates) == 1 else f"builds from {dates[0]} to {dates[-1]}" if dates else ""]
             ## (knulli's os-release names the Batocera it's built on, not knulli.)
-            if row['os'] and cfw.lower() != "knulli" and cfw_version.split(" ")[0].lower() not in row['os'].lower():
+            if row['os'] and not by_month and cfw.lower() != "knulli" and cfw_version.split(" ")[0].lower() not in row['os'].lower():
                 notes.append(row['os'])
             note = " · ".join(_e(part) for part in notes if part)
             add(f'<tr class="version"><th colspan="{columns}" scope="colgroup">{_e(cfw_version or "Unknown version")}'
                 f'{f" <span class=muted>{note}</span>" if note else ""}</th></tr>')
 
-        add(f'<tr><th scope="row" class="device">{_e(_device_name(row))}<br><span class="muted data">{_e(_hardware(row))}</span></th>')
+        hardware = _hardware(row) + (f" · {row['cfw_version']}" if by_month else "")
+        add(f'<tr><th scope="row" class="device">{_e(_device_name(row))}<br><span class="muted data">{_e(hardware)}</span></th>')
         sdl_note = '<br><span class="muted">warning</span>' if row['sdl_warned'] and row['sdl'] != "broken" else ""
         add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"])}{sdl_note}</td>')
         for key, _ in SECTIONS:
