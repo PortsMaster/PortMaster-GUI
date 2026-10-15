@@ -381,6 +381,14 @@ def _device_label(row):
     return f"{_device_name(row)} · {row['cfw']} {row['cfw_version']}".strip()
 
 
+def _builds_line(builds):
+    if not builds:
+        return ""
+    if len(builds) == 1:
+        return f' Test build <span class="data">{_e(builds[0])}</span>.'
+    return f' {len(builds)} test builds, <span class="data">{_e(builds[0])}</span> to <span class="data">{_e(builds[-1])}</span>.'
+
+
 def render_html(rows, title="PortMaster Test Matrix", built=None):
     built = built or datetime.datetime.now()
     groups = group_rows(rows)
@@ -402,7 +410,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
     add("<header>")
     add(f"<h1>{_e(title)}</h1>")
     add(f'<p class="lede">PortMaster Test Suite reports from testers\' devices: the newest run of each CFW, version and device, '
-        f'then every test that failed anywhere. Test builds: <span class="data">{_e(", ".join(builds) or "none")}</span>.</p>')
+        f'then every test that failed anywhere.{_builds_line(builds)}</p>')
     add('<ul class="counts">')
     for number, label in ((len(rows), "reports"), (len(groups), "setups"), (len(devices), "devices"), (len(cfws), "CFWs"),
                           (passing, "setups passing"), (len(groups) - passing, "setups with failures")):

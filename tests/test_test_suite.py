@@ -466,6 +466,7 @@ def test_matrix(tmp_path):
 
     page = matrix.render_html(rows)
     assert page.startswith("<title>PortMaster Test Matrix</title>")
+    assert "Test build <span class=\"data\">2026-10-13_0969</span>." in page
     assert "&lt;rg-cubexx&gt;" in page and "<rg-cubexx>" not in page
     assert "<script" not in page
 
@@ -522,6 +523,9 @@ def test_matrix_by_cfw_then_version(tmp_path):
 
     page = matrix.render_html(rows)
     assert "builds from 2025-11-28 to 2026-08-19" in page
+
+    rows[0]['portmaster'], rows[1]['portmaster'] = "2026-10-13_0469", "2026-10-15_0569"
+    assert ' 3 test builds, <span class="data">2026-10-13_0469</span> to <span class="data">2026-10-15_0569</span>.' in matrix.render_html(rows)
     assert "released 2025-05-06" in page and "scarab" not in page
 
 
