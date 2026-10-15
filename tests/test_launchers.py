@@ -332,6 +332,23 @@ def test_spruce_runs_once_with_one_autoinstall_dir(launcher):
     assert calls.count("pugwash ") == 1
 
 
+def test_spruce_autoinstall_from_roms_ports(launcher):
+    ## Roms/ports/autoinstall works too when someone made it, but isn't made otherwise.
+    ## ($directory comes from the fake device_info.txt, spruce's own ends in a slash.)
+    roms = launcher.ports_dir.parent
+    (roms / "ports").mkdir(parents=True, exist_ok=True)
+
+    calls = launcher.run("spruce", PM_PYTHON=str(launcher.root / "no-python"))
+    assert not (roms / "ports" / "autoinstall").exists()
+    assert not any(call.startswith("PortMasterDialog autoinstall") for call in calls)
+
+    (roms / "ports" / "autoinstall").mkdir()
+    (roms / "ports" / "autoinstall" / "port.zip").write_bytes(b"zip")
+
+    calls = launcher.run("spruce", PM_PYTHON=str(launcher.root / "no-python"))
+    assert f"PortMasterDialog autoinstall {launcher.pm / 'autoinstall'} {roms / 'ports' / 'autoinstall'}" in calls
+
+
 def test_miyoo(launcher):
     calls = launcher.run("miyoo")
 

@@ -25,9 +25,13 @@ pm_hook_env() {
   export HOME="/mnt/SDCARD"
 }
 
-## spruce only has the one.
+## PortMaster's folder (Persistent/portmaster) is hidden away, so Roms/ports/autoinstall
+## too, where people look for it. Only if it's there: it isn't made, it would show up
+## in the ports list.
 pm_hook_autoinstall_dirs() {
   echo "$controlfolder/autoinstall"
+  [ -d "${directory%/}/ports/autoinstall" ] && echo "${directory%/}/ports/autoinstall"
+  return 0
 }
 
 pm_hook_pre_launch() {
