@@ -6,6 +6,7 @@
 import io
 import json
 import os
+import re
 import shutil
 import sys
 import threading
@@ -407,6 +408,7 @@ def test_button_verdict(attempts, problems, notes):
 ################################################################################
 ## tools/test_suite/matrix.py: the coverage matrix from a folder of reports.
 sys.path.insert(0, str(REPO_DIR / "tools" / "test_suite"))
+import devices  # noqa: E402
 import matrix  # noqa: E402
 import receive  # noqa: E402
 
@@ -572,7 +574,8 @@ def test_matrix_by_cfw_then_version(tmp_path):
         ("ROCKNIX", "2026-10"), ("ROCKNIX", "2025-05"),
         ("spruce", "4.5.5"), ("spruce", "Unknown")]
 
-    page = matrix.render_html(rows)
+    ## (No catalogue: the grid would list Batocera as a CFW with devices but no reports.)
+    page = matrix.render_html(rows, catalogue=[])
     assert "released 2026-05-11" in page and "released 2025-08-13" in page and "Batocera" not in page
 
     ## knulli's own version file beats os-release: the Brick Pro is scarab, on Batocera 42.
@@ -597,6 +600,122 @@ def test_matrix_skips_oversized_summaries(tmp_path, monkeypatch):
     make_report(tmp_path, "r.zip", {'cfw': "x"}, [("install", suite.PASS, "installed", "")])
 
     assert matrix.read_report(tmp_path / "r.zip") is None
+
+
+@pytest.mark.parametrize("row, expected", [
+    ({'device': "rg-cubexx"}, "Anbernic RG CubeXX"),
+    ({'device': "RGCUBEXX-H"}, "Anbernic RG CubeXX"),
+    ({'device': "Anbernic RG CubeXX", 'platform': "AnbernicRGCubeXX"}, "Anbernic RG CubeXX"),
+    ({'device': "tui-brick-pro"}, "TrimUI Brick Pro"),
+    ({'device': "trimui-brick-pro"}, "TrimUI Brick Pro"),
+    ({'device': "TrimUI Brick Pro", 'platform': "BrickPro"}, "TrimUI Brick Pro"),
+    ({'device': "TrimUI Brick"}, "TrimUI Brick"),
+    ({'device': "tui-spoon"}, "TrimUI Smart Pro"),
+    ({'device': "trimui-smart-pro-s"}, "TrimUI Smart Pro S"),
+    ## spruce builds that only knew the SoC: its platform name, else the SoC and screen.
+    ({'device': "sun55iw3", 'platform': "SmartProS"}, "TrimUI Smart Pro S"),
+    ({'device': "sun55iw3", 'display': "1280x720"}, "TrimUI Smart Pro S"),
+    ({'device': "sun50iw10", 'display': "1024x768"}, "TrimUI Brick"),
+    ({'device': "sun50iw10", 'display': "640x480"}, "MagicX Zero 28"),
+    ({'device': "MIYOO RK3566 355 V10 Board"}, "Miyoo Flip"),
+    ({'device': "MLP1"}, "Miniloong Pocket 1"),
+    ({'device': "MINILOONG"}, "Miniloong Pocket 1"),
+    ({'device': "UDT R36UltraX"}, "R36 Ultra X"),
+    ({'device': "Game Console R36Ultra X"}, "R36 Ultra X"),
+    ({'device': "Game Console R36S"}, "R36S"),
+    ({'device': "RK-G350-V"}, "Batlexp G350"),
+    ({'device': "Powkiddy x55"}, "Powkiddy X55"),
+    ({'device': "x55"}, "Powkiddy X55"),
+    ({'device': "Steam Deck OLED"}, "Steam Deck"),
+    ({'device': "RG40XX-V"}, "Anbernic RG40XX V"),
+    ({'device': "rg35xx-h"}, "Anbernic RG35XX H"),
+    ({'device': "Retroid Pocket 5"}, "Retroid Pocket 5"),
+    ({'device': "MANGMI Air X MQ66"}, "MANGMI Air X"),
+    ])
+def test_devices_identify(row, expected):
+    assert devices.identify(row).name == expected
+
+
+def test_devices_unknown():
+    assert devices.identify({'device': "Some New Handheld"}) is None
+    assert devices.identify({'device': "sun50iw10", 'display': "800x600"}) is None
+
+
+def test_devices_catalogue_from_device_info():
+    ## The vendored PortMaster-Info list: every model is in the catalogue, its CFWs as reports spell them.
+    device_info = devices.load_device_info()
+    assert len(device_info) >= 40
+    catalogue = devices.build_catalogue(device_info)
+    assert all(cfw.lower() in devices.CFW_NAMES for cfws in device_info.values() for cfw in cfws)
+    for model, cfws in device_info.items():
+        for info in cfws.values():
+            assert devices.identify({'device': info['device']}, catalogue) is not None, model
+
+    by_name = {device.name: device for device in catalogue}
+    assert set(by_name["Anbernic RG353V"].supported) == {"ArkOS"}
+    assert set(by_name["Anbernic RG351P/M"].supported) >= {"AmberELEC", "ArkOS wuMMLe", "ROCKNIX"}
+    ## Variants stay apart ("rg353m" doesn't name the RG353V), families group them.
+    assert devices.identify({'device': "rg353m"}, catalogue).name == "Anbernic RG353M"
+    assert by_name["Anbernic RG353V"].family == by_name["Anbernic RG ARC-D"].family
+    assert by_name["TrimUI Brick"].family == by_name["TrimUI Smart Pro"].family != by_name["TrimUI Smart Pro S"].family
+    assert {name for _, names in devices.FAMILIES for name in names} <= set(by_name)
+
+
+@pytest.mark.parametrize("cfw, version, released, expected", [
+    ("muOS", "2601.0 Jacaranda", "2026-01", "Jacaranda"),
+    ("muOS", "2601.1 Funky Jacaranda", "2026-01", "Jacaranda"),
+    ("muOS", "2410 Big Banana", "2024-10", "Banana"),
+    ("knulli", "gladiator II", "2025-08-13", "gladiator II"),
+    ("ROCKNIX", "20261010", "2026-10-10", "2026-10"),
+    ("dArkOS", "08282026", "2026-08-28", "2026-08"),
+    ("AmberELEC", "prerelease-20261003_1121", "2026-10-03", "2026-10"),
+    ("spruce", "4.5.5", "", "4.5"),
+    ("RetroDECK", "0.10.10b", "", "0.10"),
+    ("spruce", "Unknown", "", "?"),
+    ])
+def test_matrix_major_version(cfw, version, released, expected):
+    assert matrix.major_version({'cfw': cfw, 'cfw_version': version, 'released': released}) == expected
+
+
+def test_matrix_device_grid(tmp_path):
+    base = {'arch': "aarch64", 'python': "3.11.8", 'sdl': "SDL 2 28 5", 'portmaster': "2026-10-15_0969"}
+    passed = [("install", suite.PASS, "installed", "")]
+    failed = [("install", suite.FAIL, "not installed", "")]
+    for name, info, states in (
+            ("cube-old.zip", dict(cfw="knulli", cfw_version="scarab", device="rg-cubexx", started="2026-10-14T01:00:00"), failed),
+            ("cube-new.zip", dict(cfw="knulli", cfw_version="scarab", device="rg-cubexx", started="2026-10-15T01:00:00"), passed),
+            ("cube-spruce.zip", dict(cfw="spruce", cfw_version="4.5.5", device="Anbernic RG CubeXX", started="2026-10-15T02:00:00"), passed),
+            ("h-muos.zip", dict(cfw="muOS", cfw_version="2601.0_JACARANDA", device="rg35xx-h", started="2026-10-15T03:00:00"), failed),
+            ("odd.zip", dict(cfw="muOS", cfw_version="2601.0_JACARANDA", device="Mystery Box", started="2026-10-15T04:00:00"), passed),
+            ):
+        make_report(tmp_path, name, dict(base, **info), states, os_release="OS_DATE=20260819\n")
+
+    rows = matrix.read_reports(tmp_path)
+    assert {row['report']: row['device_name'] for row in rows}["cube-spruce.zip"] == "Anbernic RG CubeXX"
+    catalogue = devices.build_catalogue({
+        "Anbernic RG40XX H": {"knulli": {"device": "rg40xx-h", "manufacturer": "Anbernic"}},
+        "Anbernic RG35XX H": {"muOS": {"device": "rg35xx-h", "manufacturer": "Anbernic"}},
+        "Gameforce Ace": {"ROCKNIX": {"device": "ace", "manufacturer": "Gameforce"}},
+        })
+
+    tested, untested = matrix.grid_columns(rows, catalogue)
+    assert tested == [("knulli", ["scarab"]), ("muOS", ["Jacaranda"]), ("spruce", ["4.5"])]
+    assert untested == ["ROCKNIX"]
+    assert [device.name for device, _ in matrix.grid_devices(rows, catalogue)] == [
+        "Anbernic RG35XX H", "Anbernic RG40XX H", "Anbernic RG CubeXX", "Gameforce Ace", "Mystery Box"]
+
+    page = matrix.render_html(rows, catalogue=catalogue)
+    assert "<script" not in page
+    ## knulli's CubeXX: 2 reports, passing now after a failure; its link goes to its setup row.
+    cell = re.search(r'<td class="v first c mixed h2" title="Anbernic RG CubeXX · knulli scarab\n2 reports[^"]*"><a href="#(setup-\d+)">2</a></td>', page)
+    assert cell and f'<tr id="{cell.group(1)}">' in page
+    assert re.search(r'<td class="v first c fail h1" title="Anbernic RG35XX H · muOS Jacaranda', page)
+    ## The RG40XX H has no reports: tinted where its family has some, marked where knulli supports it.
+    assert re.search(r'<td class="v first c family gap" title="Anbernic RG40XX H · knulli scarab\nNo reports, but 2 from its family', page)
+    assert '<td class="u first c gap" title="Gameforce Ace · ROCKNIX' in page
+    assert ">H700)<" not in page and ">RGxxXX (H700)<" in page
+    assert "Of the 3 device and CFW pairs PortMaster-Info lists, 1 have a report" in page
+    assert '<td class="n">5</td></tr></tfoot>' in page
 
 
 def test_dialog_waits_through_an_empty_done_file(tmp_path):

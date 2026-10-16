@@ -6,7 +6,8 @@
 #
 #   python3 -I tools/test_suite/matrix.py <folder of report zips> [--out DIR] [--title TEXT]
 #
-# Writes DIR/matrix.json and DIR/matrix.html (self-contained, no scripts). Reports come
+# Writes DIR/matrix.json and DIR/matrix.html (self-contained, no scripts): a device x CFW
+# release grid (devices named by devices.py), then every setup's newest run. Reports come
 # from testers, so they are only read: summary.json out of each zip, size-capped, nothing
 # extracted or run.
 
@@ -18,6 +19,9 @@ import re
 import sys
 import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import devices  # noqa: E402
 
 
 MAX_ZIP_BYTES = 64 * 1024 * 1024
@@ -245,6 +249,7 @@ def read_report(zip_path):
     width, height = environment.get("DISPLAY_WIDTH"), environment.get("DISPLAY_HEIGHT")
     row['display'] = _text(info.get('display') or (f"{width}x{height}" if width and height else ""), 20)
     row['ram_mb'] = _text(info.get('ram_mb') or environment.get("DEVICE_RAM_MB"), 10)
+    row['cpu'] = _text(environment.get("DEVICE_CPU"), 40)
     row['sdl'], row['sdl_warned'] = _sdl(info, sdl_probe)
     ## knulli: the release its build date falls in. The date from knulli's own version file
     ## ("scarab 2026/08/19 16:06", collected since 0669), Batocera's on gladiator and older,
@@ -304,6 +309,9 @@ def read_report(zip_path):
     if device and row['cfw_version'] != reported_version and device['summary'].startswith(reported):
         device['summary'] = f"{row['cfw']} {row['cfw_version']} (reported as {reported_version}) " + device['summary'][len(reported):]
 
+    row['major_version'] = major_version(row)
+    device = devices.identify(row)
+    row['device_name'], row['maker'] = (device.name, device.maker) if device else ("", "")
     row['gui_how'] = _gui_how(row['sections'].get('gui', {}).get('summary', ""))
     row['ok'] = not any(section['status'] == "fail" for section in row['sections'].values())
     return row
@@ -336,6 +344,33 @@ def version_group(row):
         return row['released'][:7]
 
     return row['cfw_version']
+
+
+def muos_family(cfw_version):
+    """ "Jacaranda" for 2601.1 Funky Jacaranda, "Banana" for 2410 Big Banana: the release, not its point releases."""
+    match = re.match(r"(\d{4})(?:\.\d+)?\s*(.*)", cfw_version)
+    if not match:
+        return cfw_version
+
+    number, name = match.groups()
+    names = sorted({other for version, other in MUOS_RELEASES.items() if version.startswith(number + ".")}, key=len)
+    return next((family for family in names if name.endswith(family)), name or number)
+
+
+def major_version(row):
+    """The grid's column for a row's version: muOS's and knulli's release names, the month for
+    date-versioned CFWs (as version_group), else major.minor (spruce 4.5, RetroDECK 0.10).
+    "?" when the version is unknown."""
+    cfw, version = row['cfw'].lower(), row['cfw_version']
+    if version in ("", "Unknown"):
+        return "?"
+    if cfw == "muos":
+        return muos_family(version)
+    if cfw in DATE_VERSIONED or cfw == "knulli":
+        return version_group(row)
+
+    match = re.match(r"v?(\d+)\.(\d+)", version)
+    return f"{match.group(1)}.{match.group(2)}" if match else version
 
 
 def version_dates(groups):
@@ -385,6 +420,69 @@ def failure_index(rows):
 
 
 ################################################################################
+## The device grid: a row per device (devices.py), a column per CFW release.
+def grid_columns(rows, catalogue):
+    """([(cfw, [major versions, newest first])] of the CFWs with reports, [CFWs without any that
+    PortMaster-Info lists devices for])."""
+    by_cfw = {}
+    for row in rows:
+        by_cfw.setdefault(row['cfw'], {}).setdefault(row['major_version'], []).append(row)
+
+    def newest_first(item):
+        major, runs = item
+        dates = [run['released'] for run in runs if run.get('released')]
+        return (major != "?", max(dates) if dates else "", version_key(major))
+
+    tested = [(cfw, [major for major, _ in sorted(majors.items(), key=newest_first, reverse=True)])
+              for cfw, majors in sorted(by_cfw.items(), key=lambda item: item[0].lower())]
+    seen = {cfw.lower() for cfw in by_cfw}
+    untested = sorted({cfw for device in catalogue for cfw in device.supported if cfw.lower() not in seen}, key=str.lower)
+    return tested, untested
+
+
+def grid_devices(rows, catalogue):
+    """[(Device, [its rows])], by maker (Other last), family and name: every device with a report
+    or that PortMaster-Info lists. A report no catalogue entry matches gets a row of its own."""
+    by_name = {device.name: device for device in catalogue}
+    found = {}
+    for row in rows:
+        device = by_name.get(row.get('device_name'))
+        if device is None:
+            name = _device_name(row) or "Unknown"
+            device = by_name.setdefault(name, devices.Device(name, devices.OTHER))
+        found.setdefault(device.name, (device, []))[1].append(row)
+
+    for device in catalogue:
+        if device.supported and device.name not in found:
+            found[device.name] = (device, [])
+
+    return sorted(found.values(), key=lambda item: (item[0].maker == devices.OTHER, item[0].maker.lower(),
+                                                    (item[0].family or item[0].name).lower(), version_key(item[0].name)))
+
+
+def cell_status(runs):
+    """"fail" if a setup's newest run failed, "mixed" if only older ones did, else "pass"."""
+    newest = {}
+    for run in runs:
+        newest.setdefault((version_group(run), device_key(run)), run)
+
+    if not all(run['ok'] for run in newest.values()):
+        return "fail"
+    return "pass" if all(run['ok'] for run in runs) else "mixed"
+
+
+def is_supported(device, cfw):
+    return cfw.lower() in {name.lower() for name in device.supported}
+
+
+def supported_pairs(found):
+    """(device and CFW pairs PortMaster-Info lists that have a report, all it lists)."""
+    pairs = {(device.name, cfw.lower()) for device, _ in found for cfw in device.supported}
+    tested = {(device.name, run['cfw'].lower()) for device, runs in found for run in runs}
+    return len(pairs & tested), len(pairs)
+
+
+################################################################################
 ## The page
 STATUS_LABEL = {"pass": "Pass", "fail": "Fail", "skip": "Skip", "info": "Info"}
 
@@ -393,7 +491,8 @@ CSS = """
 :root {
   --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2230; --muted: #5b6577; --line: #dde1e8;
   --accent: #2f5bd3;
-  --pass: #1f7a4d; --pass-bg: #e3f3ea; --fail: #b3261e; --fail-bg: #fbe5e3; --skip: #6b6f7a; --skip-bg: #eceef2;
+  --pass: #1f7a4d; --pass-bg: #e3f3ea; --fail: #b3261e; --fail-bg: #fbe5e3; --skip: #6b6f7a; --skip-bg: #eceef2; --warn: #8a5a00; --warn-bg: #fdf0d2;
+  --heat1: #d3ecdd; --heat2: #a9dbbd; --heat3: #6dbd8f; --heat4: #2f8a5a; --heat4-fg: #ffffff; --family: #edf6f0;
   --font-display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -401,12 +500,14 @@ CSS = """
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #12161d; --surface: #1a2029; --fg: #e4e8ef; --muted: #9aa4b5; --line: #2c3442;
   --accent: #7d9cf0;
-  --pass: #6fd29d; --pass-bg: #173326; --fail: #ff8a80; --fail-bg: #3a1c1a; --skip: #a3a9b5; --skip-bg: #252b35;
+  --pass: #6fd29d; --pass-bg: #173326; --fail: #ff8a80; --fail-bg: #3a1c1a; --skip: #a3a9b5; --skip-bg: #252b35; --warn: #f2c46d; --warn-bg: #3a2e14;
+  --heat1: #173326; --heat2: #1e4a33; --heat3: #2a6b47; --heat4: #3c9a64; --heat4-fg: #ffffff; --family: #18241d;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #12161d; --surface: #1a2029; --fg: #e4e8ef; --muted: #9aa4b5; --line: #2c3442;
   --accent: #7d9cf0;
-  --pass: #6fd29d; --pass-bg: #173326; --fail: #ff8a80; --fail-bg: #3a1c1a; --skip: #a3a9b5; --skip-bg: #252b35;
+  --pass: #6fd29d; --pass-bg: #173326; --fail: #ff8a80; --fail-bg: #3a1c1a; --skip: #a3a9b5; --skip-bg: #252b35; --warn: #f2c46d; --warn-bg: #3a2e14;
+  --heat1: #173326; --heat2: #1e4a33; --heat3: #2a6b47; --heat4: #3c9a64; --heat4-fg: #ffffff; --family: #18241d;
   color-scheme: dark; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-body); line-height: 1.5; }
 .page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 64px; display: grid; gap: 40px; }
@@ -431,17 +532,69 @@ tr.version .muted { font-family: var(--font-body); font-weight: 400; margin-left
 th.device { padding-left: 32px; }
 .data { font-family: var(--font-data); font-size: 0.8rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .muted { color: var(--muted); }
+.gridwrap { display: grid; gap: 8px; }
+.gridwrap > .controls { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: center; font-size: 0.85rem; }
+.gridwrap > input { position: absolute; opacity: 0; pointer-events: none; }
+.gridwrap > .controls label { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; padding: 4px 12px 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.gridwrap > .controls label::before { content: ""; width: 14px; height: 14px; border: 1.5px solid var(--muted); border-radius: 3px; box-sizing: border-box; }
+#cfw-only:checked ~ .controls label[for="cfw-only"], #hide-untested:checked ~ .controls label[for="hide-untested"] { border-color: var(--accent); color: var(--accent); }
+#cfw-only:checked ~ .controls label[for="cfw-only"]::before, #hide-untested:checked ~ .controls label[for="hide-untested"]::before { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--surface); }
+#cfw-only:focus-visible ~ .controls label[for="cfw-only"], #hide-untested:focus-visible ~ .controls label[for="hide-untested"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.8rem; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend span { gap: 2px; }
+.legend span i:last-of-type { margin-right: 4px; }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; }
+.gridbox { max-height: 80vh; overflow: auto; }
+table.grid { width: auto; border-collapse: separate; border-spacing: 0; font-size: 0.78rem; }
+.grid th, .grid td { padding: 0; border: 0; border-bottom: 1px solid var(--line); vertical-align: middle; text-align: center; }
+.grid td.c, .grid td.v, .grid td.t, .grid td.u { width: 26px; min-width: 26px; height: 24px; font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.grid .first { border-left: 1px solid var(--line); }
+.grid thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
+.grid thead tr.cfws th { height: 26px; color: var(--accent); font-family: var(--font-display); font-size: 0.8rem; text-transform: none; letter-spacing: 0; }
+.grid thead tr.cfws th:not(.dev) { white-space: nowrap; padding: 0 4px; font-size: 0.75rem; }
+.grid thead tr.majors th { top: 27px; padding: 6px 0; font-family: var(--font-data); font-size: 0.72rem; text-transform: none; letter-spacing: 0; color: var(--fg); font-weight: 500; }
+.grid thead tr.majors th span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.grid thead th.u span, .grid thead th.t span { color: var(--muted); }
+.grid .dev { position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; white-space: nowrap; padding: 0 12px 0 10px; border-right: 1px solid var(--line); font-weight: 400; }
+.grid thead .dev { z-index: 3; vertical-align: bottom; padding-bottom: 6px; }
+.grid tr.maker th { color: var(--accent); font-family: var(--font-display); font-weight: 600; padding-top: 8px; }
+.grid tr.maker td { background: var(--bg); }
+.grid tr.maker th.dev { background: var(--bg); }
+.grid tr.familyrow th.dev { font-weight: 600; }
+.grid tr.member th.dev { padding-left: 24px; }
+.grid td.n, .grid th.n { padding: 0 8px; font-family: var(--font-data); color: var(--muted); border-left: 1px solid var(--line); }
+.grid tfoot th, .grid tfoot td { color: var(--muted); font-family: var(--font-data); border-bottom: 0; }
+.grid tfoot th.dev { font-family: var(--font-body); }
+.grid a { color: inherit; text-decoration: none; display: block; line-height: 24px; }
+.grid a:hover { text-decoration: underline; }
+.c.h1, .legend .h1 { background: var(--heat1); }
+.c.h2, .legend .h2 { background: var(--heat2); }
+.c.h3, .legend .h3 { background: var(--heat3); }
+.c.h4, .legend .h4 { background: var(--heat4); color: var(--heat4-fg); }
+.c.fail, .legend .fail { background: var(--fail-bg); color: var(--fail); font-weight: 600; box-shadow: inset 0 0 0 2px var(--fail); }
+.c.mixed, .legend .mixed { box-shadow: inset 0 -3px 0 var(--warn); }
+.c.family, .legend .family { background: var(--family); }
+.c.gap::after, .legend .gap { content: ""; display: inline-block; width: 10px; height: 10px; border: 1.5px dashed var(--muted); border-radius: 50%; box-sizing: border-box; }
+.legend .gap { width: 14px; height: 14px; }
+.grid .t { display: none; }
+#cfw-only:checked ~ .gridbox .v { display: none; }
+#cfw-only:checked ~ .gridbox .t { display: table-cell; }
+#hide-untested:checked ~ .gridbox tr.untested, #hide-untested:checked ~ .gridbox .u { display: none; }
+tr:target > th, tr:target > td { background: var(--warn-bg); }
 .chip { display: inline-block; min-width: 3.4em; text-align: center; padding: 1px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
 .chip.pass { color: var(--pass); background: var(--pass-bg); }
 .chip.fail { color: var(--fail); background: var(--fail-bg); }
 .chip.skip, .chip.info, .chip.none { color: var(--skip); background: var(--skip-bg); }
 .failures { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.failures li { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--fail); border-radius: 6px; padding: 10px 14px; display: grid; gap: 4px; min-width: 0; }
+.failures li { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--fail); border-radius: 6px; padding: 10px 14px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; overflow-wrap: anywhere; }
 .failures code { font-family: var(--font-data); font-size: 0.8rem; overflow-wrap: anywhere; }
 .failures .where { color: var(--muted); font-size: 0.85rem; }
 .empty { color: var(--muted); margin: 0; }
 details { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 14px; }
 details + details { margin-top: 8px; }
+section > div, details { min-width: 0; overflow-wrap: anywhere; }
+summary .data { white-space: normal; }
 summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
 summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 details pre { font-family: var(--font-data); font-size: 0.78rem; white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 0; color: var(--muted); }
@@ -488,14 +641,131 @@ def _builds_line(builds):
     return f' {len(builds)} test builds, <span class="data">{_e(builds[0])}</span> to <span class="data">{_e(builds[-1])}</span>.'
 
 
-def render_html(rows, title="PortMaster Test Matrix", built=None):
+def heat(count):
+    """How well covered a cell is, 1 to 4: one report, a few, several, many."""
+    return 1 if count <= 1 else 2 if count <= 3 else 3 if count <= 7 else 4
+
+
+CELL_STATUS = {"pass": "all passing", "fail": "failing", "mixed": "passing now, failed before"}
+
+
+def _cell_title(name, cfw, major, runs, status):
+    lines = [f"{name} · {cfw} {major}".rstrip(), f"{len(runs)} report{'s' if len(runs) != 1 else ''}, {CELL_STATUS[status]}"]
+    lines.append("Versions: " + ", ".join(sorted({run['cfw_version'] for run in runs}, key=version_key, reverse=True)))
+    builds = sorted({run['portmaster'] for run in runs if run['portmaster']})
+    if builds:
+        lines.append("Builds: " + (builds[0] if len(builds) == 1 else f"{builds[0]} to {builds[-1]}"))
+    lines.append("Reported as: " + ", ".join(sorted({_device_name(run) for run in runs})))
+    return "\n".join(lines)
+
+
+def _grid_cell(classes, name, cfw, major, runs, supported, setup_ids, family_runs=()):
+    if runs:
+        status = cell_status(runs)
+        target = setup_ids.get(id(runs[0]))
+        number = f'<a href="#{target}">{len(runs)}</a>' if target else str(len(runs))
+        return f'<td class="{classes} c {status} h{heat(len(runs))}" title="{_e(_cell_title(name, cfw, major, runs, status))}">{number}</td>'
+
+    title = []
+    if family_runs:
+        classes += " c family"
+        title.append(f"No reports, but {len(family_runs)} from its family: " + ", ".join(sorted({run['device_name'] for run in family_runs})))
+    if supported:
+        classes += " c gap" if " c " not in f" {classes} " else " gap"
+        title.append("Supported per PortMaster-Info, no reports")
+    if title:
+        return f'<td class="{classes}" title="{_e(f"{name} · {cfw} {major}".rstrip() + chr(10) + chr(10).join(title))}"></td>'
+    return f'<td class="{classes}"></td>'
+
+
+def render_grid(add, rows, catalogue, setup_ids):
+    """The device x CFW release grid: report counts, coloured by how the newest runs went.
+    CSS only: the checkboxes switch to one column per CFW and hide untested rows."""
+    tested, untested = grid_columns(rows, catalogue)
+    found = grid_devices(rows, catalogue)
+    ## (classes, cfw, major or None): a column per release, one per CFW (CFWs-only view), untested CFWs.
+    ## PortMaster-Info's support has no versions: an untested device shows as a gap under the
+    ## CFW's newest release only (where a report would help), not under every older one.
+    columns = []
+    for cfw, majors in tested:
+        columns.extend((("v first" if index == 0 else "v"), cfw, major) for index, major in enumerate(majors))
+        columns.append(("t first", cfw, None))
+    columns.extend(("u first", cfw, None) for cfw in untested)
+
+    latest = {cfw: next((major for major in majors if major != "?"), majors[0]) for cfw, majors in tested}
+    with_reports, listed = supported_pairs(found)
+    releases = sum(len(majors) for _, majors in tested)
+    add('<section aria-labelledby="grid"><h2 id="grid">Devices</h2>')
+    add(f'<p class="lede">How many reports each device has on each CFW release: {sum(1 for _, runs in found if runs)} devices on {releases} CFW releases. '
+        f'Of the {listed} device and CFW pairs PortMaster-Info lists, {with_reports} have a report; the others are marked under each CFW\'s newest release. '
+        'Hover over a cell for its versions and builds, select its number to see its newest run.</p>')
+    add('<div class="gridwrap"><input type="checkbox" id="cfw-only"><input type="checkbox" id="hide-untested">'
+        '<div class="controls"><label for="cfw-only">One column per CFW</label><label for="hide-untested">Only devices and CFWs with reports</label></div>')
+    add('<div class="legend"><span><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i>1, 2-3, 4-7, 8+ reports, passing</span>'
+        '<span><i class="c fail"></i>newest run failing</span><span><i class="h2 c mixed"></i>passing now, failed before</span>'
+        '<span><i class="family"></i>no reports, but its family has</span><span><i class="gap"></i>supported, no reports</span></div>')
+    add('<div class="scroll gridbox"><table class="grid"><thead><tr class="cfws"><th class="dev" rowspan="2" scope="col">Device</th>')
+    for cfw, majors in tested:
+        add(f'<th class="v first" colspan="{len(majors)}" scope="colgroup">{_e(cfw)}</th><th class="t first"></th>')
+    add("".join('<th class="u first"></th>' for _ in untested))
+    add('<th class="n" rowspan="2" scope="col">Reports</th></tr><tr class="majors">')
+    for classes, cfw, major in columns:
+        label = major if major is not None else cfw
+        heading = f"{cfw} {major}" if major is not None else cfw
+        add(f'<th class="{classes}" scope="col" title="{_e(heading)}"><span>{_e(label)}</span></th>')
+    add("</tr></thead><tbody>")
+
+    def in_column(runs, cfw, major):
+        return [run for run in runs if run['cfw'] == cfw and (major is None or run['major_version'] == major)]
+
+    def cells(name, runs, supported, family_runs=()):
+        out = []
+        for classes, cfw, major in columns:
+            newest = major is None or major == latest.get(cfw)
+            out.append(_grid_cell(classes, name, cfw, major or "", in_column(runs, cfw, major), newest and supported(cfw), setup_ids,
+                                  in_column(family_runs, cfw, major)))
+        return "".join(out) + f'<td class="n">{len(runs) or ""}</td>'
+
+    maker = family = None
+    family_runs = []
+    for device, runs in found:
+        if device.maker != maker:
+            maker, family = device.maker, None
+            reported = any(runs for other, runs in found if other.maker == maker)
+            add(f'<tr class="maker{"" if reported else " untested"}"><th class="dev" scope="rowgroup">{_e(maker)}</th>')
+            add("".join(f'<td class="{classes}"></td>' for classes, _, _ in columns) + '<td class="n"></td></tr>')
+
+        if device.family and device.family != family:
+            family = device.family
+            members = [(other, other_runs) for other, other_runs in found if other.family == family]
+            family_runs = [run for _, member_runs in members for run in member_runs]
+            label = family[len(maker) + 1:] if family.startswith(maker + " ") else family
+            add(f'<tr class="familyrow{"" if family_runs else " untested"}"><th class="dev" scope="row" title="{_e(family)}">{_e(label)}</th>')
+            add(cells(family, family_runs, lambda cfw: any(is_supported(other, cfw) for other, _ in members)) + "</tr>")
+        elif not device.family:
+            family, family_runs = None, []
+
+        name = device.short_name if device.maker != devices.OTHER else device.name
+        member = " member" if device.family else ""
+        add(f'<tr class="{"" if runs else "untested"}{member}"><th class="dev" scope="row" title="{_e(device.name)}">{_e(name)}</th>')
+        add(cells(device.name, runs, lambda cfw: is_supported(device, cfw), [run for run in family_runs if run not in runs]) + "</tr>")
+
+    add('</tbody><tfoot><tr><th class="dev" scope="row">Reports</th>')
+    for classes, cfw, major in columns:
+        count = sum(1 for row in rows if row['cfw'] == cfw and (major is None or row['major_version'] == major))
+        add(f'<td class="{classes}">{count or ""}</td>')
+    add(f'<td class="n">{len(rows)}</td></tr></tfoot></table></div></div></section>')
+
+
+def render_html(rows, title="PortMaster Test Matrix", built=None, catalogue=None):
     built = built or datetime.datetime.now()
     groups = group_rows(rows)
     failures = failure_index(rows)
     cfws = sorted({row['cfw'] for row in rows}, key=str.lower)
-    devices = {device_key(row) for row in rows}
+    hardware = {row["device_name"] or _device_name(row) for row in rows}
     builds = sorted({row['portmaster'] for row in rows if row['portmaster']})
     passing = sum(1 for runs in groups.values() if runs[0]['ok'])
+    setup_ids = {id(run): f"setup-{number}" for number, runs in enumerate(groups.values()) for run in runs}
 
     out = []
     add = out.append
@@ -511,10 +781,12 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
     add(f'<p class="lede">PortMaster Test Suite reports from testers\' devices: the newest run of each CFW, version and device, '
         f'then every test that failed anywhere.{_builds_line(builds)}</p>')
     add('<ul class="counts">')
-    for number, label in ((len(rows), "reports"), (len(groups), "setups"), (len(devices), "devices"), (len(cfws), "CFWs"),
+    for number, label in ((len(rows), "reports"), (len(groups), "setups"), (len(hardware), "devices"), (len(cfws), "CFWs"),
                           (passing, "setups passing"), (len(groups) - passing, "setups with failures")):
         add(f"<li><b>{number}</b><span>{label}</span></li>")
     add("</ul></header>")
+
+    render_grid(add, rows, devices.catalogue() if catalogue is None else catalogue, setup_ids)
 
     ## Coverage
     add('<section aria-labelledby="coverage"><h2 id="coverage">Coverage</h2>')
@@ -553,7 +825,7 @@ def render_html(rows, title="PortMaster Test Matrix", built=None):
                 f'{f" <span class=muted>{note}</span>" if note else ""}</th></tr>')
 
         hardware = _hardware(row) + (f" · {row['cfw_version']}" if by_month else "")
-        add(f'<tr><th scope="row" class="device">{_e(_device_name(row))}<br><span class="muted data">{_e(hardware)}</span></th>')
+        add(f'<tr id="{setup_ids[id(row)]}"><th scope="row" class="device">{_e(_device_name(row))}<br><span class="muted data">{_e(hardware)}</span></th>')
         sdl_note = '<br><span class="muted">warning</span>' if row['sdl_warned'] and row['sdl'] != "broken" else ""
         add(f'<td class="data">{_e(row["python"])}</td><td class="data">{_e(row["sdl"])}{sdl_note}</td>')
         for key, _ in SECTIONS:
@@ -603,6 +875,9 @@ def main(argv=None):
     options = parser.parse_args(argv)
 
     rows = read_reports(options.folder)
+    unknown = sorted({_device_name(row) for row in rows if not row['device_name']})
+    if unknown:
+        print(f"Not in devices.py, listed under {devices.OTHER}: {', '.join(unknown)}", file=sys.stderr)
     out = Path(options.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "matrix.json").write_text(json.dumps(rows, indent=2))
