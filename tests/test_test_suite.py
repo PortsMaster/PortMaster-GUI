@@ -584,6 +584,12 @@ def test_matrix_by_cfw_then_version(tmp_path):
     row = matrix.read_report(tmp_path / "knulli-scarab.zip")
     assert (row['cfw_version'], row['released']) == ("scarab", "2026-05-11")
 
+    ## A development build is "devel", dated by its build, not the release before it.
+    make_report(tmp_path, "knulli-devel.zip", dict(base, cfw="knulli", cfw_version="44-dev", device="miniloong", started="2026-10-16T02:00:00"),
+                passed, os_release="VERSION=44-dev\nOS_DATE=20261012\n", cfw_files="/usr/share/knulli/knulli.version: devel-8447a2c 2026/10/12 16:46\n")
+    row = matrix.read_report(tmp_path / "knulli-devel.zip")
+    assert (row['cfw_version'], row['major_version'], row['released']) == ("devel", "devel", "2026-10-12")
+
     ## The device line in "Every run" says the corrected version too.
     make_report(tmp_path, "knulli-device.zip", dict(base, cfw="knulli", cfw_version="42", device="trimui-brick-pro", started="2026-10-15T02:00:00"),
                 passed_with_device, os_release="VERSION=42\nOS_DATE=20260819\n")

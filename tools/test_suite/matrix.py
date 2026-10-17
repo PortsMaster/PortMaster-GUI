@@ -254,12 +254,15 @@ def read_report(zip_path):
     ## knulli: the release its build date falls in. The date from knulli's own version file
     ## ("scarab 2026/08/19 16:06", collected since 0669), Batocera's on gladiator and older,
     ## else os-release's OS_DATE. What the device called itself ("scarab" from device_info.txt
-    ## before 0.2.3 whatever it was, "42", "alpha") isn't a release name.
+    ## before 0.2.3 whatever it was, "42", "alpha") isn't a release name. Development builds
+    ## ("devel-8447a2c 2026/10/12 16:46") come after the newest release: "devel", by build date.
     knulli_date = ""
     if row['cfw'].lower() == "knulli":
-        version_file = re.search(r"(?:knulli|batocera)\.version: \S+ (\d{4})/(\d\d)/(\d\d)", cfw_files)
-        built = _date(*version_file.groups()) if version_file else release_date(row['cfw'], "", os_release)
+        version_file = re.search(r"(?:knulli|batocera)\.version: (\S+) (\d{4})/(\d\d)/(\d\d)", cfw_files)
+        built = _date(*version_file.groups()[1:]) if version_file else release_date(row['cfw'], "", os_release)
         name, knulli_date = knulli_release(built)
+        if version_file and version_file.group(1).lower().startswith("devel") and built:
+            name, knulli_date = "devel", built
         if name:
             row['cfw_version'] = name
 
@@ -692,7 +695,8 @@ def render_grid(add, rows, catalogue, setup_ids):
         columns.append(("t first", cfw, None))
     columns.extend(("u first", cfw, None) for cfw in untested)
 
-    latest = {cfw: next((major for major in majors if major != "?"), majors[0]) for cfw, majors in tested}
+    ## (Not knulli's development builds: a gap is for the newest release.)
+    latest = {cfw: next((major for major in majors if major not in ("?", "devel")), majors[0]) for cfw, majors in tested}
     with_reports, listed = supported_pairs(found)
     releases = sum(len(majors) for _, majors in tested)
     add('<section aria-labelledby="grid"><h2 id="grid">Devices</h2>')
