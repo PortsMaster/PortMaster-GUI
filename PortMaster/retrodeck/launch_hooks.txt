@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# RetroDECK launcher hooks, sourced by utils/pm_launch.txt (see there for what each hook does).
+
+pm_hook_env() {
+  if [ -d "/app/bin/retrodeck.sh" ]; then
+    source /app/libexec/global.sh # loading the RetroDECK framework that even give access to variables such as roms_folder
+    directory="$roms_folder/portmaster"
+    cp "$controlfolder/retrodeck/control.txt" "$controlfolder"
+  fi
+
+  source "$controlfolder/control.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+
+  get_controls
+}
+
+pm_hook_pre_launch() {
+  echo "Starting PortMaster."
+
+  # chmod -R +x . ## WHO DID THIS????
+}
+
+## pm_hook_env sets everything.
+pm_hook_gui_env() {
+  :
+}
+
+pm_hook_run_pugwash() {
+  ./pugwash $PORTMASTER_CMDS
+}
+
+pm_hook_post_launch() {
+  printf "\033c"
+}
+
+pm_hook_frontend_refresh() {
+  if [ -f "${controlfolder}/.es-de-refresh" ]; then
+    $ESUDO rm -f "${controlfolder}/.es-de-refresh"
+    if [[ "$portmaster_reload_esde" != "false" ]]; then
+      $ESUDO pkill -f es-de
+    fi
+  fi
+}

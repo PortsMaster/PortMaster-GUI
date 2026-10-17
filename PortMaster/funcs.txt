@@ -7,8 +7,12 @@ if [ ! -z "$PM_FUNCS_VERSION" ]; then
     return
 fi
 
-# So we can check the version
-export PM_FUNCS_VERSION=3
+# So we can check the version, eg: [ "${PM_FUNCS_VERSION:-0}" -ge 4 ]
+# Bump it whenever ports get something new to use:
+#   3: the original funcs.txt
+#   4: pm_message / pm_show_error take portmsg options (--title, --timeout, ...),
+#      pm_message_close
+export PM_FUNCS_VERSION=4
 
 export PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 export PM_PORTNAME="${PM_PORTNAME:-${PM_SCRIPTNAME%.sh}}"

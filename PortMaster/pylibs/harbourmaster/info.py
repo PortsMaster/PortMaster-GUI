@@ -4,14 +4,15 @@
 # System imports
 import pathlib
 
+from pathlib import Path
+
 # Included imports
-import utility
 
 from loguru import logger
 
 # Module imports
-from .config import *
-from .util import *
+from .config import HM_GENRES
+from .util import json_safe_load, json_safe_loads, timeit
 
 ################################################################################
 ## Port Information
@@ -47,6 +48,53 @@ PORT_INFO_OPTIONAL_ROOT_ATTRS = [
     ]
 
 
+PORT_INFO_LIST_ATTRS = ('genres', 'porter', 'runtime', 'reqs', 'arch')
+PORT_INFO_TEXT_ATTRS = ('title', 'desc', 'inst', 'min_glibc')
+
+
+def _clean_attr_types(attr, source_name):
+    """
+    port.json files are written by hand, so coerce what we sensibly can into the
+    types the rest of PortMaster expects (lists of strings, strings, a dict of images).
+    """
+    for key in PORT_INFO_LIST_ATTRS:
+        value = attr.get(key)
+
+        if value is None:
+            value = []
+
+        elif isinstance(value, str):
+            value = [value]
+
+        elif isinstance(value, (list, tuple)):
+            value = [item for item in value if isinstance(item, str)]
+
+        else:
+            logger.warning(f"port_info['attr'][{key!r}] has a bad value in {source_name!r}: {value!r}")
+            value = []
+
+        attr[key] = value
+
+    for key in PORT_INFO_TEXT_ATTRS:
+        value = attr.get(key)
+
+        if value is None:
+            attr[key] = ""
+
+        elif not isinstance(value, str):
+            attr[key] = str(value)
+
+    image = attr.get('image')
+    if isinstance(image, str):
+        attr['image'] = {'screenshot': image}
+
+    elif not isinstance(image, dict):
+        attr['image'] = {}
+
+    for key in ('rtr', 'exp'):
+        attr[key] = bool(attr.get(key, False))
+
+
 def port_info_load(raw_info, source_name=None, do_default=False):
     if isinstance(raw_info, pathlib.PurePath):
         source_name = str(raw_info)
@@ -64,7 +112,7 @@ def port_info_load(raw_info, source_name=None, do_default=False):
             if source_name is None:
                 source_name = "<str>"
 
-            info = json_safe_loads(info)
+            info = json_safe_loads(raw_info)
             if info is None or not isinstance(info, dict):
                 if do_default:
                     info = {}
@@ -107,7 +155,19 @@ def port_info_load(raw_info, source_name=None, do_default=False):
 
     # This is a bizzare one, it turns out some versions are strings?!
     if isinstance(info.get('version', None), str):
-        info['version'] = int(info['version'])
+        try:
+            info['version'] = int(info['version'])
+
+        except ValueError:
+            pass
+
+    if ('version' in info and not isinstance(info['version'], int)) or not isinstance(info.get('attr', {}), dict):
+        logger.error(f'Unable to load port_info with a bad "version" or "attr" from {source_name!r}: {info}')
+
+        if do_default:
+            info = {}
+        else:
+            return None
 
     if 'version' in info and info['version'] > PORT_INFO_ROOT_ATTRS['version']:
         logger.error(f'Unable to load port_info with newer version from {source_name!r}: {info}')
@@ -180,6 +240,12 @@ def port_info_load(raw_info, source_name=None, do_default=False):
             attr_default = attr_default.copy()
 
         port_info['attr'][attr] = info.get('attr', {}).get(attr, attr_default)
+
+    _clean_attr_types(port_info['attr'], source_name)
+
+    if port_info['items'] is not None and not isinstance(port_info['items'], list):
+        logger.warning(f"port_info['items'] is not a list in {source_name!r}: {port_info['items']!r}")
+        port_info['items'] = None
 
     for attr in PORT_INFO_OPTIONAL_ROOT_ATTRS:
         if attr in info:

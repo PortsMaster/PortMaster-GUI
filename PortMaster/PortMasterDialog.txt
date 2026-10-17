@@ -109,7 +109,13 @@ _PortMasterWaitForCmd() {
   do
     RESULT=$(cat "$PM_DONE")
 
-    if [[ "$RESULT" != "WAIT" ]]; then
+    ## Empty: caught halfway through a write by an older pugwash, keep waiting.
+    if [[ "$RESULT" != "WAIT" && -n "$RESULT" ]]; then
+      break
+    fi
+
+    ## pugwash is gone, nobody is going to answer. (/proc, not kill -0: with $ESUDO it runs as root.)
+    if [ -n "$PM_PID" ] && [ ! -d "/proc/$PM_PID" ]; then
       break
     fi
 

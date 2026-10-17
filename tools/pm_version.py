@@ -32,11 +32,11 @@ def main(argv):
 
     if len(argv) == 1:
         release_type = "alpha"
-        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H%M")
+        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y.%m.%d-%H%M")
 
     elif len(argv) == 2:
         release_type = argv[1]
-        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H%M")
+        version_number = datetime.datetime.now(datetime.timezone.utc).strftime("%Y.%m.%d-%H%M")
 
     else:
         release_type = argv[1]

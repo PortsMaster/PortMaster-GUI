@@ -1,0 +1,248 @@
+{
+  "ports": {
+    "sprout.zip": {
+      "version": 4,
+      "name": "sprout.zip",
+      "items": [
+        "SPROUT.sh",
+        "sprout"
+      ],
+      "items_opt": null,
+      "attr": {
+        "title": "-SPROUT-",
+        "porter": [
+          "Fraxinus88"
+        ],
+        "desc": "-SPROUT- is a mini precision-platformer built for speed-running. Run, jump and dash your way through 100 levels across five unique lands, and restore your world to its former glory.",
+        "desc_md": null,
+        "inst": "Purchase the game from Steam. Download the game and place the game files in sprout/assets.",
+        "inst_md": null,
+        "genres": [
+          "platformer"
+        ],
+        "image": {
+          "screenshot": "screenshot.png",
+          "covers": [
+            "cover.png"
+          ],
+          "thumbnail": null,
+          "video": null
+        },
+        "rtr": false,
+        "exp": false,
+        "runtime": [
+          "dotnet-8.0.12.squashfs",
+          "gmtoolkit.squashfs"
+        ],
+        "store": [
+          {
+            "name": "Steam",
+            "gameurl": "https://store.steampowered.com/app/1336340/SPROUT/",
+            "developerurl": "https://x.com/ZedsquadronD"
+          }
+        ],
+        "availability": "paid",
+        "reqs": [],
+        "arch": [
+          "aarch64"
+        ],
+        "min_glibc": ""
+      },
+      "source": {
+        "date_added": "2025-07-16",
+        "date_updated": "2025-07-16",
+        "md5": "8e434078431e4bf189e5e03c6f234b28",
+        "release_id": "2025-07-16_2108",
+        "size": 8159843,
+        "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-07-16_2108/sprout.zip"
+      }
+    },
+    "100liljumps.zip": {
+      "version": 4,
+      "name": "100liljumps.zip",
+      "items": [
+        "100 Lil Jumps.sh",
+        "100liljumps"
+      ],
+      "items_opt": null,
+      "attr": {
+        "title": "100 Lil Jumps",
+        "porter": [
+          "tabreturn"
+        ],
+        "desc": "Nara the frog has been cursed and can only make 100 jumps. Complete the challenge and break the curse.",
+        "desc_md": null,
+        "inst": "Ready to run.",
+        "inst_md": null,
+        "genres": [
+          "platformer"
+        ],
+        "image": {
+          "screenshot": "screenshot.png",
+          "covers": [],
+          "thumbnail": null,
+          "video": null
+        },
+        "rtr": true,
+        "exp": false,
+        "runtime": [],
+        "store": [
+          {
+            "name": "itch.io",
+            "gameurl": "https://koliao.itch.io/100-lil-jumps",
+            "developerurl": "https://koliao.itch.io"
+          }
+        ],
+        "availability": "full",
+        "reqs": [],
+        "arch": [
+          "aarch64"
+        ],
+        "min_glibc": ""
+      },
+      "source": {
+        "date_added": "2025-11-09",
+        "date_updated": "2025-12-24",
+        "md5": "4564098cc201d6f6366bd05943d8cf8f",
+        "release_id": "2025-12-24_0552",
+        "size": 87022919,
+        "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-12-24_0552/100liljumps.zip"
+      }
+    },
+    "2048plus.zip": {
+      "version": 4,
+      "name": "2048plus.zip",
+      "items": [
+        "2048 Plus.sh",
+        "2048plus"
+      ],
+      "items_opt": null,
+      "attr": {
+        "title": "2048 Plus",
+        "porter": [
+          "saitamasahil"
+        ],
+        "desc": "A feature-packed implementation of the classic puzzle game 2048, built using the L\u00d6VE framework.",
+        "desc_md": null,
+        "inst": "Ready to run. Use the D-Pad to move tiles, L1/R1 for power-ups, B to undo, and Y to switch themes.",
+        "inst_md": "Ready to run. Use the **D-Pad** to move tiles, **L1/R1** for power-ups, **B** to undo, and **Y** to switch themes.",
+        "genres": [
+          "puzzle"
+        ],
+        "image": {
+          "screenshot": "screenshot.png",
+          "covers": [],
+          "thumbnail": null,
+          "video": null
+        },
+        "rtr": true,
+        "exp": false,
+        "availability": "full",
+        "store": [],
+        "runtime": [],
+        "reqs": [],
+        "arch": [
+          "aarch64",
+          "x86_64"
+        ],
+        "min_glibc": ""
+      },
+      "source": {
+        "date_added": "2026-06-22",
+        "date_updated": "2026-09-21",
+        "md5": "d66e25f6a714590772597996dba18a6d",
+        "release_id": "2026-09-21_0303",
+        "size": 105396245,
+        "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2026-09-21_0303/2048plus.zip"
+      }
+    },
+    "starfighter.zip": {
+      "version": 4,
+      "name": "starfighter.zip",
+      "items": [
+        "Project Starfighter.sh",
+        "starfighter"
+      ],
+      "items_opt": null,
+      "attr": {
+        "title": "Project: Starfighter",
+        "porter": [
+          "bmdhacks"
+        ],
+        "desc": "Project: Starfighter is a space shoot 'em up game originally developed\nby Parallel Realities in 2002, and released in 2003. You assume the role\nof Chris Bainfield in his quest to put an end to WEAPCO, the weapons\ncorporation which has enslaved the galaxy.",
+        "desc_md": null,
+        "inst": "ready to run",
+        "inst_md": null,
+        "genres": [
+          "arcade"
+        ],
+        "image": {
+          "screenshot": "screenshot.jpg",
+          "covers": [
+            "cover.jpg"
+          ],
+          "thumbnail": null,
+          "video": null
+        },
+        "rtr": true,
+        "exp": true,
+        "runtime": [],
+        "reqs": [
+          "!lowres"
+        ],
+        "arch": [
+          "aarch64"
+        ],
+        "min_glibc": ""
+      },
+      "source": {
+        "date_added": "2025-01-23",
+        "date_updated": "2026-07-15",
+        "md5": "380382b05deb0e472509c710690216ed",
+        "release_id": "2026-07-15_0750",
+        "size": 37524644,
+        "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2026-07-15_0750/starfighter.zip"
+      }
+    }
+  },
+  "utils": {
+    "gameinfo.zip": {
+      "name": "gameinfo.zip",
+      "md5": "7463dcf80d183c3097b09918d6b53b66",
+      "size": 172854594,
+      "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2026-10-05_1447/gameinfo.zip"
+    },
+    "ags_3.6.squashfs": {
+      "name": "Adventure Game Studio 3.6",
+      "runtime_name": "ags_3.6.squashfs",
+      "runtime_arch": "aarch64",
+      "md5": "e8a38f0d93e37d7732c0fe63b6168e75",
+      "size": 3088384,
+      "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-10-04_1030/ags_3.6.squashfs"
+    },
+    "ags_3.6.x86_64.squashfs": {
+      "name": "Adventure Game Studio 3.6",
+      "runtime_name": "ags_3.6.squashfs",
+      "runtime_arch": "x86_64",
+      "md5": "7f876a8734a12706d46773b8623cfcfe",
+      "size": 1933312,
+      "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-10-04_1030/ags_3.6.x86_64.squashfs"
+    },
+    "dotnet-8.0.12.squashfs": {
+      "name": "DotNet 8.0.12",
+      "runtime_name": "dotnet-8.0.12.squashfs",
+      "runtime_arch": "aarch64",
+      "md5": "9ec894aafc022ac97771e9828000464d",
+      "size": 29970432,
+      "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-05-12_1413/dotnet-8.0.12.squashfs"
+    },
+    "gmtoolkit.squashfs": {
+      "name": "GMToolkit",
+      "runtime_name": "gmtoolkit.squashfs",
+      "runtime_arch": "aarch64",
+      "md5": "16540876e9fa0eead98376821741a8ee",
+      "size": 120782848,
+      "url": "https://github.com/PortsMaster/PortMaster-New/releases/download/2025-06-10_1636/gmtoolkit.squashfs"
+    }
+  }
+}

@@ -12,7 +12,7 @@ NOT_WORKING=("da_DK" "fi_FI" "eo_UY")
 for POT_FILE in "${POT_FILES[@]}"; do
     if [[ "$POT_FILE" == "messages" ]]; then
         echo "Extracting strings ${POT_FILE}"
-        xgettext -v -o "${POT_DIR}/${POT_FILE}.pot" -L Python PortMaster/pugwash PortMaster/pylibs/harbourmaster/*.py PortMaster/pylibs/pug*.py
+        xgettext -v -o "${POT_DIR}/${POT_FILE}.pot" -L Python PortMaster/pugwash $(find PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash -name '*.py' | sort)
 
     elif [[ "$POT_FILE" == "themes" ]]; then
         echo "Extracting strings ${POT_FILE}"
