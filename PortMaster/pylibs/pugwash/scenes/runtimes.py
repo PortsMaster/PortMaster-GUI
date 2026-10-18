@@ -81,9 +81,11 @@ class RuntimesScene(BaseScene):
 
         self.last_select = self.tags['runtime_list'].selected_option()
         self.last_verified = None
-        if not runtimes:
+        ## Fill in the selected runtime's details now: do_update only does it when the
+        ## selection changes. (Nothing to fill in without a selection, eg: no runtimes.)
+        if self.last_select in self.runtimes:
             self.update_selection()
-            
+
     def update_selection(self):
         runtime_info = self.runtimes[self.last_select]
 
