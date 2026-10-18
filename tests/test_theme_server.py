@@ -64,6 +64,30 @@ def test_prepare_tools_dir(tmp_path):
     assert not any((work / "tools" / "PortMaster" / "themes").iterdir())
 
 
+def test_ensure_fonts(tmp_path, monkeypatch):
+    ## A fresh checkout has only NotoSans.tar.xz: the PortMaster/pugwash script unpacks
+    ## it, and the workers don't run that script.
+    import io
+    import tarfile
+
+    resources = tmp_path / "pylibs" / "resources"
+    resources.mkdir(parents=True)
+    with tarfile.open(str(resources / "NotoSans.tar.xz"), "w:xz") as tar:
+        for name in ("NotoSansJP-Regular.ttf", "NotoSansTC-Regular.ttf"):
+            info = tarfile.TarInfo(name)
+            info.size = 4
+            tar.addfile(info, io.BytesIO(b"font"))
+
+    monkeypatch.setattr(serve, "PM_DIR", tmp_path)
+    serve.ensure_fonts()
+    assert (resources / "NotoSansJP-Regular.ttf").read_bytes() == b"font"
+
+    ## Unpacked already: left alone.
+    (resources / "NotoSansJP-Regular.ttf").write_bytes(b"mine")
+    serve.ensure_fonts()
+    assert (resources / "NotoSansJP-Regular.ttf").read_bytes() == b"mine"
+
+
 def test_themes(tmp_path):
     for name, data in (("Alpha", {"#info": {"name": "Alpha Theme"}, "#schemes": {"#base": {}, "Dark": {}, "Light": {}}}),
                        ("Beta", {"#info": {"name": "Beta", "default-scheme": "Light"}, "#schemes": {"Dark": {}, "Light": {}}})):
@@ -281,6 +305,17 @@ def test_render_lists_the_strings_it_used(pool):
     known = serve.i18n_tool.read_strings()
     assert all(text in known['messages'] for text in info['strings']['messages'])
     assert all(text in known['themes'] for text in info['strings']['themes'])
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+@needs_checkout
+def test_language_capability_picks_the_font(pool):
+    ## The default theme's "font[ja_JP]": the language reaches the theme's capabilities
+    ## with a pretend resolution too.
+    _, info = pool.render("default_theme", None, "1280x720", "ja_JP", "main_menu")
+    fonts = {region['data'].get('font') for region in info['regions']}
+    assert fonts == {"NotoSansJP-Regular.ttf"}
 
 
 @pytest.fixture

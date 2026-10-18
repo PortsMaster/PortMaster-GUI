@@ -26,6 +26,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import threading
 import time
@@ -348,6 +349,22 @@ def all_languages():
 
 
 ################################################################################
+## The Chinese, Japanese and Korean fonts: the PortMaster/pugwash script unpacks them on
+## its first run, the workers import pugwash without it.
+def ensure_fonts():
+    resources = PM_DIR / "pylibs" / "resources"
+    if (resources / "NotoSansTC-Regular.ttf").is_file():
+        return
+
+    try:
+        with tarfile.open(str(resources / "NotoSans.tar.xz"), "r:xz") as tar:
+            tar.extractall(str(resources))
+
+    except (OSError, EOFError, tarfile.TarError) as err:
+        print(f"Unable to extract the Noto fonts, Chinese, Japanese and Korean won't show: {err}")
+
+
+################################################################################
 ## The ports cache
 def ensure_cache(cache, refresh=False):
     source = cache / "tools" / "PortMaster" / "config" / "020_portmaster.source.json"
@@ -539,6 +556,7 @@ def main(argv=None):
     parser.add_argument("--langs", default="en_US", help="export: comma separated")
     options = parser.parse_args(argv)
 
+    ensure_fonts()
     ensure_cache(options.cache, options.refresh_ports)
     themes = Themes(options.themes)
     work_dir = Path(tempfile.mkdtemp(prefix="pm-theme-server-"))

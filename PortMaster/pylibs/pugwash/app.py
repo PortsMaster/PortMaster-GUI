@@ -51,9 +51,15 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
     FRAME_TIME = 1000 // 30
 
     def __init__(self, *, first_scene=None, force_theme=None):
+        ## PM_HEADLESS=Y (testing mode only): no window, no video and no controllers, it
+        ## draws onto a surface with the software renderer. tools/theme_server's workers
+        ## use it, on SDL builds with no dummy video driver too (muOS has only "mali").
+        self.headless = harbourmaster.HM_TESTING and os.environ.get('PM_HEADLESS', '') == 'Y'
+
         # Initialize SDL
         sdl2.ext.init(
-            controller=True)
+            video=not self.headless,
+            controller=not self.headless)
 
         def nice_version(v):
             return f"{v.major}.{v.minor}.{v.patch}"
@@ -90,7 +96,10 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         display_mode = sdl2.video.SDL_DisplayMode()
         capabilities = harbourmaster.device_info()
 
-        if sdl2.video.SDL_GetCurrentDisplayMode(0, display_mode) != 0:
+        if self.headless:
+            self.display_width, self.display_height = capabilities['resolution']
+
+        elif sdl2.video.SDL_GetCurrentDisplayMode(0, display_mode) != 0:
             logger.error("Failed to get display mode:", sdl2.SDL_GetError())
             self.display_width, self.display_height = capabilities['resolution']
 
@@ -117,6 +126,13 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         if capabilities['device'] == 'default' and pretend_resolution is None:
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=(self.display_width, self.display_height))
+
+        ## The theme matches against harbourmaster.device_info(): give it the screen worked
+        ## out above and the language (its "font[ja_JP]" & co).
+        device_info = harbourmaster.device_info()
+        if capabilities is not device_info:
+            device_info.update(capabilities)
+            capabilities = device_info
 
         capabilities['capabilities'].append(lang.CURRENT_LANG)
 
@@ -147,11 +163,18 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
                     touch_file.unlink()
 
 
-        self.window = sdl2.ext.Window("PortMaster", size=capabilities['resolution'], flags=window_flags)
-        self.window.show()
+        if self.headless:
+            self.window = None
+            self.surface = sdl2.SDL_CreateRGBSurfaceWithFormat(
+                0, *capabilities['resolution'], 32, sdl2.SDL_PIXELFORMAT_ARGB8888)
+            renderer = sdl2.ext.Renderer(self.surface.contents)
 
-        # Create a renderer for drawing on the window
-        renderer = sdl2.ext.Renderer(self.window, flags=sdl2.SDL_RENDERER_ACCELERATED)
+        else:
+            self.window = sdl2.ext.Window("PortMaster", size=capabilities['resolution'], flags=window_flags)
+            self.window.show()
+
+            # Create a renderer for drawing on the window
+            renderer = sdl2.ext.Renderer(self.window, flags=sdl2.SDL_RENDERER_ACCELERATED)
 
         sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, b"2")
 
@@ -517,7 +540,11 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         ## Any texture still referenced becomes a no-op once its renderer is gone.
         self.renderer.destroy()
-        self.window.close()
+        if self.window is not None:
+            self.window.close()
+
+        else:
+            sdl2.SDL_FreeSurface(self.surface)
 
         sdl2.ext.quit()
 

@@ -76,6 +76,8 @@ It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `
 - `serve.py` serves a page showing every screen rendered with a theme, at any resolution, colour scheme and language, and exports PNGs with `--export`.
 - Each render process, `worker.py`, is a headless pugwash for one theme version, scheme, resolution and language. SDL allows one GUI per process, and the screen size, the theme's `[capability]` overrides and the language are fixed at start. A new one starts when the theme's files change, so no state carries over.
   - It pretends to be a device: the `device_info.txt` screen rules, and `PM_PRETEND_RESOLUTION`, which pugwash honours in `HM_TESTING` mode.
+  - It draws with no window (`PM_HEADLESS=Y`, also `HM_TESTING` only): SDL's software renderer on a surface, with no video or controller subsystem. So it needs no dummy video driver, and it runs on a device next to a GUI that owns the screen (tried on muOS, whose SDL has only `mali`).
+  - `serve.py` unpacks the Chinese/Japanese/Korean fonts (`NotoSans.tar.xz`) at start, as the `PortMaster/pugwash` script does: the workers don't run that script.
   - It links a shared ports cache (`~/.cache/portmaster-theme-server`, filled by `worker.py --prepare-cache`).
 - `shots.py` holds the screen catalogue: one builder per screen, pushing scenes with real port data.
   - It records which translatable strings each render looked up, for the editor.

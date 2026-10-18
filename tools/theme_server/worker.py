@@ -81,12 +81,9 @@ def device_env(width, height, lang):
 
 
 def sdl_env():
-    """Headless SDL, unless the environment already picked a driver (the tests on a device
-    whose SDL has no dummy driver)."""
-    if "SDL_VIDEODRIVER" in os.environ:
-        return {'SDL_AUDIODRIVER': os.environ.get('SDL_AUDIODRIVER', "dummy")}
-
-    return {'SDL_VIDEODRIVER': "dummy", 'SDL_AUDIODRIVER': "dummy", 'SDL_RENDER_DRIVER': "software"}
+    """Headless pugwash: no window or video driver, it draws onto a surface (PM_HEADLESS),
+    so it runs on SDL builds with no dummy driver and next to a GUI that owns the screen."""
+    return {'PM_HEADLESS': "Y", 'SDL_AUDIODRIVER': "dummy"}
 
 
 def prepare_tools_dir(work, cache, theme_dir, scheme):
