@@ -133,7 +133,8 @@ def pool(tmp_path_factory):
     (themes_dir / "Tiny" / "theme.json").write_text(json.dumps(tiny))
 
     themes = serve.Themes(themes_dir)
-    pool = serve.RenderPool(themes, tmp / "cache" / "tools" / "PortMaster" / "config", tmp / "work")
+    ## Two renderers at most (60-90 MB each): the Test Suite runs this on handhelds too.
+    pool = serve.RenderPool(themes, tmp / "cache" / "tools" / "PortMaster" / "config", tmp / "work", max_workers=2)
     try:
         pool.warm()
     except serve.WorkerError as error:
