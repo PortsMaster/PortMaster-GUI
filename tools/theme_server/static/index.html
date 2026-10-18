@@ -38,6 +38,33 @@ input[type=text] { width: 7.5em; font-family: var(--mono); }
 .status { margin-left: auto; font-size: 12px; color: var(--muted); padding-bottom: 5px; text-align: right; }
 .status .live { color: var(--accent); }
 main { padding: 16px; }
+/* Translate view */
+.translate { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.tbar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-bottom: 10px; }
+.tbar input[type=search] { font: 13px var(--sans); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; width: 16em; }
+.progress { font-size: 12px; color: var(--muted); }
+.tlist { display: grid; gap: 6px; }
+.trow { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: 6px; padding: 8px 10px; display: grid; gap: 6px; min-width: 0; }
+.trow.done { border-left-color: var(--pass, #1f7a4d); }
+.trow.todo { border-left-color: var(--muted); }
+.trow.problem { border-left-color: var(--error); }
+.trow.selected { outline: 2px solid var(--accent); outline-offset: -1px; }
+.trow .source { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+.trow textarea { font: 13px/1.4 var(--sans); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; resize: vertical; min-height: 2.4em; }
+.trow textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.trow .tmeta { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--muted); }
+.trow .tmeta .where { font-family: var(--mono); }
+.chip { display: inline-block; padding: 0 6px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--fg); cursor: pointer; font: 11px var(--sans); }
+.tproblem { color: var(--error); font-size: 12px; }
+.twarn { color: var(--warn); font-size: 12px; }
+.tpreview { position: sticky; top: 92px; display: grid; gap: 10px; max-height: calc(100vh - 110px); overflow: auto; }
+.tpreview h2 { font-size: 13px; margin: 0; color: var(--muted); font-weight: 600; }
+.tpreview .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+.tpreview .shots figure, .tpreview .big { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; cursor: pointer; }
+.tpreview figure img, .tpreview .big img { width: 100%; display: block; }
+.tpreview figcaption { font-size: 11px; padding: 3px 6px; color: var(--muted); }
+.tempty { color: var(--muted); font-size: 13px; }
+@media (max-width: 900px) { .translate { grid-template-columns: 1fr; } .tpreview { position: static; max-height: none; } }
 .notice { background: var(--error-bg); color: var(--error); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; white-space: pre-wrap; font-family: var(--mono); font-size: 12px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card, 300px), 1fr)); gap: 16px; align-items: start; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: grid; min-width: 0; }
@@ -84,21 +111,39 @@ pre.data { font: 11px/1.4 var(--mono); white-space: pre-wrap; overflow-wrap: any
 <body>
 <header>
   <h1>Theme Preview</h1>
+  <span class="seg" id="view" style="margin-bottom:2px"><button data-view="preview" aria-pressed="true">Preview</button><button data-view="translate" aria-pressed="false">Translate</button></span>
   <label class="field">Theme <select id="theme"></select></label>
   <label class="field">Colour scheme <select id="scheme"></select></label>
   <label class="field">Resolution <select id="res"></select></label>
   <label class="field" id="custom-res-field" hidden>Custom <input type="text" id="custom-res" placeholder="800x600" spellcheck="false"></label>
   <label class="field">Language <select id="lang"></select></label>
-  <span class="field" style="display:grid;gap:2px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Show
+  <span class="field preview-only" style="display:grid;gap:2px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Show
     <span class="seg" id="mode"><button data-mode="screens" aria-pressed="true">All screens</button><button data-mode="resolutions" aria-pressed="false">One screen, every size</button></span></span>
-  <label class="field" id="mode-shot-field" hidden>Screen <select id="mode-shot"></select></label>
-  <label class="toggle"><input type="checkbox" id="debug"> Region boxes</label>
-  <label class="field">Size <input type="range" id="size" min="200" max="900" step="20" value="300"></label>
+  <label class="field preview-only" id="mode-shot-field" hidden>Screen <select id="mode-shot"></select></label>
+  <label class="toggle preview-only"><input type="checkbox" id="debug"> Region boxes</label>
+  <label class="field preview-only">Size <input type="range" id="size" min="200" max="900" step="20" value="300"></label>
   <div class="status" id="status">Loading…</div>
 </header>
 <main>
   <div id="notice" class="notice" hidden></div>
   <div class="grid" id="grid"></div>
+  <div class="translate" id="translate" hidden>
+    <div>
+      <div class="tbar">
+        <span class="seg" id="tdomain"><button data-domain="messages" aria-pressed="true">PortMaster</button><button data-domain="themes" aria-pressed="false">Themes</button></span>
+        <select id="tfilter">
+          <option value="all">All strings</option>
+          <option value="todo">Untranslated</option>
+          <option value="problem">With problems</option>
+          <option value="screen">On the screens shown</option>
+        </select>
+        <input type="search" id="tsearch" placeholder="Search English or translation">
+        <span class="progress" id="tprogress"></span>
+      </div>
+      <div class="tlist" id="tlist"></div>
+    </div>
+    <aside class="tpreview" id="tpreview"><p class="tempty">Select a string to see it on the screens that use it.</p></aside>
+  </div>
 </main>
 <dialog id="detail">
   <div class="detail">
@@ -125,17 +170,19 @@ pre.data { font: 11px/1.4 var(--mono); white-space: pre-wrap; overflow-wrap: any
 "use strict";
 const $ = (id) => document.getElementById(id);
 const state = { info: null, theme: "default_theme", scheme: "", res: "640x480", lang: "en_US", mode: "screens",
-  modeShot: "main_menu", debug: false, size: 300, version: null, renders: new Map(), detail: null };
+  modeShot: "main_menu", debug: false, size: 300, version: null, renders: new Map(), detail: null,
+  view: "preview", tDomain: "messages", tFilter: "all", tSearch: "", tSelected: null, tData: null, usage: new Map(), usageKey: null };
 
 function load() {
   try { Object.assign(state, JSON.parse(localStorage.getItem("pm-theme-preview") || "{}"), { info: null, renders: new Map(), version: null, detail: null }); } catch (e) {}
   const hash = new URLSearchParams(location.hash.slice(1));
-  for (const key of ["theme", "scheme", "res", "lang", "mode", "modeShot"]) if (hash.get(key)) state[key] = hash.get(key);
+  for (const key of ["theme", "scheme", "res", "lang", "mode", "modeShot", "view"]) if (hash.get(key)) state[key] = hash.get(key);
 }
 function save() {
-  const keep = { theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, debug: state.debug, size: state.size };
+  const keep = { theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, debug: state.debug, size: state.size,
+    view: state.view, tDomain: state.tDomain, tFilter: state.tFilter };
   try { localStorage.setItem("pm-theme-preview", JSON.stringify(keep)); } catch (e) {}
-  history.replaceState(null, "", "#" + new URLSearchParams({ theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot }));
+  history.replaceState(null, "", "#" + new URLSearchParams({ theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, view: state.view }));
 }
 function option(select, value, text) { const o = document.createElement("option"); o.value = value; o.textContent = text; select.append(o); }
 function theme() { return state.info.themes.find((t) => t.id === state.theme) || state.info.themes[0]; }
@@ -149,13 +196,32 @@ function fillControls() {
   $("res").replaceChildren(); for (const r of info.resolutions) option($("res"), r, r.replace("x", " × ")); option($("res"), "custom", "Custom…");
   if (info.resolutions.includes(state.res)) $("res").value = state.res; else { $("res").value = "custom"; $("custom-res").value = state.res; }
   $("custom-res-field").hidden = $("res").value !== "custom";
-  $("lang").replaceChildren(); for (const [code, name] of info.languages) option($("lang"), code, `${name} (${code})`);
-  $("lang").value = state.lang;
+  fillLanguages();
   $("mode-shot").replaceChildren(); for (const [name, title] of info.shots) option($("mode-shot"), name, title);
   $("mode-shot").value = state.modeShot;
   $("debug").checked = state.debug;
   $("size").value = state.size; document.body.style.setProperty("--card", state.size + "px");
   setMode(state.mode, false);
+}
+function fillLanguages() {
+  // Translate: every language PortMaster has a name for (English is the source); preview: the ones with files.
+  const list = state.view === "translate"
+    ? state.info.all_languages.filter(([code]) => code !== "en_US").map(([code, name, has]) => [code, `${name} (${code})${has ? "" : " · new"}`])
+    : state.info.languages.map(([code, name]) => [code, `${name} (${code})`]);
+  $("lang").replaceChildren(); for (const [code, label] of list) option($("lang"), code, label);
+  if (!list.some(([code]) => code === state.lang)) state.lang = state.view === "translate" ? (list.find(([code]) => code === "de_DE") || list[0])[0] : "en_US";
+  $("lang").value = state.lang;
+}
+function setView(view) {
+  state.view = view;
+  for (const b of $("view").children) b.setAttribute("aria-pressed", String(b.dataset.view === view));
+  for (const el of document.querySelectorAll(".preview-only")) el.hidden = view !== "preview" || (el.id === "mode-shot-field" && state.mode !== "resolutions");
+  $("grid").hidden = view !== "preview";
+  $("translate").hidden = view !== "translate";
+  fillLanguages();
+  save();
+  state.version = null;
+  poll().then(() => (view === "translate" ? buildTranslate() : build()));
 }
 function fillSchemes() {
   const t = theme();
@@ -171,7 +237,7 @@ function fillSchemes() {
 function setMode(mode, rebuild = true) {
   state.mode = mode;
   for (const b of $("mode").children) b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
-  $("mode-shot-field").hidden = mode !== "resolutions";
+  $("mode-shot-field").hidden = mode !== "resolutions" || state.view !== "preview";
   if (rebuild) { save(); build(); }
 }
 
@@ -360,7 +426,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 /* Controls */
-function changed() { state.renders.clear(); save(); build(); }
+function changed() { state.renders.clear(); save(); if (state.view === "translate") buildTranslate(); else build(); }
 $("theme").onchange = () => { state.theme = $("theme").value; state.version = null; fillSchemes(); poll().then(changed); };
 $("scheme").onchange = () => { state.scheme = $("scheme").value; changed(); };
 $("res").onchange = () => {
@@ -373,23 +439,208 @@ $("custom-res").onchange = () => {
   if (!/^\d{2,4}x\d{2,4}$/.test(value)) { $("custom-res").setCustomValidity("Like 800x600"); $("custom-res").reportValidity(); return; }
   $("custom-res").setCustomValidity(""); state.res = value; changed();
 };
-$("lang").onchange = () => { state.lang = $("lang").value; changed(); };
+$("lang").onchange = () => { state.lang = $("lang").value; state.version = null; poll().then(changed); };
+$("view").onclick = (event) => { if (event.target.dataset.view && event.target.dataset.view !== state.view) setView(event.target.dataset.view); };
 $("mode").onclick = (event) => { if (event.target.dataset.mode) setMode(event.target.dataset.mode); };
 $("mode-shot").onchange = () => { state.modeShot = $("mode-shot").value; save(); build(); };
 $("debug").onchange = () => { state.debug = $("debug").checked; save(); for (const card of state.cards) if (card.info) fill(card); };
 $("size").oninput = () => { state.size = Number($("size").value); document.body.style.setProperty("--card", state.size + "px"); save(); };
 
+/* Translate */
+const tkey = (domain, text) => domain + "\u0000" + text;
+async function buildTranslate() {
+  $("tlist").replaceChildren();
+  $("tprogress").textContent = "Loading…";
+  for (const b of $("tdomain").children) b.setAttribute("aria-pressed", String(b.dataset.domain === state.tDomain));
+  $("tfilter").value = state.tFilter;
+  try {
+    const r = await fetch("/api/strings?" + new URLSearchParams({ lang: state.lang }));
+    state.tData = (await r.json()).domains;
+  } catch (e) { $("tprogress").textContent = "Can't load the strings."; return; }
+  renderList();
+  scanUsage();
+}
+/* Which screens use each string: render every screen once (cached) and read what it looked up. */
+async function scanUsage() {
+  const key = [state.theme, state.scheme, state.res, state.lang].join("|");
+  if (state.usageKey === key) return;
+  state.usageKey = key;
+  state.usage = new Map();
+  state.scanning = true;
+  const shots = state.info.shots;
+  let done = 0;
+  updateProgress(0, shots.length);
+  await Promise.all(shots.map(async ([shot, title]) => {
+    try {
+      const info = await render(shot, state.res);
+      for (const domain of ["messages", "themes"]) {
+        for (const text of (info.strings || {})[domain] || []) {
+          const k = tkey(domain, text);
+          if (!state.usage.has(k)) state.usage.set(k, []);
+          if (!state.usage.get(k).some(([s]) => s === shot)) state.usage.get(k).push([shot, title]);
+        }
+      }
+    } catch (e) { /* that screen failed; it shows in Preview */ }
+    done += 1;
+    if (state.usageKey === key) updateProgress(done, shots.length);
+  }));
+  if (state.usageKey === key) { state.scanning = false; renderList(); showPreview(); }
+}
+function counts() {
+  const entries = state.tData[state.tDomain];
+  return { total: entries.length, done: entries.filter((e) => e.translation).length, problems: entries.filter((e) => e.problems.some((p) => !p.includes("line breaks"))).length };
+}
+function updateProgress(scanned, total) {
+  if (!state.tData) return;
+  const c = counts();
+  $("tprogress").textContent = `${c.done} of ${c.total} translated` + (c.problems ? ` · ${c.problems} with problems` : "") +
+    (scanned !== undefined && scanned < total ? ` · finding where strings are used ${scanned}/${total}` : "");
+}
+function visible(entry) {
+  const search = state.tSearch.toLowerCase();
+  if (search && !entry.text.toLowerCase().includes(search) && !entry.translation.toLowerCase().includes(search)) return false;
+  if (state.tFilter === "todo") return !entry.translation;
+  if (state.tFilter === "problem") return entry.problems.length > 0;
+  if (state.tFilter === "screen") return state.usage.has(tkey(state.tDomain, entry.text));
+  return true;
+}
+function rowClass(entry) {
+  return "trow " + (entry.problems.some((p) => !p.includes("line breaks")) ? "problem" : entry.translation ? "done" : "todo");
+}
+function renderList() {
+  if (!state.tData) return;
+  const list = $("tlist");
+  list.replaceChildren();
+  const entries = state.tData[state.tDomain].filter(visible);
+  for (const entry of entries) list.append(row(entry));
+  if (!entries.length) { const p = document.createElement("p"); p.className = "tempty"; p.textContent = "No strings match."; list.append(p); }
+  updateProgress();
+}
+function row(entry) {
+  const el = document.createElement("div");
+  const key = tkey(state.tDomain, entry.text);
+  el.className = rowClass(entry) + (state.tSelected === key ? " selected" : "");
+  el.dataset.key = key;
+  const source = document.createElement("div"); source.className = "source"; source.textContent = entry.text;
+  const box = document.createElement("textarea");
+  box.value = entry.translation; box.rows = Math.min(6, Math.max(1, entry.text.split("\n").length));
+  box.placeholder = "Not translated: shows in English"; box.lang = state.lang.replace("_", "-");
+  box.setAttribute("aria-label", `Translation of: ${entry.text}`);
+  const meta = document.createElement("div"); meta.className = "tmeta";
+  const notes = document.createElement("div");
+  const problems = () => {
+    notes.replaceChildren();
+    for (const p of entry.problems) { const s = document.createElement("div"); s.className = p.includes("line breaks") ? "twarn" : "tproblem"; s.textContent = p; notes.append(s); }
+  };
+  const where = document.createElement("span"); where.className = "where";
+  where.textContent = entry.sources.slice(0, 2).join(", ") + (entry.sources.length > 2 ? ` +${entry.sources.length - 2}` : "");
+  meta.append(where);
+  for (const [shot, title] of state.usage.get(key) || []) {
+    const chip = document.createElement("button"); chip.type = "button"; chip.className = "chip"; chip.textContent = title;
+    chip.onclick = () => { select(entry, el); showPreview(shot); };
+    meta.append(chip);
+  }
+  problems();
+  box.addEventListener("focus", () => select(entry, el));
+  box.addEventListener("change", () => store(entry, box, el, problems));
+  box.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      store(entry, box, el, problems);
+      const next = el.nextElementSibling && el.nextElementSibling.querySelector("textarea");
+      if (next) next.focus();
+    }
+  });
+  el.append(source, box, notes, meta);
+  return el;
+}
+function select(entry, el) {
+  const key = tkey(state.tDomain, entry.text);
+  if (state.tSelected === key) return;
+  state.tSelected = key;
+  for (const other of document.querySelectorAll(".trow.selected")) other.classList.remove("selected");
+  el.classList.add("selected");
+  showPreview();
+}
+async function store(entry, box, el, problems) {
+  const translation = box.value.replace(/\r\n/g, "\n");
+  if (translation === entry.translation) return;
+  try {
+    const r = await fetch("/api/translate", {
+      method: "POST", headers: { "Content-Type": "application/json", "X-Theme-Server": "1" },
+      body: JSON.stringify({ lang: state.lang, domain: state.tDomain, text: entry.text, translation }) });
+    const body = await r.json();
+    if (!r.ok) throw new Error(body.error || r.statusText);
+    entry.translation = translation; entry.problems = body.problems;
+    el.className = rowClass(entry) + (state.tSelected === tkey(state.tDomain, entry.text) ? " selected" : "");
+    problems(); updateProgress();
+    poll();
+  } catch (error) {
+    box.setCustomValidity(`Not saved: ${error.message}`); box.reportValidity(); setTimeout(() => box.setCustomValidity(""), 3000);
+  }
+}
+function showPreview(focusShot) {
+  const pane = $("tpreview");
+  if (!state.tSelected || !state.tData) return;
+  const [domain, text] = state.tSelected.split("\u0000");
+  const entry = state.tData[domain].find((e) => e.text === text);
+  const used = state.usage.get(state.tSelected) || [];
+  pane.replaceChildren();
+  const h = document.createElement("h2");
+  if (!used.length) {
+    h.textContent = state.scanning ? "Finding where it's used…" : "Not on any screen shown here";
+    const p = document.createElement("p"); p.className = "tempty";
+    p.textContent = `It's used in: ${entry ? entry.sources.join(", ") : ""}`;
+    pane.append(h, p);
+    return;
+  }
+  h.textContent = `On ${used.length} screen${used.length > 1 ? "s" : ""} · ${state.res.replace("x", "×")}`;
+  const order = focusShot ? [...used.filter(([s]) => s === focusShot), ...used.filter(([s]) => s !== focusShot)] : used;
+  const [first, ...rest] = order;
+  const big = document.createElement("figure"); big.className = "big";
+  big.innerHTML = `<img alt=""><figcaption></figcaption>`;
+  big.querySelector("img").src = "/api/render.png?" + params(first[0]);
+  big.querySelector("figcaption").textContent = first[1];
+  big.onclick = () => { openShot(first[0]); };
+  const shots = document.createElement("div"); shots.className = "shots";
+  for (const [shot, title] of rest) {
+    const fig = document.createElement("figure");
+    fig.innerHTML = `<img alt=""><figcaption></figcaption>`;
+    fig.querySelector("img").src = "/api/render.png?" + params(shot);
+    fig.querySelector("figcaption").textContent = title;
+    fig.onclick = () => showPreview(shot);
+    shots.append(fig);
+  }
+  pane.append(h, big, shots);
+}
+function openShot(shot) {
+  // The screen's full view, with its region boxes.
+  state.cards = state.info.shots.map(([name, title]) => ({ shot: name, res: state.res, title }));
+  const index = state.cards.findIndex((c) => c.shot === shot);
+  render(shot, state.res).then((info) => { state.cards[index].info = info; openDetail(index); });
+}
+$("tdomain").onclick = (event) => {
+  if (!event.target.dataset.domain) return;
+  state.tDomain = event.target.dataset.domain; state.tSelected = null;
+  for (const b of $("tdomain").children) b.setAttribute("aria-pressed", String(b.dataset.domain === state.tDomain));
+  save(); renderList();
+  $("tpreview").innerHTML = '<p class="tempty">Select a string to see it on the screens that use it.</p>';
+};
+$("tfilter").onchange = () => { state.tFilter = $("tfilter").value; save(); renderList(); };
+$("tsearch").oninput = () => { state.tSearch = $("tsearch").value; renderList(); };
+
 /* Live reload: the server's fingerprint of the theme folder changes when a file is saved. */
 let lastChange = null;
 async function poll() {
   try {
-    const r = await fetch("/api/version?" + new URLSearchParams({ theme: state.theme }));
+    const r = await fetch("/api/version?" + new URLSearchParams({ theme: state.theme, lang: state.lang }));
     const { version } = await r.json();
     if (state.version !== null && version !== state.version) {
       state.version = version; lastChange = new Date();
       state.renders.clear();
       const detail = state.detail;
-      for (const card of state.cards) fill(card);
+      if (state.view === "translate") showPreview();
+      for (const card of state.view === "preview" ? state.cards || [] : []) fill(card);
       if (detail !== null) Promise.all(state.cards.map((c) => render(c.shot, c.res))).then(() => { if (state.detail === detail) openDetail(detail); });
       // Refresh the scheme list too, in case theme.json changed it.
       state.info = await (await fetch("/api/info")).json(); fillSchemes();
@@ -411,9 +662,7 @@ function status() {
     $("status").textContent = "Can't reach the server."; return;
   }
   fillControls();
-  await poll();
-  save();
-  build();
+  setView(state.view === "translate" ? "translate" : "preview");
   setInterval(poll, 1000);
 })();
 </script>

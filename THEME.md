@@ -35,6 +35,24 @@ To write the screens to files instead, for a theme's README or to compare before
 
 That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
 
+### Translating PortMaster
+
+The same server is a translation editor: pick **Translate** at the top. It lists every string of PortMaster (and, under **Themes**, every theme's text) with the chosen language's translation.
+- **Filters:** show only the untranslated strings, those with problems, or those on the rendered screens.
+- **Preview:** selecting a string shows the screens that use it, in that language, at the chosen resolution. Saving (leave the box, or Ctrl/⌘+Enter for the next string) updates them a moment later, so you can see whether it fits.
+- **Problems flagged:** a translation that drops a `{placeholder}`, a line break, or a space the English starts or ends with (text joined to other text, like "Music: " + "Disabled").
+- **Where it saves:** the language files in your checkout, `PortMaster/pylibs/locales/<lang>.json` and `<lang>.themes.json`. Pick a language marked "new" to start one.
+
+A theme can also carry its own translations, in a `#translations` section of its `theme.json`:
+
+```json
+    "#translations": {
+        "de_DE": { "Ports List": "Portliste" }
+    },
+```
+
+They win over PortMaster's translations of the same text.
+
 Every theme needs `main_menu`, `option_menu`, `ports_list` and `message_window` sections: pugwash fills in the other screens from those when a theme leaves them out.
 
 ## Scene Format

@@ -232,7 +232,8 @@ def main(argv=None):
                     reply(ok=True, missing=str(missing), regions=[], errors=[])
                     continue
 
-                reply(ok=True, regions=regions, errors=errors, ms=int((time.monotonic() - started) * 1000))
+                reply(ok=True, regions=regions, errors=errors, strings=renderer.strings(),
+                      ms=int((time.monotonic() - started) * 1000))
 
             else:
                 reply(ok=False, error=f"unknown command {command.get('cmd')!r}")

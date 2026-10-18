@@ -78,6 +78,9 @@ It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `
   - It pretends to be a device: the `device_info.txt` screen rules, and `PM_PRETEND_RESOLUTION`, which pugwash honours in `HM_TESTING` mode.
   - It links a shared ports cache (`~/.cache/portmaster-theme-server`, filled by `worker.py --prepare-cache`).
 - `shots.py` holds the screen catalogue: one builder per screen, pushing scenes with real port data.
+  - It records which translatable strings each render looked up, for the editor.
+- **Translate view:** a translation editor. `/api/strings` lists a language's strings, and `/api/translate` saves one into the checkout's language files, in `strings.json` order. It only accepts requests from the page itself: they need the `X-Theme-Server` header.
+  - Renderers are keyed by the theme and the language files together, so a saved translation re-renders.
 - Tested in `tests/test_theme_server.py`.
 
 Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is fixed and the marker should then be removed. pugwash's `main()` is wrapped in `logger.catch`, so it exits 0 even after a crash; check its output for tracebacks rather than relying on the exit code.

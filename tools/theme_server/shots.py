@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 import harbourmaster
+from harbourmaster import i18n
 from loguru import logger
 
 from pugwash import scenes as pug_scenes
@@ -40,6 +41,35 @@ class EmptyScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
         self.theme_section = ""
+
+
+class RecordingDict(dict):
+    """A translations dict that notes every string looked up in it: which strings a screen uses."""
+    def __init__(self, data, seen):
+        super().__init__(data)
+        self.seen = seen
+
+    def get(self, key, default=None):
+        self.seen.append(key)
+        return super().get(key, default)
+
+
+def record_lookups():
+    """Swap harbourmaster.i18n's dicts for recording ones: {'messages': [...], 'themes': [...]},
+    in lookup order, for the caller to clear."""
+    seen = {'messages': [], 'themes': []}
+    i18n._messages = RecordingDict(i18n._messages, seen['messages'])
+    i18n._themes = RecordingDict(i18n._themes, seen['themes'])
+    i18n._theme_own = RecordingDict(i18n._theme_own, seen['themes'])
+    return seen
+
+
+def _unique(items):
+    found = []
+    for item in items:
+        if item not in found:
+            found.append(item)
+    return found
 
 
 class NoThemeDownloads:
@@ -341,6 +371,8 @@ class Renderer:
             temp_dir=self.work / "temp", callback=self.gui)
         ## Screenshots load as they're drawn, so every image is there in the first frame.
         self.gui.images.disable_async()
+        ## Which strings each screen looks up, for the translation editor.
+        self.lookups = record_lookups()
         ## No sounds or music in a screenshot.
         self.gui.sounds.sound_is_disabled = True
         self.gui.sounds.music_is_disabled = True
@@ -359,6 +391,8 @@ class Renderer:
             raise KeyError(f"no shot called {shot!r}")
 
         self.errors.clear()
+        for seen in self.lookups.values():
+            seen.clear()
         gui = self.gui
         ## A screen that "quit" (eg: a scene with nothing to show) mustn't cancel the next one.
         gui.events.running = True
@@ -376,6 +410,10 @@ class Renderer:
             gui.messages_end(internal=True)
 
         return regions, list(self.errors)
+
+    def strings(self):
+        """The strings the last render looked up, once each: {'messages': [...], 'themes': [...]}."""
+        return {domain: _unique(seen) for domain, seen in self.lookups.items()}
 
     def quit(self):
         self.gui.quit()

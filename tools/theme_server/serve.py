@@ -36,6 +36,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO_DIR = HERE.parents[1]
+sys.path.insert(0, str(HERE.parent))
+import i18n as i18n_tool  # noqa: E402  (tools/i18n.py)
+
 PM_DIR = REPO_DIR / "PortMaster"
 DEFAULT_THEME_DIR = PM_DIR / "pylibs" / "default_theme"
 WORKER = HERE / "worker.py"
@@ -97,20 +100,27 @@ class Themes:
                 'schemes': schemes, 'default_scheme': default, 'error': None}
 
     @staticmethod
-    def fingerprint(theme_dir):
-        """Changes whenever a file in the theme is added, removed or saved."""
+    def fingerprint(theme_dir, extra_files=()):
+        """Changes whenever a file in the theme (or one of extra_files) is added, removed or saved."""
         digest = hashlib.md5()
+        paths = []
         for root, dirs, files in os.walk(str(theme_dir)):
             dirs.sort()
-            for name in sorted(files):
-                path = os.path.join(root, name)
-                try:
-                    stat = os.stat(path)
-                except OSError:
-                    continue
-                digest.update(f"{path}\0{stat.st_size}\0{stat.st_mtime_ns}\n".encode("utf-8", "replace"))
+            paths += [os.path.join(root, name) for name in sorted(files)]
+
+        for path in paths + [str(path) for path in extra_files]:
+            try:
+                stat = os.stat(path)
+            except OSError:
+                continue
+            digest.update(f"{path}\0{stat.st_size}\0{stat.st_mtime_ns}\n".encode("utf-8", "replace"))
 
         return digest.hexdigest()[:12]
+
+
+def version(theme_dir, lang):
+    """The theme's fingerprint with the language's translation files: what a render depends on."""
+    return Themes.fingerprint(theme_dir, [i18n_tool.domain_file(lang, domain) for domain in i18n_tool.DOMAINS])
 
 
 def languages():
@@ -195,6 +205,7 @@ class RenderPool:
         self.renders = {}
         self.lock = threading.Lock()
         self.start_lock = threading.Lock()
+        self.translations = Translations()
         self.counter = 0
 
     def _worker(self, theme_id, scheme, resolution, lang):
@@ -202,7 +213,7 @@ class RenderPool:
         if theme_dir is None:
             raise WorkerError(f"no theme {theme_id!r}")
 
-        fingerprint = Themes.fingerprint(theme_dir)
+        fingerprint = version(theme_dir, lang)
         key = (theme_id, fingerprint, scheme or "", resolution, lang)
         with self.lock:
             worker = self.workers.get(key)
@@ -253,10 +264,11 @@ class RenderPool:
             'shot': shot, 'theme': theme_id, 'scheme': worker.ready.get('scheme'), 'resolution': resolution,
             'lang': lang, 'version': fingerprint, 'regions': answer.get('regions', []),
             'errors': answer.get('errors', []), 'missing': answer.get('missing'), 'ms': answer.get('ms'),
+            'strings': self.translations.used(answer.get('strings', {})),
             }
         with self.lock:
-            ## Drop renders of older theme versions.
-            for old_key in [k for k in self.renders if k[0] == theme_id and k[1] != fingerprint]:
+            ## Drop renders of older versions of the theme and the language's translations.
+            for old_key in [k for k in self.renders if k[0] == theme_id and k[4] == lang and k[1] != fingerprint]:
                 del self.renders[old_key]
             self.renders[render_key] = (png, info)
 
@@ -271,6 +283,68 @@ class RenderPool:
             workers, self.workers = list(self.workers.values()), {}
         for worker in workers:
             worker.stop()
+
+
+################################################################################
+## Translations: the language files in the checkout's PortMaster/pylibs/locales
+class Translations:
+    """Reads and saves translations, one string at a time."""
+    def __init__(self):
+        self.lock = threading.Lock()
+
+    def strings(self):
+        return i18n_tool.read_strings()
+
+    def used(self, lookups):
+        """The strings a render looked up that are translatable (not {templates} and the like)."""
+        strings = self.strings()
+        return {domain: [text for text in lookups.get(domain, []) if text in strings[domain]] for domain in i18n_tool.DOMAINS}
+
+    def language(self, lang):
+        """Every string of both domains, with this language's translation and its problems."""
+        strings, translations = self.strings(), i18n_tool.read_translations(lang)
+        result = {}
+        for domain in i18n_tool.DOMAINS:
+            entries = []
+            for text, sources in strings[domain].items():
+                translation = translations[domain].get(text, "")
+                entries.append({'text': text, 'translation': translation, 'sources': sources,
+                                'problems': i18n_tool.problems(text, translation) if translation else []})
+            result[domain] = entries
+        return result
+
+    def save(self, lang, domain, text, translation):
+        """Sets one translation ("" removes it), in strings.json's order. Returns its problems."""
+        with self.lock:
+            strings = self.strings()[domain]
+            if text not in strings:
+                raise KeyError(text)
+
+            translations = i18n_tool.read_translations(lang)[domain]
+            if translation:
+                translations[text] = translation
+            else:
+                translations.pop(text, None)
+
+            ordered = {key: translations[key] for key in strings if key in translations}
+            path = i18n_tool.domain_file(lang, domain)
+            temp = path.with_name(path.name + ".tmp")
+            i18n_tool.write_json(temp, ordered)
+            os.replace(str(temp), str(path))
+            ## Both files of a language exist once it has one.
+            for other in i18n_tool.DOMAINS:
+                if not i18n_tool.domain_file(lang, other).exists():
+                    i18n_tool.write_json(i18n_tool.domain_file(lang, other), {})
+
+        return i18n_tool.problems(text, translation) if translation else []
+
+
+def all_languages():
+    """[(code, name, has files)]: every language PortMaster knows a name for, and any other with files."""
+    have = {code for code, _ in languages()}
+    text = (PM_DIR / "pylibs" / "pugwash" / "lang.py").read_text(encoding="utf-8")
+    names = dict(re.findall(r'"(\w\w_\w\w)": _\("([^"]+)"\)', text))
+    return [(code, names.get(code, code), code in have) for code in sorted(set(names) | have, key=lambda code: names.get(code, code))]
 
 
 ################################################################################
@@ -329,11 +403,23 @@ class Handler(BaseHTTPRequestHandler):
                     'languages': languages(),
                     'resolutions': list(RESOLUTIONS),
                     'shots': self.server.shots,
+                    'all_languages': all_languages(),
                     })
+
+            elif url.path == "/api/strings":
+                lang = query.get('lang', "")
+                if not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang):
+                    self.send(400, {'error': "bad language"})
+                    return
+                self.send(200, {'lang': lang, 'domains': self.server.pool.translations.language(lang)})
 
             elif url.path == "/api/version":
                 theme_dir = self.server.themes.get(query.get('theme'))
-                self.send(200 if theme_dir else 404, {'version': Themes.fingerprint(theme_dir) if theme_dir else None})
+                lang = query.get('lang', "en_US")
+                if not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang):
+                    self.send(400, {'error': "bad language"})
+                    return
+                self.send(200 if theme_dir else 404, {'version': version(theme_dir, lang) if theme_dir else None})
 
             elif url.path in ("/api/render.png", "/api/render.json"):
                 theme_id = query.get('theme', "default_theme")
@@ -360,6 +446,44 @@ class Handler(BaseHTTPRequestHandler):
 
         except WorkerError as error:
             self.send(500, {'error': str(error)})
+
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
+    def do_POST(self):
+        url = urllib.parse.urlparse(self.path)
+        ## Only the page itself: another site can't send this header without a CORS
+        ## preflight, which this server never answers.
+        if self.headers.get("X-Theme-Server") != "1" or not (self.headers.get("Content-Type") or "").startswith("application/json"):
+            self.send(403, {'error': "forbidden"})
+            return
+
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+            if not 0 < length <= 256 * 1024:
+                self.send(400, {'error': "bad request"})
+                return
+            body = json.loads(self.rfile.read(length).decode("utf-8"))
+
+            if url.path == "/api/translate":
+                lang, domain = body.get('lang', ""), body.get('domain', "")
+                text, translation = body.get('text'), body.get('translation', "")
+                if not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang) or lang == "en_US" or domain not in i18n_tool.DOMAINS or \
+                        not isinstance(text, str) or not isinstance(translation, str):
+                    self.send(400, {'error': "bad language, domain or text"})
+                    return
+                try:
+                    problems = self.server.pool.translations.save(lang, domain, text, translation)
+                except KeyError:
+                    self.send(404, {'error': "not a translatable string"})
+                    return
+                self.send(200, {'ok': True, 'problems': problems})
+
+            else:
+                self.send(404, {'error': "not found"})
+
+        except (ValueError, UnicodeDecodeError, AttributeError):
+            self.send(400, {'error': "bad request"})
 
         except (BrokenPipeError, ConnectionResetError):
             pass

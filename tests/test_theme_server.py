@@ -267,3 +267,98 @@ def test_port_screens_with_port_data(online_hm, hm_dirs, tmp_path):
 
     finally:
         pool.stop()
+
+
+################################################################################
+## The translation editor's side: which strings a screen uses, reading and saving.
+@pytest.mark.sdl
+@pytest.mark.own_display
+@needs_checkout
+def test_render_lists_the_strings_it_used(pool):
+    _, info = pool.render("default_theme", None, "640x480", "de_DE", "options")
+    assert "Select Theme" in info['strings']['messages']
+    ## Only translatable ones: not templates like "{system.cfw_name}".
+    known = serve.i18n_tool.read_strings()
+    assert all(text in known['messages'] for text in info['strings']['messages'])
+    assert all(text in known['themes'] for text in info['strings']['themes'])
+
+
+@pytest.fixture
+def locales(tmp_path, monkeypatch):
+    """The translation files, copied: saving writes there, not into the checkout."""
+    import shutil as sh
+    locales = tmp_path / "locales"
+    sh.copytree(str(serve.i18n_tool.LOCALES_DIR), str(locales))
+    monkeypatch.setattr(serve.i18n_tool, "LOCALES_DIR", locales)
+    return locales
+
+
+def test_translations_save(locales):
+    translations = serve.Translations()
+    entries = {entry['text']: entry for entry in translations.language("de_DE")['messages']}
+    assert entries["Select Theme"]['translation'] and entries["Select Theme"]['sources']
+
+    before = serve.version(serve.DEFAULT_THEME_DIR, "de_DE")
+    assert translations.save("de_DE", "messages", "Select Theme", "Thema wählen") == []
+    assert json.loads((locales / "de_DE.json").read_text(encoding="utf-8"))["Select Theme"] == "Thema wählen"
+    ## The renders depend on it.
+    assert serve.version(serve.DEFAULT_THEME_DIR, "de_DE") != before
+
+    ## Kept in strings.json's order, so diffs stay small.
+    order = list(json.loads((locales / "strings.json").read_text(encoding="utf-8")))
+    saved = list(json.loads((locales / "de_DE.json").read_text(encoding="utf-8")))
+    assert saved == [text for text in order if text in saved]
+
+    ## Problems come back; "" removes a translation.
+    assert translations.save("de_DE", "messages", "Music: ", "Musik:") == ["English ends with a space, this doesn't"]
+    translations.save("de_DE", "messages", "Select Theme", "")
+    assert "Select Theme" not in json.loads((locales / "de_DE.json").read_text(encoding="utf-8"))
+
+    ## Only known strings; a new language gets both its files.
+    with pytest.raises(KeyError):
+        translations.save("de_DE", "messages", "Not a string PortMaster has", "x")
+    translations.save("da_DK", "themes", next(iter(serve.i18n_tool.read_strings()['themes'])), "Dansk")
+    assert (locales / "da_DK.json").is_file() and (locales / "da_DK.themes.json").is_file()
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+@needs_checkout
+def test_translate_api(pool, locales):
+    server = serve.Server(("127.0.0.1", 0), serve.Handler)
+    server.themes, server.pool, server.shots, server.verbose = pool.themes, pool, pool.shots(), False
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+
+    def post(body, headers={"Content-Type": "application/json", "X-Theme-Server": "1"}):
+        request = urllib.request.Request(base + "/api/translate", data=json.dumps(body).encode(), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return response.status, json.loads(response.read())
+        except urllib.error.HTTPError as error:
+            return error.code, json.loads(error.read())
+
+    try:
+        with urllib.request.urlopen(base + "/api/strings?lang=de_DE", timeout=30) as response:
+            data = json.loads(response.read())
+        assert {entry['text'] for entry in data['domains']['messages']} >= {"Select Theme", "Options"}
+
+        good = {'lang': "de_DE", 'domain': "messages", 'text': "Select Theme", 'translation': "Thema wählen"}
+        ## Only from the page: another site's form or script can't send the header.
+        assert post(good, {"Content-Type": "application/json"})[0] == 403
+        assert post(good, {"Content-Type": "text/plain", "X-Theme-Server": "1"})[0] == 403
+        assert post(dict(good, lang="en_US"))[0] == 400
+        assert post(dict(good, lang="../x"))[0] == 400
+        assert post(dict(good, domain="other"))[0] == 400
+        assert post(dict(good, text="Nope"))[0] == 404
+        status, body = post(good)
+        assert status == 200 and body == {'ok': True, 'problems': []}
+        assert json.loads((locales / "de_DE.json").read_text(encoding="utf-8"))["Select Theme"] == "Thema wählen"
+
+        with urllib.request.urlopen(base + "/api/info", timeout=30) as response:
+            names = {code: (name, has) for code, name, has in json.loads(response.read())['all_languages']}
+        assert names["de_DE"] == ("German", True) and names["da_DK"] == ("Danish", False)
+
+    finally:
+        server.shutdown()
+        server.server_close()

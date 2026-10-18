@@ -163,6 +163,10 @@ def problems(source, translation):
     extra = sorted(set(PLACEHOLDER.findall(translation)) - set(PLACEHOLDER.findall(source)))
     if extra:
         found.append("unknown " + ", ".join(extra))
+    ## Joined to other text in the code ("Music: " + "Disabled"): the spaces at the ends matter.
+    for end, english, here in (("starts", source[:1], translation[:1]), ("ends", source[-1:], translation[-1:])):
+        if english.isspace() and not here.isspace():
+            found.append(f"English {end} with a space, this doesn't")
     if source.count("\n") != translation.count("\n"):
         found.append(f"{source.count(chr(10))} line breaks in English, {translation.count(chr(10))} here")
     return found
