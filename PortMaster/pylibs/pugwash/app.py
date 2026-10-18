@@ -30,6 +30,15 @@ from pugwash.app_ports import PortInfoMixin
 from pugwash import lang
 
 
+def parse_resolution(text):
+    """(width, height) from "1024x768", None for anything else."""
+    width, _x, height = text.strip().lower().partition('x')
+    if not (width.isdigit() and height.isdigit() and int(width) > 0 and int(height) > 0):
+        return None
+
+    return (int(width), int(height))
+
+
 class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixin, sdl.GUI, harbourmaster.Callback):
     """
     The GUI. Methods are grouped into the mixins in app_*.py.
@@ -91,22 +100,22 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             # Print the display width and height
             logger.info(f"Display size: {self.display_width}x{self.display_height}")
 
+        pretend_resolution = None
         if harbourmaster.HM_TESTING:
             ## To pretend to be a different device set the device_info environment
-            ## variables, eg: DEVICE_NAME=RG353V CFW_NAME=ArkOS DEVICE_ARCH=aarch64
-            pretend_resolution = None
-            ## Uncomment to choose a particular resolution
-            # pretend_resolution = (1024, 768)
+            ## variables, eg: DEVICE_NAME=RG353V CFW_NAME=ArkOS DEVICE_ARCH=aarch64,
+            ## and PM_PRETEND_RESOLUTION=1024x768 for its screen (tools/theme_server).
+            pretend_resolution = parse_resolution(os.environ.get('PM_PRETEND_RESOLUTION', ''))
 
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=pretend_resolution)
 
-        if capabilities['device'] == 'default':
+        if capabilities['device'] == 'default' and pretend_resolution is None:
             device = harbourmaster.find_device_by_resolution((self.display_width, self.display_height))
             logger.info(f"FOUND: {device}")
             if device != 'default':
                 capabilities = harbourmaster.device_info(device)
 
-        if capabilities['device'] == 'default':
+        if capabilities['device'] == 'default' and pretend_resolution is None:
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=(self.display_width, self.display_height))
 
         capabilities['capabilities'].append(lang.CURRENT_LANG)
@@ -437,9 +446,9 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         self.clean()
 
-    def create_screenshot(self):
+    def create_screenshot(self, file_name='screenshot.png'):
         """
-        Creates a screenshot and saves it to screenshot.png
+        Creates a screenshot and saves it to file_name (screenshot.png)
         """
         # Create a texture to render onto
         self.in_screenshot = True
@@ -460,10 +469,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         # Draw the GUI
         self.do_draw()
 
-        # Reset the rendering target to the default (the window)
-        sdl2.SDL_SetRenderTarget(self.renderer.sdlrenderer, None)
-
-        # Capture screenshot
+        # Capture screenshot, from the texture: read before the target goes back to the window.
         width, height = ctypes.c_int(0), ctypes.c_int(0)
         sdl2.SDL_QueryTexture(texture, None, None, ctypes.byref(width), ctypes.byref(height))
         pixels = (ctypes.c_uint8 * (width.value * height.value * 4))()
@@ -474,8 +480,11 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             pixels,
             width.value * 4)
 
+        # Reset the rendering target to the default (the window)
+        sdl2.SDL_SetRenderTarget(self.renderer.sdlrenderer, None)
+
         # Save the screenshot using pypng
-        with open('screenshot.png', 'wb') as f:
+        with open(file_name, 'wb') as f:
             writer = png.Writer(width=width.value, height=height.value, greyscale=False, alpha=True)
             writer.write_array(f, pixels)
 

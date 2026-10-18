@@ -4,6 +4,38 @@ PortMasters new gui has a flexible theme system build around a `theme.json` file
 
 This is currently a WIP documenting the theme format.
 
+## Previewing your theme
+
+The theme preview server renders every PortMaster screen with your theme, at any screen size, colour scheme and language, and refreshes the page each time you save a file. It runs from a PortMaster-GUI checkout on Linux or macOS:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # once, gets SDL2
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes
+```
+
+Then open http://localhost:8090/. `--themes` is one theme folder (it has a `theme.json`) or a folder of them; the default theme is always there too.
+
+- **The screens:**
+  - main menu, all, ready-to-run and installed ports, port info (and its popup)
+  - filters, featured ports, options, runtimes, themes, colour schemes, language
+  - on-screen keyboard, messages with a progress bar, message box
+  - the autoinstall and dialog screens, which always use the default theme on a device
+  - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
+- **Region boxes:** draws each region's area with its name. In a screen's own view, hover over or click a box (or a name in the list) to see the region's final theme values, after `#base`, `#element` and `[capability]` overrides are applied. **Save PNG** saves the screen, with the boxes if they're on.
+- **One screen, every size:** one screen at every common resolution, to check your `[hires]`, `[4:3]` and other overrides.
+- A screen your theme has no section for says so, rather than failing. Errors pugwash logged while drawing (a missing image, a bad colour) are listed on the screen.
+
+To write the screens to files instead, for a theme's README or to compare before and after a change:
+
+```bash
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes --export out/ \
+    --resolutions 640x480,1280x720 --schemes all --langs en_US,de_DE
+```
+
+That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
+
+Every theme needs `main_menu`, `option_menu`, `ports_list` and `message_window` sections: pugwash fills in the other screens from those when a theme leaves them out.
+
 ## Scene Format
 
 The theme has a few different sections:
