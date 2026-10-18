@@ -108,6 +108,11 @@ def test_language_reload(app, tmp_path):
     assert "Sprache wählen" in option_list.list
     assert "de_DE" in harbourmaster.device_info()['capabilities'] and "en_US" not in harbourmaster.device_info()['capabilities']
 
+    ## The languages are named in the new language too.
+    from pugwash.scenes import LanguageScene
+    names = LanguageScene(app).tags['option_list'].list
+    assert "Französisch" in names and "French" not in names
+
     ## The theme's font for the language: "font[ja_JP]".
     app.reload_language("ja_JP", then=options(app))
     assert app.scenes[-1][1][-1].tags['option_list'].font == "NotoSansJP-Regular.ttf"

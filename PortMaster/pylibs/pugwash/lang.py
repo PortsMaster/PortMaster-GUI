@@ -142,12 +142,14 @@ def set_language(language):
 
 
 def lang_list():
+    """{code: name} of the languages with a translation, named in the current language
+    (ALL_LANGUAGES holds the English names: it's made before any translation loads)."""
     languages = {
-        lang_id: lang_name
-        for lang_id, lang_name in sorted(ALL_LANGUAGES.items(), key=lambda item: (item[1]))
+        lang_id: _(lang_name)
+        for lang_id, lang_name in ALL_LANGUAGES.items()
         if i18n.language_file(LANG_DIR, lang_id).is_file()}
 
-    return languages
+    return dict(sorted(languages.items(), key=lambda item: item[1]))
 
 
 load_lang()

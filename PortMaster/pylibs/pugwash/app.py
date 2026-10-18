@@ -580,6 +580,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         capabilities.append(new_lang)
 
         self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
+        self.lang_list = lang_list()
         self.reload_theme(then)
 
     def quit(self):

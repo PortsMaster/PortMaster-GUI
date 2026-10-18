@@ -14,7 +14,7 @@ class LanguageScene(BaseScene):
 
         self.load_regions("option_menu", ['option_list', ])
 
-        languages = gui.lang_list
+        languages = lang.lang_list()
         selected_lang = lang.CURRENT_LANG
 
         self.tags['option_list'].reset_options()
