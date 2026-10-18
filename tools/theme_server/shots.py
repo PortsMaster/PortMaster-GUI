@@ -238,6 +238,31 @@ def shot_disclaimer(gui):
     _root(gui, DisclaimerScene(gui))
 
 
+def _startup_warning(gui, keywords):
+    """The unsupported-system warning with these of get_startup_warnings()'s warnings."""
+    from pugwash.scenes import StartupWarningScene
+    from pugwash.scenes import startup
+    import unittest.mock
+
+    ## Its warnings come from looking at the device; pretend to be one that gets these.
+    def exists(path):
+        return {"/mnt/SDCARD/spruce": "spruce", "/etc/trimui_device.txt": "trimui"}.get(str(path).rstrip("/")) in keywords
+
+    with unittest.mock.patch.object(startup.Path, "exists", lambda self: exists(self)):
+        info = dict(harbourmaster.device_info(), ram=512 if "lowram" in keywords else 2048)
+        warnings = startup.get_startup_warnings(info)
+
+    _root(gui, StartupWarningScene(gui, warnings))
+
+
+def shot_warning_trimui(gui):
+    _startup_warning(gui, {"trimui"})
+
+
+def shot_warning_long(gui):
+    _startup_warning(gui, {"spruce", "lowram"})
+
+
 SHOTS = (
     ("main_menu", "Main menu", shot_main_menu),
     ("ports_all", "All ports", shot_ports_all),
@@ -261,6 +286,8 @@ SHOTS = (
     ("selection_images", "Selection list + images", shot_selection_images),
     ("selection_description_images", "Selection list + description + images", shot_selection_description_images),
     ("disclaimer", "Disclaimer", shot_disclaimer),
+    ("warning_trimui", "Unsupported system warning (TrimUI)", shot_warning_trimui),
+    ("warning_long", "Unsupported system warning (spruce, low RAM)", shot_warning_long),
     )
 
 SHOT_BUILDERS = {name: builder for name, _, builder in SHOTS}

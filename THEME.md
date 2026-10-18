@@ -20,6 +20,7 @@ Then open http://localhost:8090/. `--themes` is one theme folder (it has a `them
   - filters, featured ports, options, runtimes, themes, colour schemes, language
   - on-screen keyboard, messages with a progress bar, message box
   - the autoinstall and dialog screens, which always use the default theme on a device
+  - the disclaimer and the unsupported-system warning, which are built in and look the same in every theme
   - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
 - **Region boxes:** draws each region's area with its name. In a screen's own view, hover over or click a box (or a name in the list) to see the region's final theme values, after `#base`, `#element` and `[capability]` overrides are applied. **Save PNG** saves the screen, with the boxes if they're on.
 - **One screen, every size:** one screen at every common resolution, to check your `[hires]`, `[4:3]` and other overrides.
