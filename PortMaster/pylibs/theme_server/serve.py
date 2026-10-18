@@ -247,8 +247,10 @@ class Worker:
             self.stop()
             raise WorkerError(self.ready.get('error') or "the renderer didn't start, see " + self.log_name)
 
-        ## What it has loaded: (theme id, theme version, scheme, language).
+        ## What it has loaded: (theme id, theme version, scheme, language), and what it's
+        ## doing for /api/status: None, "loading" or "rendering".
         self.loaded = loaded
+        self.state = None
         self.used = time.monotonic()
 
     def _read(self):
@@ -289,19 +291,25 @@ class Worker:
     def render(self, loaded, theme_dir, scheme, lang, shot):
         """(answer, png bytes): the theme, scheme and language loaded first if they aren't."""
         with self.lock:
-            if self.loaded != loaded:
-                answer = self._request({'cmd': "load", 'theme_dir': str(theme_dir), 'scheme': scheme, 'lang': lang})
+            try:
+                if self.loaded != loaded:
+                    self.state = "loading"
+                    answer = self._request({'cmd': "load", 'theme_dir': str(theme_dir), 'scheme': scheme, 'lang': lang})
+                    if not answer.get('ok'):
+                        self.loaded = None
+                        raise WorkerError(answer.get('error', "loading the theme failed"))
+                    self.loaded = loaded
+
+                self.state = "rendering"
+                out_file = self.work / "render.png"
+                answer = self._request({'cmd': "render", 'shot': shot, 'out': str(out_file)})
                 if not answer.get('ok'):
-                    self.loaded = None
-                    raise WorkerError(answer.get('error', "loading the theme failed"))
-                self.loaded = loaded
+                    raise WorkerError(answer.get('error', "render failed"))
 
-            out_file = self.work / "render.png"
-            answer = self._request({'cmd': "render", 'shot': shot, 'out': str(out_file)})
-            if not answer.get('ok'):
-                raise WorkerError(answer.get('error', "render failed"))
+                return answer, (out_file.read_bytes() if not answer.get('missing') else b"")
 
-            return answer, (out_file.read_bytes() if not answer.get('missing') else b"")
+            finally:
+                self.state = None
 
     def stop(self):
         try:
@@ -353,6 +361,21 @@ class RenderPool:
         self.start_lock = threading.Lock()
         self.translations = Translations()
         self.counter = 0
+        ## Screen sizes whose renderer is starting, for /api/status.
+        self.starting = set()
+
+    def status(self):
+        """What the renderers are doing, so the page can say: {'starting': [resolution],
+        'loading': [...], 'rendering': [...], 'running': [...]}."""
+        with self.lock:
+            states = {resolution: worker.state for resolution, worker in self.workers.items()}
+            starting = sorted(self.starting)
+        return {
+            'starting': starting,
+            'loading': sorted(res for res, state in states.items() if state == "loading"),
+            'rendering': sorted(res for res, state in states.items() if state == "rendering"),
+            'running': sorted(states),
+            }
 
     def _wanted(self, theme_id, scheme, lang):
         """(theme dir, scheme, (theme id, version, scheme, lang)) for a render."""
@@ -387,14 +410,20 @@ class RenderPool:
             for old in stale:
                 old.stop()
 
-            if self.zygote is None or (self.zygote and not self.zygote.alive()):
-                try:
-                    self.zygote = Zygote(self.ports_config, self.work_dir / "zygote")
-                except (WorkerError, OSError) as error:
-                    print(f"No zygote, renderers start on their own: {error}", file=sys.stderr, flush=True)
-                    self.zygote = False
+            with self.lock:
+                self.starting.add(resolution)
+            try:
+                if self.zygote is None or (self.zygote and not self.zygote.alive()):
+                    try:
+                        self.zygote = Zygote(self.ports_config, self.work_dir / "zygote")
+                    except (WorkerError, OSError) as error:
+                        print(f"No zygote, renderers start on their own: {error}", file=sys.stderr, flush=True)
+                        self.zygote = False
 
-            worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded, self.zygote or None)
+                worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded, self.zygote or None)
+            finally:
+                with self.lock:
+                    self.starting.discard(resolution)
             with self.lock:
                 self.workers[resolution] = worker
 
@@ -581,6 +610,9 @@ class Handler(BaseHTTPRequestHandler):
                     'shots': self.server.shots,
                     'all_languages': all_languages(),
                     })
+
+            elif url.path == "/api/status":
+                self.send(200, self.server.pool.status())
 
             elif url.path == "/api/strings":
                 lang = query.get('lang', "")

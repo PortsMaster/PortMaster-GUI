@@ -572,3 +572,25 @@ def test_renderers_fork_from_the_zygote(pool, tmp_path):
         time.sleep(0.05)
     png, info = pool.render("default_theme", "Dracula", "720x720", "de_DE", "main_menu")
     assert png and pool.workers["720x720"] is not forked
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_status_says_what_the_renderers_do(pool):
+    ## For the page's "Starting the renderer..." / "Loading..." line.
+    seen = []
+    original = serve.Worker.__init__
+
+    def slow_start(self, *args, **kwargs):
+        seen.append(pool.status())
+        original(self, *args, **kwargs)
+
+    serve.Worker.__init__ = slow_start
+    try:
+        pool.render("default_theme", None, "960x544", "en_US", "main_menu")
+    finally:
+        serve.Worker.__init__ = original
+
+    assert seen and seen[0]['starting'] == ["960x544"]
+    status = pool.status()
+    assert "960x544" in status['running'] and status['starting'] == [] and status['loading'] == []

@@ -37,6 +37,10 @@ input[type=text] { width: 7.5em; font-family: var(--mono); }
 .seg button[aria-pressed=true] { background: var(--accent); color: #fff; }
 .status { margin-left: auto; font-size: 12px; color: var(--muted); padding-bottom: 5px; text-align: right; }
 .status .live { color: var(--accent); }
+.busy { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; color: var(--fg); padding-bottom: 5px; }
+.spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
 main { padding: 16px; }
 /* Translate view */
 .translate { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -122,6 +126,7 @@ pre.data { font: 11px/1.4 var(--mono); white-space: pre-wrap; overflow-wrap: any
   <label class="field preview-only" id="mode-shot-field" hidden>Screen <select id="mode-shot"></select></label>
   <label class="toggle preview-only"><input type="checkbox" id="debug"> Region boxes</label>
   <label class="field preview-only">Size <input type="range" id="size" min="200" max="900" step="20" value="300"></label>
+  <div class="busy" id="busy" role="status" aria-live="polite" hidden><span class="spinner" aria-hidden="true"></span><span id="busy-text"></span></div>
   <div class="status" id="status">Loading…</div>
 </header>
 <main>
@@ -213,6 +218,7 @@ function fillLanguages() {
   $("lang").value = state.lang;
 }
 function setView(view) {
+  cancelRenders();
   state.view = view;
   for (const b of $("view").children) b.setAttribute("aria-pressed", String(b.dataset.view === view));
   for (const el of document.querySelectorAll(".preview-only")) el.hidden = view !== "preview" || (el.id === "mode-shot-field" && state.mode !== "resolutions");
@@ -244,16 +250,66 @@ function setMode(mode, rebuild = true) {
 function params(shot, res) {
   return new URLSearchParams({ theme: state.theme, scheme: state.scheme, res: res || state.res, lang: state.lang, shot, v: state.version || "" });
 }
+/* Renders go through a queue, two at a time: changing a setting drops what's waiting
+   and cancels what's running, so the server isn't busy with screens nobody wants. */
+const queue = { jobs: [], running: 0, gen: 0, total: 0, done: 0, controllers: new Set() };
+const QUEUE_LIMIT = 2;
+function cancelled() { const error = new Error("cancelled"); error.cancelled = true; return error; }
+function cancelRenders() {
+  queue.gen += 1;
+  for (const job of queue.jobs) job.reject(cancelled());
+  queue.jobs = [];
+  for (const controller of queue.controllers) controller.abort();
+  queue.total = 0; queue.done = 0;
+  state.renders.clear();
+  // A usage scan cut short starts again (buildTranslate, or the next poll).
+  if (state.scanning) { state.usageKey = null; state.scanning = false; }
+  busy();
+}
+function pump() {
+  while (queue.running < QUEUE_LIMIT && queue.jobs.length) {
+    const job = queue.jobs.shift();
+    const controller = new AbortController();
+    queue.running += 1; queue.controllers.add(controller);
+    fetch("/api/render.json?" + job.key, { signal: controller.signal })
+      .then(async (r) => { const body = await r.json(); if (!r.ok) throw new Error(body.error || r.statusText); return body; })
+      .then(job.resolve, (error) => job.reject(controller.signal.aborted ? cancelled() : error))
+      .finally(() => {
+        queue.running -= 1; queue.controllers.delete(controller);
+        if (job.gen === queue.gen) queue.done += 1;
+        pump();
+      });
+  }
+  busy();
+}
 async function render(shot, res) {
   const key = params(shot, res).toString();
   if (!state.renders.has(key)) {
-    state.renders.set(key, fetch("/api/render.json?" + key).then(async (r) => {
-      const body = await r.json();
-      if (!r.ok) throw new Error(body.error || r.statusText);
-      return body;
-    }));
+    const promise = new Promise((resolve, reject) => queue.jobs.push({ key, resolve, reject, gen: queue.gen }));
+    promise.catch(() => { if (state.renders.get(key) === promise) state.renders.delete(key); });
+    state.renders.set(key, promise);
+    queue.total += 1;
+    pump();
   }
   return state.renders.get(key);
+}
+
+/* What's happening, from the queue and the server's /api/status. */
+let statusTimer = null;
+async function serverStatus() {
+  try { state.server = await (await fetch("/api/status")).json(); } catch (e) { state.server = null; }
+  busy();
+}
+function busy() {
+  const active = queue.running + queue.jobs.length;
+  $("busy").hidden = !active;
+  if (!active) { clearInterval(statusTimer); statusTimer = null; state.server = null; return; }
+  if (!statusTimer) { statusTimer = setInterval(serverStatus, 500); serverStatus(); }
+  const server = state.server;
+  let text = `Rendering ${Math.min(queue.done + 1, queue.total)} of ${queue.total}…`;
+  if (server && server.starting.length) text = `Starting the renderer for ${server.starting[0].replace("x", "×")}, a few seconds…`;
+  else if (server && server.loading.length) text = "Loading the theme and language…";
+  $("busy-text").textContent = text;
 }
 
 function cards() {
@@ -265,6 +321,7 @@ function cards() {
 }
 
 function build() {
+  cancelRenders();
   const grid = $("grid");
   grid.replaceChildren();
   const list = cards();
@@ -304,6 +361,7 @@ async function fill(card) {
     card.el.classList.toggle("has-errors", info.errors.length > 0);
     meta.innerHTML = info.errors.length ? `<span class="badge">${info.errors.length} error${info.errors.length > 1 ? "s" : ""}</span>` : `${info.ms ?? "–"} ms`;
   } catch (error) {
+    if (error.cancelled) return;
     card.el.classList.add("has-errors");
     shotEl.innerHTML = `<div class="missing"></div>`; shotEl.firstChild.textContent = error.message.split("\n").filter(Boolean).slice(-1)[0] || "Render failed";
     meta.innerHTML = `<span class="badge">failed</span>`;
@@ -426,7 +484,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 /* Controls */
-function changed() { state.renders.clear(); save(); if (state.view === "translate") buildTranslate(); else build(); }
+function changed() { cancelRenders(); save(); if (state.view === "translate") buildTranslate(); else build(); }
 $("theme").onchange = () => { state.theme = $("theme").value; state.version = null; fillSchemes(); poll().then(changed); };
 $("scheme").onchange = () => { state.scheme = $("scheme").value; changed(); };
 $("res").onchange = () => {
@@ -637,9 +695,9 @@ async function poll() {
     const { version } = await r.json();
     if (state.version !== null && version !== state.version) {
       state.version = version; lastChange = new Date();
-      state.renders.clear();
+      cancelRenders();
       const detail = state.detail;
-      if (state.view === "translate") showPreview();
+      if (state.view === "translate") { if (!state.usageKey) scanUsage(); showPreview(); }
       for (const card of state.view === "preview" ? state.cards || [] : []) fill(card);
       if (detail !== null) Promise.all(state.cards.map((c) => render(c.shot, c.res))).then(() => { if (state.detail === detail) openDetail(detail); });
       // Refresh the scheme list too, in case theme.json changed it.
