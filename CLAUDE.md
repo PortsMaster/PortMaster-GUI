@@ -29,7 +29,8 @@ flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster P
 ./do_release.sh testsuite                  # a test build + dist/pmtest.zip, the "PortMaster Test Suite" port for testers (see below)
 ./do_release.sh alpha|beta|stable [VER]    # a release in dist/ (+ version.json); stable (or MAKE_INSTALL=Y) also builds the makeself installers
 ./do_muos_release.sh [stable]              # dist/muos.portmaster.zip (likewise do_trimui_release.sh, do_x86_64_release.sh)
-./do_i18n.sh                               # extract strings with xgettext, sync with Crowdin, compile .mo (needs crowdin CLI)
+python3 -I tools/i18n.py extract           # after changing translatable strings: rewrite locales/strings*.json
+python3 -I tools/i18n.py check             # language files: unused strings, lost {placeholders}
 ```
 
 pugwash flags: `--quiet --no-check --debug --no-colour --force-colour --no-log --offline --no-harbour`.
@@ -162,7 +163,13 @@ The version lives in the `## -- BEGIN PORTMASTER INFO --` block at the top of th
 
 ## Translations
 
-Wrap user-facing strings in `_()` (gettext). `do_i18n.sh` extracts strings from the `pugwash` script and every `.py` under `pylibs/harbourmaster` and `pylibs/pugwash` into `pylibs/locales/messages.pot`; theme strings go into `themes.pot` via `theme_msgfmt.py`. Translations are managed on Crowdin, so don't hand-edit `.po` files for other languages. If you change strings on purpose, regenerate the snapshot with `PM_UPDATE_I18N_SNAPSHOT=1 pytest tests/test_i18n_snapshot.py`.
+Wrap user-facing strings in `_()` from `harbourmaster.i18n`. Translations live in `PortMaster/pylibs/locales` as plain JSON, two files per language: `<lang>.json` for the code's strings and `<lang>.themes.json` for themes' `"text"` values (`{"English": "translation"}`; a missing string shows in English).
+- `strings.json` and `strings.themes.json` list every English string and where it's used.
+- `tools/i18n.py extract` rewrites both lists from the code and the themes. Pass `--themes DIR` to rescan other themes too; themes it doesn't scan keep their strings.
+- `tests/test_i18n.py` fails when the code's strings and `strings.json` differ, so run `extract` after changing strings on purpose.
+- A theme can carry its own translations in a `#translations` section of `theme.json` (`{lang: {text: translation}}`), which win over PortMaster's.
+- `pugwash.lang` picks the language on import and loads it with `harbourmaster.i18n.load_language`.
+- There's no gettext, `.po`/`.mo` or Crowdin any more: translators edit the language files, for example with the theme server's translation editor.
 
 ## Style
 

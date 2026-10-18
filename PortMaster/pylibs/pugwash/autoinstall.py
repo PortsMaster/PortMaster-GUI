@@ -11,7 +11,7 @@ import shutil
 import zipfile
 from pathlib import Path
 from loguru import logger
-from gettext import gettext as _
+from harbourmaster.i18n import _
 
 
 class AutoinstallResult:

@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import zipfile
 
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pathlib import Path
 
 # Included imports

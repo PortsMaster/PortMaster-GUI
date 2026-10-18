@@ -3,7 +3,7 @@
 # RetroDECK.
 
 import shutil
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pathlib import Path
 from loguru import logger
 from ..util import json_safe_load, replace_file

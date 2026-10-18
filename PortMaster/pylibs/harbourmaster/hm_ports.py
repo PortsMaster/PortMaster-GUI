@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from . import config as hm_config
 from .config import HM_SORT_ORDER

@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import zipfile
 from pathlib import Path
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from .console import cprint
 from .config import HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES

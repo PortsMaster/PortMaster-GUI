@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 import hashlib
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from .console import cprint
 from .util import download, hash_file

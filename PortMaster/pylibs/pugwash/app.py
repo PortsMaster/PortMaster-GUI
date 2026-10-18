@@ -19,7 +19,7 @@ from pugwash import tasks
 from loguru import logger
 from pugwash.theme import ThemeEngine
 from pugwash.scenes import StringFormatter, TempMenuScene
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pugwash import PYLIB_PATH, PORTMASTER_VERSION, PORTMASTER_DEBUG
 from pugwash.lang import lang_list
 from pugwash.util import battery_level, get_ip_address, is_process_running

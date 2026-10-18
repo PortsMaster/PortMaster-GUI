@@ -118,7 +118,7 @@ def languages():
     text = (PM_DIR / "pylibs" / "pugwash" / "lang.py").read_text(encoding="utf-8")
     names = dict(re.findall(r'"(\w\w_\w\w)": _\("([^"]+)"\)', text))
     locales = PM_DIR / "pylibs" / "locales"
-    codes = {"en_US"} | {path.name for path in locales.iterdir() if (path / "LC_MESSAGES").is_dir()}
+    codes = {"en_US"} | {match.group(1) for match in (re.match(r"^([a-z]{2,3}_[A-Z]{2})\.json$", path.name) for path in locales.glob("*.json")) if match}
     return [(code, names.get(code, code)) for code in names if code in codes] + \
         [(code, code) for code in sorted(codes - set(names))]
 

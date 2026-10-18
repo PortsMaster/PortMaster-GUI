@@ -8,7 +8,7 @@ import harbourmaster
 from loguru import logger
 from pugwash.scenes import BlankScene
 from harbourmaster import HarbourMaster, make_temp_directory
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pugwash import PORTMASTER_DEBUG
 from pugwash.app import PortMasterGUI
 from pugwash.autoinstall import games_list_refresh_text

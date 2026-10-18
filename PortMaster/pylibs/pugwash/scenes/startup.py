@@ -4,7 +4,7 @@
 
 import harbourmaster
 from pathlib import Path
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from .base import BaseScene
 from .main_menu import MainMenuScene
 

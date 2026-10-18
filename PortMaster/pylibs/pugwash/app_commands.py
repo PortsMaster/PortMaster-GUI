@@ -6,7 +6,7 @@ import shutil
 import zipfile
 import harbourmaster
 from loguru import logger
-from gettext import gettext as _
+from harbourmaster.i18n import _
 
 
 class CommandsMixin:

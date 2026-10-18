@@ -3,7 +3,7 @@
 import datetime
 import shutil
 import zipfile
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from .util import calculate_git_blob_sha_data, calculate_git_blob_sha_file, datetime_compare, download, fetch_data, fetch_text, json_safe_load, json_safe_loads
 

@@ -3,7 +3,7 @@
 # Port sources. HM_SOURCE_APIS maps the "api" value in *.source.json files to a class,
 # PortMasterV3 is the only one left; raw_download handles installs from a plain url.
 
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from urllib.parse import urlparse, urlunparse
 from loguru import logger
 from ..info import port_info_load

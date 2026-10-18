@@ -1,0 +1,1035 @@
+{
+  "This is not a valid zip file.": [
+    "pylibs/harbourmaster/captain.py:47",
+    "pylibs/pugwash/autoinstall.py:112"
+  ],
+  "illegal file {file_name}": [
+    "pylibs/harbourmaster/captain.py:54",
+    "pylibs/harbourmaster/captain.py:59",
+    "pylibs/harbourmaster/captain.py:64"
+  ],
+  "the port has no directory": [
+    "pylibs/harbourmaster/captain.py:116"
+  ],
+  "the port has no launch script": [
+    "pylibs/harbourmaster/captain.py:120"
+  ],
+  "unable to load {file_name}": [
+    "pylibs/harbourmaster/captain.py:127",
+    "pylibs/harbourmaster/captain.py:132"
+  ],
+  "Loading...": [
+    "pylibs/harbourmaster/harbour.py:126"
+  ],
+  "Loading Sources.": [
+    "pylibs/harbourmaster/harbour.py:210"
+  ],
+  "Download validation failed.": [
+    "pylibs/harbourmaster/hm_info.py:71",
+    "pylibs/harbourmaster/hm_info.py:91",
+    "pylibs/harbourmaster/util/net.py:141"
+  ],
+  "Unable to download file.": [
+    "pylibs/harbourmaster/hm_info.py:86"
+  ],
+  "Loading Info.": [
+    "pylibs/harbourmaster/hm_info.py:101"
+  ],
+  "Fetching latest ports info data.": [
+    "pylibs/harbourmaster/hm_info.py:120"
+  ],
+  "Fetching latest porters info.": [
+    "pylibs/harbourmaster/hm_info.py:124"
+  ],
+  "Fetching latest port stats.": [
+    "pylibs/harbourmaster/hm_info.py:128"
+  ],
+  "Fetching latest featured ports.": [
+    "pylibs/harbourmaster/hm_info.py:132"
+  ],
+  "Fetching latest featured port images zip.": [
+    "pylibs/harbourmaster/hm_info.py:136"
+  ],
+  "Fetching featured port image {file_name}": [
+    "pylibs/harbourmaster/hm_info.py:281"
+  ],
+  "Installing Theme {download_name}.": [
+    "pylibs/harbourmaster/hm_install.py:57"
+  ],
+  "Installing": [
+    "pylibs/harbourmaster/hm_install.py:66",
+    "pylibs/harbourmaster/hm_install.py:133",
+    "pylibs/harbourmaster/hm_install.py:267",
+    "pylibs/pugwash/autoinstall.py:131"
+  ],
+  "Theme {download_name!r} installed successfully.": [
+    "pylibs/harbourmaster/hm_install.py:79"
+  ],
+  "PortMaster.zip is damaged, download it again.": [
+    "pylibs/harbourmaster/hm_install.py:105"
+  ],
+  "Port {download_name} installed failed.": [
+    "pylibs/harbourmaster/hm_install.py:107",
+    "pylibs/harbourmaster/hm_install.py:397"
+  ],
+  "Installing {download_name}.": [
+    "pylibs/harbourmaster/hm_install.py:124",
+    "pylibs/harbourmaster/hm_install.py:251",
+    "pylibs/pugwash/autoinstall.py:126"
+  ],
+  "Port {download_name!r} installed successfully.": [
+    "pylibs/harbourmaster/hm_install.py:168",
+    "pylibs/harbourmaster/hm_install.py:421"
+  ],
+  "Installation failed, removing files...": [
+    "pylibs/harbourmaster/hm_install.py:186"
+  ],
+  "HELLO.\n\nIT LOOKS LIKE YOU'RE MANUALLY INSTALLING A PORT THAT IS INCOMPATIBLE WITH YOUR DEVICE.\n\nIF YOU HAVE ISSUES, DO NOT REPORT THEM ON DISCORD, YOU WILL BE SUBJECT TO RIDICULE.\n\nARE YOU SURE YOU WANT TO RESUME INSTALLING?": [
+    "pylibs/harbourmaster/hm_install.py:230"
+  ],
+  "Okay": [
+    "pylibs/harbourmaster/hm_install.py:231",
+    "pylibs/pugwash/app_callbacks.py:179",
+    "pylibs/pugwash/app_fifo.py:79",
+    "pylibs/pugwash/scenes/dialogs.py:64",
+    "pylibs/pugwash/scenes/dialogs.py:111"
+  ],
+  "Cancel": [
+    "pylibs/harbourmaster/hm_install.py:231",
+    "pylibs/pugwash/app_callbacks.py:182",
+    "pylibs/pugwash/app_fifo.py:80",
+    "pylibs/pugwash/scenes/dialogs.py:33",
+    "pylibs/pugwash/scenes/dialogs.py:67",
+    "pylibs/pugwash/scenes/dialogs.py:112",
+    "pylibs/pugwash/scenes/keyboard.py:33",
+    "pylibs/pugwash/scenes/keyboard.py:41"
+  ],
+  "Not compatible with this device.": [
+    "pylibs/harbourmaster/hm_install.py:233"
+  ],
+  "Installation failed: {reason}": [
+    "pylibs/harbourmaster/hm_install.py:394"
+  ],
+  "Port {download_name!r} and {runtime_name!r} installed successfully.": [
+    "pylibs/harbourmaster/hm_install.py:411"
+  ],
+  "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\nEither reinstall to try again, or check the wiki for help.": [
+    "pylibs/harbourmaster/hm_install.py:416"
+  ],
+  "Unable to download in offline mode.": [
+    "pylibs/harbourmaster/hm_install.py:432",
+    "pylibs/harbourmaster/hm_install.py:512"
+  ],
+  "File not found.": [
+    "pylibs/harbourmaster/hm_install.py:455"
+  ],
+  "Unable to find a source for {port_name}": [
+    "pylibs/harbourmaster/hm_install.py:530"
+  ],
+  "Unknown port {port_name}": [
+    "pylibs/harbourmaster/hm_install.py:544"
+  ],
+  "Removing {port_name}": [
+    "pylibs/harbourmaster/hm_install.py:579"
+  ],
+  "Error uninstalling {port_name}\n\n{error}": [
+    "pylibs/harbourmaster/hm_install.py:623"
+  ],
+  "Successfully uninstalled {port_name}": [
+    "pylibs/harbourmaster/hm_install.py:627"
+  ],
+  "Loading Ports.": [
+    "pylibs/harbourmaster/hm_ports.py:187"
+  ],
+  "Port {runtime} contains a bad runtime, game may not run correctly.": [
+    "pylibs/harbourmaster/hm_runtimes.py:90"
+  ],
+  "Port {runtime} contains an unknown runtime, game may not run correctly.": [
+    "pylibs/harbourmaster/hm_runtimes.py:104"
+  ],
+  "Not Installed": [
+    "pylibs/harbourmaster/hm_runtimes.py:121",
+    "pylibs/pugwash/app_ports.py:93",
+    "pylibs/pugwash/scenes/filters.py:69",
+    "pylibs/pugwash/scenes/runtimes.py:91"
+  ],
+  "Update Available": [
+    "pylibs/harbourmaster/hm_runtimes.py:122",
+    "pylibs/pugwash/app_ports.py:92",
+    "pylibs/pugwash/scenes/filters.py:70"
+  ],
+  "Verified": [
+    "pylibs/harbourmaster/hm_runtimes.py:123"
+  ],
+  "Unverified": [
+    "pylibs/harbourmaster/hm_runtimes.py:124"
+  ],
+  "Broken": [
+    "pylibs/harbourmaster/hm_runtimes.py:125"
+  ],
+  "Unable do download a runtime when in offline mode.": [
+    "pylibs/harbourmaster/hm_runtimes.py:136"
+  ],
+  "Verifying runtime {runtime}": [
+    "pylibs/harbourmaster/hm_runtimes.py:142"
+  ],
+  "Verifying": [
+    "pylibs/harbourmaster/hm_runtimes.py:151",
+    "pylibs/harbourmaster/hm_runtimes.py:154"
+  ],
+  "Unable to find a download for {runtime}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:179"
+  ],
+  "Unable to download {runtime} in {device_arch}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:185"
+  ],
+  "Verified {runtime} successfully.": [
+    "pylibs/harbourmaster/hm_runtimes.py:207"
+  ],
+  "Verified {runtime}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:210"
+  ],
+  "Updating {runtime}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:216"
+  ],
+  "Runtime {runtime} is broken, reinstalling.": [
+    "pylibs/harbourmaster/hm_runtimes.py:220"
+  ],
+  "Downloading runtime {runtime}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:224"
+  ],
+  "Unable to download {runtime}, game may not run correctly.": [
+    "pylibs/harbourmaster/hm_runtimes.py:253",
+    "pylibs/harbourmaster/hm_runtimes.py:263"
+  ],
+  "Successfully downloaded {runtime}.": [
+    "pylibs/harbourmaster/hm_runtimes.py:272"
+  ],
+  "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": [
+    "pylibs/harbourmaster/platform/retrodeck.py:18"
+  ],
+  "Unable to download verification file.": [
+    "pylibs/harbourmaster/source/__init__.py:35"
+  ],
+  "Unable to download non zip files.": [
+    "pylibs/harbourmaster/source/__init__.py:46"
+  ],
+  "Cache out of date.": [
+    "pylibs/harbourmaster/source/base.py:34"
+  ],
+  "First check.": [
+    "pylibs/harbourmaster/source/base.py:39"
+  ],
+  "Auto Update.": [
+    "pylibs/harbourmaster/source/base.py:42"
+  ],
+  "Updating": [
+    "pylibs/harbourmaster/source/portmaster.py:42",
+    "pylibs/pugwash/theme.py:441"
+  ],
+  "Up to date already": [
+    "pylibs/harbourmaster/source/portmaster.py:53",
+    "pylibs/pugwash/theme.py:448"
+  ],
+  "Fetching latest info": [
+    "pylibs/harbourmaster/source/portmaster.py:57",
+    "pylibs/pugwash/theme.py:451"
+  ],
+  "Done.": [
+    "pylibs/harbourmaster/source/portmaster.py:136",
+    "pylibs/pugwash/theme.py:474"
+  ],
+  "Fetching info": [
+    "pylibs/harbourmaster/source/portmaster.py:168",
+    "pylibs/pugwash/theme.py:480"
+  ],
+  "Unable to find {port_name}.": [
+    "pylibs/harbourmaster/source/portmaster.py:389"
+  ],
+  "Unable to download file. [{status_code}]": [
+    "pylibs/harbourmaster/util/net.py:70"
+  ],
+  "Downloading {file_url} - ({total_length_mb})": [
+    "pylibs/harbourmaster/util/net.py:86"
+  ],
+  "Downloading file.": [
+    "pylibs/harbourmaster/util/net.py:98",
+    "pylibs/harbourmaster/util/net.py:112"
+  ],
+  "Download failed: {err}": [
+    "pylibs/harbourmaster/util/net.py:129"
+  ],
+  "Passed file validation.": [
+    "pylibs/harbourmaster/util/net.py:147"
+  ],
+  "Unable to validate download.": [
+    "pylibs/harbourmaster/util/net.py:152"
+  ],
+  "Unknown IP": [
+    "pylibs/pugwash/app.py:229"
+  ],
+  "N/A": [
+    "pylibs/pugwash/app.py:382",
+    "pylibs/pugwash/app_ports.py:70"
+  ],
+  "Fetching latest gameinfo.xml files and cover images.": [
+    "pylibs/pugwash/app_commands.py:47"
+  ],
+  "Downloading gameinfo.xml for {source_name}": [
+    "pylibs/pugwash/app_commands.py:68"
+  ],
+  "Installing {port_name}": [
+    "pylibs/pugwash/app_commands.py:101"
+  ],
+  "Uninstalling {port_name}": [
+    "pylibs/pugwash/app_commands.py:112"
+  ],
+  "Updating all port sources:": [
+    "pylibs/pugwash/app_commands.py:125"
+  ],
+  "Checking {runtime_name}": [
+    "pylibs/pugwash/app_commands.py:137"
+  ],
+  "Auto-installation": [
+    "pylibs/pugwash/app_fifo.py:356",
+    "pylibs/pugwash/autoinstall.py:168"
+  ],
+  "** NO PORT **": [
+    "pylibs/pugwash/app_ports.py:33"
+  ],
+  "Ready to Run": [
+    "pylibs/pugwash/app_ports.py:52",
+    "pylibs/pugwash/scenes/filters.py:66",
+    "pylibs/pugwash/scenes/main_menu.py:96"
+  ],
+  "Requires Files": [
+    "pylibs/pugwash/app_ports.py:52"
+  ],
+  "Installed": [
+    "pylibs/pugwash/app_ports.py:64",
+    "pylibs/pugwash/app_ports.py:91",
+    "pylibs/pugwash/scenes/runtimes.py:91"
+  ],
+  "Missing": [
+    "pylibs/pugwash/app_ports.py:66"
+  ],
+  "Installation failed, see log.txt for details.": [
+    "pylibs/pugwash/autoinstall.py:101"
+  ],
+  "It is for the wrong architecture ({zip_arch}, this device is {device_arch}), it was deleted.": [
+    "pylibs/pugwash/autoinstall.py:123"
+  ],
+  "Installed {download_name}.": [
+    "pylibs/pugwash/autoinstall.py:154"
+  ],
+  "- SUCCESS: {name}": [
+    "pylibs/pugwash/autoinstall.py:192"
+  ],
+  "- FAILURE: {name}": [
+    "pylibs/pugwash/autoinstall.py:194"
+  ],
+  "Ports have been added or removed, update your games list to see the new games or remove the uninstalled ones.": [
+    "pylibs/pugwash/autoinstall.py:204"
+  ],
+  "Some files failed to install, select them to see why. They were left in the autoinstall directory.": [
+    "pylibs/pugwash/autoinstall.py:219"
+  ],
+  "Everything installed successfully.": [
+    "pylibs/pugwash/autoinstall.py:221"
+  ],
+  "{installed} installed, {failed} failed": [
+    "pylibs/pugwash/autoinstall.py:227"
+  ],
+  "OK: {name}": [
+    "pylibs/pugwash/autoinstall.py:233"
+  ],
+  "{name} installed successfully.": [
+    "pylibs/pugwash/autoinstall.py:234"
+  ],
+  "FAILED: {name}": [
+    "pylibs/pugwash/autoinstall.py:236"
+  ],
+  "{name} failed to install:\n\n{reason}": [
+    "pylibs/pugwash/autoinstall.py:237"
+  ],
+  "Danish": [
+    "pylibs/pugwash/lang.py:22"
+  ],
+  "German": [
+    "pylibs/pugwash/lang.py:23"
+  ],
+  "English": [
+    "pylibs/pugwash/lang.py:24"
+  ],
+  "Spanish": [
+    "pylibs/pugwash/lang.py:25"
+  ],
+  "Esperanto": [
+    "pylibs/pugwash/lang.py:26"
+  ],
+  "Finnish": [
+    "pylibs/pugwash/lang.py:27"
+  ],
+  "French": [
+    "pylibs/pugwash/lang.py:28"
+  ],
+  "Italian": [
+    "pylibs/pugwash/lang.py:29"
+  ],
+  "Japanese": [
+    "pylibs/pugwash/lang.py:30"
+  ],
+  "Korean": [
+    "pylibs/pugwash/lang.py:31"
+  ],
+  "Dutch": [
+    "pylibs/pugwash/lang.py:32"
+  ],
+  "Polish": [
+    "pylibs/pugwash/lang.py:33"
+  ],
+  "Portuguese (Portugal)": [
+    "pylibs/pugwash/lang.py:34"
+  ],
+  "Portuguese (Brazil)": [
+    "pylibs/pugwash/lang.py:35"
+  ],
+  "Romanian": [
+    "pylibs/pugwash/lang.py:36"
+  ],
+  "Russian": [
+    "pylibs/pugwash/lang.py:37"
+  ],
+  "Swedish": [
+    "pylibs/pugwash/lang.py:38"
+  ],
+  "Ukrainian": [
+    "pylibs/pugwash/lang.py:39"
+  ],
+  "Chinese Simplified": [
+    "pylibs/pugwash/lang.py:40"
+  ],
+  "Messages": [
+    "pylibs/pugwash/scenes/dialogs.py:17"
+  ],
+  "Are you sure you want to cancel?": [
+    "pylibs/pugwash/scenes/dialogs.py:52"
+  ],
+  "Featured Ports": [
+    "pylibs/pugwash/scenes/featured.py:17",
+    "pylibs/pugwash/scenes/featured.py:19",
+    "pylibs/pugwash/scenes/main_menu.py:30"
+  ],
+  "Select": [
+    "pylibs/pugwash/scenes/featured.py:30",
+    "pylibs/pugwash/scenes/keyboard.py:33",
+    "pylibs/pugwash/scenes/keyboard.py:41",
+    "pylibs/pugwash/scenes/language.py:30",
+    "pylibs/pugwash/scenes/themes.py:45",
+    "pylibs/pugwash/scenes/themes.py:130"
+  ],
+  "Back": [
+    "pylibs/pugwash/scenes/featured.py:30",
+    "pylibs/pugwash/scenes/language.py:29",
+    "pylibs/pugwash/scenes/language.py:30",
+    "pylibs/pugwash/scenes/options.py:158",
+    "pylibs/pugwash/scenes/port_info.py:36",
+    "pylibs/pugwash/scenes/port_info.py:39",
+    "pylibs/pugwash/scenes/port_info.py:129",
+    "pylibs/pugwash/scenes/port_info.py:131",
+    "pylibs/pugwash/scenes/ports.py:241",
+    "pylibs/pugwash/scenes/ports.py:267",
+    "pylibs/pugwash/scenes/ports.py:269",
+    "pylibs/pugwash/scenes/runtimes.py:107",
+    "pylibs/pugwash/scenes/runtimes.py:110",
+    "pylibs/pugwash/scenes/themes.py:47",
+    "pylibs/pugwash/scenes/themes.py:129",
+    "pylibs/pugwash/scenes/themes.py:130"
+  ],
+  "No featured ports found, internet connection is required.": [
+    "pylibs/pugwash/scenes/featured.py:47"
+  ],
+  "Filters Scene": [
+    "pylibs/pugwash/scenes/filters.py:14"
+  ],
+  "Alphabetical": [
+    "pylibs/pugwash/scenes/filters.py:43"
+  ],
+  "Recently Added": [
+    "pylibs/pugwash/scenes/filters.py:44"
+  ],
+  "Recently Updated": [
+    "pylibs/pugwash/scenes/filters.py:45"
+  ],
+  "Total Downloads": [
+    "pylibs/pugwash/scenes/filters.py:46"
+  ],
+  "Action": [
+    "pylibs/pugwash/scenes/filters.py:49"
+  ],
+  "Adventure": [
+    "pylibs/pugwash/scenes/filters.py:50"
+  ],
+  "Arcade": [
+    "pylibs/pugwash/scenes/filters.py:51"
+  ],
+  "Casino/Card": [
+    "pylibs/pugwash/scenes/filters.py:52"
+  ],
+  "First Person Shooter": [
+    "pylibs/pugwash/scenes/filters.py:53"
+  ],
+  "Platformer": [
+    "pylibs/pugwash/scenes/filters.py:54"
+  ],
+  "Puzzle": [
+    "pylibs/pugwash/scenes/filters.py:55"
+  ],
+  "Racing": [
+    "pylibs/pugwash/scenes/filters.py:56"
+  ],
+  "Rhythm": [
+    "pylibs/pugwash/scenes/filters.py:57"
+  ],
+  "Role Playing Game": [
+    "pylibs/pugwash/scenes/filters.py:58"
+  ],
+  "Simulation": [
+    "pylibs/pugwash/scenes/filters.py:59"
+  ],
+  "Sports": [
+    "pylibs/pugwash/scenes/filters.py:60"
+  ],
+  "Strategy": [
+    "pylibs/pugwash/scenes/filters.py:61"
+  ],
+  "Visual Novel": [
+    "pylibs/pugwash/scenes/filters.py:62"
+  ],
+  "Other": [
+    "pylibs/pugwash/scenes/filters.py:63"
+  ],
+  "Files Required": [
+    "pylibs/pugwash/scenes/filters.py:67"
+  ],
+  "Experimental": [
+    "pylibs/pugwash/scenes/filters.py:68"
+  ],
+  "Broken Ports": [
+    "pylibs/pugwash/scenes/filters.py:71"
+  ],
+  "Free game, all files included.": [
+    "pylibs/pugwash/scenes/filters.py:74"
+  ],
+  "Demo files included.": [
+    "pylibs/pugwash/scenes/filters.py:75"
+  ],
+  "Free external assets needed.": [
+    "pylibs/pugwash/scenes/filters.py:76"
+  ],
+  "Paid external assets needed.": [
+    "pylibs/pugwash/scenes/filters.py:77"
+  ],
+  "{runtime_name} Runtime": [
+    "pylibs/pugwash/scenes/filters.py:80",
+    "pylibs/pugwash/scenes/filters.py:81",
+    "pylibs/pugwash/scenes/filters.py:82",
+    "pylibs/pugwash/scenes/filters.py:83",
+    "pylibs/pugwash/scenes/filters.py:84",
+    "pylibs/pugwash/scenes/filters.py:85",
+    "pylibs/pugwash/scenes/filters.py:86"
+  ],
+  "ARM 32bit": [
+    "pylibs/pugwash/scenes/filters.py:89"
+  ],
+  "ARM 64bit": [
+    "pylibs/pugwash/scenes/filters.py:90"
+  ],
+  "x86 64bit": [
+    "pylibs/pugwash/scenes/filters.py:91"
+  ],
+  "Ascending": [
+    "pylibs/pugwash/scenes/filters.py:128"
+  ],
+  "Descending": [
+    "pylibs/pugwash/scenes/filters.py:130"
+  ],
+  "Sort:": [
+    "pylibs/pugwash/scenes/filters.py:138"
+  ],
+  "Clear Filters": [
+    "pylibs/pugwash/scenes/filters.py:153"
+  ],
+  "Genres:": [
+    "pylibs/pugwash/scenes/filters.py:177"
+  ],
+  "Attributes:": [
+    "pylibs/pugwash/scenes/filters.py:207"
+  ],
+  "Architecture:": [
+    "pylibs/pugwash/scenes/filters.py:236"
+  ],
+  "Availability:": [
+    "pylibs/pugwash/scenes/filters.py:265"
+  ],
+  "Porters:": [
+    "pylibs/pugwash/scenes/filters.py:294"
+  ],
+  "Delete": [
+    "pylibs/pugwash/scenes/keyboard.py:33",
+    "pylibs/pugwash/scenes/keyboard.py:41"
+  ],
+  "Upper Case": [
+    "pylibs/pugwash/scenes/keyboard.py:33"
+  ],
+  "Space": [
+    "pylibs/pugwash/scenes/keyboard.py:33",
+    "pylibs/pugwash/scenes/keyboard.py:41"
+  ],
+  "Enter": [
+    "pylibs/pugwash/scenes/keyboard.py:33",
+    "pylibs/pugwash/scenes/keyboard.py:41",
+    "pylibs/pugwash/scenes/main_menu.py:55",
+    "pylibs/pugwash/scenes/options.py:158"
+  ],
+  "Lower Case": [
+    "pylibs/pugwash/scenes/keyboard.py:41"
+  ],
+  "Language Select": [
+    "pylibs/pugwash/scenes/language.py:14"
+  ],
+  "{lang_name} (Selected)": [
+    "pylibs/pugwash/scenes/language.py:24"
+  ],
+  "Do you want to change language?\n\nYou will have to restart for it to take affect.": [
+    "pylibs/pugwash/scenes/language.py:47"
+  ],
+  "Main Menu": [
+    "pylibs/pugwash/scenes/main_menu.py:17",
+    "pylibs/pugwash/scenes/startup.py:65"
+  ],
+  "Hand curated lists of ports": [
+    "pylibs/pugwash/scenes/main_menu.py:31"
+  ],
+  "All Ports": [
+    "pylibs/pugwash/scenes/main_menu.py:34",
+    "pylibs/pugwash/scenes/main_menu.py:95"
+  ],
+  "List all ports available on PortMaster.": [
+    "pylibs/pugwash/scenes/main_menu.py:35"
+  ],
+  "Ready to Run Ports": [
+    "pylibs/pugwash/scenes/main_menu.py:38"
+  ],
+  "List all ports that are ready to play!": [
+    "pylibs/pugwash/scenes/main_menu.py:39"
+  ],
+  "Manage Ports": [
+    "pylibs/pugwash/scenes/main_menu.py:42",
+    "pylibs/pugwash/scenes/main_menu.py:97"
+  ],
+  "Update / Uninstall Ports": [
+    "pylibs/pugwash/scenes/main_menu.py:43"
+  ],
+  "Options": [
+    "pylibs/pugwash/scenes/main_menu.py:48"
+  ],
+  "PortMaster Options": [
+    "pylibs/pugwash/scenes/main_menu.py:49"
+  ],
+  "Exit": [
+    "pylibs/pugwash/scenes/main_menu.py:52"
+  ],
+  "Quit PortMaster": [
+    "pylibs/pugwash/scenes/main_menu.py:53"
+  ],
+  "Quit": [
+    "pylibs/pugwash/scenes/main_menu.py:55",
+    "pylibs/pugwash/scenes/startup.py:129",
+    "pylibs/pugwash/scenes/startup.py:212"
+  ],
+  "Secret Mode {secret_mode}": [
+    "pylibs/pugwash/scenes/main_menu.py:75"
+  ],
+  "Enabled": [
+    "pylibs/pugwash/scenes/main_menu.py:76",
+    "pylibs/pugwash/scenes/options.py:49",
+    "pylibs/pugwash/scenes/options.py:53",
+    "pylibs/pugwash/scenes/options.py:93",
+    "pylibs/pugwash/scenes/options.py:136",
+    "pylibs/pugwash/scenes/options.py:140",
+    "pylibs/pugwash/scenes/options.py:144",
+    "pylibs/pugwash/scenes/options.py:200",
+    "pylibs/pugwash/scenes/options.py:212",
+    "pylibs/pugwash/scenes/options.py:226",
+    "pylibs/pugwash/scenes/options.py:238",
+    "pylibs/pugwash/scenes/options.py:314",
+    "pylibs/pugwash/scenes/options.py:323"
+  ],
+  "Disabled": [
+    "pylibs/pugwash/scenes/main_menu.py:76",
+    "pylibs/pugwash/scenes/options.py:49",
+    "pylibs/pugwash/scenes/options.py:53",
+    "pylibs/pugwash/scenes/options.py:93",
+    "pylibs/pugwash/scenes/options.py:136",
+    "pylibs/pugwash/scenes/options.py:140",
+    "pylibs/pugwash/scenes/options.py:144",
+    "pylibs/pugwash/scenes/options.py:200",
+    "pylibs/pugwash/scenes/options.py:212",
+    "pylibs/pugwash/scenes/options.py:226",
+    "pylibs/pugwash/scenes/options.py:238",
+    "pylibs/pugwash/scenes/options.py:314",
+    "pylibs/pugwash/scenes/options.py:323"
+  ],
+  "Are you sure you want to exit PortMaster?": [
+    "pylibs/pugwash/scenes/main_menu.py:124",
+    "pylibs/pugwash/scenes/startup.py:166",
+    "pylibs/pugwash/scenes/startup.py:242"
+  ],
+  "Options Menu": [
+    "pylibs/pugwash/scenes/options.py:21"
+  ],
+  "Interface": [
+    "pylibs/pugwash/scenes/options.py:27"
+  ],
+  "Choose Language": [
+    "pylibs/pugwash/scenes/options.py:31"
+  ],
+  "Select the language PortMaster uses.": [
+    "pylibs/pugwash/scenes/options.py:32"
+  ],
+  "Select Theme": [
+    "pylibs/pugwash/scenes/options.py:35",
+    "pylibs/pugwash/scenes/themes.py:13"
+  ],
+  "Select a theme for PortMaster.": [
+    "pylibs/pugwash/scenes/options.py:36"
+  ],
+  "Select Color Scheme": [
+    "pylibs/pugwash/scenes/options.py:42"
+  ],
+  "Select a colour scheme for PortMaster": [
+    "pylibs/pugwash/scenes/options.py:43"
+  ],
+  "Audio": [
+    "pylibs/pugwash/scenes/options.py:45"
+  ],
+  "Music: ": [
+    "pylibs/pugwash/scenes/options.py:49",
+    "pylibs/pugwash/scenes/options.py:314"
+  ],
+  "Enable or Disable background music in PortMaster.": [
+    "pylibs/pugwash/scenes/options.py:50"
+  ],
+  "Sound FX: ": [
+    "pylibs/pugwash/scenes/options.py:53",
+    "pylibs/pugwash/scenes/options.py:323"
+  ],
+  "Enable or Disable soundfx in PortMaster.": [
+    "pylibs/pugwash/scenes/options.py:54"
+  ],
+  "Port Metadata": [
+    "pylibs/pugwash/scenes/options.py:57"
+  ],
+  "Metadata Update: ": [
+    "pylibs/pugwash/scenes/options.py:61",
+    "pylibs/pugwash/scenes/options.py:351"
+  ],
+  "Auto": [
+    "pylibs/pugwash/scenes/options.py:61",
+    "pylibs/pugwash/scenes/options.py:351"
+  ],
+  "Manual": [
+    "pylibs/pugwash/scenes/options.py:61",
+    "pylibs/pugwash/scenes/options.py:351"
+  ],
+  "PortMaster updates metadata when ports are installed so that it shows port images and descriptions when browsing ports on your device.": [
+    "pylibs/pugwash/scenes/options.py:62"
+  ],
+  "Metadata Refresh": [
+    "pylibs/pugwash/scenes/options.py:66"
+  ],
+  "Manually update port metadata with missing/updated information and artwork.": [
+    "pylibs/pugwash/scenes/options.py:67"
+  ],
+  "Ports Location: ": [
+    "pylibs/pugwash/scenes/options.py:72",
+    "pylibs/pugwash/scenes/options.py:81",
+    "pylibs/pugwash/scenes/options.py:388"
+  ],
+  "Roms section": [
+    "pylibs/pugwash/scenes/options.py:72",
+    "pylibs/pugwash/scenes/options.py:366"
+  ],
+  "Ports tab": [
+    "pylibs/pugwash/scenes/options.py:72",
+    "pylibs/pugwash/scenes/options.py:367"
+  ],
+  "Location where ports should be installed to.": [
+    "pylibs/pugwash/scenes/options.py:73",
+    "pylibs/pugwash/scenes/options.py:82"
+  ],
+  "SD 1": [
+    "pylibs/pugwash/scenes/options.py:81"
+  ],
+  "SD 2": [
+    "pylibs/pugwash/scenes/options.py:81"
+  ],
+  "System": [
+    "pylibs/pugwash/scenes/options.py:84"
+  ],
+  "Runtime Manager": [
+    "pylibs/pugwash/scenes/options.py:88",
+    "pylibs/pugwash/scenes/runtimes.py:13"
+  ],
+  "Manage port runtimes.": [
+    "pylibs/pugwash/scenes/options.py:89"
+  ],
+  "Experimental Ports: ": [
+    "pylibs/pugwash/scenes/options.py:93",
+    "pylibs/pugwash/scenes/options.py:212"
+  ],
+  "Show or hide experimental ports.": [
+    "pylibs/pugwash/scenes/options.py:94"
+  ],
+  "Update Ports": [
+    "pylibs/pugwash/scenes/options.py:98"
+  ],
+  "Fetch latest ports information.": [
+    "pylibs/pugwash/scenes/options.py:99"
+  ],
+  "Update PortMaster": [
+    "pylibs/pugwash/scenes/options.py:103"
+  ],
+  "Force check for a new PortMaster version.": [
+    "pylibs/pugwash/scenes/options.py:104"
+  ],
+  "Restore PortMaster": [
+    "pylibs/pugwash/scenes/options.py:109"
+  ],
+  "This will restore PortMaster to the latest stable version of PortMaster.": [
+    "pylibs/pugwash/scenes/options.py:110"
+  ],
+  "Release Channel: {channel}": [
+    "pylibs/pugwash/scenes/options.py:114"
+  ],
+  "Change release channel of PortMaster, either beta or stable.": [
+    "pylibs/pugwash/scenes/options.py:116"
+  ],
+  "Enable Alpha Releases": [
+    "pylibs/pugwash/scenes/options.py:122"
+  ],
+  "Change release channel of PortMaster to alpha.": [
+    "pylibs/pugwash/scenes/options.py:123"
+  ],
+  "Controller Mode: {controller_mode}": [
+    "pylibs/pugwash/scenes/options.py:129",
+    "pylibs/pugwash/scenes/options.py:341"
+  ],
+  "Toggle between various controller layouts.": [
+    "pylibs/pugwash/scenes/options.py:130"
+  ],
+  "Secret Options": [
+    "pylibs/pugwash/scenes/options.py:133"
+  ],
+  "All Ports: ": [
+    "pylibs/pugwash/scenes/options.py:136",
+    "pylibs/pugwash/scenes/options.py:200"
+  ],
+  "Show all ports, ignoring requirements.": [
+    "pylibs/pugwash/scenes/options.py:137"
+  ],
+  "CWTBE Mode: ": [
+    "pylibs/pugwash/scenes/options.py:140",
+    "pylibs/pugwash/scenes/options.py:226"
+  ],
+  "Enable gptokeyb2 by default.": [
+    "pylibs/pugwash/scenes/options.py:141"
+  ],
+  "Debug Mode: ": [
+    "pylibs/pugwash/scenes/options.py:144",
+    "pylibs/pugwash/scenes/options.py:238"
+  ],
+  "Enable debug logging all the time.": [
+    "pylibs/pugwash/scenes/options.py:145"
+  ],
+  "Delete PortMaster Config": [
+    "pylibs/pugwash/scenes/options.py:148"
+  ],
+  "This can break stuff, don't touch unless you know what you are doing.": [
+    "pylibs/pugwash/scenes/options.py:149",
+    "pylibs/pugwash/scenes/options.py:153"
+  ],
+  "Delete PortMaster Runtimes": [
+    "pylibs/pugwash/scenes/options.py:152"
+  ],
+  "Are you sure you want to restore PortMaster?\n\nThis will require you to run a specially crafted port that will be installed.": [
+    "pylibs/pugwash/scenes/options.py:242"
+  ],
+  "A special port has been installed called \"Restore PortMaster.sh\"\n\nRun this port to restore your PortMaster installation.": [
+    "pylibs/pugwash/scenes/options.py:252"
+  ],
+  "PortMaster will now quit so you can run the restoration port.": [
+    "pylibs/pugwash/scenes/options.py:255"
+  ],
+  "Are you sure you want to change to the alpha release channel?\n\nPortMaster will upgrade or downgrade accordingly.\n\nTHIS CAN AND WILL BREAK STUFF, YOU HAVE BEEN WARNED": [
+    "pylibs/pugwash/scenes/options.py:262"
+  ],
+  "Are you sure you want to change the release channel from {current_channel} to {new_channel}?\n\nPortMaster will upgrade or downgrade accordingly.": [
+    "pylibs/pugwash/scenes/options.py:289"
+  ],
+  "Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information and will require a 50+ MB download.": [
+    "pylibs/pugwash/scenes/options.py:357"
+  ],
+  "Are you sure you want to move ports from the {from_mode} to the {to_mode}": [
+    "pylibs/pugwash/scenes/options.py:378"
+  ],
+  "SDCARD 1": [
+    "pylibs/pugwash/scenes/options.py:397"
+  ],
+  "SDCARD 2": [
+    "pylibs/pugwash/scenes/options.py:398"
+  ],
+  "Are you sure you want to manage and install ports on {to_loc}?\n\nAlready installed ports will not be moved.\nPortMaster will restart for this to take effect.": [
+    "pylibs/pugwash/scenes/options.py:402"
+  ],
+  "Deleting Runtimes:": [
+    "pylibs/pugwash/scenes/options.py:466"
+  ],
+  "Source Manager": [
+    "pylibs/pugwash/scenes/options.py:491"
+  ],
+  "Port Info Popup": [
+    "pylibs/pugwash/scenes/port_info.py:13"
+  ],
+  "Hide Info": [
+    "pylibs/pugwash/scenes/port_info.py:24",
+    "pylibs/pugwash/scenes/port_info.py:27"
+  ],
+  "Reinstall": [
+    "pylibs/pugwash/scenes/port_info.py:36",
+    "pylibs/pugwash/scenes/port_info.py:129"
+  ],
+  "Uninstall": [
+    "pylibs/pugwash/scenes/port_info.py:36",
+    "pylibs/pugwash/scenes/port_info.py:129",
+    "pylibs/pugwash/scenes/runtimes.py:107"
+  ],
+  "Install": [
+    "pylibs/pugwash/scenes/port_info.py:39",
+    "pylibs/pugwash/scenes/port_info.py:131",
+    "pylibs/pugwash/scenes/runtimes.py:110"
+  ],
+  "Port Info": [
+    "pylibs/pugwash/scenes/port_info.py:63"
+  ],
+  "Show Info": [
+    "pylibs/pugwash/scenes/port_info.py:96",
+    "pylibs/pugwash/scenes/port_info.py:101",
+    "pylibs/pugwash/scenes/ports.py:241",
+    "pylibs/pugwash/scenes/ports.py:267",
+    "pylibs/pugwash/scenes/ports.py:269"
+  ],
+  "Are you sure you want to uninstall {port_name}?": [
+    "pylibs/pugwash/scenes/port_info.py:151"
+  ],
+  "NO PORTS": [
+    "pylibs/pugwash/scenes/ports.py:34",
+    "pylibs/pugwash/scenes/ports.py:65"
+  ],
+  "** NO PORTS FOUND **": [
+    "pylibs/pugwash/scenes/ports.py:38",
+    "pylibs/pugwash/scenes/ports.py:72"
+  ],
+  "Download ports first.": [
+    "pylibs/pugwash/scenes/ports.py:40",
+    "pylibs/pugwash/scenes/ports.py:75"
+  ],
+  "Try removing some filters.": [
+    "pylibs/pugwash/scenes/ports.py:77"
+  ],
+  "Ports List": [
+    "pylibs/pugwash/scenes/ports.py:246"
+  ],
+  "Filters": [
+    "pylibs/pugwash/scenes/ports.py:267"
+  ],
+  "Download All": [
+    "pylibs/pugwash/scenes/runtimes.py:47"
+  ],
+  "Used": [
+    "pylibs/pugwash/scenes/runtimes.py:92"
+  ],
+  "Not Used": [
+    "pylibs/pugwash/scenes/runtimes.py:92"
+  ],
+  "Check": [
+    "pylibs/pugwash/scenes/runtimes.py:107"
+  ],
+  "Are you sure you want to download and verify all runtimes?": [
+    "pylibs/pugwash/scenes/runtimes.py:125"
+  ],
+  "Deleted runtime {runtime}": [
+    "pylibs/pugwash/scenes/runtimes.py:167"
+  ],
+  "For the best experience, switch to a supported firmware such as muOS or KNULLI.": [
+    "pylibs/pugwash/scenes/startup.py:20"
+  ],
+  "SpruceOS is not supported by PortMaster.": [
+    "pylibs/pugwash/scenes/startup.py:24"
+  ],
+  "CrossMix-OS is not supported by PortMaster.": [
+    "pylibs/pugwash/scenes/startup.py:28"
+  ],
+  "NextUI is not supported by PortMaster.": [
+    "pylibs/pugwash/scenes/startup.py:34"
+  ],
+  "Your OS is not supported by PortMaster.": [
+    "pylibs/pugwash/scenes/startup.py:42"
+  ],
+  "Your device has less than 1GB of RAM.": [
+    "pylibs/pugwash/scenes/startup.py:46"
+  ],
+  "Disclaimer": [
+    "pylibs/pugwash/scenes/startup.py:103"
+  ],
+  "Accept": [
+    "pylibs/pugwash/scenes/startup.py:129"
+  ],
+  "Warning": [
+    "pylibs/pugwash/scenes/startup.py:177"
+  ],
+  "Many ports will not work.": [
+    "pylibs/pugwash/scenes/startup.py:192"
+  ],
+  "I Understand": [
+    "pylibs/pugwash/scenes/startup.py:212"
+  ],
+  "{theme_name} (Selected)": [
+    "pylibs/pugwash/scenes/themes.py:31"
+  ],
+  "Download": [
+    "pylibs/pugwash/scenes/themes.py:50"
+  ],
+  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": [
+    "pylibs/pugwash/scenes/themes.py:69"
+  ],
+  "Select Colour Scheme": [
+    "pylibs/pugwash/scenes/themes.py:110"
+  ],
+  "{item_name} (Selected)": [
+    "pylibs/pugwash/scenes/themes.py:124"
+  ],
+  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": [
+    "pylibs/pugwash/scenes/themes.py:147"
+  ],
+  "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
+    "pylibs/pugwash/update.py:79"
+  ],
+  "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": [
+    "pylibs/pugwash/update.py:85"
+  ],
+  "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": [
+    "pylibs/pugwash/update.py:90"
+  ]
+}

@@ -3,7 +3,7 @@
 # Theme and colour scheme selection.
 
 import harbourmaster
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from .base import BaseScene
 
 
