@@ -54,7 +54,7 @@ RESOLUTIONS = (
     "1024x768", "1280x720", "1280x800", "1920x1080", "1920x1152",
     )
 
-## Render processes kept running at once (each is a pugwash, ~60 MB).
+## Render processes kept running at once, one per screen size (each is a pugwash, ~60 MB).
 MAX_WORKERS = 6
 
 
@@ -146,9 +146,10 @@ class WorkerError(Exception):
 
 
 class Worker:
-    """One worker.py: a pugwash for one theme version, scheme, resolution and language."""
-    def __init__(self, key, theme_dir, scheme, resolution, lang, ports_config, work):
-        self.key = key
+    """One worker.py: a pugwash at one screen size, switched in place to the theme version,
+    colour scheme and language each render needs."""
+    def __init__(self, resolution, theme_dir, scheme, lang, ports_config, work, loaded=None):
+        self.resolution = resolution
         self.lock = threading.Lock()
         self.work = Path(work)
         command = [sys.executable, str(WORKER), "--theme-dir", str(theme_dir), "--resolution", resolution,
@@ -164,6 +165,8 @@ class Worker:
             self.stop()
             raise WorkerError(self.ready.get('error') or "the renderer didn't start, see " + str(self.log_file.name))
 
+        ## What it has loaded: (theme id, theme version, scheme, language).
+        self.loaded = loaded
         self.used = time.monotonic()
 
     def _read(self):
@@ -172,15 +175,38 @@ class Worker:
             return {'ok': False, 'error': "the renderer stopped, see " + str(self.log_file.name)}
         return json.loads(line)
 
+    def _request(self, command):
+        if self.proc.poll() is not None:
+            raise WorkerError("the renderer stopped, see " + str(self.log_file.name))
+
+        self.used = time.monotonic()
+        self.proc.stdin.write(json.dumps(command) + "\n")
+        self.proc.stdin.flush()
+        return self._read()
+
+    def alive(self):
+        return self.proc.poll() is None
+
     def request(self, **command):
         with self.lock:
-            if self.proc.poll() is not None:
-                raise WorkerError("the renderer stopped, see " + str(self.log_file.name))
+            return self._request(command)
 
-            self.used = time.monotonic()
-            self.proc.stdin.write(json.dumps(command) + "\n")
-            self.proc.stdin.flush()
-            return self._read()
+    def render(self, loaded, theme_dir, scheme, lang, shot):
+        """(answer, png bytes): the theme, scheme and language loaded first if they aren't."""
+        with self.lock:
+            if self.loaded != loaded:
+                answer = self._request({'cmd': "load", 'theme_dir': str(theme_dir), 'scheme': scheme, 'lang': lang})
+                if not answer.get('ok'):
+                    self.loaded = None
+                    raise WorkerError(answer.get('error', "loading the theme failed"))
+                self.loaded = loaded
+
+            out_file = self.work / "render.png"
+            answer = self._request({'cmd': "render", 'shot': shot, 'out': str(out_file)})
+            if not answer.get('ok'):
+                raise WorkerError(answer.get('error', "render failed"))
+
+            return answer, (out_file.read_bytes() if not answer.get('missing') else b"")
 
     def stop(self):
         try:
@@ -200,8 +226,9 @@ class Worker:
 
 
 class RenderPool:
-    """Starts workers as they're needed, replaces them when their theme changes, and caches
-    what they rendered."""
+    """A renderer per screen size, started as needed (the least recently used goes when
+    there are too many), switched to each theme, scheme and language in place; and the
+    renders, until their theme or language files change."""
     def __init__(self, themes, ports_config, work_dir, max_workers=MAX_WORKERS):
         self.themes = themes
         self.ports_config = Path(ports_config)
@@ -215,31 +242,30 @@ class RenderPool:
         self.translations = Translations()
         self.counter = 0
 
-    def _worker(self, theme_id, scheme, resolution, lang):
+    def _wanted(self, theme_id, scheme, lang):
+        """(theme dir, scheme, (theme id, version, scheme, lang)) for a render."""
         theme_dir = self.themes.get(theme_id)
         if theme_dir is None:
             raise WorkerError(f"no theme {theme_id!r}")
 
-        ## No scheme is the theme's default one, by name: the same renderer the page uses.
+        ## No scheme is the theme's default one, by name: the same as the page asks for.
         scheme = scheme or self.themes.info(theme_id, theme_dir)['default_scheme']
-        fingerprint = version(theme_dir, lang)
-        key = (theme_id, fingerprint, scheme or "", resolution, lang)
+        return theme_dir, scheme, (theme_id, version(theme_dir, lang), scheme or "", lang)
+
+    def _worker(self, resolution, theme_dir, scheme, lang, loaded):
         with self.lock:
-            worker = self.workers.get(key)
-        if worker is not None:
-            return worker, fingerprint
+            worker = self.workers.get(resolution)
+        if worker is not None and worker.alive():
+            return worker
 
         ## One start at a time: the page asks for every screen at once.
         with self.start_lock:
             with self.lock:
-                worker = self.workers.get(key)
-                if worker is not None:
-                    return worker, fingerprint
+                worker = self.workers.get(resolution)
+                if worker is not None and worker.alive():
+                    return worker
 
-                ## The same settings for an older version of the theme, then the least
-                ## recently used if there are too many.
-                stale = [self.workers.pop(other) for other in list(self.workers)
-                         if other[0] == theme_id and other[2:] == key[2:]]
+                stale = [self.workers.pop(resolution)] if resolution in self.workers else []
                 while len(self.workers) >= self.max_workers:
                     stale.append(self.workers.pop(min(self.workers, key=lambda other: self.workers[other].used)))
 
@@ -249,28 +275,25 @@ class RenderPool:
             for old in stale:
                 old.stop()
 
-            worker = Worker(key, theme_dir, scheme, resolution, lang, self.ports_config, work)
+            worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded)
             with self.lock:
-                self.workers[key] = worker
+                self.workers[resolution] = worker
 
-        return worker, fingerprint
+        return worker
 
     def render(self, theme_id, scheme, resolution, lang, shot):
         """(png bytes, info dict) for one screen, cached until the theme changes."""
-        worker, fingerprint = self._worker(theme_id, scheme, resolution, lang)
-        render_key = worker.key + (shot,)
+        theme_dir, scheme, loaded = self._wanted(theme_id, scheme, lang)
+        fingerprint = loaded[1]
+        render_key = (theme_id, fingerprint, scheme or "", resolution, lang, shot)
         with self.lock:
             if render_key in self.renders:
                 return self.renders[render_key]
 
-        out_file = worker.work / f"{shot}.png"
-        answer = worker.request(cmd="render", shot=shot, out=str(out_file))
-        if not answer.get('ok'):
-            raise WorkerError(answer.get('error', "render failed"))
-
-        png = out_file.read_bytes() if not answer.get('missing') else b""
+        worker = self._worker(resolution, theme_dir, scheme, lang, loaded)
+        answer, png = worker.render(loaded, theme_dir, scheme, lang, shot)
         info = {
-            'shot': shot, 'theme': theme_id, 'scheme': worker.ready.get('scheme'), 'resolution': resolution,
+            'shot': shot, 'theme': theme_id, 'scheme': scheme, 'resolution': resolution,
             'lang': lang, 'version': fingerprint, 'regions': answer.get('regions', []),
             'errors': answer.get('errors', []), 'missing': answer.get('missing'), 'ms': answer.get('ms'),
             'strings': self.translations.used(answer.get('strings', {})),
@@ -290,7 +313,8 @@ class RenderPool:
     def warm(self, theme_id="default_theme", scheme=None, resolution="640x480", lang="en_US"):
         """Starts the renderer the page asks for first (the default theme, scheme and
         language), so its screens come quicker. Raises WorkerError if it can't start."""
-        self._worker(theme_id, scheme, resolution, lang)
+        theme_dir, scheme, loaded = self._wanted(theme_id, scheme, lang)
+        self._worker(resolution, theme_dir, scheme, lang, loaded)
 
     def stop(self):
         with self.lock:

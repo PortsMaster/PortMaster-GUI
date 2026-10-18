@@ -193,9 +193,10 @@ def test_missing_sections_and_default_only_screens(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-def test_a_saved_theme_gets_a_new_renderer(pool):
+def test_a_saved_theme_reloads_in_the_same_renderer(pool):
     theme_json = pool.themes.get("Tiny") / "theme.json"
     _, before = pool.render("Tiny", None, "640x480", "en_US", "main_menu")
+    renderer = pool.workers["640x480"]
     data = json.loads(theme_json.read_text())
     data["main_menu"]["#element:option_list"]["area"] = [0.0, 0.0, 0.5, 0.5]
     theme_json.write_text(json.dumps(data))
@@ -204,8 +205,31 @@ def test_a_saved_theme_gets_a_new_renderer(pool):
     assert after['version'] != before['version']
     rect = next(region['rect'] for region in after['regions'] if region['tag'] == "option_list")
     assert rect == [0, 0, 320, 240]
-    ## The old renderer for those settings is gone.
-    assert sum(1 for key in pool.workers if key[0] == "Tiny" and key[3] == "640x480") == 1
+    ## Reloaded in place: the same process, no new one.
+    assert pool.workers["640x480"] is renderer and renderer.alive()
+    assert renderer.loaded[:2] == ("Tiny", after['version'])
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_one_renderer_switches_theme_scheme_and_language(pool):
+    ## Each screen size has one renderer, switched in place: renders match a renderer
+    ## started with those settings.
+    renders = {}
+    for theme_id, scheme, lang in (("default_theme", None, "en_US"), ("default_theme", "Dracula", "en_US"),
+                                   ("default_theme", None, "de_DE"), ("Tiny", None, "en_US")):
+        png, info = pool.render(theme_id, scheme, "854x480", lang, "options")
+        assert not info['errors']
+        renders[(theme_id, scheme, lang)] = png
+    assert len(set(renders.values())) == 4
+    assert list(pool.workers).count("854x480") == 1
+
+    fresh = serve.RenderPool(pool.themes, pool.ports_config, pool.work_dir / "fresh")
+    try:
+        png, _ = fresh.render("default_theme", "Dracula", "854x480", "en_US", "options")
+        assert png == renders[("default_theme", "Dracula", "en_US")]
+    finally:
+        fresh.stop()
 
 
 @pytest.mark.sdl

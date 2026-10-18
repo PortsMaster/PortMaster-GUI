@@ -364,6 +364,18 @@ class Renderer:
         self.gui.sounds.sound_is_disabled = True
         self.gui.sounds.music_is_disabled = True
 
+    def load(self, theme_name, scheme, lang):
+        """Another theme, colour scheme or language (or the same, saved again): reloaded in
+        place, much quicker than a new renderer."""
+        gui = self.gui
+        gui.themes.force_theme = theme_name
+        gui.hm.cfg_data['theme-scheme'] = scheme
+        ## Reloads the translations (saved ones too) and then the theme.
+        gui.reload_language(lang)
+        self.lookups = record_lookups()
+        self.theme_name = theme_name
+        self.scheme = gui.themes.get_current_theme_scheme()
+
     def settle(self, frames=3):
         """A few frames, so scenes fill in their lists and text."""
         gui = self.gui

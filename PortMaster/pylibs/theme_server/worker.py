@@ -16,6 +16,9 @@
 #   cache's (DIR/tools/PortMaster/config, see --prepare-cache), or on a device PortMaster's
 #   own. Nothing in it is changed.
 #
+#   {"cmd": "load", "theme_dir": DIR, "scheme": NAME or null, "lang": "de_DE"}
+#       -> {"ok": true, "theme": name, "scheme": ...}: switches theme, scheme and language
+#       in place (or reloads them after a save), about a second instead of a new renderer.
 #   {"cmd": "render", "shot": "main_menu", "out": "/tmp/x.png"}
 #       -> {"ok": true, "regions": [...], "errors": [...]}
 #   {"cmd": "shots"} -> {"ok": true, "shots": [[name, title], ...]}
@@ -115,12 +118,7 @@ def prepare_tools_dir(work, ports_config, theme_dir, scheme):
             elif entry.is_file():
                 shutil.copyfile(str(entry), str(config / entry.name))
 
-    default_theme = PM_DIR / "pylibs" / "default_theme"
-    if theme_dir.resolve() == default_theme.resolve():
-        theme_name = "default_theme"
-    else:
-        theme_name = theme_dir.name
-        (tools / "PortMaster" / "themes" / theme_name).symlink_to(theme_dir.resolve())
+    theme_name = link_theme(work, theme_dir)
 
     ## Its "version", else harbourmaster upgrades the config by deleting the image folders
     ## (here links), and not a first run, which writes the default sources.
@@ -141,6 +139,20 @@ def prepare_tools_dir(work, ports_config, theme_dir, scheme):
         'music-disabled': True,
         }, indent=2))
 
+    return theme_name
+
+
+def link_theme(work, theme_dir):
+    """The theme's name, linked into work/tools/PortMaster/themes unless it's the built-in one."""
+    default_theme = PM_DIR / "pylibs" / "default_theme"
+    if Path(theme_dir).resolve() == default_theme.resolve():
+        return "default_theme"
+
+    theme_name = Path(theme_dir).name
+    link = work / "tools" / "PortMaster" / "themes" / theme_name
+    if link.is_symlink() or link.exists():
+        link.unlink()
+    link.symlink_to(Path(theme_dir).resolve())
     return theme_name
 
 
@@ -232,6 +244,12 @@ def main(argv=None):
 
             elif command.get('cmd') == "shots":
                 reply(ok=True, shots=[[name, title] for name, title, _ in shots.SHOTS])
+
+            elif command.get('cmd') == "load":
+                started = time.monotonic()
+                theme_name = link_theme(work, command['theme_dir'])
+                renderer.load(theme_name, command.get('scheme'), command.get('lang') or options.lang)
+                reply(ok=True, theme=theme_name, scheme=renderer.scheme, ms=int((time.monotonic() - started) * 1000))
 
             elif command.get('cmd') == "render":
                 started = time.monotonic()

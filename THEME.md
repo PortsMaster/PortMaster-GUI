@@ -40,7 +40,7 @@ That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a 
 PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list, and the translation editor saves into the device's PortMaster. Press B on the device to stop it.
 
 - Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
-- Each screen size, colour scheme and language starts a render process (60-90 MB): the first screen of a new combination takes 10-15 seconds on a handheld, the rest a second or two. How many run at once depends on the device's free memory.
+- Each screen size starts a render process (60-90 MB): its first screen takes about 10 seconds on a handheld. Switching theme, colour scheme or language, or saving, takes 2-3 seconds, and other screens a second or two. How many sizes are kept at once depends on the device's free memory.
 - Anyone on the same network can open it while it runs.
 
 ### Translating PortMaster
