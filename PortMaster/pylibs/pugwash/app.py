@@ -18,7 +18,7 @@ from pugwash import sdl
 from pugwash import tasks
 from loguru import logger
 from pugwash.theme import ThemeEngine
-from pugwash.scenes import StringFormatter, TempMenuScene
+from pugwash.scenes import MainMenuScene, StringFormatter, TempMenuScene
 from harbourmaster.i18n import _
 from pugwash import PYLIB_PATH, PORTMASTER_VERSION, PORTMASTER_DEBUG
 from pugwash.lang import lang_list
@@ -219,6 +219,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         self.themes = ThemeEngine(self, force_theme=force_theme)
 
         self.theme_data = self.themes.gui_init()
+        self.theme_dir = self.themes.get_theme_dir(self.themes.get_current_theme())
         self.resources.add_path(PYLIB_PATH / 'resources')
         self.theme_downloader = None
 
@@ -529,6 +530,57 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
     def format_data(self, input_string, used_keys=None):
         return self.formatter.format_string(input_string, used_keys)
+
+    def reload_theme(self, then=()):
+        """
+        Loads the theme again, the one in the config (or force_theme) with its colour
+        scheme, so a new theme, scheme or language applies without a restart. Everything
+        the old theme loaded is dropped first. The screens were made from the old theme:
+        this makes a new main menu, then pushes then's (layer name, scene class) on it.
+        """
+        logger.info("Reloading the theme")
+        self.sounds.unload_all()
+        self.images.unload_all()
+        self.text.unload_all()
+        self.animations.clear()
+        self.pallet.clear()
+        self.override.clear()
+        self.default_rects = sdl.NamedRects([0, 0, *self.renderer.logical_size])
+
+        ## The theme's folder first, then PortMaster's own resources, as at start.
+        self.resources.remove_path(self.theme_dir)
+        self.resources.remove_path(PYLIB_PATH / 'resources')
+        self.theme_data = self.themes.gui_init()
+        self.theme_dir = self.themes.get_theme_dir(self.themes.get_current_theme())
+        self.resources.add_path(PYLIB_PATH / 'resources')
+
+        for scene in self.all_scenes():
+            scene.scene_deactivate()
+
+        self.message_box_scene = None
+        self.scenes = [('root', [MainMenuScene(self)])]
+        self.scenes[-1][1][-1].scene_activate()
+        for name, scene_class in then:
+            self.push_scene(name, scene_class(self))
+
+        self.updated = True
+
+    def reload_language(self, language, then=()):
+        """
+        Use another language now (None for the system's): its translations, the theme's
+        font for it ("font[ja_JP]" & co, matched as a capability), and new screens, as
+        reload_theme().
+        """
+        old_lang = lang.CURRENT_LANG
+        new_lang = lang.set_language(language)
+
+        capabilities = harbourmaster.device_info()['capabilities']
+        if old_lang in capabilities:
+            capabilities.remove(old_lang)
+        capabilities.append(new_lang)
+
+        self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
+        self.reload_theme(then)
 
     def quit(self):
         # Clean up. Anything SDL owns has to be destroyed before SDL_Quit, otherwise the

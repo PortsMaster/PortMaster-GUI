@@ -142,7 +142,6 @@
   "Lower Case": "Letra minúscula",
   "Language Select": "Seleção de Idioma",
   "{lang_name} (Selected)": "{lang_name} (Selecionado)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "Você quer trocar de idioma?\n\nVocê terá que reiniciar para trocar o idioma.",
   "Main Menu": "Menu Principal",
   "Hand curated lists of ports": "Listas de jogos selecionados",
   "All Ports": "Todos os Jogos",
@@ -247,10 +246,8 @@
   "Accept": "Aceitar",
   "{theme_name} (Selected)": "{theme_name} (Selecionado)",
   "Download": "Baixar",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "Você quer trocar de tema?\n\nVocê terá que reiniciar para trocar de tema.",
   "Select Colour Scheme": "Selecionar Esquema de Cores",
   "{item_name} (Selected)": "{item_name} (Selecionado)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "Você quer trocar o esquema de cores do tema?\n\nVocê terá que reiniciar para trocar as cores.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "Você está trocando da versão {old_release_channel} para a versão {new_release_channel}.\n\nVocê deseja retroceder a versão?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "Há uma nova versão do Portmaster ({portmaster_version})\n\nDeseja atualizar?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "Você quer reinstalar PortMaster?\n\nIsso irá reinstalar do canal {release_channel} para {portmaster_version}."

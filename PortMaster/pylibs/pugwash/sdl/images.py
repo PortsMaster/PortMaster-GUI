@@ -458,6 +458,19 @@ class ImageManager():
         self.async_dispatcher = dispatcher
         self.async_executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="image-load")
 
+    def unload_all(self):
+        '''
+        Forget every image and destroy its texture: a theme reload. Screenshots still
+        decoding are dropped when they finish (_decoded checks they're still wanted).
+        '''
+        for texture in self.textures.values():
+            texture.destroy()
+
+        self.images = {}
+        self.textures = {}
+        self.cache = []
+        self.max_images = self.MAX_IMAGES
+
     def disable_async(self):
         if self.async_executor is not None:
             self.async_executor.shutdown(wait=False)

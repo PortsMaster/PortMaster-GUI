@@ -139,7 +139,6 @@
   "Lower Case": "Нижній регістр",
   "Language Select": "Вибір мови",
   "{lang_name} (Selected)": "{lang_name} (Обрано)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "Ви хочете змінити мову?\n\nВам доведеться перезапустити застосунок, щоб вона набула чинності.",
   "Main Menu": "Головне меню",
   "Hand curated lists of ports": "Кураторський список портів",
   "All Ports": "Всі порти",
@@ -244,10 +243,8 @@
   "Accept": "Прийняти",
   "{theme_name} (Selected)": "{theme_name} (Обрано)",
   "Download": "Завантажити",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "Ви хочете змінити тему?\n\nВам доведеться перезапустити застосунок, щоб вона набула чинності.",
   "Select Colour Scheme": "Оберіть кольорову палітру",
   "{item_name} (Selected)": "{item_name} (Обрано)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "Ви хочете змінити кольорову палітру?\n\nВам доведеться перезапустити застосунок, щоб вона набула чинності.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "Ви переходите з {old_release_channel} на {new_release_channel} версію.\n\nХочете знизити версію?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "Доступна нова версія PortMaster ({portmaster_version})\n\nХочете оновити?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "Хочете перевстановити PortMaster?\n\nЦе перевстановить застосунок з {release_channel} каналу до {portmaster_version}."

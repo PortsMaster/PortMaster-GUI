@@ -127,7 +127,6 @@
   "Lower Case": "小文字",
   "Language Select": "言語を選択してください",
   "{lang_name} (Selected)": "{lang_name} (選択済み)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "言語を変更しますか？\n\n影響を受けるには再起動する必要があります。",
   "Main Menu": "メインメニュー",
   "Hand curated lists of ports": "ポートのハンドキュレーションリスト",
   "All Ports": "すべてのポート",
@@ -197,10 +196,8 @@
   "Deleted runtime {runtime}": "ランタイム {runtime} を削除しました",
   "{theme_name} (Selected)": "{theme_name} (選択済み)",
   "Download": "ダウンロード",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "テーマを変更しますか？\n\n適用するには再起動する必要があります。",
   "Select Colour Scheme": "配色を選択",
   "{item_name} (Selected)": "{item_name} (選択済み)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "テーマを変更しますか？\n\n影響を受けるには再起動する必要があります。",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "{old_release_channel} から {new_release_channel} へ切り替えています。\n\nダウングレードしますか？",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "PortMaster ({portmaster_version})\n\nアップグレードしますか？",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "PortMasterを再インストールしますか？\n\n {release_channel} チャンネルから {portmaster_version} に再インストールします。"

@@ -139,7 +139,6 @@
   "Lower Case": "Minuscule",
   "Language Select": "Sélection de la langue",
   "{lang_name} (Selected)": "{lang_name} (Sélectionné)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "Voulez-vous changer de langue ?\n\nVous devrez redémarrer pour que cela prenne effet.",
   "Main Menu": "Menu principal",
   "Hand curated lists of ports": "Ports sélectionnés",
   "All Ports": "Tous les ports",
@@ -244,10 +243,8 @@
   "Accept": "Accepter",
   "{theme_name} (Selected)": "{theme_name} (Sélectionné)",
   "Download": "Télécharger",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "Voulez-vous changer de thème ?\n\nVous devrez redémarrer pour que ce changement prenne effet.",
   "Select Colour Scheme": "Sélection de la palette de couleurs",
   "{item_name} (Selected)": "{item_name} (Sélectionné)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "Voulez-vous changer le schéma de couleurs du thème ?\n\nVous devrez redémarrer pour que ce changement prenne effet.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "Vous passez de l' {old_release_channel} à la version {new_release_channel} .\n\nVoulez-vous rétrograder ?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "Il y a une nouvelle version de PortMaster ({portmaster_version})\n\nVoulez-vous mettre à jour ?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "Voulez-vous réinstaller PortMaster ?\n\nCela va réinstaller depuis le canal {release_channel} vers {portmaster_version}."

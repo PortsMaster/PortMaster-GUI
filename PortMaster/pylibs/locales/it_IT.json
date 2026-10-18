@@ -120,7 +120,6 @@
   "Lower Case": "Minuscolo",
   "Language Select": "Selezione Lingua",
   "{lang_name} (Selected)": "{lang_name} (Attuale)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "Vuoi cambiare lingua?\n\nRiavvia per applicare le modifiche.",
   "Main Menu": "Menu principale",
   "Hand curated lists of ports": "Selezione di ports raccomandati dal Team",
   "All Ports": "Tutti i Ports",
@@ -198,10 +197,8 @@
   "Deleted runtime {runtime}": "Runtime {runtime} eliminata",
   "{theme_name} (Selected)": "{theme_name} (Attuale)",
   "Download": "Download",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "Vuoi cambiare Tema?\n\nRiavvia per applicare le modifiche.",
   "Select Colour Scheme": "Selezionare schema colori",
   "{item_name} (Selected)": "{item_name} (Attuale)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "Vuoi Cambiare lo Schema Colore?\n\nDovrai riavviare per applicare le modifiche.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "Stai passando dalla versione {old_release_channel} alla versione {new_release_channel} .\n\nVuoi tornare alla versione precedente?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "C'è una nuova versione di PortMaster ({portmaster_version})\n\nVuoi aggiornare?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "Vuoi reinstallare PortMaster?\n\nProseguendo scaricherai da {release_channel} la versione {portmaster_version}."

@@ -140,7 +140,6 @@
   "Lower Case": "小写",
   "Language Select": "选择语言",
   "{lang_name} (Selected)": "{lang_name} （已选）",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "您想要更改语言吗？\n\n需要重启程序以适用更改。",
   "Main Menu": "主菜单",
   "Hand curated lists of ports": "社区推荐的移植作品",
   "All Ports": "所有移植作品",
@@ -243,10 +242,8 @@
   "Accept": "同意",
   "{theme_name} (Selected)": "{theme_name} （已选）",
   "Download": "下载",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "您确定想更换主题吗？\n\n需要重启程序以适用更改。",
   "Select Colour Scheme": "选择配色方案",
   "{item_name} (Selected)": "{item_name}  （已选）",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "您确定想更改主题颜色方案吗？\n\n需要重启程序以适用更改。",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "正在从 {old_release_channel} 切换到 {new_release_channel} 版本。希望退回吗？",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "PortMaster有新版本 ({portmaster_version}) 可用，希望升级吗？",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "您希望重装PortMaster吗?\n\n这会安装来自 {release_channel} 的 {portmaster_version} 版本。"

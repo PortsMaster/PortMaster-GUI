@@ -142,7 +142,6 @@
   "Lower Case": "소문자",
   "Language Select": "언어 선택",
   "{lang_name} (Selected)": "{lang_name} (선택됨)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "언어를 변경하시겠습니까?\n\n적용하려면 다시 시작해야 합니다.",
   "Main Menu": "메인 메뉴",
   "Hand curated lists of ports": "엄선한 포트 목록",
   "All Ports": "모든 포트",
@@ -247,10 +246,8 @@
   "Accept": "수락",
   "{theme_name} (Selected)": "{theme_name} (선택됨)",
   "Download": "다운로드",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "테마를 변경하시겠습니까?\n\n적용하려면 다시 시작해야 합니다.",
   "Select Colour Scheme": "색상 구성표 선택",
   "{item_name} (Selected)": "{item_name} (선택됨)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "테마 색 구성표를 변경하시겠습니까?\n\n적용하려면 다시 시작해야 합니다.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "{old_release_channel}에서 {new_release_channel}로 전환하고 있습니다.\n\n다운그레이드하시겠습니까?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "새로운 ({portmaster_version}) 버전이 있습니다.\n\n업그레이드하시겠습니까?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "포트마스터를 다시 설치 하겠습니까?\n\n {release_channel} 채널에서 {portmaster_version}로 다시 설치합니다."

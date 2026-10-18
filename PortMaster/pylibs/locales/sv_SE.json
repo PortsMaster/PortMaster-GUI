@@ -127,7 +127,6 @@
   "Lower Case": "Gemener",
   "Language Select": "Välj Språk",
   "{lang_name} (Selected)": "{lang_name} (Vald)",
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": "Vill du ändra språk?\n\nOmstart krävs för att visa ändringar.",
   "Main Menu": "Huvudmeny",
   "Hand curated lists of ports": "Listor av handplockade portar",
   "All Ports": "Alla portar",
@@ -222,10 +221,8 @@
   "Deleted runtime {runtime}": "Raderat körtid {runtime}",
   "{theme_name} (Selected)": "{theme_name} (Vald)",
   "Download": "Hämta",
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": "Vill du ändra tema?\n\nOmstart krävs för att visa ändringar.",
   "Select Colour Scheme": "Välj färgschema",
   "{item_name} (Selected)": "{item_name} (Vald)",
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": "Vill du ändra temats färgschema?\n\nOmstart krävs för att visa ändringar.",
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": "Du kommer byta från {old_release_channel} till {new_release_channel}.\n\nVill du nedgradera?",
   "There is a new version of PortMaster ({portmaster_version})\n\nDo you want to upgrade?": "Det finns en ny version av PortMaster ({portmaster_version})\n\nVill du uppgradera?",
   "Do you want to reinstall PortMaster?\n\nThis will reinstall from the {release_channel} channel to {portmaster_version}.": "Vill du ominstallera PortMaster?\n\nDetta kommer ominstallera {portmaster_version} från {release_channel}-kanalen."

@@ -266,10 +266,11 @@
     "pylibs/harbourmaster/util/net.py:152"
   ],
   "Unknown IP": [
-    "pylibs/pugwash/app.py:253"
+    "pylibs/pugwash/app.py:254",
+    "pylibs/pugwash/app.py:582"
   ],
   "N/A": [
-    "pylibs/pugwash/app.py:406",
+    "pylibs/pugwash/app.py:407",
     "pylibs/pugwash/app_ports.py:70"
   ],
   "Fetching latest gameinfo.xml files and cover images.": [
@@ -353,61 +354,61 @@
     "pylibs/pugwash/autoinstall.py:237"
   ],
   "Danish": [
-    "pylibs/pugwash/lang.py:22"
-  ],
-  "German": [
-    "pylibs/pugwash/lang.py:23"
-  ],
-  "English": [
     "pylibs/pugwash/lang.py:24"
   ],
-  "Spanish": [
+  "German": [
     "pylibs/pugwash/lang.py:25"
   ],
-  "Esperanto": [
+  "English": [
     "pylibs/pugwash/lang.py:26"
   ],
-  "Finnish": [
+  "Spanish": [
     "pylibs/pugwash/lang.py:27"
   ],
-  "French": [
+  "Esperanto": [
     "pylibs/pugwash/lang.py:28"
   ],
-  "Italian": [
+  "Finnish": [
     "pylibs/pugwash/lang.py:29"
   ],
-  "Japanese": [
+  "French": [
     "pylibs/pugwash/lang.py:30"
   ],
-  "Korean": [
+  "Italian": [
     "pylibs/pugwash/lang.py:31"
   ],
-  "Dutch": [
+  "Japanese": [
     "pylibs/pugwash/lang.py:32"
   ],
-  "Polish": [
+  "Korean": [
     "pylibs/pugwash/lang.py:33"
   ],
-  "Portuguese (Portugal)": [
+  "Dutch": [
     "pylibs/pugwash/lang.py:34"
   ],
-  "Portuguese (Brazil)": [
+  "Polish": [
     "pylibs/pugwash/lang.py:35"
   ],
-  "Romanian": [
+  "Portuguese (Portugal)": [
     "pylibs/pugwash/lang.py:36"
   ],
-  "Russian": [
+  "Portuguese (Brazil)": [
     "pylibs/pugwash/lang.py:37"
   ],
-  "Swedish": [
+  "Romanian": [
     "pylibs/pugwash/lang.py:38"
   ],
-  "Ukrainian": [
+  "Russian": [
     "pylibs/pugwash/lang.py:39"
   ],
-  "Chinese Simplified": [
+  "Swedish": [
     "pylibs/pugwash/lang.py:40"
+  ],
+  "Ukrainian": [
+    "pylibs/pugwash/lang.py:41"
+  ],
+  "Chinese Simplified": [
+    "pylibs/pugwash/lang.py:42"
   ],
   "Messages": [
     "pylibs/pugwash/scenes/dialogs.py:17"
@@ -425,8 +426,8 @@
     "pylibs/pugwash/scenes/keyboard.py:33",
     "pylibs/pugwash/scenes/keyboard.py:41",
     "pylibs/pugwash/scenes/language.py:30",
-    "pylibs/pugwash/scenes/themes.py:45",
-    "pylibs/pugwash/scenes/themes.py:130"
+    "pylibs/pugwash/scenes/themes.py:46",
+    "pylibs/pugwash/scenes/themes.py:127"
   ],
   "Back": [
     "pylibs/pugwash/scenes/featured.py:30",
@@ -442,9 +443,9 @@
     "pylibs/pugwash/scenes/ports.py:269",
     "pylibs/pugwash/scenes/runtimes.py:107",
     "pylibs/pugwash/scenes/runtimes.py:110",
-    "pylibs/pugwash/scenes/themes.py:47",
-    "pylibs/pugwash/scenes/themes.py:129",
-    "pylibs/pugwash/scenes/themes.py:130"
+    "pylibs/pugwash/scenes/themes.py:48",
+    "pylibs/pugwash/scenes/themes.py:126",
+    "pylibs/pugwash/scenes/themes.py:127"
   ],
   "No featured ports found, internet connection is required.": [
     "pylibs/pugwash/scenes/featured.py:47"
@@ -596,13 +597,10 @@
     "pylibs/pugwash/scenes/keyboard.py:41"
   ],
   "Language Select": [
-    "pylibs/pugwash/scenes/language.py:14"
+    "pylibs/pugwash/scenes/language.py:13"
   ],
   "{lang_name} (Selected)": [
-    "pylibs/pugwash/scenes/language.py:24"
-  ],
-  "Do you want to change language?\n\nYou will have to restart for it to take affect.": [
-    "pylibs/pugwash/scenes/language.py:47"
+    "pylibs/pugwash/scenes/language.py:23"
   ],
   "Main Menu": [
     "pylibs/pugwash/scenes/main_menu.py:17",
@@ -713,7 +711,7 @@
   ],
   "Theme Editor": [
     "pylibs/pugwash/scenes/options.py:48",
-    "pylibs/pugwash/scenes/theme_server.py:66"
+    "pylibs/pugwash/scenes/theme_server.py:64"
   ],
   "Preview themes and edit PortMaster's translations from a computer or phone on the same network.": [
     "pylibs/pugwash/scenes/options.py:49"
@@ -1013,10 +1011,10 @@
     "pylibs/pugwash/scenes/startup.py:212"
   ],
   "Starting the theme editor...": [
-    "pylibs/pugwash/scenes/theme_server.py:74"
+    "pylibs/pugwash/scenes/theme_server.py:73"
   ],
   "Stop": [
-    "pylibs/pugwash/scenes/theme_server.py:76"
+    "pylibs/pugwash/scenes/theme_server.py:75"
   ],
   "it stopped": [
     "pylibs/pugwash/scenes/theme_server.py:109"
@@ -1031,25 +1029,19 @@
     "pylibs/pugwash/scenes/theme_server.py:138"
   ],
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": [
-    "pylibs/pugwash/scenes/theme_server.py:166"
+    "pylibs/pugwash/scenes/theme_server.py:167"
   ],
   "{theme_name} (Selected)": [
     "pylibs/pugwash/scenes/themes.py:31"
   ],
   "Download": [
-    "pylibs/pugwash/scenes/themes.py:50"
-  ],
-  "Do you want to change theme?\n\nYou will have to restart for it to take effect.": [
-    "pylibs/pugwash/scenes/themes.py:69"
+    "pylibs/pugwash/scenes/themes.py:51"
   ],
   "Select Colour Scheme": [
-    "pylibs/pugwash/scenes/themes.py:110"
+    "pylibs/pugwash/scenes/themes.py:106"
   ],
   "{item_name} (Selected)": [
-    "pylibs/pugwash/scenes/themes.py:124"
-  ],
-  "Do you want to change the themes color scheme?\n\nYou will have to restart for it to take affect.": [
-    "pylibs/pugwash/scenes/themes.py:147"
+    "pylibs/pugwash/scenes/themes.py:120"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

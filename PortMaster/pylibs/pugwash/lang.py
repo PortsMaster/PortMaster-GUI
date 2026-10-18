@@ -15,6 +15,8 @@ LANG_DIR = PYLIB_PATH / "locales"
 ## Set by load_lang().
 DEFAULT_LANG = None
 CURRENT_LANG = None
+## The environment variable that holds the language.
+ENVIRON_KEY = 'LANG'
 
 
 ALL_LANGUAGES = {
@@ -78,7 +80,7 @@ def load_lang():
     Load the desired language, we check for an override in our config.json, otherwise use the environment variables.
 
     """
-    global DEFAULT_LANG, CURRENT_LANG
+    global DEFAULT_LANG, CURRENT_LANG, ENVIRON_KEY
 
 
     config = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config" / "config.json"
@@ -121,6 +123,22 @@ def load_lang():
         os.environ[environ_key] = 'en_US'
 
     CURRENT_LANG = os.environ[environ_key]
+    ENVIRON_KEY = environ_key
+
+
+def set_language(language):
+    """
+    Use another language from now on, None for the system's: its translations, CURRENT_LANG
+    and the environment (ports and the scripts PortMaster runs see it too). The GUI also
+    swaps the language capability, which picks the theme's font for it, and reloads the
+    theme: see PortMasterGUI.reload_language().
+    """
+    global CURRENT_LANG
+
+    CURRENT_LANG = (language and check_lang(language)) or DEFAULT_LANG or 'en_US'
+    os.environ[ENVIRON_KEY] = CURRENT_LANG
+    i18n.load_language(LANG_DIR, CURRENT_LANG)
+    return CURRENT_LANG
 
 
 def lang_list():
