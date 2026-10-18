@@ -375,6 +375,20 @@ It also supports text auto-scrolling if it doesnt fit within the area it is disp
 
 Probably should write something here.
 
+#### QR codes
+
+An `image` starting with `qr:` is a QR code of the text after it, which can use text template tags. It's redrawn when a tag's value changes, and an empty text shows nothing.
+
+```json
+        "server_qr": {
+            "area": [0.65, 0.2, 0.3, 0.4],
+            "image": "qr:{some.url}",
+            "image-mode": "fit"
+        }
+```
+
+The code is black on white with a white border, as phone cameras read best, and it's scaled up without smoothing so it stays sharp at any size. Give it a square area, or `"image-mode": "fit"` (the default), so it isn't stretched.
+
 ### Lists
 
 The list system is quite adequate
