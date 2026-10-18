@@ -541,3 +541,34 @@ def test_no_scheme_is_the_default_scheme(pool):
     workers = dict(pool.workers)
     pool.render("default_theme", "Light Mode", "640x480", "en_US", "main_menu")
     assert pool.workers == workers
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_renderers_fork_from_the_zygote(pool, tmp_path):
+    ## The zygote imports pugwash once and forks a renderer per screen size; they draw
+    ## the same as a worker.py of their own.
+    import os
+    import signal
+
+    png, _ = pool.render("default_theme", "Dracula", "720x720", "de_DE", "options")
+    forked = pool.workers["720x720"]
+    assert pool.zygote and forked.pid and forked.proc is None
+
+    alone = serve.RenderPool(pool.themes, pool.ports_config, tmp_path / "alone", use_zygote=False)
+    try:
+        own_png, _ = alone.render("default_theme", "Dracula", "720x720", "de_DE", "options")
+        assert alone.workers["720x720"].proc is not None
+        assert own_png == png
+    finally:
+        alone.stop()
+
+    ## A renderer that died is replaced.
+    os.kill(forked.pid, signal.SIGKILL)
+    for _ in range(100):
+        if not forked.alive():
+            break
+        import time
+        time.sleep(0.05)
+    png, info = pool.render("default_theme", "Dracula", "720x720", "de_DE", "main_menu")
+    assert png and pool.workers["720x720"] is not forked

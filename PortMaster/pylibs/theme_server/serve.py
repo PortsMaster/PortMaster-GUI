@@ -145,47 +145,142 @@ class WorkerError(Exception):
     pass
 
 
+class Zygote:
+    """worker.py --zygote: pugwash imported once, forking a renderer per screen size (a
+    new one starts in about half the time)."""
+    def __init__(self, ports_config, work):
+        import socket
+
+        self.work = Path(work)
+        parent, child = socket.socketpair()
+        self.log_file = open(str(self.work.with_suffix(".log")), "w")
+        try:
+            self.proc = subprocess.Popen(
+                [sys.executable, str(WORKER), "--zygote", "--control-fd", str(child.fileno()),
+                 "--ports-config", str(ports_config), "--work", str(self.work)],
+                stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=self.log_file, pass_fds=[child.fileno()])
+        finally:
+            child.close()
+
+        self.control = parent
+        self.reader = parent.makefile("r")
+        self.lock = threading.Lock()
+        ready = self._read()
+        if not ready.get('ok'):
+            self.stop()
+            raise WorkerError(ready.get('error') or "the zygote didn't start, see " + self.log_file.name)
+
+    def _read(self):
+        line = self.reader.readline()
+        return json.loads(line) if line else {'ok': False}
+
+    def spawn(self, **request):
+        """(pid, socket) of a new renderer."""
+        import array
+        import socket
+
+        ours, theirs = socket.socketpair()
+        try:
+            with self.lock:
+                self.control.sendmsg([json.dumps(request).encode("utf-8")],
+                                     [(socket.SOL_SOCKET, socket.SCM_RIGHTS, array.array("i", [theirs.fileno()]))])
+                answer = self._read()
+        except OSError as error:
+            ours.close()
+            raise WorkerError(f"the zygote stopped: {error}")
+        finally:
+            theirs.close()
+
+        if not answer.get('ok'):
+            ours.close()
+            raise WorkerError(answer.get('error') or "the zygote stopped, see " + self.log_file.name)
+
+        return answer['pid'], ours
+
+    def alive(self):
+        return self.proc.poll() is None
+
+    def stop(self):
+        try:
+            self.proc.stdin.close()
+            self.proc.wait(timeout=5)
+        except (OSError, subprocess.TimeoutExpired):
+            self.proc.kill()
+        finally:
+            self.control.close()
+            self.log_file.close()
+            shutil.rmtree(str(self.work), ignore_errors=True)
+            try:
+                os.unlink(self.log_file.name)
+            except OSError:
+                pass
+
+
 class Worker:
-    """One worker.py: a pugwash at one screen size, switched in place to the theme version,
-    colour scheme and language each render needs."""
-    def __init__(self, resolution, theme_dir, scheme, lang, ports_config, work, loaded=None):
+    """One renderer: a pugwash at one screen size, switched in place to the theme version,
+    colour scheme and language each render needs. Forked by the zygote, or (without
+    one) a worker.py of its own."""
+    def __init__(self, resolution, theme_dir, scheme, lang, ports_config, work, loaded=None, zygote=None):
         self.resolution = resolution
         self.lock = threading.Lock()
         self.work = Path(work)
-        command = [sys.executable, str(WORKER), "--theme-dir", str(theme_dir), "--resolution", resolution,
-                   "--lang", lang, "--ports-config", str(ports_config), "--work", str(self.work)]
-        if scheme:
-            command += ["--scheme", scheme]
+        self.log_name = str(self.work.with_suffix(".log"))
+        self.proc = self.pid = self.sock = self.log_file = None
+        if zygote is not None:
+            self.pid, self.sock = zygote.spawn(resolution=resolution, theme_dir=str(theme_dir), scheme=scheme,
+                                               lang=lang, work=str(self.work))
+            self.reader, self.writer = self.sock.makefile("r"), self.sock.makefile("w")
 
-        self.log_file = open(str(self.work.with_suffix(".log")), "w")
-        self.proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     stderr=self.log_file, universal_newlines=True, bufsize=1)
+        else:
+            command = [sys.executable, str(WORKER), "--theme-dir", str(theme_dir), "--resolution", resolution,
+                       "--lang", lang, "--ports-config", str(ports_config), "--work", str(self.work)]
+            if scheme:
+                command += ["--scheme", scheme]
+
+            self.log_file = open(self.log_name, "w")
+            self.proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                         stderr=self.log_file, universal_newlines=True, bufsize=1)
+            self.reader, self.writer = self.proc.stdout, self.proc.stdin
+
         self.ready = self._read()
         if not self.ready.get('ok'):
             self.stop()
-            raise WorkerError(self.ready.get('error') or "the renderer didn't start, see " + str(self.log_file.name))
+            raise WorkerError(self.ready.get('error') or "the renderer didn't start, see " + self.log_name)
 
         ## What it has loaded: (theme id, theme version, scheme, language).
         self.loaded = loaded
         self.used = time.monotonic()
 
     def _read(self):
-        line = self.proc.stdout.readline()
+        try:
+            line = self.reader.readline()
+        except OSError:
+            line = ""
         if not line:
-            return {'ok': False, 'error': "the renderer stopped, see " + str(self.log_file.name)}
+            return {'ok': False, 'error': "the renderer stopped, see " + self.log_name}
         return json.loads(line)
 
     def _request(self, command):
-        if self.proc.poll() is not None:
-            raise WorkerError("the renderer stopped, see " + str(self.log_file.name))
+        if not self.alive():
+            raise WorkerError("the renderer stopped, see " + self.log_name)
 
         self.used = time.monotonic()
-        self.proc.stdin.write(json.dumps(command) + "\n")
-        self.proc.stdin.flush()
+        try:
+            self.writer.write(json.dumps(command) + "\n")
+            self.writer.flush()
+        except OSError:
+            raise WorkerError("the renderer stopped, see " + self.log_name)
         return self._read()
 
     def alive(self):
-        return self.proc.poll() is None
+        if self.proc is not None:
+            return self.proc.poll() is None
+
+        try:
+            os.kill(self.pid, 0)
+            return True
+        except OSError:
+            return False
 
     def request(self, **command):
         with self.lock:
@@ -210,17 +305,32 @@ class Worker:
 
     def stop(self):
         try:
-            if self.proc.poll() is None:
-                self.proc.stdin.write(json.dumps({'cmd': "quit"}) + "\n")
-                self.proc.stdin.flush()
+            if self.alive():
+                self.writer.write(json.dumps({'cmd': "quit"}) + "\n")
+                self.writer.flush()
+            if self.proc is not None:
                 self.proc.wait(timeout=5)
+            else:
+                end = time.monotonic() + 5
+                while self.alive() and time.monotonic() < end:
+                    time.sleep(0.05)
+                if self.alive():
+                    os.kill(self.pid, signal.SIGKILL)
         except (OSError, ValueError, subprocess.TimeoutExpired):
-            self.proc.kill()
+            if self.proc is not None:
+                self.proc.kill()
+            elif self.pid is not None:
+                try:
+                    os.kill(self.pid, signal.SIGKILL)
+                except OSError:
+                    pass
         finally:
-            self.log_file.close()
+            for file in (self.log_file, self.sock):
+                if file is not None:
+                    file.close()
             shutil.rmtree(str(self.work), ignore_errors=True)
             try:
-                os.unlink(self.log_file.name)
+                os.unlink(self.log_name)
             except OSError:
                 pass
 
@@ -229,8 +339,10 @@ class RenderPool:
     """A renderer per screen size, started as needed (the least recently used goes when
     there are too many), switched to each theme, scheme and language in place; and the
     renders, until their theme or language files change."""
-    def __init__(self, themes, ports_config, work_dir, max_workers=MAX_WORKERS):
+    def __init__(self, themes, ports_config, work_dir, max_workers=MAX_WORKERS, use_zygote=True):
         self.themes = themes
+        ## Started with the first renderer; False once it failed (then worker.py each).
+        self.zygote = None if use_zygote else False
         self.ports_config = Path(ports_config)
         self.max_workers = max(1, max_workers)
         self.work_dir = Path(work_dir)
@@ -275,7 +387,14 @@ class RenderPool:
             for old in stale:
                 old.stop()
 
-            worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded)
+            if self.zygote is None or (self.zygote and not self.zygote.alive()):
+                try:
+                    self.zygote = Zygote(self.ports_config, self.work_dir / "zygote")
+                except (WorkerError, OSError) as error:
+                    print(f"No zygote, renderers start on their own: {error}", file=sys.stderr, flush=True)
+                    self.zygote = False
+
+            worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded, self.zygote or None)
             with self.lock:
                 self.workers[resolution] = worker
 
@@ -321,6 +440,9 @@ class RenderPool:
             workers, self.workers = list(self.workers.values()), {}
         for worker in workers:
             worker.stop()
+        if self.zygote:
+            self.zygote.stop()
+            self.zygote = None
 
 
 ################################################################################

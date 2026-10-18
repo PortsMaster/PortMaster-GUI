@@ -50,7 +50,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
     TASK_INPUT_LAYERS = ('messages', 'message_box')
     FRAME_TIME = 1000 // 30
 
-    def __init__(self, *, first_scene=None, force_theme=None):
+    def __init__(self, *, first_scene=None, force_theme=None, force_scheme=None):
         ## PM_HEADLESS=Y: no window, no video and no controllers, it draws onto a surface
         ## with the software renderer. The theme server's render workers (theme_server/
         ## worker.py) use it, on a device too: muOS's SDL has only its "mali" driver, and
@@ -216,7 +216,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         self.cancellable = True
 
-        self.themes = ThemeEngine(self, force_theme=force_theme)
+        self.themes = ThemeEngine(self, force_theme=force_theme, force_scheme=force_scheme)
 
         self.theme_data = self.themes.gui_init()
         self.theme_dir = self.themes.get_theme_dir(self.themes.get_current_theme())

@@ -557,9 +557,11 @@ class ThemeDownloader(harbourmaster.source.BaseSource):
 
 
 class ThemeEngine:
-    def __init__(self, gui, force_theme=None):
+    def __init__(self, gui, force_theme=None, force_scheme=None):
         self.gui = gui
+        ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
+        self.force_scheme = force_scheme
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -599,6 +601,8 @@ class ThemeEngine:
         """
         Returns the colour scheme of the current theme
         """
+        if self.force_scheme is not None:
+            return self.force_scheme
 
         cfg_data = self.get_pm_config()
         return cfg_data.setdefault("theme-scheme", None)

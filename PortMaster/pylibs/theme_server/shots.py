@@ -343,7 +343,9 @@ def scene_regions(gui):
 
 
 class Renderer:
-    def __init__(self, work, theme_name):
+    def __init__(self, work, theme_name, scheme=None, tools_dir=None):
+        """tools_dir: the HarbourMaster's (its ports and config), when it isn't
+        harbourmaster.HM_TOOLS_DIR (a renderer forked from worker.py's zygote)."""
         self.work = Path(work)
         self.errors = []
         ## pugwash's errors (the theme's), not harbourmaster's (the port data's).
@@ -351,11 +353,14 @@ class Renderer:
                    filter=lambda record: not record["name"].startswith("harbourmaster"))
 
         self.theme_name = theme_name
-        self.gui = PortMasterGUI(first_scene=EmptyScene, force_theme=theme_name)
+        self.gui = PortMasterGUI(first_scene=EmptyScene, force_theme=theme_name, force_scheme=scheme)
         self.scheme = self.gui.themes.get_current_theme_scheme()
+        dirs = {}
+        if tools_dir is not None:
+            dirs = {'tools_dir': Path(tools_dir), 'ports_dir': self.work / "ports", 'scripts_dir': self.work / "ports"}
         self.gui.hm = harbourmaster.HarbourMaster(
             {'offline': True, 'no-check': True},
-            temp_dir=self.work / "temp", callback=self.gui)
+            temp_dir=self.work / "temp", callback=self.gui, **dirs)
         ## Screenshots load as they're drawn, so every image is there in the first frame.
         self.gui.images.disable_async()
         ## Which strings each screen looks up, for the translation editor.
@@ -369,7 +374,7 @@ class Renderer:
         place, much quicker than a new renderer."""
         gui = self.gui
         gui.themes.force_theme = theme_name
-        gui.hm.cfg_data['theme-scheme'] = scheme
+        gui.themes.force_scheme = scheme
         ## Reloads the translations (saved ones too) and then the theme.
         gui.reload_language(lang)
         self.lookups = record_lookups()

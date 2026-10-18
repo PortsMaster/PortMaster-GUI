@@ -118,7 +118,7 @@ def prepare_tools_dir(work, ports_config, theme_dir, scheme):
             elif entry.is_file():
                 shutil.copyfile(str(entry), str(config / entry.name))
 
-    theme_name = link_theme(work, theme_dir)
+    theme_name = link_theme(tools / "PortMaster" / "themes", theme_dir)
 
     ## Its "version", else harbourmaster upgrades the config by deleting the image folders
     ## (here links), and not a first run, which writes the default sources.
@@ -142,18 +142,20 @@ def prepare_tools_dir(work, ports_config, theme_dir, scheme):
     return theme_name
 
 
-def link_theme(work, theme_dir):
-    """The theme's name, linked into work/tools/PortMaster/themes unless it's the built-in one."""
+def link_theme(themes_dir, theme_dir):
+    """The theme's name, linked into themes_dir (PortMaster/themes) unless it's the built-in one."""
     default_theme = PM_DIR / "pylibs" / "default_theme"
-    if Path(theme_dir).resolve() == default_theme.resolve():
+    target = Path(theme_dir).resolve()
+    if target == default_theme.resolve():
         return "default_theme"
 
-    theme_name = Path(theme_dir).name
-    link = work / "tools" / "PortMaster" / "themes" / theme_name
+    link = Path(themes_dir) / target.name
+    if link.is_symlink() and Path(os.readlink(str(link))) == target:
+        return target.name
     if link.is_symlink() or link.exists():
         link.unlink()
-    link.symlink_to(Path(theme_dir).resolve())
-    return theme_name
+    link.symlink_to(target)
+    return target.name
 
 
 def prepare_cache(cache):
@@ -185,58 +187,45 @@ def prepare_cache(cache):
     return 0 if sum(counts.values()) > 0 else 1
 
 
-def main(argv=None):
-    if argv is None:
-        argv = sys.argv[1:]
-    if argv[:1] == ["--prepare-cache"] and len(argv) == 2:
-        return prepare_cache(argv[1])
-
-    parser = argparse.ArgumentParser(description="theme dev server renderer")
-    parser.add_argument("--theme-dir", required=True)
-    parser.add_argument("--scheme", default=None)
-    parser.add_argument("--resolution", default="640x480")
-    parser.add_argument("--lang", default="en_US")
-    parser.add_argument("--ports-config", required=True)
-    parser.add_argument("--work", required=True)
-    options = parser.parse_args(argv)
-
-    ## Answers go to the real stdout, everything pugwash prints to stderr.
-    reply_file = os.fdopen(os.dup(1), 'w')
-    os.dup2(2, 1)
-
-    def reply(**answer):
-        reply_file.write(json.dumps(answer) + "\n")
-        reply_file.flush()
-
-    width, height = (int(part) for part in options.resolution.lower().split("x"))
-    work = Path(options.work)
-    work.mkdir(parents=True, exist_ok=True)
-    theme_name = prepare_tools_dir(work, Path(options.ports_config), Path(options.theme_dir), options.scheme)
-
-    os.environ.update(device_env(width, height, options.lang))
+def renderer_env(width, height, lang):
+    """The environment pugwash and harbourmaster read: the pretend device, headless SDL."""
+    os.environ.update(device_env(width, height, lang))
     os.environ.update(sdl_env())
     for key in ('LANGUAGE', 'LC_ALL', 'LC_MESSAGES'):
         os.environ.pop(key, None)
+
+
+def use_tools_dir(work):
     os.environ['HM_TOOLS_DIR'] = str(work / "tools")
     os.environ['HM_PORTS_DIR'] = str(work / "ports")
     os.environ['HM_SCRIPTS_DIR'] = str(work / "ports")
 
-    ## Next to PortMaster/: from a checkout that's harbourmaster's testing mode.
+
+def import_pugwash():
+    """Next to PortMaster/ (from a checkout that's harbourmaster's testing mode), then the
+    modules: once the environment above is set, they read it on import."""
     os.chdir(str(PM_DIR.parent))
     sys.path[:0] = [str(PM_DIR / "pylibs"), str(PM_DIR / "exlibs")]
-
     from theme_server import shots
+    return shots
 
+
+def run_renderer(shots, work, theme_dir, scheme, lang, resolution, lines, reply, tools_dir=None):
+    """Starts the renderer and answers commands from lines until "quit" or the end."""
+    import harbourmaster
+
+    themes_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "themes"
     try:
-        renderer = shots.Renderer(work, theme_name)
+        theme_name = link_theme(themes_dir, theme_dir)
+        renderer = shots.Renderer(work, theme_name, scheme=scheme, tools_dir=tools_dir)
 
     except Exception:
         reply(ok=False, error=traceback.format_exc())
         return 1
 
-    reply(ok=True, ready=True, resolution=[width, height], theme=theme_name, scheme=renderer.scheme)
+    reply(ok=True, ready=True, resolution=resolution, theme=theme_name, scheme=renderer.scheme)
 
-    for line in sys.stdin:
+    for line in lines:
         try:
             command = json.loads(line)
             if command.get('cmd') == "quit":
@@ -247,8 +236,8 @@ def main(argv=None):
 
             elif command.get('cmd') == "load":
                 started = time.monotonic()
-                theme_name = link_theme(work, command['theme_dir'])
-                renderer.load(theme_name, command.get('scheme'), command.get('lang') or options.lang)
+                theme_name = link_theme(themes_dir, command['theme_dir'])
+                renderer.load(theme_name, command.get('scheme'), command.get('lang') or lang)
                 reply(ok=True, theme=theme_name, scheme=renderer.scheme, ms=int((time.monotonic() - started) * 1000))
 
             elif command.get('cmd') == "render":
@@ -271,6 +260,143 @@ def main(argv=None):
 
     renderer.quit()
     return 0
+
+
+def json_writer(file):
+    def reply(**answer):
+        file.write(json.dumps(answer) + "\n")
+        file.flush()
+    return reply
+
+
+def parse_resolution(text):
+    return [int(part) for part in text.lower().split("x")]
+
+
+################################################################################
+## The zygote: imports pugwash once, then forks a renderer for each screen size, which
+## saves the imports (half of a renderer's start) each time.
+##
+##   worker.py --zygote --control-fd N --ports-config DIR --work DIR
+##
+## serve.py sends on the control socket a JSON message, with the renderer's end of a
+## socket pair attached (SCM_RIGHTS):
+##   {"resolution": "640x480", "theme_dir": DIR, "scheme": ..., "lang": ..., "work": DIR}
+##   -> {"ok": true, "pid": N}
+## The renderer then talks on that socket as a worker.py does on stdin/stdout. The
+## zygote stops when its stdin closes.
+def zygote(options):
+    import array
+    import select
+    import signal
+    import socket
+
+    control = socket.socket(fileno=options.control_fd)
+    shared = Path(options.work)
+    shared.mkdir(parents=True, exist_ok=True)
+    ## The themes (linked as renderers load them) and the config pugwash reads at start;
+    ## each renderer's HarbourMaster has its own copy of the ports.
+    prepare_tools_dir(shared, Path(options.ports_config), PM_DIR / "pylibs" / "default_theme", None)
+    renderer_env(640, 480, "en_US")
+    use_tools_dir(shared)
+    shots = import_pugwash()
+    from harbourmaster import hardware
+    from pugwash import lang as pug_lang
+
+    ## Renderers are reaped by the system.
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+    send = json_writer(control.makefile("w"))
+    send(ok=True, ready=True)
+
+    ## No threads: it forks. Its stdin closing (serve.py gone) stops it.
+    fd_size = array.array("i").itemsize
+    while True:
+        readable, _, _ = select.select([control, 0], [], [])
+        if 0 in readable and not os.read(0, 4096):
+            return 0
+        if control not in readable:
+            continue
+
+        data, ancdata, _, _ = control.recvmsg(65536, socket.CMSG_SPACE(fd_size))
+        if not data:
+            return 0
+
+        fds = array.array("i")
+        for level, kind, payload in ancdata:
+            if level == socket.SOL_SOCKET and kind == socket.SCM_RIGHTS:
+                fds.frombytes(payload[:len(payload) - (len(payload) % fd_size)])
+
+        try:
+            spawn = json.loads(data.decode("utf-8"))
+            channel = socket.socket(fileno=fds[0])
+        except (ValueError, IndexError, OSError) as error:
+            send(ok=False, error=f"bad spawn request: {error}")
+            continue
+
+        pid = os.fork()
+        if pid == 0:
+            ## The renderer.
+            code = 1
+            try:
+                control.close()
+                signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+                work = Path(spawn['work'])
+                work.mkdir(parents=True, exist_ok=True)
+                log = open(str(work.with_suffix(".log")), "w")
+                os.dup2(log.fileno(), 2)
+                os.dup2(log.fileno(), 1)
+                devnull = os.open(os.devnull, os.O_RDONLY)
+                os.dup2(devnull, 0)
+
+                width, height = parse_resolution(spawn['resolution'])
+                prepare_tools_dir(work, Path(options.ports_config), PM_DIR / "pylibs" / "default_theme", None)
+                renderer_env(width, height, spawn['lang'])
+                hardware._CACHED_DICT = None
+                pug_lang.set_language(spawn['lang'])
+                code = run_renderer(shots, work, Path(spawn['theme_dir']), spawn.get('scheme'), spawn['lang'],
+                                    [width, height], channel.makefile("r"), json_writer(channel.makefile("w")),
+                                    tools_dir=work / "tools")
+            except BaseException:
+                traceback.print_exc()
+            finally:
+                os._exit(code)
+
+        channel.close()
+        send(ok=True, pid=pid)
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv[:1] == ["--prepare-cache"] and len(argv) == 2:
+        return prepare_cache(argv[1])
+
+    parser = argparse.ArgumentParser(description="theme dev server renderer")
+    parser.add_argument("--zygote", action="store_true")
+    parser.add_argument("--control-fd", type=int)
+    parser.add_argument("--theme-dir")
+    parser.add_argument("--scheme", default=None)
+    parser.add_argument("--resolution", default="640x480")
+    parser.add_argument("--lang", default="en_US")
+    parser.add_argument("--ports-config", required=True)
+    parser.add_argument("--work", required=True)
+    options = parser.parse_args(argv)
+
+    if options.zygote:
+        return zygote(options)
+
+    ## Answers go to the real stdout, everything pugwash prints to stderr.
+    reply = json_writer(os.fdopen(os.dup(1), 'w'))
+    os.dup2(2, 1)
+
+    width, height = parse_resolution(options.resolution)
+    work = Path(options.work)
+    work.mkdir(parents=True, exist_ok=True)
+    prepare_tools_dir(work, Path(options.ports_config), PM_DIR / "pylibs" / "default_theme", None)
+    renderer_env(width, height, options.lang)
+    use_tools_dir(work)
+    shots = import_pugwash()
+    return run_renderer(shots, work, Path(options.theme_dir), options.scheme, options.lang, [width, height], sys.stdin, reply)
 
 
 if __name__ == "__main__":
