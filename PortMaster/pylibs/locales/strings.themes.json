@@ -87,7 +87,7 @@
   ],
   "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}": [
     "hiviz/theme.json:526",
-    "default_theme/theme.json:621"
+    "default_theme/theme.json:650"
   ],
   "{ports_list.filter_ports} games": [
     "jimmyhat999_grid_dark/theme.json:239",

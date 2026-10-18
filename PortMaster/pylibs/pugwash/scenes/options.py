@@ -12,6 +12,7 @@ from .base import BaseScene
 from .keyboard import OnScreenKeyboard
 from .language import LanguageScene
 from .runtimes import RuntimesScene
+from .theme_server import ThemeServerScene
 from .themes import ThemeSchemeScene, ThemesScene
 
 
@@ -41,6 +42,11 @@ class OptionScene(BaseScene):
                 'select-scheme',
                 _("Select Color Scheme"),
             description=_("Select a colour scheme for PortMaster"))
+
+        self.tags['option_list'].add_option(
+            'theme-editor',
+            _("Theme Editor"),
+            description=_("Preview themes and edit PortMaster's translations from a computer or phone on the same network."))
 
         self.tags['option_list'].add_option(None, _("Audio"))
 
@@ -436,6 +442,10 @@ class OptionScene(BaseScene):
 
             if selected_option == 'select-scheme':
                 self.gui.push_scene('select-scheme', ThemeSchemeScene(self.gui))
+                return True
+
+            if selected_option == 'theme-editor':
+                self.gui.push_scene('theme-editor', ThemeServerScene(self.gui))
                 return True
 
             if selected_option == 'select-language':

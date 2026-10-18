@@ -28,6 +28,9 @@ from .themes import (
     ThemesScene,
     ThemeSchemeScene,
     )
+from .theme_server import (
+    ThemeServerScene,
+    )
 from .language import (
     LanguageScene,
     )
@@ -78,5 +81,6 @@ __all__ = (
     'SourceScene',
     'TempMenuScene',
     'ThemeSchemeScene',
+    'ThemeServerScene',
     'ThemesScene',
     )

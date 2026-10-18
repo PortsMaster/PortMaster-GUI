@@ -24,7 +24,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/pytest --cov --cov-report=term-missing   # with coverage (.coveragerc); CI fails below the floor set in .github/workflows/tests.yaml
 python3 PortMaster/pugwash                 # run the GUI locally (windowed)
 python3 PortMaster/harbourmaster help      # CLI: list/ports/install/uninstall/runtime_list/device_info/...
-flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests   # the lint CI enforces; full flake8 still reports lots of existing style issues
+flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash PortMaster/pylibs/theme_server tests tools/test_suite tools/theme_server tools/i18n.py   # the lint CI enforces; full flake8 still reports lots of existing style issues
 ./do_release.sh test                       # a test build in dist/: version YYYY-MM-DD_XX69 (next free one today), checkout untouched
 ./do_release.sh testsuite                  # a test build + dist/pmtest.zip, the "PortMaster Test Suite" port for testers (see below)
 ./do_release.sh alpha|beta|stable [VER]    # a release in dist/ (+ version.json); stable (or MAKE_INSTALL=Y) also builds the makeself installers
@@ -62,7 +62,7 @@ Installing is covered in `test_install.py` (bad data, layouts, rollback, runtime
 Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.
 - `test_api_snapshot.py` checks that every public name in `tests/data/api_snapshot.json` is still reachable. Update its `AREAS` table when code moves.
-- `test_i18n_snapshot.py` checks that the set of translatable strings (`tests/data/msgids.txt`) hasn't changed.
+- `test_i18n.py` checks that the translatable strings in the code match `locales/strings.json` (`tools/i18n.py extract` updates it).
 
 **PortMaster Test Suite** (`tools/test_suite/`, built by `./do_release.sh testsuite` into `dist/pmtest.zip`): a port testers drop into `autoinstall/`. It installs the test build it carries, then runs, on the device:
 - the pytest suite (from its own copy of `tests/`, `tools/` and the code, with pytest 7.4 in `pmtest/site/`)
@@ -72,17 +72,19 @@ Guard tests for restructuring:
 
 It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `pmtest/reports/<CFW>-<device>-<date>.zip`, scrubbed of MAC/private IP addresses, serials, Wi-Fi names and the hostname (`suite.scrub`). The tester's own `pugwash.txt`/`harbourmaster.txt`/`log.txt` are set aside in `pmtest/saved-logs/` for the run and put back afterwards (or by the next run after a crash), so a report only holds the run's logs. pugwash and the GUI tests run in the environment the installed launcher gives the GUI (`pm_launch.txt` with `PM_LAUNCH_ENV_ONLY=Y`). The build also writes `dist/pmtest.zip.md5`, for `harbourmaster install <url>/pmtest.zip.md5`. `python3 -I tools/test_suite/matrix.py <folder of reports> --out DIR` turns collected reports into `matrix.json` and a self-contained `matrix.html` coverage page, starting with a device × CFW release heat map. `tools/test_suite/devices.py` names the hardware behind each CFW's device string (`DEVICES`, `FAMILIES`) and reads a vendored copy of PortMaster-Info's `device_info.json` (`--refresh` updates it) for supported-but-untested cells; a report it can't place is printed and listed under Other; it and `receive.py` must keep running on Python 3.7 with only the standard library. A build made with `PM_PMTEST_UPLOAD=http://<host>:8770/` carries `pmtest/upload.txt` and, if the tester agrees on the start screen, POSTs each finished report there, where `python3 -I tools/test_suite/receive.py <folder>` saves it on the LAN. The public endpoint is the `pmtest-reports` Cloudflare Worker (its own repo, with `collect.py` to download reports); HTTPS uses PortMaster's certifi bundle. Builds without the variable send nothing. Tested in `tests/test_test_suite.py` and `tests/test_build.py`.
 
-**Theme preview server** (`tools/theme_server/`, for theme authors, documented in `THEME.md`):
+**Theme preview server** (`PortMaster/pylibs/theme_server/`, run from a checkout with `tools/theme_server/serve.py`; documented in `THEME.md`):
 - `serve.py` serves a page showing every screen rendered with a theme, at any resolution, colour scheme and language, and exports PNGs with `--export`.
 - Each render process, `worker.py`, is a headless pugwash for one theme version, scheme, resolution and language. SDL allows one GUI per process, and the screen size, the theme's `[capability]` overrides and the language are fixed at start. A new one starts when the theme's files change, so no state carries over.
-  - It pretends to be a device: the `device_info.txt` screen rules, and `PM_PRETEND_RESOLUTION`, which pugwash honours in `HM_TESTING` mode.
-  - It draws with no window (`PM_HEADLESS=Y`, also `HM_TESTING` only): SDL's software renderer on a surface, with no video or controller subsystem. So it needs no dummy video driver, and it runs on a device next to a GUI that owns the screen (tried on muOS, whose SDL has only `mali`).
+  - It pretends to be a device: the `device_info.txt` screen rules, and `PM_PRETEND_RESOLUTION`, which pugwash honours in `HM_TESTING` mode or headless.
+  - It draws with no window (`PM_HEADLESS=Y`): SDL's software renderer on a surface, with no video or controller subsystem. So it needs no dummy video driver, and it runs on a device next to the GUI that owns the screen (muOS's SDL has only `mali`).
+  - It takes the ports from a PortMaster config folder (`--ports-config`): the cache's (`~/.cache/portmaster-theme-server`, filled by `worker.py --prepare-cache`) or, on a device, PortMaster's own. It copies the files and links the screenshot folders, so that folder is never changed.
   - `serve.py` unpacks the Chinese/Japanese/Korean fonts (`NotoSans.tar.xz`) at start, as the `PortMaster/pugwash` script does: the workers don't run that script.
-  - It links a shared ports cache (`~/.cache/portmaster-theme-server`, filled by `worker.py --prepare-cache`).
 - `shots.py` holds the screen catalogue: one builder per screen, pushing scenes with real port data.
   - It records which translatable strings each render looked up, for the editor.
-- **Translate view:** a translation editor. `/api/strings` lists a language's strings, and `/api/translate` saves one into the checkout's language files, in `strings.json` order. It only accepts requests from the page itself: they need the `X-Theme-Server` header.
+- **Translate view:** a translation editor. `/api/strings` lists a language's strings, and `/api/translate` saves one into the language files, in `strings.json` order. It only accepts requests from the page itself: they need the `X-Theme-Server` header.
   - Renderers are keyed by the theme and the language files together, so a saved translation re-renders.
+- `translations.py` is the language-file code (`tools/i18n.py` runs its `extract`/`check`).
+- **On a device:** Options → Theme Editor (`pugwash/scenes/theme_server.py`) runs `python3 -m theme_server.serve --managed` on port 8090 (or the next free one), with as many workers as `MemAvailable` allows. The screen shows the address as text and as a QR code (`"image": "qr:{theme_server.url}"`, the default theme's `theme_server` section, or a plain fallback). `--managed` reports `{"ok": true, "port": N}` on stdout and stops when stdin closes, so B, or pugwash dying, stops it. Its log is `PortMaster/theme_server.txt`.
 - Tested in `tests/test_theme_server.py`.
 
 Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is fixed and the marker should then be removed. pugwash's `main()` is wrapped in `logger.catch`, so it exits 0 even after a crash; check its output for tracebacks rather than relying on the exit code.

@@ -18,7 +18,7 @@ Then open http://localhost:8090/. `--themes` is one theme folder (it has a `them
 - **The screens:**
   - main menu, all, ready-to-run and installed ports, port info (and its popup)
   - filters, featured ports, options, runtimes, themes, colour schemes, language
-  - on-screen keyboard, messages with a progress bar, message box
+  - on-screen keyboard, theme editor, messages with a progress bar, message box
   - the autoinstall and dialog screens, which always use the default theme on a device
   - the disclaimer and the unsupported-system warning, which are built in and look the same in every theme
   - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
@@ -34,6 +34,14 @@ To write the screens to files instead, for a theme's README or to compare before
 ```
 
 That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
+
+### On your device
+
+PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list, and the translation editor saves into the device's PortMaster. Press B on the device to stop it.
+
+- Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
+- Each screen size, colour scheme and language starts a render process (60-90 MB): the first screen of a new combination takes 10-15 seconds on a handheld, the rest a second or two. How many run at once depends on the device's free memory.
+- Anyone on the same network can open it while it runs.
 
 ### Translating PortMaster
 
@@ -161,6 +169,7 @@ Currently there are the following scenes:
 - `message_box`: An alert box
 - `filter_list`: Available filters
 - `themes_list`: List themes / downloader.
+- `theme_server`: The theme editor (Options → Theme Editor), with the tags `{theme_server.url}`, the address, empty until the server is up, and `{theme_server.status}`, the instructions or what went wrong. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets a plain screen in PortMaster's own font.
 
 ### Scene: main_menu
 

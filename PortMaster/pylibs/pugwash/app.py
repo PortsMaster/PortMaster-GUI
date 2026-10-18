@@ -51,10 +51,11 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
     FRAME_TIME = 1000 // 30
 
     def __init__(self, *, first_scene=None, force_theme=None):
-        ## PM_HEADLESS=Y (testing mode only): no window, no video and no controllers, it
-        ## draws onto a surface with the software renderer. tools/theme_server's workers
-        ## use it, on SDL builds with no dummy video driver too (muOS has only "mali").
-        self.headless = harbourmaster.HM_TESTING and os.environ.get('PM_HEADLESS', '') == 'Y'
+        ## PM_HEADLESS=Y: no window, no video and no controllers, it draws onto a surface
+        ## with the software renderer. The theme server's render workers (theme_server/
+        ## worker.py) use it, on a device too: muOS's SDL has only its "mali" driver, and
+        ## the PortMaster that started the server owns the screen.
+        self.headless = os.environ.get('PM_HEADLESS', '') == 'Y'
 
         # Initialize SDL
         sdl2.ext.init(
@@ -110,10 +111,10 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             logger.info(f"Display size: {self.display_width}x{self.display_height}")
 
         pretend_resolution = None
-        if harbourmaster.HM_TESTING:
+        if harbourmaster.HM_TESTING or self.headless:
             ## To pretend to be a different device set the device_info environment
             ## variables, eg: DEVICE_NAME=RG353V CFW_NAME=ArkOS DEVICE_ARCH=aarch64,
-            ## and PM_PRETEND_RESOLUTION=1024x768 for its screen (tools/theme_server).
+            ## and PM_PRETEND_RESOLUTION=1024x768 for its screen (the theme server).
             pretend_resolution = parse_resolution(os.environ.get('PM_PRETEND_RESOLUTION', ''))
 
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=pretend_resolution)
@@ -140,7 +141,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         print(capabilities)
 
         # Create the window
-        if harbourmaster.HM_TESTING:
+        if harbourmaster.HM_TESTING or self.headless:
             window_flags = None
         else:
             window_flags = sdl2.SDL_WINDOW_FULLSCREEN

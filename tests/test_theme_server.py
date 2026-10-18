@@ -1,29 +1,23 @@
 # SPDX-License-Identifier: MIT
 #
-# tools/theme_server: the theme dev server. Its renderer (worker.py, a headless pugwash)
+# theme_server (PortMaster/pylibs/theme_server): the theme dev server. Its renderer (worker.py, a headless pugwash)
 # draws every screen of a theme; serve.py runs renderers, serves the page and exports.
 # These use an empty ports cache, so no network.
 
 import json
-import sys
 import threading
 import urllib.error
 import urllib.request
 
 import pytest
 
-from conftest import PM_DIR, REPO_DIR
+from conftest import PM_DIR
 
-sys.path.insert(0, str(REPO_DIR / "tools" / "theme_server"))
-import serve  # noqa: E402
-import worker  # noqa: E402
+from theme_server import serve, worker
 
 
 DEFAULT_THEME = PM_DIR / "pylibs" / "default_theme"
 
-## The renderers rely on harbourmaster's testing mode (windowed, PM_PRETEND_RESOLUTION),
-## which needs a git checkout: not the Test Suite's copy on a device.
-needs_checkout = pytest.mark.skipif(not (REPO_DIR / ".git").exists(), reason="the theme server runs from a git checkout")
 
 
 @pytest.mark.parametrize("size, expected, absent", [
@@ -50,17 +44,20 @@ def test_prepare_tools_dir(tmp_path):
     (theme / "theme.json").write_text("{}")
 
     work = tmp_path / "work"
-    assert worker.prepare_tools_dir(work, tmp_path / "cache", theme, "Dark") == "My Theme"
+    assert worker.prepare_tools_dir(work, cache_config, theme, "Dark") == "My Theme"
     config = work / "tools" / "PortMaster" / "config"
-    ## The cache is linked, not copied; config.json is the renderer's own, with the cache's
-    ## version (else harbourmaster "upgrades" it by deleting the image folders).
-    assert (config / "images_pm").is_symlink() and (config / "020_portmaster.source.json").is_symlink()
+    ## The screenshot folders are linked, the files copied: on a device this is PortMaster's
+    ## own config, which nothing may change. config.json is the renderer's own, with the
+    ## version (else harbourmaster "upgrades" it by deleting the image folders) and not a
+    ## first run (which writes the default source files).
+    assert (config / "images_pm").is_symlink()
+    assert not (config / "020_portmaster.source.json").is_symlink() and (config / "020_portmaster.source.json").read_text() == "{}"
     cfg = json.loads((config / "config.json").read_text())
-    assert (cfg['version'], cfg['theme'], cfg['theme-scheme'], cfg['disclaimer']) == (2, "My Theme", "Dark", True)
+    assert (cfg['version'], cfg['theme'], cfg['theme-scheme'], cfg['disclaimer'], cfg['first-run']) == (2, "My Theme", "Dark", True, False)
     assert (work / "tools" / "PortMaster" / "themes" / "My Theme").resolve() == theme.resolve()
 
     ## The built-in theme isn't linked, pugwash finds it by name.
-    assert worker.prepare_tools_dir(work, tmp_path / "cache", DEFAULT_THEME, None) == "default_theme"
+    assert worker.prepare_tools_dir(work, cache_config, DEFAULT_THEME, None) == "default_theme"
     assert not any((work / "tools" / "PortMaster" / "themes").iterdir())
 
 
@@ -136,7 +133,7 @@ def pool(tmp_path_factory):
     (themes_dir / "Tiny" / "theme.json").write_text(json.dumps(tiny))
 
     themes = serve.Themes(themes_dir)
-    pool = serve.RenderPool(themes, tmp / "cache", tmp / "work")
+    pool = serve.RenderPool(themes, tmp / "cache" / "tools" / "PortMaster" / "config", tmp / "work")
     try:
         pool.shots()
     except serve.WorkerError as error:
@@ -150,7 +147,6 @@ def pool(tmp_path_factory):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 @pytest.mark.parametrize("resolution", ["640x480", "1280x720"])
 def test_every_screen_renders(pool, resolution):
     for shot, _ in pool.shots():
@@ -172,7 +168,6 @@ def test_every_screen_renders(pool, resolution):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_png_size_and_caching(pool):
     import png as pypng
 
@@ -186,7 +181,6 @@ def test_png_size_and_caching(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_missing_sections_and_default_only_screens(pool):
     _, info = pool.render("Tiny", None, "640x480", "en_US", "main_menu")
     assert not info['missing'] and info['regions']
@@ -199,7 +193,6 @@ def test_missing_sections_and_default_only_screens(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_a_saved_theme_gets_a_new_renderer(pool):
     theme_json = pool.themes.get("Tiny") / "theme.json"
     _, before = pool.render("Tiny", None, "640x480", "en_US", "main_menu")
@@ -217,7 +210,6 @@ def test_a_saved_theme_gets_a_new_renderer(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_http_api(pool):
     server = serve.Server(("127.0.0.1", 0), serve.Handler)
     server.themes, server.pool, server.shots, server.verbose = pool.themes, pool, pool.shots(), False
@@ -261,7 +253,6 @@ def test_http_api(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_export(pool, tmp_path):
     shots = [shot for shot in pool.shots() if shot[0] in ("main_menu", "filters")]
     assert serve.export(pool, pool.themes, tmp_path, ["Tiny"], ["640x480"], [], ["en_US"], shots) == 0
@@ -274,12 +265,13 @@ def test_export(pool, tmp_path):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_port_screens_with_port_data(online_hm, hm_dirs, tmp_path):
-    ## online_hm saved tests/data/ports.json's ports into hm_dirs' config: a ports cache.
-    cache = hm_dirs['tools_dir'].parent
-    assert (cache / "tools" / "PortMaster" / "config" / "020_portmaster.source.json").is_file()
-    pool = serve.RenderPool(serve.Themes(None), cache, tmp_path / "work")
+    ## online_hm saved tests/data/ports.json's ports into hm_dirs' config: as on a device,
+    ## the renderers take the ports from PortMaster's own config, and leave it as it was.
+    config = hm_dirs['tools_dir'] / "PortMaster" / "config"
+    assert (config / "020_portmaster.source.json").is_file()
+    before = {path: path.read_bytes() for path in config.rglob("*") if path.is_file()}
+    pool = serve.RenderPool(serve.Themes(None), config, tmp_path / "work")
     try:
         _, info = pool.render("default_theme", None, "640x480", "en_US", "port_info")
         assert not info['missing'] and not info['errors']
@@ -292,12 +284,13 @@ def test_port_screens_with_port_data(online_hm, hm_dirs, tmp_path):
     finally:
         pool.stop()
 
+    assert {path: path.read_bytes() for path in config.rglob("*") if path.is_file()} == before
+
 
 ################################################################################
 ## The translation editor's side: which strings a screen uses, reading and saving.
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_render_lists_the_strings_it_used(pool):
     _, info = pool.render("default_theme", None, "640x480", "de_DE", "options")
     assert "Select Theme" in info['strings']['messages']
@@ -309,7 +302,6 @@ def test_render_lists_the_strings_it_used(pool):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_language_capability_picks_the_font(pool):
     ## The default theme's "font[ja_JP]": the language reaches the theme's capabilities
     ## with a pretend resolution too.
@@ -358,7 +350,6 @@ def test_translations_save(locales):
 
 @pytest.mark.sdl
 @pytest.mark.own_display
-@needs_checkout
 def test_translate_api(pool, locales):
     server = serve.Server(("127.0.0.1", 0), serve.Handler)
     server.themes, server.pool, server.shots, server.verbose = pool.themes, pool, pool.shots(), False
@@ -397,3 +388,112 @@ def test_translate_api(pool, locales):
     finally:
         server.shutdown()
         server.server_close()
+
+
+################################################################################
+## On a device: PortMaster's options start the server (pugwash/scenes/theme_server.py).
+def test_listen_tries_the_next_ports():
+    import socket
+
+    busy = socket.socket()
+    busy.bind(("127.0.0.1", 0))
+    busy.listen(1)
+    port = busy.getsockname()[1]
+    try:
+        server = serve.listen("127.0.0.1", port, 5)
+        try:
+            assert port < server.server_address[1] < port + 5
+        finally:
+            server.server_close()
+
+        with pytest.raises(OSError):
+            serve.listen("127.0.0.1", port, 1)
+
+    finally:
+        busy.close()
+
+
+def test_worker_count(tmp_path):
+    from pugwash.scenes.theme_server import worker_count
+
+    meminfo = tmp_path / "meminfo"
+    for available_kb, expected in ((200 * 1024, 1), (480 * 1024, 3), (4000 * 1024, 4)):
+        meminfo.write_text(f"MemTotal: 999999 kB\nMemAvailable: {available_kb} kB\n")
+        assert worker_count(str(meminfo)) == expected
+
+    assert worker_count(str(tmp_path / "missing")) == 2
+
+
+def start_managed(tmp_path, *args):
+    import os
+    import subprocess
+    import sys
+
+    env = dict(os.environ)
+    env['PYTHONPATH'] = os.pathsep.join([str(PM_DIR / "pylibs"), str(PM_DIR / "exlibs")])
+    env['TMPDIR'] = str(tmp_path / "tmp")
+    (tmp_path / "tmp").mkdir()
+    return subprocess.Popen(
+        [sys.executable, "-m", "theme_server.serve", "--managed", "--port", "0",
+         "--ports-config", str(tmp_path / "config"), "--max-workers", "1", *args],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env,
+        universal_newlines=True, cwd=str(tmp_path))
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_managed_server(tmp_path):
+    proc = start_managed(tmp_path)
+    try:
+        ready = json.loads(proc.stdout.readline() or "{}")
+        if not ready.get('ok'):
+            pytest.skip(f"the renderer can't start here: {ready.get('error')}")
+
+        with urllib.request.urlopen(f"http://127.0.0.1:{ready['port']}/api/info", timeout=30) as response:
+            assert json.loads(response.read())['themes'][0]['id'] == "default_theme"
+
+        ## PortMaster closing stdin stops it, and it cleans up after itself.
+        proc.stdin.close()
+        assert proc.wait(timeout=30) == 0
+        assert list((tmp_path / "tmp").iterdir()) == []
+
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+
+
+@pytest.mark.sdl
+def test_theme_editor_scene(gui, hm_dirs, monkeypatch):
+    import time
+    import harbourmaster
+    from pugwash.scenes import theme_server as scene_module
+
+    monkeypatch.setattr(scene_module, "get_ip_address", lambda force_update=False: "127.0.0.1")
+    gui.hm = harbourmaster.HarbourMaster({'offline': True, 'no-check': True}, callback=gui, **hm_dirs)
+    scene = scene_module.ThemeServerScene(gui)
+    gui.push_scene('theme-editor', scene)
+    proc = scene.proc
+    try:
+        end = time.monotonic() + 120
+        while not gui.text_data.get('theme_server.url') and proc.poll() is None:
+            gui.do_loop(no_delay=True)
+            assert time.monotonic() < end
+
+        url = gui.text_data['theme_server.url']
+        assert url.startswith("http://127.0.0.1:") and url in gui.text_data['theme_server.status']
+        ## The QR code of the address is on screen.
+        assert gui.images.load("qr:" + url) is scene.tags['server_qr'].image
+
+        with urllib.request.urlopen(url + "api/info", timeout=30) as response:
+            assert response.status == 200
+
+        ## B stops it.
+        monkeypatch.setattr(gui.events, "was_pressed", lambda button: button == 'B')
+        gui.do_loop(no_delay=True)
+        assert proc.wait(timeout=30) == 0
+        assert gui.scene_list() == ["root"]
+
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        gui.hm = None

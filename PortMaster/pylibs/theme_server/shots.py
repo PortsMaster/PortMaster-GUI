@@ -209,6 +209,15 @@ def shot_keyboard(gui):
     gui.push_scene('osk', pug_scenes.OnScreenKeyboard(gui))
 
 
+def shot_theme_editor(gui):
+    ## Not started: a renderer mustn't run a server. A theme without a "theme_server"
+    ## section shows PortMaster's plain fallback, as on a device.
+    shot_options(gui)
+    scene = pug_scenes.ThemeServerScene(gui, start=False)
+    gui.push_scene('theme-editor', scene)
+    scene.show("http://192.168.0.2:8090/")
+
+
 def shot_messages(gui):
     _ports_list(gui, 'install')
     gui.messages_begin(internal=True)
@@ -309,6 +318,7 @@ SHOTS = (
     ("theme_schemes", "Colour schemes", shot_theme_schemes),
     ("language", "Language", shot_language),
     ("keyboard", "On-screen keyboard", shot_keyboard),
+    ("theme_editor", "Theme editor (its address and QR code)", shot_theme_editor),
     ("messages", "Messages and progress", shot_messages),
     ("message_box", "Message box", shot_message_box),
     ("selection_list", "Selection list", shot_selection_list),

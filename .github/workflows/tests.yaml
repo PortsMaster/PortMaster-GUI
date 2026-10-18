@@ -42,7 +42,8 @@ jobs:
         run: |
           flake8 --select=E9,F63,F7,F82,F811 \
             PortMaster/pugwash PortMaster/harbourmaster \
-            PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests tools/test_suite
+            PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash PortMaster/pylibs/theme_server \
+            tests tools/test_suite tools/theme_server tools/i18n.py
           # The launchers (shellcheck is preinstalled on the runners)
           cd PortMaster && shellcheck -s bash --severity=error \
             utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt ../tools/installer.sh \

@@ -4,16 +4,14 @@
 # list of every translatable string, locales/strings.json (tools/i18n.py extract).
 
 import json
-import sys
 
 import pytest
 
-from conftest import PM_DIR, REPO_DIR
+from conftest import PM_DIR
 
 from harbourmaster import i18n
 
-sys.path.insert(0, str(REPO_DIR / "tools"))
-import i18n as i18n_tool  # noqa: E402
+from theme_server import translations as i18n_tool
 
 
 LOCALES_DIR = PM_DIR / "pylibs" / "locales"

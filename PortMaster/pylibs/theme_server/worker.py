@@ -10,7 +10,11 @@
 # else pugwash prints goes to stderr.
 #
 #   worker.py --theme-dir DIR --resolution 640x480 [--scheme NAME] [--lang en_US]
-#             --cache DIR --work DIR
+#             --ports-config DIR --work DIR
+#
+#   --ports-config is a PortMaster config folder with the ports list and screenshots: the
+#   cache's (DIR/tools/PortMaster/config, see --prepare-cache), or on a device PortMaster's
+#   own. Nothing in it is changed.
 #
 #   {"cmd": "render", "shot": "main_menu", "out": "/tmp/x.png"}
 #       -> {"ok": true, "regions": [...], "errors": [...]}
@@ -32,8 +36,8 @@ import traceback
 from pathlib import Path
 
 
-REPO_DIR = Path(__file__).resolve().parents[2]
-PM_DIR = REPO_DIR / "PortMaster"
+## PortMaster/pylibs/theme_server/worker.py
+PM_DIR = Path(__file__).resolve().parents[2]
 
 
 def screen_capabilities(width, height):
@@ -86,8 +90,10 @@ def sdl_env():
     return {'PM_HEADLESS': "Y", 'SDL_AUDIODRIVER': "dummy"}
 
 
-def prepare_tools_dir(work, cache, theme_dir, scheme):
-    """work/tools: the cached ports (linked, not copied), the theme, and a config.json."""
+def prepare_tools_dir(work, ports_config, theme_dir, scheme):
+    """work/tools: the ports data from ports_config (files copied, the screenshot folders
+    linked: harbourmaster may rewrite a source file, it only reads the screenshots), the
+    theme, and a config.json."""
     tools = work / "tools"
     config = tools / "PortMaster" / "config"
     if tools.exists():
@@ -99,11 +105,15 @@ def prepare_tools_dir(work, cache, theme_dir, scheme):
     (work / "ports").mkdir(exist_ok=True)
     (work / "temp").mkdir(exist_ok=True)
 
-    cached = cache / "tools" / "PortMaster" / "config"
+    cached = Path(ports_config)
     if cached.is_dir():
         for entry in cached.iterdir():
-            if entry.name != "config.json":
-                (config / entry.name).symlink_to(entry)
+            if entry.name == "config.json":
+                continue
+            if entry.is_dir():
+                (config / entry.name).symlink_to(entry.resolve())
+            elif entry.is_file():
+                shutil.copyfile(str(entry), str(config / entry.name))
 
     default_theme = PM_DIR / "pylibs" / "default_theme"
     if theme_dir.resolve() == default_theme.resolve():
@@ -112,14 +122,17 @@ def prepare_tools_dir(work, cache, theme_dir, scheme):
         theme_name = theme_dir.name
         (tools / "PortMaster" / "themes" / theme_name).symlink_to(theme_dir.resolve())
 
-    ## The cache's own config.json (its "version", else harbourmaster upgrades the config by
-    ## deleting the image folders, which here are links into the cache).
+    ## Its "version", else harbourmaster upgrades the config by deleting the image folders
+    ## (here links), and not a first run, which writes the default sources.
     cfg_data = {}
-    if (cached / "config.json").is_file():
+    try:
         cfg_data = json.loads((cached / "config.json").read_text())
+    except (OSError, ValueError):
+        pass
 
     (config / "config.json").write_text(json.dumps({
-        **cfg_data,
+        **{key: cfg_data[key] for key in ('version',) if key in cfg_data},
+        'first-run': False,
         'theme': theme_name,
         'theme-scheme': scheme,
         'disclaimer': True,
@@ -171,7 +184,7 @@ def main(argv=None):
     parser.add_argument("--scheme", default=None)
     parser.add_argument("--resolution", default="640x480")
     parser.add_argument("--lang", default="en_US")
-    parser.add_argument("--cache", required=True)
+    parser.add_argument("--ports-config", required=True)
     parser.add_argument("--work", required=True)
     options = parser.parse_args(argv)
 
@@ -186,7 +199,7 @@ def main(argv=None):
     width, height = (int(part) for part in options.resolution.lower().split("x"))
     work = Path(options.work)
     work.mkdir(parents=True, exist_ok=True)
-    theme_name = prepare_tools_dir(work, Path(options.cache), Path(options.theme_dir), options.scheme)
+    theme_name = prepare_tools_dir(work, Path(options.ports_config), Path(options.theme_dir), options.scheme)
 
     os.environ.update(device_env(width, height, options.lang))
     os.environ.update(sdl_env())
@@ -196,11 +209,11 @@ def main(argv=None):
     os.environ['HM_PORTS_DIR'] = str(work / "ports")
     os.environ['HM_SCRIPTS_DIR'] = str(work / "ports")
 
-    ## From the checkout: harbourmaster's testing mode (windowed, no update checks).
-    os.chdir(str(REPO_DIR))
+    ## Next to PortMaster/: from a checkout that's harbourmaster's testing mode.
+    os.chdir(str(PM_DIR.parent))
     sys.path[:0] = [str(PM_DIR / "pylibs"), str(PM_DIR / "exlibs")]
 
-    import shots
+    from theme_server import shots
 
     try:
         renderer = shots.Renderer(work, theme_name)

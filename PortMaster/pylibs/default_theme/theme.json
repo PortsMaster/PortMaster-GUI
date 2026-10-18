@@ -590,6 +590,35 @@
         },
         "#element:button_bar": {}
     },
+    "theme_server": {
+        "#element:background": {},
+        "server_title": {
+            "area": [0.04, 0.02, 0.96, 0.12],
+            "text": "{scene.title}",
+            "font-size": 24,
+            "font-color": "list_selected",
+            "align": "center"
+        },
+        "server_qr_panel": {
+            "area": [0.04, 0.14, 0.46, 0.9],
+            "fill": "panels"
+        },
+        "server_qr": {
+            "area": [0.06, 0.16, 0.44, 0.88],
+            "image": "qr:{theme_server.url}",
+            "image-mode": "fit"
+        },
+        "server_info": {
+            "area": [0.5, 0.14, 0.96, 0.9],
+            "fill": "panels",
+            "border": 10,
+            "font-size": 15,
+            "font-color": "general_font",
+            "text-wrap": true,
+            "text": "{theme_server.status}"
+        },
+        "#element:button_bar": {}
+    },
     "runtime_list": {
         "#element:background": {
             "music": null
