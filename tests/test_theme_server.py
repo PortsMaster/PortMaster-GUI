@@ -479,10 +479,11 @@ def test_managed_server(tmp_path):
         with urllib.request.urlopen(f"http://127.0.0.1:{ready['port']}/api/info", timeout=30) as response:
             assert json.loads(response.read())['themes'][0]['id'] == "default_theme"
 
-        ## PortMaster closing stdin stops it, and it cleans up after itself.
+        ## PortMaster closing stdin stops it, and it cleans up after itself. (Only its own
+        ## folder: ctypes' find_library can leave gcc's temporary files there too.)
         proc.stdin.close()
         assert proc.wait(timeout=30) == 0
-        assert list((tmp_path / "tmp").iterdir()) == []
+        assert [path for path in (tmp_path / "tmp").iterdir() if path.name.startswith("pm-theme-server-")] == []
 
     finally:
         if proc.poll() is None:
