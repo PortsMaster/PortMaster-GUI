@@ -113,9 +113,10 @@ def test_language_reload(app, tmp_path):
     names = LanguageScene(app).tags['option_list'].list
     assert "Französisch" in names and "French" not in names
 
-    ## The theme's font for the language: "font[ja_JP]".
-    app.reload_language("ja_JP", then=options(app))
-    assert app.scenes[-1][1][-1].tags['option_list'].font == "NotoSansJP-Regular.ttf"
+    ## The theme's font for the language: "font[ja_JP]" (the Test Suite has no Noto fonts).
+    if (PM_DIR / "pylibs" / "resources" / "NotoSansJP-Regular.ttf").is_file():
+        app.reload_language("ja_JP", then=options(app))
+        assert app.scenes[-1][1][-1].tags['option_list'].font == "NotoSansJP-Regular.ttf"
 
     app.reload_language("en_US", then=options(app))
     assert screen(app, tmp_path, "after") == before
