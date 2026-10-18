@@ -40,7 +40,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 
-from theme_server import translations as i18n_tool
+from theme_server import catalogue, translations as i18n_tool
 
 
 HERE = Path(__file__).resolve().parent
@@ -220,6 +220,8 @@ class RenderPool:
         if theme_dir is None:
             raise WorkerError(f"no theme {theme_id!r}")
 
+        ## No scheme is the theme's default one, by name: the same renderer the page uses.
+        scheme = scheme or self.themes.info(theme_id, theme_dir)['default_scheme']
         fingerprint = version(theme_dir, lang)
         key = (theme_id, fingerprint, scheme or "", resolution, lang)
         with self.lock:
@@ -282,8 +284,13 @@ class RenderPool:
         return png, info
 
     def shots(self):
-        worker, _ = self._worker("default_theme", None, "640x480", "en_US")
-        return worker.request(cmd="shots")['shots']
+        """[[name, title]] of every screen, in the page's order."""
+        return [[name, title] for name, title in catalogue.SHOTS]
+
+    def warm(self, theme_id="default_theme", scheme=None, resolution="640x480", lang="en_US"):
+        """Starts the renderer the page asks for first (the default theme, scheme and
+        language), so its screens come quicker. Raises WorkerError if it can't start."""
+        self._worker(theme_id, scheme, resolution, lang)
 
     def stop(self):
         with self.lock:
@@ -611,14 +618,7 @@ def main(argv=None):
     pool = RenderPool(themes, ports_config, work_dir, options.max_workers)
 
     try:
-        try:
-            shots = pool.shots()
-        except WorkerError as error:
-            if report is None:
-                raise
-            report(ok=False, error=str(error).strip().splitlines()[-1])
-            return 1
-
+        shots = pool.shots()
         if options.export:
             resolutions = list(RESOLUTIONS) if options.resolutions == "all" else options.resolutions.split(",")
             bad = [resolution for resolution in resolutions if not valid_resolution(resolution)]
@@ -636,8 +636,19 @@ def main(argv=None):
                 return 1
             sys.exit(f"Can't listen on {options.host}:{options.port} ({error.strerror}), try another --port.")
 
-        server.themes, server.pool, server.shots, server.verbose = themes, pool, shots, options.verbose
+        ## Managed: every request goes in PortMaster's theme_server.txt.
+        server.themes, server.pool, server.shots, server.verbose = themes, pool, shots, options.verbose or report is not None
         port = server.server_address[1]
+
+        ## Up straight away; the first renderer starts meanwhile (6-15 seconds on a handheld).
+        def warm():
+            try:
+                pool.warm()
+            except WorkerError as error:
+                print(f"The renderer didn't start: {error}", file=sys.stderr, flush=True)
+
+        threading.Thread(target=warm, name="warm", daemon=True).start()
+
         if report is not None:
             report(ok=True, ready=True, port=port)
 

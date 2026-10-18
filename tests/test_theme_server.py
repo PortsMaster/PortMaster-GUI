@@ -135,7 +135,7 @@ def pool(tmp_path_factory):
     themes = serve.Themes(themes_dir)
     pool = serve.RenderPool(themes, tmp / "cache" / "tools" / "PortMaster" / "config", tmp / "work")
     try:
-        pool.shots()
+        pool.warm()
     except serve.WorkerError as error:
         pool.stop()
         pytest.skip(f"the renderer can't start here: {str(error).strip().splitlines()[-1]}")
@@ -497,3 +497,23 @@ def test_theme_editor_scene(gui, hm_dirs, monkeypatch):
         if proc.poll() is None:
             proc.kill()
         gui.hm = None
+
+
+def test_screens_listed_without_a_renderer(tmp_path):
+    ## The page's list of screens comes from the catalogue: the server is up (and PortMaster
+    ## shows its address) before any renderer has started.
+    pool = serve.RenderPool(serve.Themes(None), tmp_path / "config", tmp_path / "work")
+    shots = pool.shots()
+    assert shots[0] == ["main_menu", "Main menu"] and ["theme_editor", "Theme editor (its address and QR code)"] in shots
+    assert pool.workers == {}
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_no_scheme_is_the_default_scheme(pool):
+    ## The page asks for the default scheme by name; warm() and the API without a scheme
+    ## must use that same renderer, not start another.
+    pool.render("default_theme", None, "640x480", "en_US", "main_menu")
+    workers = dict(pool.workers)
+    pool.render("default_theme", "Light Mode", "640x480", "en_US", "main_menu")
+    assert pool.workers == workers

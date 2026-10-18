@@ -15,6 +15,8 @@ from pugwash import scenes as pug_scenes
 from pugwash.app import PortMasterGUI
 from pugwash.scenes.base import BaseScene
 
+from theme_server import catalogue
+
 
 class MissingSection(Exception):
     """A screen needs a theme section this theme doesn't have."""
@@ -302,33 +304,8 @@ def shot_warning_long(gui):
     _startup_warning(gui, {"spruce", "lowram"})
 
 
-SHOTS = (
-    ("main_menu", "Main menu", shot_main_menu),
-    ("ports_all", "All ports", shot_ports_all),
-    ("ports_rtr", "Ready to run ports", shot_ports_rtr),
-    ("ports_manage", "Manage ports", shot_ports_manage),
-    ("port_info", "Port info", shot_port_info),
-    ("port_info_popup", "Port info popup", shot_port_info_popup),
-    ("filters", "Filters", shot_filters),
-    ("featured", "Featured ports", shot_featured),
-    ("featured_list", "Featured ports list", shot_featured_list),
-    ("options", "Options", shot_options),
-    ("runtimes", "Runtimes", shot_runtimes),
-    ("themes", "Themes", shot_themes),
-    ("theme_schemes", "Colour schemes", shot_theme_schemes),
-    ("language", "Language", shot_language),
-    ("keyboard", "On-screen keyboard", shot_keyboard),
-    ("theme_editor", "Theme editor (its address and QR code)", shot_theme_editor),
-    ("messages", "Messages and progress", shot_messages),
-    ("message_box", "Message box", shot_message_box),
-    ("selection_list", "Selection list", shot_selection_list),
-    ("selection_description", "Selection list + description", shot_selection_description),
-    ("selection_images", "Selection list + images", shot_selection_images),
-    ("selection_description_images", "Selection list + description + images", shot_selection_description_images),
-    ("disclaimer", "Disclaimer", shot_disclaimer),
-    ("warning_trimui", "Unsupported system warning (TrimUI)", shot_warning_trimui),
-    ("warning_long", "Unsupported system warning (spruce, low RAM)", shot_warning_long),
-    )
+## The catalogue's screens with their builders.
+SHOTS = tuple((name, title, globals()["shot_" + name]) for name, title in catalogue.SHOTS)
 
 SHOT_BUILDERS = {name: builder for name, _, builder in SHOTS}
 
