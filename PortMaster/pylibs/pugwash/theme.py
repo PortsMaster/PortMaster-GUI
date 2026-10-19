@@ -129,6 +129,110 @@ def theme_apply(gui, section_data, base_data, elements):
     return new_data
 
 
+## Fonts with capital letters only, an address in them reads wrong: the list's font instead.
+CAPS_ONLY_FONTS = ('AmazDooMLeft.ttf', )
+
+## Keys only a list uses, left out when a list region becomes text.
+LIST_ONLY_KEYS = ('select', 'alt-fill', 'no-select', 'pointer', 'list', 'line-height', 'autoscroll',
+                  'scroll', 'columns', 'grid', 'text-clip', 'border-x', 'tag')
+
+
+def section_from_themes_list(section, mode):
+    """
+    A "port_links" (mode 'links') or "theme_server" (mode 'server') section made from a
+    theme's "themes_list" section (with its elements applied), for themes made before those
+    screens: the theme's own panels and fonts, the QR code where the theme screenshot goes
+    and the address where the description goes. None if the section hasn't the list and
+    screenshot regions to make it from.
+    """
+    def tag(name, region):
+        return region.get('tag', name)
+
+    list_regions = [(name, region) for name, region in section.items()
+                    if isinstance(region, dict) and tag(name, region) == 'themes_list']
+    if len(list_regions) == 0:
+        return None
+
+    list_name, list_region = list_regions[0]
+    list_fonts = {key: value for key, value in list_region.items() if key == 'font' or key.startswith('font[')}
+
+    def address(region, text):
+        new = copy.deepcopy(region)
+        if new.get('font') in CAPS_ONLY_FONTS:
+            new.update(list_fonts)
+
+        new.pop('tag', None)
+        new.pop('autoscroll', None)
+        new['text'] = text
+        return new
+
+    address_text = "{port_links.name}\n{port_links.url}" if mode == 'links' else "{theme_server.url}"
+
+    out = {}
+    dropped = set()
+    has_qr = False
+    for name, region in section.items():
+        if not isinstance(region, dict) or name == '#config':
+            continue
+
+        text = region.get('text', '')
+        text = text if isinstance(text, str) else ''
+        image = region.get('image', '')
+        image = image if isinstance(image, str) else ''
+
+        if name == list_name:
+            if mode == 'links':
+                new = copy.deepcopy(region)
+                new.pop('tag', None)
+                out['links_list'] = new
+
+            else:
+                new = {key: value for key, value in region.items() if not key.startswith(LIST_ONLY_KEYS)}
+                for key, value in list(new.items()):
+                    if key.startswith('font-size') and isinstance(value, (int, float)):
+                        new[key] = max(10, round(value * 0.75))
+
+                new.update({"text": "{theme_server.status}", "text-wrap": True})
+                out['server_info'] = new
+
+        elif '{theme_info.name}' in text:
+            new = copy.deepcopy(region)
+            new.pop('tag', None)
+            new['text'] = "{port_info.title}" if mode == 'links' else "{scene.title}"
+            out['links_title' if mode == 'links' else 'server_title'] = new
+
+        elif '{theme_info.description}' in text and '{theme_info.creator}' not in text:
+            out['link_info' if mode == 'links' else 'server_url'] = address(region, address_text)
+
+        elif '{theme_info.' in text:
+            dropped.add(name)
+
+        elif '{theme_info.image}' in image:
+            new = {key: value for key, value in region.items() if not key.startswith(('image[', 'image-mode', 'tag'))}
+            new['image'] = "qr:{port_links.url}" if mode == 'links' else "qr:{theme_server.url}"
+            new['image-mode'] = "fit"
+            out['link_qr' if mode == 'links' else 'server_qr'] = new
+            has_qr = True
+
+        else:
+            out[name] = copy.deepcopy(region)
+
+    if not has_qr:
+        return None
+
+    ## A description that also had the creator in it (hiviz): the text goes there.
+    info_name = 'link_info' if mode == 'links' else 'server_url'
+    for name in sorted(dropped):
+        if info_name not in out and '{theme_info.description}' in section[name].get('text', ''):
+            out[info_name] = address(section[name], address_text)
+
+    ## The panels behind the text left out ("theme_general_info_back").
+    for name in dropped:
+        out.pop(name + '_back', None)
+
+    return out
+
+
 def theme_load(gui, theme_file, color_scheme=None):
     logger.info(f"Loading theme {theme_file}")
 
@@ -343,6 +447,15 @@ def theme_load(gui, theme_file, color_scheme=None):
     if 'featured_ports' not in sections:
         ## Temporary Hack
         sections['featured_ports'] = copy.deepcopy(sections['ports_list'])
+
+    ## Themes made before the port links and theme editor screens: made from their themes list.
+    ## (Without a screenshot region there, the scenes show their own plain screen.)
+    for section_name, mode in (('port_links', 'links'), ('theme_server', 'server')):
+        if section_name not in sections and 'themes_list' in sections:
+            section = section_from_themes_list(sections['themes_list'], mode)
+            if section is not None:
+                logger.debug(f"  - {section_name} made from themes_list")
+                sections[section_name] = section
 
 
 

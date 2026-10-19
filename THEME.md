@@ -165,12 +165,12 @@ Currently there are the following scenes:
 - `option_menu`: Options screen
 - `ports_list`: The list of ports
 - `port_info`: Detailed port information. X opens the port's links (`port_links`) when it has any; a theme that maps buttons in `#config` can use the action `port_links`.
-- `port_links`: A port's links, its page on the PortMaster website (ports from the PortMaster and Multiverse sources) and the stores in its `port.json`, each as a QR code. The list is the region tagged `links_list`. The selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website", "Steam: developer", ...), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`); `{port_links.count}` is how many there are. Show the QR code with `"image": "qr:{port_links.url}"`. A theme without this section gets a plain screen in PortMaster's own font.
+- `port_links`: A port's links, its page on the PortMaster website (ports from the PortMaster and Multiverse sources) and the stores in its `port.json`, each as a QR code. The list is the region tagged `links_list`. The selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website", "Steam: developer", ...), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`); `{port_links.count}` is how many there are. Show the QR code with `"image": "qr:{port_links.url}"`. A theme without this section (one made before it) gets one made from its `themes_list` section: its list, the QR code where the theme screenshot goes and the address where the description goes; if that has no `{theme_info.image}` region, a plain screen in PortMaster's own font.
 - `message_window`: A scrolling list of messages, used during downloading, installation, and fetching the latest ports information.
 - `message_box`: An alert box
 - `filter_list`: Available filters
 - `themes_list`: List themes / downloader.
-- `theme_server`: The theme editor (Options → Theme Editor), with the tags `{theme_server.url}`, the address, empty until the server is up, and `{theme_server.status}`, the instructions or what went wrong. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets a plain screen in PortMaster's own font.
+- `theme_server`: The theme editor (Options → Theme Editor), with the tags `{theme_server.url}`, the address, empty until the server is up, and `{theme_server.status}`, the instructions or what went wrong. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets one made from its `themes_list` section, as `port_links` does (the instructions where the list goes), or else a plain screen in PortMaster's own font.
 
 ### Scene: main_menu
 
