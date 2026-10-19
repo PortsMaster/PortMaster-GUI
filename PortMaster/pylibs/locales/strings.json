@@ -149,13 +149,13 @@
   ],
   "Not Installed": [
     "pylibs/harbourmaster/hm_runtimes.py:127",
-    "pylibs/pugwash/app_ports.py:93",
+    "pylibs/pugwash/app_ports.py:193",
     "pylibs/pugwash/scenes/filters.py:69",
     "pylibs/pugwash/scenes/runtimes.py:93"
   ],
   "Update Available": [
     "pylibs/harbourmaster/hm_runtimes.py:128",
-    "pylibs/pugwash/app_ports.py:92",
+    "pylibs/pugwash/app_ports.py:192",
     "pylibs/pugwash/scenes/filters.py:70"
   ],
   "Verified": [
@@ -267,7 +267,7 @@
   ],
   "N/A": [
     "pylibs/pugwash/app.py:406",
-    "pylibs/pugwash/app_ports.py:70"
+    "pylibs/pugwash/app_ports.py:170"
   ],
   "Fetching latest gameinfo.xml files and cover images.": [
     "pylibs/pugwash/app_commands.py:47"
@@ -291,24 +291,30 @@
     "pylibs/pugwash/app_fifo.py:356",
     "pylibs/pugwash/autoinstall.py:168"
   ],
+  "PortMaster website": [
+    "pylibs/pugwash/app_ports.py:74"
+  ],
+  "{store}: developer": [
+    "pylibs/pugwash/app_ports.py:90"
+  ],
   "** NO PORT **": [
-    "pylibs/pugwash/app_ports.py:33"
+    "pylibs/pugwash/app_ports.py:129"
   ],
   "Ready to Run": [
-    "pylibs/pugwash/app_ports.py:52",
+    "pylibs/pugwash/app_ports.py:149",
     "pylibs/pugwash/scenes/filters.py:66",
     "pylibs/pugwash/scenes/main_menu.py:96"
   ],
   "Requires Files": [
-    "pylibs/pugwash/app_ports.py:52"
+    "pylibs/pugwash/app_ports.py:149"
   ],
   "Installed": [
-    "pylibs/pugwash/app_ports.py:64",
-    "pylibs/pugwash/app_ports.py:91",
+    "pylibs/pugwash/app_ports.py:164",
+    "pylibs/pugwash/app_ports.py:191",
     "pylibs/pugwash/scenes/runtimes.py:93"
   ],
   "Missing": [
-    "pylibs/pugwash/app_ports.py:66"
+    "pylibs/pugwash/app_ports.py:166"
   ],
   "Installation failed, see log.txt for details.": [
     "pylibs/pugwash/autoinstall.py:101"
@@ -432,8 +438,9 @@
     "pylibs/pugwash/scenes/options.py:164",
     "pylibs/pugwash/scenes/port_info.py:36",
     "pylibs/pugwash/scenes/port_info.py:39",
-    "pylibs/pugwash/scenes/port_info.py:129",
-    "pylibs/pugwash/scenes/port_info.py:131",
+    "pylibs/pugwash/scenes/port_info.py:138",
+    "pylibs/pugwash/scenes/port_info.py:140",
+    "pylibs/pugwash/scenes/port_links.py:51",
     "pylibs/pugwash/scenes/ports.py:241",
     "pylibs/pugwash/scenes/ports.py:267",
     "pylibs/pugwash/scenes/ports.py:269",
@@ -707,7 +714,7 @@
   ],
   "Theme Editor": [
     "pylibs/pugwash/scenes/options.py:48",
-    "pylibs/pugwash/scenes/theme_server.py:64"
+    "pylibs/pugwash/scenes/theme_server.py:70"
   ],
   "Preview themes and edit PortMaster's translations from a computer or phone on the same network.": [
     "pylibs/pugwash/scenes/options.py:49"
@@ -909,30 +916,38 @@
   ],
   "Reinstall": [
     "pylibs/pugwash/scenes/port_info.py:36",
-    "pylibs/pugwash/scenes/port_info.py:129"
+    "pylibs/pugwash/scenes/port_info.py:138"
   ],
   "Uninstall": [
     "pylibs/pugwash/scenes/port_info.py:36",
-    "pylibs/pugwash/scenes/port_info.py:129",
+    "pylibs/pugwash/scenes/port_info.py:138",
     "pylibs/pugwash/scenes/runtimes.py:109"
   ],
   "Install": [
     "pylibs/pugwash/scenes/port_info.py:39",
-    "pylibs/pugwash/scenes/port_info.py:131",
+    "pylibs/pugwash/scenes/port_info.py:140",
     "pylibs/pugwash/scenes/runtimes.py:112"
   ],
+  "Links": [
+    "pylibs/pugwash/scenes/port_info.py:42",
+    "pylibs/pugwash/scenes/port_info.py:143",
+    "pylibs/pugwash/scenes/port_links.py:28"
+  ],
   "Port Info": [
-    "pylibs/pugwash/scenes/port_info.py:63"
+    "pylibs/pugwash/scenes/port_info.py:72"
   ],
   "Show Info": [
-    "pylibs/pugwash/scenes/port_info.py:96",
-    "pylibs/pugwash/scenes/port_info.py:101",
+    "pylibs/pugwash/scenes/port_info.py:105",
+    "pylibs/pugwash/scenes/port_info.py:110",
     "pylibs/pugwash/scenes/ports.py:241",
     "pylibs/pugwash/scenes/ports.py:267",
     "pylibs/pugwash/scenes/ports.py:269"
   ],
   "Are you sure you want to uninstall {port_name}?": [
-    "pylibs/pugwash/scenes/port_info.py:151"
+    "pylibs/pugwash/scenes/port_info.py:176"
+  ],
+  "No links for this port.": [
+    "pylibs/pugwash/scenes/port_links.py:46"
   ],
   "NO PORTS": [
     "pylibs/pugwash/scenes/ports.py:34",
@@ -1007,25 +1022,25 @@
     "pylibs/pugwash/scenes/startup.py:212"
   ],
   "Starting the theme editor...": [
-    "pylibs/pugwash/scenes/theme_server.py:73"
+    "pylibs/pugwash/scenes/theme_server.py:79"
   ],
   "Stop": [
-    "pylibs/pugwash/scenes/theme_server.py:75"
+    "pylibs/pugwash/scenes/theme_server.py:81"
   ],
   "it stopped": [
-    "pylibs/pugwash/scenes/theme_server.py:109"
+    "pylibs/pugwash/scenes/theme_server.py:115"
   ],
   "Unable to start the theme editor: {error}": [
-    "pylibs/pugwash/scenes/theme_server.py:122"
+    "pylibs/pugwash/scenes/theme_server.py:128"
   ],
   "The theme editor is running, but this device isn't on a network. Connect it to Wi-Fi, then start the theme editor again.": [
-    "pylibs/pugwash/scenes/theme_server.py:129"
+    "pylibs/pugwash/scenes/theme_server.py:140"
   ],
   "On a computer or phone on the same network, scan the code or open:\n\n{url}\n\nPreview themes at any screen size, and edit PortMaster's translations: they are saved on this device.\n\nPress B to stop the theme editor.": [
-    "pylibs/pugwash/scenes/theme_server.py:138"
+    "pylibs/pugwash/scenes/theme_server.py:149"
   ],
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": [
-    "pylibs/pugwash/scenes/theme_server.py:167"
+    "pylibs/pugwash/scenes/theme_server.py:178"
   ],
   "{theme_name} (Selected)": [
     "pylibs/pugwash/scenes/themes.py:31"

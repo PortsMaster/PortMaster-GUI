@@ -153,7 +153,7 @@ def test_every_screen_renders(pool, resolution):
     for shot, _ in pool.shots():
         png, info = pool.render("default_theme", None, resolution, "en_US", shot)
         assert info['errors'] == [], (shot, info['errors'])
-        if shot in ("port_info", "port_info_popup", "featured", "featured_list"):
+        if shot in ("port_info", "port_info_popup", "port_links", "featured", "featured_list"):
             ## No ports or featured lists in an empty cache (and the default theme has no popup section).
             assert info['missing'] and png == b""
             continue

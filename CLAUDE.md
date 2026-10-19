@@ -94,7 +94,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 
 ## Architecture
 
-**Import setup**: the scripts prepend `pylibs/` and `exlibs/` to `sys.path`. `exlibs/` holds vendored third-party packages (loguru, requests, urllib3, certifi, `sdl2`, `png`, `qrcode`, ...), and `pylibs/` holds the project packages. A theme `image` of `qr:<text>` is a QR code (`sdl/images.py`, `tests/test_qr.py`). Don't edit vendored code unless that's the point of the change. There are no star imports and no injected builtins: import names explicitly.
+**Import setup**: the scripts prepend `pylibs/` and `exlibs/` to `sys.path`. `exlibs/` holds vendored third-party packages (loguru, requests, urllib3, certifi, `sdl2`, `png`, `qrcode`, ...), and `pylibs/` holds the project packages. A theme `image` of `qr:<text>` is a QR code (`sdl/images.py`, `tests/test_qr.py`). X on the port info screen opens `scenes/port_links.py`: the port's website page and its `port.json` stores (`app_ports.port_links()`, which tidies the hand-typed store names), each as a QR code (`tests/test_port_links.py`). Don't edit vendored code unless that's the point of the change. There are no star imports and no injected builtins: import names explicitly.
 
 **`harbourmaster` library** (`pylibs/harbourmaster/`):
 - `harbour.py`: `HarbourMaster`, the engine both the GUI and CLI drive. It holds `__init__`, config, sources and GCD modes. Its other methods live in mixins grouped by job:

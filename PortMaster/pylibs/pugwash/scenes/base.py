@@ -3,9 +3,28 @@
 # StringFormatter (the {tag} template text) and BaseScene, which loads a theme section into regions.
 
 import functools
+import json
 from harbourmaster.i18n import theme_text
 from pugwash import sdl
 from loguru import logger
+
+
+def plain_font():
+    """
+    PortMaster's own font for the language (the default theme's "font[ja_JP]" & co), for the
+    sections a theme doesn't have, where the text has to be readable whatever the theme.
+    """
+    from pugwash import PYLIB_PATH, lang
+
+    font = "DejaVuSans.ttf"
+    try:
+        with open(str(PYLIB_PATH / "default_theme" / "theme.json"), encoding="utf-8") as fh:
+            base = json.load(fh).get("#base", {})
+        font = base.get(f"font[{lang.CURRENT_LANG}]") or base.get("font") or font
+    except (OSError, ValueError, AttributeError):
+        pass
+
+    return font
 
 
 class StringFormatter:

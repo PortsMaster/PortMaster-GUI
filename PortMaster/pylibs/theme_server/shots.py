@@ -141,6 +141,34 @@ def shot_port_info_popup(gui):
     gui.push_scene('port_info', PortInfoPopup(gui, info_scene))
 
 
+def _links_port(gui):
+    """A port with a few links (website and stores): one of PORT_INFO_PORTS if it has, or
+    the port with the most."""
+    def links(name):
+        return len(gui.get_port_links(name, gui.hm.port_info(name)))
+
+    for name in PORT_INFO_PORTS:
+        if gui.hm.port_info(name) is not None and links(name) >= 3:
+            return name
+
+    return max(gui.hm.list_ports(), key=links, default=None) or _info_port(gui)
+
+
+def shot_port_links(gui):
+    name = _links_port(gui)
+    list_scene = _ports_list(gui, 'install')
+    info_scene = pug_scenes.PortInfoScene(gui, name, 'install', list_scene)
+    gui.push_scene('port_info', info_scene)
+    gui.push_scene('port_links', pug_scenes.PortLinksScene(gui, name, info_scene.port_info))
+
+    ## A store, not the website, so a store's address shows.
+    scene = gui.scenes[-1][1][-1]
+    if len(scene.links) > 1:
+        scene.tags['links_list'].list_select(1)
+        scene.last_select = 1
+        scene.show_link(1)
+
+
 def shot_filters(gui):
     list_scene = _ports_list(gui, 'install')
     gui.push_scene('ports', pug_scenes.FiltersScene(gui, list_scene))

@@ -31,8 +31,8 @@
     "ff_VII/theme.json:523",
     "Zelda/theme.json:551",
     "Stardew/theme.json:651",
-    "default_theme/theme.json:510",
-    "default_theme/theme.json:510"
+    "default_theme/theme.json:567",
+    "default_theme/theme.json:567"
   ],
   "Creator: {theme_info.creator}\nStatus: {theme_info.status}": [
     "Fallout/theme.json:831",
@@ -40,7 +40,7 @@
     "ff_VII/theme.json:612",
     "Zelda/theme.json:633",
     "Stardew/theme.json:739",
-    "default_theme/theme.json:560"
+    "default_theme/theme.json:617"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free": [
     "Stardew/theme.json:613"
@@ -64,14 +64,17 @@
     "default_theme/theme.json:353",
     "default_theme/theme.json:353"
   ],
+  "{port_links.name}\n{port_links.url}": [
+    "default_theme/theme.json:480"
+  ],
   "Time: {system.time_24hr}\nCFW: {system.cfw_name} ({system.cfw_version})\nDevice: {system.device_name}\nBattery: {system.battery_level}": [
     "ff_VII/theme.json:480",
     "Stardew/theme.json:605",
-    "default_theme/theme.json:450"
+    "default_theme/theme.json:507"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total": [
     "ff_VII/theme.json:488",
-    "default_theme/theme.json:458"
+    "default_theme/theme.json:515"
   ],
   "• Porter: {port_info.porter}\n• Genres: {port_info.genres}\n• Description: {port_info.description}": [
     "hiviz/theme.json:267"
@@ -87,7 +90,7 @@
   ],
   "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}": [
     "hiviz/theme.json:526",
-    "default_theme/theme.json:653"
+    "default_theme/theme.json:710"
   ],
   "{ports_list.filter_ports} games": [
     "jimmyhat999_grid_dark/theme.json:239",

@@ -3,8 +3,93 @@
 # PortMasterGUI PortInfoMixin.
 
 import os
+import urllib.parse
 import harbourmaster
 from harbourmaster.i18n import _
+
+
+## The port's page on the website, for ports from the PortMaster and Multiverse sources.
+WEBSITE_PORT_URL = "https://portmaster.games/detail.html?name={name}"
+
+## port.json "store" names are typed by hand: "Itch", "itch.io", "GoG", "Steam ", ...
+STORE_NAMES = {
+    'steam':        "Steam",
+    'itch':         "itch.io",
+    'itchio':       "itch.io",
+    'gog':          "GOG",
+    'gogcom':       "GOG",
+    'gamejolt':     "Game Jolt",
+    'playstore':    "Google Play",
+    'googleplay':   "Google Play",
+    'appstore':     "App Store",
+    'humble':       "Humble Bundle",
+    'humblebundle': "Humble Bundle",
+    'github':       "GitHub",
+    'dlsite':       "DLsite",
+    'epic':         "Epic Games Store",
+    'epicgames':    "Epic Games Store",
+    'epicgamesstore': "Epic Games Store",
+    }
+
+
+def store_name(name, url):
+    key = ''.join(char for char in name.casefold() if char.isalnum())
+    if key in STORE_NAMES:
+        return STORE_NAMES[key]
+
+    if name.strip() != '':
+        return name.strip()
+
+    host = urllib.parse.urlsplit(url).hostname or url
+    if host.startswith('www.'):
+        host = host[4:]
+
+    return host
+
+
+def port_links(port_name, port_info, website=False):
+    """
+    The links for a port, as a list of (label, kind, url): the PortMaster website first (if
+    `website`), then each of its stores, the game's page and then the developer's.
+    """
+    links = []
+    seen = set()
+
+    def add(label, kind, url):
+        if not isinstance(url, str):
+            return
+
+        url = url.strip()
+        if not url.casefold().startswith(('http://', 'https://')) or url in seen:
+            return
+
+        seen.add(url)
+        links.append((label, kind, url))
+
+    if website:
+        name = harbourmaster.name_cleaner(port_name)
+        if name.endswith('.zip'):
+            name = name[:-4]
+
+        add(_("PortMaster website"), 'website', WEBSITE_PORT_URL.format(name=urllib.parse.quote(name, safe='')))
+
+    stores = (port_info or {}).get('attr', {}).get('store', None)
+    if not isinstance(stores, list):
+        stores = []
+
+    for store in stores:
+        if not isinstance(store, dict):
+            continue
+
+        game_url = store.get('gameurl') or store.get('url') or ''
+        dev_url = store.get('developerurl') or ''
+        name = store.get('name') if isinstance(store.get('name'), str) else ''
+        label = store_name(name, isinstance(game_url, str) and game_url or str(dev_url))
+
+        add(label, 'store', game_url)
+        add(_("{store}: developer").format(store=label), 'developer', dev_url)
+
+    return links
 
 
 class PortInfoMixin:
@@ -25,6 +110,17 @@ class PortInfoMixin:
 
         return image
 
+    def get_port_links(self, port_name, port_info):
+        """port_links() for a port, with the website link if it's from an official source."""
+        website = False
+        official_urls = set(harbourmaster.HarbourMaster.LEGACY_SOURCE_URLS.values())
+        for source in getattr(self.hm, 'sources', {}).values():
+            if source._config.get('url') in official_urls and source.clean_name(port_name) in source.ports:
+                website = True
+                break
+
+        return port_links(port_name, port_info, website=website)
+
     def set_port_info(self, port_name, port_info, want_install_size=False):
         ## TODO: make this better :D
         if port_name is None:
@@ -39,6 +135,7 @@ class PortInfoMixin:
             self.set_data("port_info.runtime", "")
             self.set_data("port_info.download_size", "")
             self.set_data("port_info.install_size", "")
+            self.set_data("port_info.links", "")
             # self.set_data("port_info.image", "no-image")
             return
 
@@ -50,6 +147,9 @@ class PortInfoMixin:
         self.set_data("port_info.genres", ', '.join(port_info['attr']['genres']))
         self.set_data("port_info.porter", harbourmaster.oc_join(port_info['attr']['porter']))
         self.set_data("port_info.ready_to_run", port_info['attr']['rtr'] and _("Ready to Run") or _("Requires Files"))
+        ## How many links the port has (empty for none, for {if:port_info.links}).
+        links = len(self.get_port_links(port_name, port_info))
+        self.set_data("port_info.links", links and str(links) or "")
         # self.set_data("port_info.image", port_image)
 
         runtimes = port_info['attr']['runtime']

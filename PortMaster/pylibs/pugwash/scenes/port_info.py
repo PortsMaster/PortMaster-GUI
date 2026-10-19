@@ -38,6 +38,9 @@ class PortInfoPopup(BaseScene):
         else:
             buttons.update({'A': _('Install'), 'B': _('Back')})
 
+        if self.parent_info_scene.has_links():
+            buttons['X'] = _('Links')
+
         self.port_name = self.gui.get_data("port_info.name")
         self.set_buttons(buttons)
 
@@ -47,7 +50,13 @@ class PortInfoPopup(BaseScene):
         if self.port_name != self.gui.get_data("port_info.name"):
             self.update_selection()
 
+        if events.was_pressed('X') and self.parent_info_scene.show_links():
+            return True
+
         for action in self.config_buttons(events):
+            if action == "port_links" and self.parent_info_scene.show_links():
+                return True
+
             if action == "pop_scene":
                 self.parent_info_scene.popup_shown = False
                 self.button_back()
@@ -130,9 +139,25 @@ class PortInfoScene(BaseScene):
         else:
             buttons.update({'A': _('Install'), 'B': _('Back')})
 
+        if self.has_links():
+            buttons['X'] = _('Links')
+
         self.set_buttons(buttons)
 
         self.ready = True
+
+    def has_links(self):
+        return self.gui.get_data("port_info.links") not in ("", None)
+
+    def show_links(self):
+        """The port's links (website, stores) with QR codes, if it has any."""
+        if not self.has_links():
+            return False
+
+        from .port_links import PortLinksScene
+        self.button_activate()
+        self.gui.push_scene('port_links', PortLinksScene(self.gui, self.port_name, self.port_info))
+        return True
 
     def do_update(self, events):
         super().do_update(events)
@@ -159,7 +184,14 @@ class PortInfoScene(BaseScene):
             self.gui.pop_scene()
             return True
 
+        if events.was_pressed('X') and self.show_links():
+            return True
+
         for action in self.config_buttons(events):
+            if action == "port_links":
+                self.show_links()
+                return True
+
             if action == "port_info_popup":
                 if 'port_info_popup' in self.gui.theme_data:
                     if self.popup_shown:

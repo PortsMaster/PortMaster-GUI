@@ -164,7 +164,8 @@ Currently there are the following scenes:
 - `main_menu`: The main menu
 - `option_menu`: Options screen
 - `ports_list`: The list of ports
-- `port_info`: Detailed port information.
+- `port_info`: Detailed port information. X opens the port's links (`port_links`) when it has any; a theme that maps buttons in `#config` can use the action `port_links`.
+- `port_links`: A port's links, its page on the PortMaster website (ports from the PortMaster and Multiverse sources) and the stores in its `port.json`, each as a QR code. The list is the region tagged `links_list`. The selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website", "Steam: developer", ...), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`); `{port_links.count}` is how many there are. Show the QR code with `"image": "qr:{port_links.url}"`. A theme without this section gets a plain screen in PortMaster's own font.
 - `message_window`: A scrolling list of messages, used during downloading, installation, and fetching the latest ports information.
 - `message_box`: An alert box
 - `filter_list`: Available filters
@@ -653,6 +654,7 @@ The format is:
 - port_info.install_size
 - port_info.runtime
 - port_info.runtime_status
+- port_info.links: how many links the port has (the `port_links` screen), empty if none, so `{if:port_info.links}Press X for links{endif}` works.
 
 ## Ports List tags
 
