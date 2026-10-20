@@ -392,6 +392,7 @@ def test_sandboxed_stub_keeps_its_logic(launcher):
 
 @pytest.mark.parametrize("cfw, sdl_path", [
     (None, "/usr/lib"),
+    ("muos", "/usr/lib"),
     ("trimui", "/usr/trimui/lib"),
     ("retrodeck", ""),
     ])

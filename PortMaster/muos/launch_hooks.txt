@@ -32,9 +32,10 @@ pm_hook_pre_launch() {
   $ESUDO chmod -R +x .
 }
 
-## pm_hook_env sets everything.
+## The system SDL2 in /usr/lib, as muos/PortMaster.txt set before pm_launch.txt: pysdl2's
+## own search doesn't always find it (RG Vita Pro: "could not find any library for SDL2").
 pm_hook_gui_env() {
-  :
+  export PYSDL2_DLL_PATH="/usr/lib"
 }
 
 pm_hook_run_pugwash() {
