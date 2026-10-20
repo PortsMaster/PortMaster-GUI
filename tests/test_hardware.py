@@ -147,3 +147,60 @@ def test_device_info_stale_cache_when_the_probe_fails(tmp_path, monkeypatch):
 
     monkeypatch.setattr(hardware.subprocess, "run", probe)
     assert hardware.HardwareDetector(tmp_path).get_info()['model'] == "Old Answer"
+
+
+def _old_launcher_env(monkeypatch):
+    """What the 2026.06 launcher's device_info.txt (0.1.15) exported: no DEVICE_CAPABILITIES."""
+    _no_device_env(monkeypatch)
+    monkeypatch.setenv("DEVICE_INFO_VERSION", "0.1.15")
+    monkeypatch.setenv("CFW_NAME", "muOS")
+    monkeypatch.setenv("DEVICE_NAME", "rg-vita-pro")
+    monkeypatch.setenv("DEVICE_CPU", "Cortex-A53")
+
+
+def test_device_info_ignores_an_older_scripts_environment(tmp_path, monkeypatch):
+    ## PortMaster updated itself and restarted under the old launcher: every port was
+    ## "incompatible", the capabilities were only the language.
+    _old_launcher_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.6"\n')
+    _cache(tmp_path, "0.2.6", "Retroid Pocket 5")
+
+    info = hardware.HardwareDetector(tmp_path).get_info()
+
+    assert info['model'] == "Retroid Pocket 5"
+    assert info['capabilities'] == ["aarch64", "1920x1080"]
+    ## Nothing from the old environment fills in what the cache hasn't.
+    assert info['cpu'] == "Unknown"
+
+
+def test_device_info_older_environment_and_no_cache_probes(tmp_path, monkeypatch):
+    _old_launcher_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.6"\n')
+    probes = []
+
+    def probe(*args, **kwargs):
+        probes.append(kwargs['env']['controlfolder'])
+        _cache(tmp_path, "0.2.6", "Probed")
+
+    monkeypatch.setattr(hardware.subprocess, "run", probe)
+    info = hardware.HardwareDetector(tmp_path).get_info()
+
+    assert probes == [str(tmp_path)]
+    assert info['model'] == "Probed" and "aarch64" in info['capabilities']
+
+
+def test_device_info_current_environment_is_used(tmp_path, monkeypatch):
+    ## The launcher sourced the current device_info.txt: no disk reads.
+    _no_device_env(monkeypatch)
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.6"\n')
+    for key, value in (("DEVICE_INFO_VERSION", "0.2.6"), ("CFW_NAME", "muOS"), ("DEVICE_NAME", "RG35XX-H"),
+                       ("DEVICE_CAPABILITIES", "aarch64 640x480")):
+        monkeypatch.setenv(key, value)
+
+    def no_probe(*args, **kwargs):
+        raise AssertionError("probed although the environment is current")
+
+    monkeypatch.setattr(hardware.subprocess, "run", no_probe)
+    info = hardware.HardwareDetector(tmp_path).get_info()
+
+    assert info['model'] == "RG35XX-H" and info['capabilities'] == ["aarch64", "640x480"]

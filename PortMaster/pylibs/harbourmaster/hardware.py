@@ -95,6 +95,7 @@ class HardwareDetector:
 
     def __init__(self, control_dir: Optional[Union[str, Path]] = None):
         self.control_dir = Path(control_dir) if control_dir else _find_control_dir()
+        self.env_is_stale = False
 
     def _quick_probe_identity(self) -> Tuple[str, str]:
         """Fast helper to resolve the exact device_info_<cfw>_<device>.env filename."""
@@ -174,18 +175,27 @@ class HardwareDetector:
         return None
 
     def _load_raw_data(self, force_refresh: bool = False) -> Dict[str, str]:
-        # Priority 1: In-memory environment (Zero Disk I/O)
-        if not force_refresh:
-            if os.environ.get("DEVICE_NAME") or os.environ.get("DEVICE_CPU") or os.environ.get("CFW_NAME"):
-                return {_clean_str(k).lower(): _clean_str(v) for k, v in os.environ.items()}
-
-        safe_cfw, safe_dev = self._quick_probe_identity()
-        target_file = self.control_dir / f"device_info_{safe_cfw}_{safe_dev}.env"
-
         ## Some CFWs replace control.txt with their own that never sources device_info.txt
         ## (ROCKNIX 20250517), so nothing else replaces a cache an older version wrote.
         script = self._device_info_script()
         wanted = _script_version(script) if script is not None else None
+
+        # Priority 1: In-memory environment (Zero Disk I/O)
+        self.env_is_stale = False
+        if not force_refresh:
+            if os.environ.get("DEVICE_NAME") or os.environ.get("DEVICE_CPU") or os.environ.get("CFW_NAME"):
+                ## Set by an older device_info.txt: PortMaster updated itself and restarted
+                ## under the launcher that was running, whose device_info.txt (0.1.x) has no
+                ## DEVICE_CAPABILITIES, so every port was "incompatible". Without a version
+                ## the variables were set by hand (to pretend to be a device), they're used.
+                env_version = _clean_str(os.environ.get("DEVICE_INFO_VERSION", ""))
+                if env_version == "" or wanted is None or env_version == wanted:
+                    return {_clean_str(k).lower(): _clean_str(v) for k, v in os.environ.items()}
+
+                self.env_is_stale = True
+
+        safe_cfw, safe_dev = self._quick_probe_identity()
+        target_file = self.control_dir / f"device_info_{safe_cfw}_{safe_dev}.env"
 
         def current(env_file: Path) -> bool:
             if wanted is None:
@@ -256,8 +266,11 @@ class HardwareDetector:
 
         raw_env = self._load_raw_data(force_refresh)
 
+        ## Nor anything an older device_info.txt left in the environment.
+        env = {} if self.env_is_stale else os.environ
+
         def get_val(key: str, default: Any) -> Any:
-            val = raw_env.get(key.lower(), os.environ.get(key.upper(), default))
+            val = raw_env.get(key.lower(), env.get(key.upper(), default))
             if val is None or (isinstance(val, str) and not _clean_str(val)):
                 return default
             return _clean_str(val) if isinstance(val, str) else val
