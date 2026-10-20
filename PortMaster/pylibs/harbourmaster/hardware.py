@@ -184,12 +184,19 @@ class HardwareDetector:
         self.env_is_stale = False
         if not force_refresh:
             if os.environ.get("DEVICE_NAME") or os.environ.get("DEVICE_CPU") or os.environ.get("CFW_NAME"):
-                ## Set by an older device_info.txt: PortMaster updated itself and restarted
-                ## under the launcher that was running, whose device_info.txt (0.1.x) has no
-                ## DEVICE_CAPABILITIES, so every port was "incompatible". Without a version
-                ## the variables were set by hand (to pretend to be a device), they're used.
+                ## Only what this device_info.txt exported. Another version's (older or newer)
+                ## is left over: PortMaster updated itself and restarted under the launcher
+                ## that was running, and 0.1.x has no DEVICE_CAPABILITIES, so every port was
+                ## "incompatible". With no version at all, only variables set by hand to
+                ## pretend to be a device, which have DEVICE_CAPABILITIES (a CFW's own
+                ## control.txt may export CFW_NAME and nothing else).
                 env_version = _clean_str(os.environ.get("DEVICE_INFO_VERSION", ""))
-                if env_version == "" or wanted is None or env_version == wanted:
+                if env_version == "":
+                    trusted = _clean_str(os.environ.get("DEVICE_CAPABILITIES", "")) != ""
+                else:
+                    trusted = wanted is None or env_version == wanted
+
+                if trusted:
                     return {_clean_str(k).lower(): _clean_str(v) for k, v in os.environ.items()}
 
                 self.env_is_stale = True

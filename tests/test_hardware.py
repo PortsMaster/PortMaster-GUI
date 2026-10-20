@@ -5,6 +5,8 @@ import pytest
 import harbourmaster
 from harbourmaster import hardware
 
+from conftest import PM_DIR
+
 
 def test_device_info_from_environment():
     info = harbourmaster.device_info()
@@ -29,6 +31,9 @@ def test_device_info_is_cached(monkeypatch):
 def test_device_info_defaults(monkeypatch):
     for key in ("DISPLAY_WIDTH", "DISPLAY_HEIGHT", "DEVICE_RAM", "CFW_GLIBC", "DEVICE_CAPABILITIES"):
         monkeypatch.delenv(key)
+
+    ## Exported by this device_info.txt, so used although it has no capabilities.
+    monkeypatch.setenv("DEVICE_INFO_VERSION", hardware._script_version(PM_DIR / "device_info.txt"))
 
     info = harbourmaster.device_info()
 
@@ -158,10 +163,12 @@ def _old_launcher_env(monkeypatch):
     monkeypatch.setenv("DEVICE_CPU", "Cortex-A53")
 
 
-def test_device_info_ignores_an_older_scripts_environment(tmp_path, monkeypatch):
+@pytest.mark.parametrize("version", ["0.1.15", "0.9.0"])
+def test_device_info_ignores_another_scripts_environment(tmp_path, monkeypatch, version):
     ## PortMaster updated itself and restarted under the old launcher: every port was
-    ## "incompatible", the capabilities were only the language.
+    ## "incompatible", the capabilities were only the language. A newer one's isn't used either.
     _old_launcher_env(monkeypatch)
+    monkeypatch.setenv("DEVICE_INFO_VERSION", version)
     (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.6"\n')
     _cache(tmp_path, "0.2.6", "Retroid Pocket 5")
 
@@ -204,3 +211,21 @@ def test_device_info_current_environment_is_used(tmp_path, monkeypatch):
     info = hardware.HardwareDetector(tmp_path).get_info()
 
     assert info['model'] == "RG35XX-H" and info['capabilities'] == ["aarch64", "640x480"]
+
+
+def test_device_info_unversioned_environment_needs_capabilities(tmp_path, monkeypatch):
+    ## A CFW's own control.txt exporting CFW_NAME alone isn't a device description.
+    _no_device_env(monkeypatch)
+    monkeypatch.delenv("DEVICE_INFO_VERSION", raising=False)
+    monkeypatch.setenv("CFW_NAME", "ROCKNIX")
+    (tmp_path / "device_info.txt").write_text('export DEVICE_INFO_VERSION="0.2.6"\n')
+    _cache(tmp_path, "0.2.6", "Retroid Pocket 5")
+
+    assert hardware.HardwareDetector(tmp_path).get_info()['model'] == "Retroid Pocket 5"
+
+    ## Set by hand to pretend to be a device (with capabilities): used as it is.
+    hardware._CACHED_DICT = None
+    monkeypatch.setenv("DEVICE_NAME", "Pretend")
+    monkeypatch.setenv("DEVICE_CAPABILITIES", "aarch64 640x480")
+    info = hardware.HardwareDetector(tmp_path).get_info()
+    assert info['model'] == "Pretend" and info['capabilities'] == ["aarch64", "640x480"]
