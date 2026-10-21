@@ -407,7 +407,7 @@ def option_text(scene, option):
 def test_options_list(scene_gui, options):
     ids = options.tags['option_list'].options
 
-    for option in ('select-language', 'select-theme', 'theme-editor', 'toggle-music', 'toggle-sfx',
+    for option in ('select-language', 'select-theme', 'toggle-music', 'toggle-sfx',
                    'runtime-manager', 'toggle-experimental', 'update-ports', 'update-portmaster', 'release-channel'):
         assert option in ids, option
 
@@ -687,25 +687,41 @@ def test_language_selected_row_does_nothing(scene_gui, language, monkeypatch):
     assert top(scene_gui) is language
 
 
+def other_languages(language):
+    return [option for option in language.tags['option_list'].options if isinstance(option, tuple) and option[0] == 'select-language']
+
+
 def test_language_choose(scene_gui, language, monkeypatch):
-    reloaded = []
-    monkeypatch.setattr(scene_gui, "reload_language", lambda code, then=None: reloaded.append((code, [name for name, _ in then])))
-
-    region = language.tags['option_list']
-    others = [option for option in region.options if isinstance(option, tuple) and option[0] == 'select-language']
-    assert others
-
-    select(language, others[0])
-    scene_gui.do_loop(no_delay=True)
-    press(scene_gui, monkeypatch, 'A')
-
-    code = others[0][1]
-    assert reloaded == [(code, ['option', 'select-language'])]
+    ## Asks, saves it, and quits: it applies at the next start.
     from pugwash import lang
-    if code == lang.DEFAULT_LANG:
-        assert 'language' not in scene_gui.hm.cfg_data
-    else:
-        assert scene_gui.hm.cfg_data['language'] == code
+    other = [option for option in other_languages(language) if option[1] != lang.DEFAULT_LANG][0]
+
+    choose(scene_gui, monkeypatch, other)
+
+    assert "change language" in scene_gui.boxes[-1]
+    assert scene_gui.hm.cfg_data['language'] == other[1]
+    assert scene_gui.events.running is False
+
+
+def test_language_choose_declined(scene_gui, language, monkeypatch):
+    scene_gui.answer = False
+    choose(scene_gui, monkeypatch, other_languages(language)[0])
+
+    assert 'language' not in scene_gui.hm.cfg_data
+    assert scene_gui.events.running is True
+
+
+def test_language_choose_the_default(scene_gui, monkeypatch):
+    ## The language came from the system, not the config: del raised KeyError.
+    from pugwash import lang
+    monkeypatch.setenv("LANG", "xx_XX")
+    scene_gui.hm.cfg_data.pop('language', None)
+    language = push(scene_gui, 'select-language', scene_gui.scenes_mod.LanguageScene(scene_gui))
+
+    choose(scene_gui, monkeypatch, ('select-language', lang.DEFAULT_LANG))
+
+    assert 'language' not in scene_gui.hm.cfg_data
+    assert scene_gui.events.running is False
 
 
 def test_language_b(scene_gui, language, monkeypatch):

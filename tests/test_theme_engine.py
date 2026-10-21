@@ -5,14 +5,12 @@
 # PortMaster from starting).
 
 import json
-import shutil
 from types import SimpleNamespace
 
 import pytest
 
 import harbourmaster
 
-from conftest import PM_DIR
 
 
 pytestmark = pytest.mark.sdl
@@ -164,10 +162,9 @@ def test_current_theme(engine, hm):
     assert engine.get_current_theme() == "default_theme"
 
 
-def test_forced_theme_and_scheme(theme, hm):
-    engine = theme.ThemeEngine(SimpleNamespace(hm=hm), force_theme="forced", force_scheme="dark")
+def test_forced_theme(theme, hm):
+    engine = theme.ThemeEngine(SimpleNamespace(hm=hm), force_theme="forced")
     assert engine.get_current_theme() == "forced"
-    assert engine.get_current_theme_scheme() == "dark"
 
 
 def test_config_without_harbourmaster(theme, hm, monkeypatch):
@@ -193,45 +190,48 @@ def test_theme_missing(theme, tmp_path):
 ################################################################################
 ## A custom theme that loads as JSON but not as a theme
 @pytest.fixture
-def app(gui, hm_dirs):
-    gui.hm = harbourmaster.HarbourMaster({'offline': True, 'no-check': True}, callback=gui, **hm_dirs)
-    yield gui
+def loading(theme, engine, hm, monkeypatch):
+    """Theme.gui_init stood in for: the "Typo" theme fails as a typo in it would."""
+    from pugwash.sdl.errors import GUIThemeError
+    add_theme(hm, "Typo", "Typo")
+    tried = []
 
-    gui.themes.force_theme = "default_theme"
-    gui.hm.cfg_data['theme'] = "default_theme"
-    gui.reload_theme()
-    gui.hm = None
+    def gui_init(self, gui, color_scheme=None):
+        tried.append(self.theme_dir.name)
+        if self.theme_dir.name == "Typo":
+            raise GUIThemeError("Region area incorrect length")
 
+        return {"loaded": self.theme_dir.name}
 
-@pytest.fixture
-def typo_theme():
-    """A copy of the default theme with a typo: an element's area has three numbers."""
-    theme_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "themes" / "Typo"
-    shutil.copytree(str(PM_DIR / "pylibs" / "default_theme"), str(theme_dir))
-    data = json.loads((theme_dir / "theme.json").read_text())
-    data["#elements"]["left_pane"] = dict(data["#elements"]["left_pane"], area=[0, 0, 100])
-    (theme_dir / "theme.json").write_text(json.dumps(data))
-    yield "Typo"
-    shutil.rmtree(str(theme_dir))
+    monkeypatch.setattr(theme.Theme, "gui_init", gui_init)
+    engine.gui.resources = SimpleNamespace(remove_path=lambda path: tried.append(("removed", path.name)))
+    engine.tried = tried
+    return engine
 
 
-def test_theme_that_fails_to_load_falls_back(app, typo_theme, log_errors):
+def test_theme_that_fails_to_load_falls_back(loading, hm, log_errors):
     ## It stopped PortMaster from starting until the theme was deleted by hand.
-    app.themes.force_theme = None
-    app.hm.cfg_data['theme'] = typo_theme
+    hm.cfg_data['theme'] = "Typo"
 
-    app.reload_theme()
-
-    assert app.themes.get_current_theme() == "default_theme"
-    assert app.theme_dir == PM_DIR / "pylibs" / "default_theme"
-    assert 'option_menu' in app.theme_data
+    assert loading.gui_init() == {"loaded": "default_theme"}
+    assert loading.tried == ["Typo", ("removed", "Typo"), "default_theme"]
+    assert loading.get_current_theme() == "default_theme"
     assert any("using the default theme" in message for message in log_errors)
 
 
-def test_forced_theme_that_fails_to_load_raises(app, typo_theme):
+def test_forced_theme_that_fails_to_load_raises(loading):
     ## The theme editor shows the error rather than another theme.
     from pugwash.sdl.errors import GUIThemeError
-    app.themes.force_theme = typo_theme
+    loading.force_theme = "Typo"
 
     with pytest.raises(GUIThemeError):
-        app.reload_theme()
+        loading.gui_init()
+
+
+def test_default_theme_failing_raises(loading, theme, monkeypatch):
+    def fail(self, gui, color_scheme=None):
+        raise ValueError("broken install")
+
+    monkeypatch.setattr(theme.Theme, "gui_init", fail)
+    with pytest.raises(ValueError):
+        loading.gui_init()

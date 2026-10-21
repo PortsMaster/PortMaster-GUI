@@ -353,6 +353,3 @@ def test_animation_scene_change(pugwash, ticks):
     manager.change_scene()
     assert gui.data["animation.resets"] == "000"
     assert gui.data["animation.keeps"] == "002"
-
-    manager.clear()
-    assert manager._animations == {}

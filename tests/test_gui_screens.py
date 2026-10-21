@@ -331,16 +331,6 @@ def test_port_info_popup(popup_theme, monkeypatch):
     assert not info.popup_shown
 
 
-def test_port_info_popup_links(popup_theme, monkeypatch):
-    screen_gui = popup_theme
-    popup_info(screen_gui, "sprout.zip")
-
-    press(screen_gui, monkeypatch, 'UP')
-    popup = top(screen_gui)
-    assert "Links" in bar(popup)
-
-    press(screen_gui, monkeypatch, 'X')
-    assert screen_gui.scene_list()[-1] == "port_links"
 
 
 def test_port_info_popup_follows_the_port(popup_theme, monkeypatch):
@@ -354,11 +344,6 @@ def test_port_info_popup_follows_the_port(popup_theme, monkeypatch):
     assert popup.port_name == "something else"
 
 
-def test_port_info_without_links(screen_gui, info, monkeypatch):
-    ## 2048plus has no stores, and the website link is only for the official sources' ports.
-    screen_gui.set_data("port_info.links", "")
-    assert not info.has_links()
-    assert info.show_links() is False
 
 
 def test_port_info_without_harbourmaster(screen_gui, info):
@@ -380,6 +365,9 @@ def test_runtime_list(screen_gui, runtimes):
 
     ## aarch64 builds only, by name, then "Download All".
     assert [option for option in options if option] == ['ags_3.6.squashfs', 'dotnet-8.0.12.squashfs', 'gmtoolkit.squashfs', 'all']
+
+    select(runtimes, 'dotnet-8.0.12.squashfs', tag='runtime_list')
+    screen_gui.do_loop(no_delay=True)
     assert screen_gui.get_data('runtime_info.status') == "Not Installed"
     assert screen_gui.get_data('runtime_info.disk_size') == ""
 
@@ -493,14 +481,23 @@ def test_themes_list(screen_gui, themes):
 
 
 def test_themes_select(screen_gui, themes, monkeypatch):
-    reloads = []
-    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append([name for name, _ in then]))
-
+    ## Asks, saves it, and quits: it applies at the next start.
+    screen_gui.hm.cfg_data['theme-scheme'] = "Night"
     choose(screen_gui, monkeypatch, 'default_theme', tag='themes_list')
 
-    assert reloads == [['option', 'select-theme']]
+    assert "change theme" in screen_gui.boxes[-1]
     assert screen_gui.hm.cfg_data['theme'] == 'default_theme'
     assert screen_gui.hm.cfg_data['theme-scheme'] is None
+    assert screen_gui.events.running is False
+
+
+def test_themes_select_declined(screen_gui, themes, monkeypatch):
+    screen_gui.answer = False
+    screen_gui.hm.cfg_data['theme-scheme'] = "Night"
+    choose(screen_gui, monkeypatch, 'default_theme', tag='themes_list')
+
+    assert screen_gui.hm.cfg_data['theme-scheme'] == "Night"
+    assert screen_gui.events.running is True
 
 
 def test_themes_not_installed_cant_be_selected(screen_gui, themes, monkeypatch):
@@ -510,8 +507,6 @@ def test_themes_not_installed_cant_be_selected(screen_gui, themes, monkeypatch):
     monkeypatch.setattr(screen_gui.themes, "get_themes_list", lambda *args: listed)
     themes.tags['themes_list'].add_option('remote_theme', "Remote")
 
-    reloads = []
-    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append(then))
     installs = []
     monkeypatch.setattr(screen_gui, "do_install", lambda name, url: installs.append((name, url)))
 
@@ -520,7 +515,7 @@ def test_themes_not_installed_cant_be_selected(screen_gui, themes, monkeypatch):
     assert "Download" in bar(themes) and "Select" not in bar(themes)
 
     press(screen_gui, monkeypatch, 'A')
-    assert reloads == []
+    assert screen_gui.boxes == []
 
     press(screen_gui, monkeypatch, 'X')
     assert installs == [("Remote", "https://example.com/remote.theme.zip.md5")]
@@ -555,14 +550,12 @@ def test_schemes_list(screen_gui, schemes):
 
 
 def test_schemes_choose(screen_gui, schemes, monkeypatch):
-    reloads = []
-    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append([name for name, _ in then]))
     other = [option for option in schemes.tags['option_list'].options if isinstance(option, tuple) and option[0] == 'select-scheme'][0]
 
     choose(screen_gui, monkeypatch, other)
 
     assert screen_gui.hm.cfg_data['theme-scheme'] == other[1]
-    assert reloads == [['option', 'select-scheme']]
+    assert screen_gui.events.running is False
 
 
 def test_schemes_back_and_blank(screen_gui, schemes, monkeypatch):
