@@ -152,8 +152,14 @@ def hex_color_decode(hex_code):
 
     if len(hex_code) not in (6, 8):
         print(f'bad hex_code: {hex_code}')
-        return [255, 255, 255]
+        return (255, 255, 255)
 
-    return [
-        int(hex_code[i:i+2], 16)
-        for i in range(0, len(hex_code), 2)]
+    ## A tuple: it's cached, so nobody may change it. A typo ("#ggg") is white, as a bad length is.
+    try:
+        return tuple(
+            int(hex_code[i:i+2], 16)
+            for i in range(0, len(hex_code), 2))
+
+    except ValueError:
+        print(f'bad hex_code: {hex_code}')
+        return (255, 255, 255)
