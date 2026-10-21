@@ -41,14 +41,8 @@ class PortMasterV3(BaseSource):
         if self.hm.callback is not None:
             self.hm.callback.message(" - {}".format(_("Updating")))
 
-        changed = False
-        # Scrap the rest
-        self._data = {}
-        self._info = {}
-        self.ports = []
-        self.utils = []
-        self.images = {}
-
+        ## Already fetched this run: keep what's loaded. Clearing it first emptied the
+        ## port list on "Update ports" right after the startup update.
         if self._did_update:
             self.hm.callback.message(" - {}".format(_("Up to date already")))
             return
@@ -58,7 +52,17 @@ class PortMasterV3(BaseSource):
 
         data = net.fetch_json(self._config['url'])
         if data is None:
+            ## No network yet, or the download failed: use the cached ports until the next try.
+            self.load()
             return
+
+        changed = False
+        # Scrap the rest
+        self._data = {}
+        self._info = {}
+        self.ports = []
+        self.utils = []
+        self.images = {}
 
         ## Load data from the assets.
         for key, asset in data['ports'].items():
