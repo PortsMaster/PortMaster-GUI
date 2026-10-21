@@ -168,3 +168,36 @@ CXX=clang++ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=../ ..
 make install -j$(nproc)
 ```
+
+## Compile libtheoradec (libs.aarch64/libtheoradec.so.1)
+
+Distro builds (Debian's `libtheora0`) have the debugging telemetry on, which needs
+`libcairo.so.2`: most CFWs don't have it, so the library won't load at all. This one
+needs only libc (GLIBC_2.17). Built on a Raspberry Pi with Debian 11.
+
+```sh
+curl -fsSLO https://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.xz
+curl -fsSLO https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2
+sha256sum libogg-1.3.5.tar.xz libtheora-1.1.1.tar.bz2
+# c4d91be36fc8e54deae7575241e03f4211eb102afb3fc0775fbbc1b740016705  libogg-1.3.5.tar.xz
+# b6ae1ee2fa3d42ac489287d3ec34c5885730b1296f0801ae577a35193d3affbc  libtheora-1.1.1.tar.bz2
+
+P=$PWD/prefix
+tar xf libogg-1.3.5.tar.xz && tar xf libtheora-1.1.1.tar.bz2
+
+# libogg is only needed for its headers, libtheoradec doesn't link it.
+cd libogg-1.3.5
+./configure --prefix=$P --disable-static && make -j$(nproc) && make install
+cd ..
+
+# The 2009 configure script doesn't know aarch64: give it the build triplet.
+cd libtheora-1.1.1
+PKG_CONFIG_PATH=$P/lib/pkgconfig ./configure --build=aarch64-unknown-linux-gnu --prefix=$P \
+  --with-ogg=$P --disable-static --disable-telemetry --disable-examples --disable-oggtest \
+  --disable-vorbistest --disable-sdltest --disable-spec CFLAGS="-O2 -g0"
+make -j$(nproc) && make install
+cd ..
+
+strip --strip-unneeded -o libtheoradec.so.1 $P/lib/libtheoradec.so.1.1.4
+readelf -d libtheoradec.so.1 | grep NEEDED    # only libc.so.6
+```
