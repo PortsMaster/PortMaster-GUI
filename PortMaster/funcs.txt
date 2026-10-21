@@ -12,7 +12,8 @@ fi
 #   3: the original funcs.txt
 #   4: pm_message / pm_show_error take portmsg options (--title, --timeout, ...),
 #      pm_message_close
-export PM_FUNCS_VERSION=4
+#   5: PM_LIBRARY_PATH, PortMaster's libs.<arch> (also at the end of LD_LIBRARY_PATH)
+export PM_FUNCS_VERSION=5
 
 export PM_SCRIPTNAME="$(basename "${PM_SCRIPTNAME:-$0}")"
 export PM_PORTNAME="${PM_PORTNAME:-${PM_SCRIPTNAME%.sh}}"
@@ -24,6 +25,25 @@ export PM_CAN_MOUNT="${PM_CAN_MOUNT:-Y}"
 if [[ "$CFW_NAME" == "muOS" ]]; then
     export LD_LIBRARY_PATH="/opt/muos/extra/lib:$LD_LIBRARY_PATH"
 fi
+
+# Libraries ports often need that some CFWs don't have (eg: libtheora, which the love
+# runtime is built against), in $controlfolder/libs.<arch>. They go after the system's
+# own, so they only fill in what's missing; a port that wants them first can use
+#   export LD_LIBRARY_PATH="$PM_LIBRARY_PATH:$LD_LIBRARY_PATH"
+# aarch64 devices get armhf's too, for 32-bit ports: the loader skips libraries of the
+# other architecture, so this works without knowing PORT_32BIT (ports set it after
+# sourcing control.txt). When it's already set, armhf's come first.
+if [ "$DEVICE_ARCH" = "aarch64" ]; then
+    if [ "${PORT_32BIT:-N}" = "Y" ]; then
+        PM_LIBRARY_PATH="$controlfolder/libs.armhf:$controlfolder/libs.aarch64"
+    else
+        PM_LIBRARY_PATH="$controlfolder/libs.aarch64:$controlfolder/libs.armhf"
+    fi
+else
+    PM_LIBRARY_PATH="$controlfolder/libs.${DEVICE_ARCH}"
+fi
+export PM_LIBRARY_PATH
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$PM_LIBRARY_PATH"
 
 source "$controlfolder/PortMasterDialog.txt"
 
