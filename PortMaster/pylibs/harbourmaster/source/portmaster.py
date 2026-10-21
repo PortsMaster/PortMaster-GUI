@@ -41,12 +41,7 @@ class PortMasterV3(BaseSource):
         if self.hm.callback is not None:
             self.hm.callback.message(" - {}".format(_("Updating")))
 
-        ## Already fetched this run: keep what's loaded. Clearing it first emptied the
-        ## port list on "Update ports" right after the startup update.
-        if self._did_update:
-            self.hm.callback.message(" - {}".format(_("Up to date already")))
-            return
-
+        ## Always fetched, even if it was at start: a release may have been made since.
         if self.hm.callback is not None:
             self.hm.callback.message("  - {}".format(_("Fetching latest info")))
 
@@ -136,7 +131,6 @@ class PortMasterV3(BaseSource):
         self._config['last_checked'] = datetime.datetime.now().isoformat()
 
         self.save()
-        self._did_update = True
         self.hm.callback.message("  - {}".format(_("Done.")))
 
     ## Port images
