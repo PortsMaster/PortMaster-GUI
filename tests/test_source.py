@@ -85,13 +85,15 @@ def test_update_failure_keeps_going(hm, monkeypatch):
     assert source.ports == []
 
 
-def test_update_again_keeps_the_ports(pm_source, ports_json_data):
-    ## "Update ports" after the startup update used to empty the list until a restart.
+def test_update_again_fetches_again(pm_source, ports_json_data):
+    ## "Update ports" after the startup update emptied the list until a restart. It
+    ## fetches again: a release may have been made since PortMaster started.
+    ports_json_data['ports']['sprout.zip']['attr']['title'] = "Sprout, the new release"
     pm_source.update()
 
-    assert pm_source.fetched == [pm_source._config['url']]
+    assert pm_source.fetched == [pm_source._config['url']] * 2
     assert sorted(pm_source.ports) == sorted(ports_json_data['ports'])
-    assert pm_source.port_info("sprout.zip")['attr']['title']
+    assert pm_source.port_info("sprout.zip")['attr']['title'] == "Sprout, the new release"
 
 
 def test_failed_update_keeps_the_cached_ports(pm_source, make_hm, ports_json_data, monkeypatch):
