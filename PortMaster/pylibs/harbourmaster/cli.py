@@ -271,8 +271,9 @@ def do_portsjson(hm, argv):
         port_info['date_added'], port_info['date_updated'] = (
             ports_info.get('ports', {}).get(port_name, {}).get('date', (default_time, default_time)))
 
-        del port_info['status']
-        del port_info['files']
+        ## Only installed ports have these.
+        port_info.pop('status', None)
+        port_info.pop('files', None)
 
         ports_json['ports'].append(port_info)
 
@@ -468,6 +469,11 @@ def do_fifo_control(hm, argv):
 
 
 def do_device_info(hm, argv):
+    """
+    Device info for the website, every known device and CFW.
+
+    {command} device_info [filename]
+    """
     import json
 
     website_data = {}
