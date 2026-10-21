@@ -349,8 +349,12 @@ class Theme:
         if not self.theme_file.is_file():
             raise ValueError(f"{self.theme_file} not found.")
 
+        ## Cut off (a download, a full SD card) or hand edited: callers skip it.
         with open(self.theme_file, 'r') as fh:
-            self.theme_data = json.load(fh)
+            self.theme_data = harbourmaster.json_safe_load(fh)
+
+        if not isinstance(self.theme_data, dict):
+            raise ValueError(f"{self.theme_file} is broken.")
 
         self.__screenshot = None
 
@@ -587,7 +591,21 @@ class ThemeEngine:
             logger.error(f"Unable to find theme '{cfg_data['theme']}', setting to 'default_theme'")
             cfg_data["theme"] = "default_theme"
 
+        elif cfg_data["theme"] != "default_theme" and not self._theme_loads(cfg_data["theme"]):
+            ## Otherwise PortMaster wouldn't start again until the theme was deleted by hand.
+            logger.error(f"Unable to load theme '{cfg_data['theme']}', setting to 'default_theme'")
+            cfg_data["theme"] = "default_theme"
+
         return cfg_data["theme"]
+
+    def _theme_loads(self, theme_name):
+        try:
+            self.get_theme(theme_name)
+
+        except ValueError:
+            return False
+
+        return True
 
     def get_current_theme_scheme(self):
         """
@@ -650,7 +668,12 @@ class ThemeEngine:
         ## Load local ones
         for theme_file in (cfg_dir / "themes").glob("*/theme.json"):
             theme_name = theme_file.parent.name
-            theme_info = self.get_theme_info(theme_name)
+            try:
+                theme_info = self.get_theme_info(theme_name)
+
+            except ValueError as err:
+                logger.error(f"Skipping theme {theme_name}: {err}")
+                continue
 
             themes[theme_name] = theme_info
 
@@ -691,6 +714,20 @@ class ThemeEngine:
         return theme.schemes
 
     def gui_init(self):
-        theme = self.get_theme(self.get_current_theme())
+        theme_name = self.get_current_theme()
         scheme = self.get_current_theme_scheme()
-        return theme.gui_init(self.gui, scheme)
+
+        try:
+            return self.get_theme(theme_name).gui_init(self.gui, scheme)
+
+        except Exception:
+            ## A custom theme that doesn't load (eg: no option_menu section) would stop
+            ## PortMaster starting every time: use the default theme. Not when one is
+            ## forced (the theme editor shows what's wrong with it).
+            if self.force_theme is not None or theme_name == "default_theme":
+                raise
+
+            logger.exception(f"Unable to load theme {theme_name!r}, using the default theme.")
+            self.get_pm_config()["theme"] = "default_theme"
+            self.gui.resources.remove_path(self.get_theme_dir(theme_name))
+            return self.get_theme("default_theme").gui_init(self.gui, None)
