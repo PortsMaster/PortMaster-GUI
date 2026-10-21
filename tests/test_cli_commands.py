@@ -344,9 +344,20 @@ def test_fifo_control_commands(cli_hm, tmp_path, monkeypatch):
     thread = threading.Thread(target=lambda: result.append(cli.do_fifo_control(cli_hm, [str(fifo), str(done)])))
     thread.start()
 
+    ## One stat(): exists() then is_file() raced the stale file's removal, and the
+    ## open() below then made a plain file where the pipe was going (FileExistsError).
+    import stat
     import time
+
+    def is_pipe():
+        try:
+            return stat.S_ISFIFO(fifo.stat().st_mode)
+        except OSError:
+            return False
+
     end = time.monotonic() + 10
-    while not (fifo.exists() and not fifo.is_file()) and time.monotonic() < end:
+    while not is_pipe():
+        assert time.monotonic() < end, "fifo_control never made its pipe"
         time.sleep(0.01)
 
     with open(str(fifo), 'w') as fh:
