@@ -446,7 +446,8 @@ class OptionScene(BaseScene):
             if selected_option == 'delete-config':
                 self.gui.events.running = False
 
-                shutil.rmtree(harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config")
+                ## Already gone (deleted by hand) is fine too.
+                shutil.rmtree(str(self.gui.hm.cfg_dir), ignore_errors=True)
 
                 if not harbourmaster.HM_TESTING:
                     reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
@@ -456,7 +457,7 @@ class OptionScene(BaseScene):
                 return True
 
             if selected_option == 'delete-runtimes':
-                runtimes = list((harbourmaster.HM_TOOLS_DIR / "PortMaster" / "libs").glob("*.squashfs"))
+                runtimes = list(self.gui.hm.libs_dir.glob("*.squashfs"))
                 if len(runtimes) == 0:
                     self.gui.message_box("No runtimes found.")
                     return True
