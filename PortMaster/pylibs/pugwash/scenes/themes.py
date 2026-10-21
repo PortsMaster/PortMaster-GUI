@@ -133,7 +133,12 @@ class ThemeSchemeScene(BaseScene):
         super().do_update(events)
 
         if events.was_pressed('A'):
-            selected_option, selected_parameter = self.tags['option_list'].selected_option()
+            selected = self.tags['option_list'].selected_option()
+            if not isinstance(selected, tuple):
+                ## The blank row (the d-pad skips it, a theme's list might not).
+                return True
+
+            selected_option, selected_parameter = selected
 
             self.button_activate()
 
