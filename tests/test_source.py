@@ -8,6 +8,8 @@ import harbourmaster
 from harbourmaster import source as hm_source
 from harbourmaster.util import net as hm_net
 
+REAL_FETCH_JSON = hm_net.fetch_json
+
 
 @pytest.fixture
 def pm_source(hm, ports_json_data, monkeypatch):
@@ -81,6 +83,57 @@ def test_update_failure_keeps_going(hm, monkeypatch):
     source.update()
 
     assert source.ports == []
+
+
+def test_update_again_keeps_the_ports(pm_source, ports_json_data):
+    ## "Update ports" after the startup update used to empty the list until a restart.
+    pm_source.update()
+
+    assert pm_source.fetched == [pm_source._config['url']]
+    assert sorted(pm_source.ports) == sorted(ports_json_data['ports'])
+    assert pm_source.port_info("sprout.zip")['attr']['title']
+
+
+def test_failed_update_keeps_the_cached_ports(pm_source, make_hm, ports_json_data, monkeypatch):
+    ## Due an update, but the network isn't really there: the cache is still shown.
+    config = json.loads(pm_source._file_name.read_text())
+    config['last_checked'] = "2020-01-01T00:00:00"
+    pm_source._file_name.write_text(json.dumps(config))
+
+    def timeout(*args, **kwargs):
+        raise hm_net.requests.exceptions.ReadTimeout("read timed out")
+
+    monkeypatch.setattr(hm_net, "fetch_json", REAL_FETCH_JSON)
+    monkeypatch.setattr(hm_net.requests, "get", timeout)
+    source = make_hm(offline=False, **{'no-check': False}).sources['pm']
+
+    assert sorted(source.ports) == sorted(ports_json_data['ports'])
+    assert source.port_download_url("sprout.zip") == ports_json_data['ports']['sprout.zip']['source']['url']
+
+
+class FakeResponse:
+    status_code = 200
+
+    def json(self):
+        raise ValueError("Expecting value: line 1 column 1 (char 0)")
+
+
+@pytest.mark.parametrize("error", [
+    hm_net.requests.exceptions.ReadTimeout("read timed out"),
+    hm_net.requests.exceptions.SSLError("certificate is not yet valid"),
+    hm_net.requests.exceptions.ConnectionError("no route to host"),
+    ])
+def test_fetch_network_errors_are_none(monkeypatch, error):
+    def get(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(hm_net.requests, "get", get)
+    assert hm_net.fetch_json("https://example.com/ports.json") is None
+
+
+def test_fetch_json_bad_json_is_none(monkeypatch):
+    monkeypatch.setattr(hm_net.requests, "get", lambda *args, **kwargs: FakeResponse())
+    assert hm_net.fetch_json("https://example.com/ports.json") is None
 
 
 def test_raw_download_md5_unavailable(tmp_path, callback, monkeypatch):
