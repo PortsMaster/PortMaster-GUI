@@ -12,7 +12,7 @@ from loguru import logger
 from .console import cprint
 from .config import HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES
 from .util import HarbourException, add_dict_list_unique, add_list_unique, add_pm_signature, get_dict_list, get_path_fs, hash_file, name_cleaner, runtime_nicename
-from .info import port_info_load, port_info_merge
+from .info import is_safe_port_item, port_info_load, port_info_merge
 from .source import raw_download
 from .captain import check_port
 
@@ -584,11 +584,15 @@ class InstallMixin:
 
         ports_dir = self.ports_dir
 
+        for item in all_port_items:
+            if not is_safe_port_item(item):
+                logger.error(f"Not removing {item!r} for {port_name}: it is outside the ports folder.")
+
         uninstall_items = [
             item
             for item in all_port_items
             # Only delete files/scripts with only 1 owner.
-            if len(get_dict_list(all_items, item)) == 1]
+            if len(get_dict_list(all_items, item)) == 1 and is_safe_port_item(item)]
 
         self.platform.port_uninstall(port_name, port_info, all_port_items)
 
