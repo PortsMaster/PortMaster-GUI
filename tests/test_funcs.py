@@ -122,3 +122,50 @@ def test_pm_message_falls_back_to_pugwash(funcs):
     output, calls = funcs('pm_message "Loading"')
     assert "Loading" in output
     assert calls == ["PortMasterDialogInit no-harbour", "PortMasterDialog messages_begin", "PortMasterDialog message Loading"]
+
+
+################################################################################
+## LD_LIBRARY_PATH appends in the shell files every port sources
+def _shipped_shell_files():
+    for path in sorted(PM_DIR.rglob("*")):
+        if not path.is_file() or "runtimes" in path.parts or path.suffix not in (".txt", ".sh"):
+            continue
+
+        try:
+            yield path, path.read_text(errors="replace")
+        except OSError:
+            pass
+
+
+def test_no_bare_ld_library_path_appends():
+    ## $LD_LIBRARY_PATH:/x with LD_LIBRARY_PATH empty leaves an empty entry, which makes the
+    ## loader search the current folder (control.txt did that on JELOS/AmberELEC & co).
+    import re
+    ## $LD_LIBRARY_PATH: or ${LD_LIBRARY_PATH}:, not the guarded ${LD_LIBRARY_PATH:+...}.
+    bare = re.compile(r'LD_LIBRARY_PATH="?\$(LD_LIBRARY_PATH|\{LD_LIBRARY_PATH\}):')
+
+    found = [
+        f"{path.relative_to(PM_DIR)}:{number}: {line.strip()}"
+        for path, text in _shipped_shell_files()
+        for number, line in enumerate(text.splitlines(), 1)
+        if bare.search(line) and not line.lstrip().startswith("#")]
+
+    assert found == []
+
+
+@pytest.mark.parametrize("before, expected", [
+    (None, "/usr/lib32"),
+    ("", "/usr/lib32"),
+    ("/opt/lib", "/opt/lib:/usr/lib32"),
+    ])
+def test_guarded_append(before, expected):
+    ## The form control.txt uses now.
+    env = {key: value for key, value in os.environ.items() if key != "LD_LIBRARY_PATH"}
+    if before is not None:
+        env["LD_LIBRARY_PATH"] = before
+
+    result = subprocess.run(
+        ["bash", "-c", 'export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/lib32; printf %s "$LD_LIBRARY_PATH"'],
+        env=env, stdout=subprocess.PIPE, check=True)
+
+    assert result.stdout.decode() == expected
