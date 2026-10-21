@@ -31,7 +31,12 @@ def in_terminal():
     """
     Are we in a terminal?
     """
-    return os.isatty(sys.stdout.fileno()) and os.isatty(sys.stdin.fileno())
+    try:
+        return os.isatty(sys.stdout.fileno()) and os.isatty(sys.stdin.fileno())
+
+    except (AttributeError, OSError, ValueError):
+        ## No real file behind them (io.UnsupportedOperation is both of the last two).
+        return False
 
 
 def do_cprint_output(file_handle):

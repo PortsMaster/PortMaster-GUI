@@ -174,3 +174,56 @@ def test_detect_retrodeck_json_portmaster_path(tmp_path):
         {"paths": {"rd_home_path": "/home/deck/retrodeck", "portmaster_path": "/media/pm"}}))
 
     assert detect(tmp_path)[1] == Path("/media/pm/ports")
+
+
+def test_detect_trimui_miyoo_ex(tmp_path):
+    make_dirs(tmp_path, "/mnt/SDCARD/MIYOO_EX/PortMaster")
+    assert detect(tmp_path)[:3] == (
+        Path("/mnt/SDCARD/MIYOO_EX/PortMaster"), Path("/mnt/SDCARD/MIYOO_EX/ports"), Path("/mnt/SDCARD/MIYOO_EX/ports"))
+
+
+def test_detect_retrodeck_json_in_home(tmp_path):
+    ## The flatpak keeps it under ~/.var.
+    config = tmp_path / "home/.var/app/net.retrodeck.retrodeck/config/retrodeck"
+    config.mkdir(parents=True)
+    (config / "retrodeck.json").write_text(json.dumps(
+        {"paths": {"rd_home_path": "/rd", "ports_path": "/rd/pm"}}))
+
+    assert detect(tmp_path)[:3] == (
+        tmp_path / "home/.var/app/net.retrodeck.retrodeck/data", Path("/rd/pm/ports"), Path("/rd/roms/portmaster"))
+
+
+@pytest.mark.parametrize("text", ["{", "[]", '{"paths": {}}', '{"other": 1}'])
+def test_detect_retrodeck_json_broken_exits(tmp_path, text):
+    make_dirs(tmp_path, "/var/config/retrodeck")
+    (tmp_path / "var/config/retrodeck/retrodeck.json").write_text(text)
+
+    with pytest.raises(SystemExit) as exc:
+        detect(tmp_path)
+
+    assert exc.value.code == 255
+
+
+def test_detect_retrodeck_cfg(tmp_path):
+    make_dirs(tmp_path, "/var/config/retrodeck")
+    (tmp_path / "var/config/retrodeck/retrodeck.cfg").write_text(
+        "[paths]\nrdhome=/rd\nports_folder=/media/pm\nroms_folder=/media/roms\n")
+
+    assert detect(tmp_path)[:3] == (Path("/var/data"), Path("/media/pm/ports"), Path("/media/roms/portmaster"))
+
+
+def test_detect_retrodeck_cfg_in_home_defaults(tmp_path):
+    config = tmp_path / "home/.var/app/net.retrodeck.retrodeck/config/retrodeck"
+    config.mkdir(parents=True)
+    (config / "retrodeck.cfg").write_text("rdhome=/rd\n")
+
+    assert detect(tmp_path)[:3] == (
+        tmp_path / "home/.var/app/net.retrodeck.retrodeck/data", Path("/rd/PortMaster/ports"), Path("/rd/roms/portmaster"))
+
+
+def test_detect_retrodeck_cfg_without_rdhome_exits(tmp_path):
+    make_dirs(tmp_path, "/var/config/retrodeck")
+    (tmp_path / "var/config/retrodeck/retrodeck.cfg").write_text("roms_folder=/r\n")
+
+    with pytest.raises(SystemExit):
+        detect(tmp_path)

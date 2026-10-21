@@ -25,6 +25,7 @@ from harbourmaster import (
 
 
 LOG_FILE = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "harbourmaster.txt"
+LOG_FILE_HANDLE = None
 if LOG_FILE.parent.is_dir():
     LOG_FILE_HANDLE = logger.add(LOG_FILE, level="DEBUG", backtrace=True, diagnose=True)
 
@@ -271,8 +272,9 @@ def do_portsjson(hm, argv):
         port_info['date_added'], port_info['date_updated'] = (
             ports_info.get('ports', {}).get(port_name, {}).get('date', (default_time, default_time)))
 
-        del port_info['status']
-        del port_info['files']
+        ## Only installed ports have these.
+        port_info.pop('status', None)
+        port_info.pop('files', None)
 
         ports_json['ports'].append(port_info)
 
@@ -468,6 +470,11 @@ def do_fifo_control(hm, argv):
 
 
 def do_device_info(hm, argv):
+    """
+    Device info for the website, every known device and CFW.
+
+    {command} device_info [filename]
+    """
     import json
 
     website_data = {}
@@ -606,7 +613,8 @@ def main(argv):
             logger.remove(0)  # For the default handler, it's actually '0'.
             logger.add(sys.stderr, level="DEBUG")
 
-        if config['no-log']:
+        ## logger.remove(None) would remove every handler.
+        if config['no-log'] and LOG_FILE_HANDLE is not None:
             logger.remove(LOG_FILE_HANDLE)
             LOG_FILE_HANDLE = None
 

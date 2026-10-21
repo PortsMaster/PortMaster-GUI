@@ -18,8 +18,7 @@ def portmaster_check_update(pm, config, temp_dir):
     cfg_data = {}
 
     if cfg_file.is_file():
-        with open(cfg_file, 'r') as fh:
-            cfg_data = json.load(fh)
+        cfg_data = harbourmaster.json_load_dict(cfg_file)
 
     update_checked = cfg_data.get('update_checked', None)
 
@@ -47,7 +46,8 @@ def portmaster_check_update(pm, config, temp_dir):
             logger.error(f'Unable to download {PORTMASTER_RELEASE_URL}version.json')
             return False
 
-        if release_channel not in release_info:
+        channel_info = release_info.get(release_channel) if isinstance(release_info, dict) else None
+        if not isinstance(channel_info, dict) or not all(isinstance(channel_info.get(key), str) for key in ('version', 'url', 'md5')):
             logger.error(f'Unable to find {release_channel} in {release_info!r}')
             # Whelp, we tried.
             return False

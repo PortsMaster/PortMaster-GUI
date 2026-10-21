@@ -41,6 +41,16 @@ class PortMasterV3(BaseSource):
         if self.hm.callback is not None:
             self.hm.callback.message(" - {}".format(_("Updating")))
 
+        ## Always fetched, even if it was at start: a release may have been made since.
+        if self.hm.callback is not None:
+            self.hm.callback.message("  - {}".format(_("Fetching latest info")))
+
+        data = net.fetch_json(self._config['url'])
+        if data is None:
+            ## No network yet, or the download failed: use the cached ports until the next try.
+            self.load()
+            return
+
         changed = False
         # Scrap the rest
         self._data = {}
@@ -48,17 +58,6 @@ class PortMasterV3(BaseSource):
         self.ports = []
         self.utils = []
         self.images = {}
-
-        if self._did_update:
-            self.hm.callback.message(" - {}".format(_("Up to date already")))
-            return
-
-        if self.hm.callback is not None:
-            self.hm.callback.message("  - {}".format(_("Fetching latest info")))
-
-        data = net.fetch_json(self._config['url'])
-        if data is None:
-            return
 
         ## Load data from the assets.
         for key, asset in data['ports'].items():
@@ -132,7 +131,6 @@ class PortMasterV3(BaseSource):
         self._config['last_checked'] = datetime.datetime.now().isoformat()
 
         self.save()
-        self._did_update = True
         self.hm.callback.message("  - {}".format(_("Done.")))
 
     ## Port images

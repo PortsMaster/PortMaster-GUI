@@ -109,13 +109,16 @@ class EventManager:
             key: False
             for key in self.BUTTON_MAP.values()}
 
+        ## Every button by name: the sticks' and triggers' too, and the keyboard's.
         self.buttons.update({
             key: False
-            for key in self.AXIS_TO_BUTTON.keys()})
+            for keys in self.AXIS_TO_BUTTON.values()
+            for key in keys
+            if key is not None})
 
         self.buttons.update({
             key: False
-            for key in self.KEY_MAP.keys()})
+            for key in self.KEY_MAP.values()})
 
         self.axis = {
             key: 0.0

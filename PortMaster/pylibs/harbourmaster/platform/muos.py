@@ -42,6 +42,13 @@ class PlatformmuOS(PlatformBase):
         INFO_PREVIEW_DIR = INFO_CATALOG / "preview"
         INFO_TEXT_DIR    = INFO_CATALOG / "text"
 
+        ## Not this muOS's layout: leave it be.
+        if not INFO_CATALOG.is_dir():
+            return
+
+        for info_dir in (INFO_BOX_DIR, INFO_PREVIEW_DIR, INFO_TEXT_DIR):
+            info_dir.mkdir(exist_ok=True)
+
         with self.gamelist_backup() as gamelist_xml:
             if gamelist_xml is None:
                 return

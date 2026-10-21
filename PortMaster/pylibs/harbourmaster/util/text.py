@@ -17,7 +17,7 @@ def nice_size(size):
 
     suffixes = ('B', 'KB', 'MB', 'GB', 'TB')
     for suffix in suffixes:
-        if size < 768:
+        if size < 768 or suffix == suffixes[-1]:
             break
 
         size /= 1024
@@ -104,6 +104,15 @@ def runtime_nicename(runtime):
             runtime_nicename(_runtime)
             for _runtime in runtime])
 
+    try:
+        return _runtime_nicename(runtime)
+
+    except IndexError:
+        ## Not named the usual way (eg: "mono.squashfs" from a hand-written port.json).
+        return runtime
+
+
+def _runtime_nicename(runtime):
     if runtime.startswith("frt"):
         return ("Godot/FRT {version}").format(version=runtime.split('_', 1)[1].rsplit('.', 1)[0])
 
@@ -134,14 +143,32 @@ def runtime_nicename(runtime):
     return runtime
 
 
-def datetime_compare(time_a, time_b=None):
-    if isinstance(time_a, str):
-        time_a = datetime.datetime.fromisoformat(time_a)
+def _as_datetime(value):
+    if isinstance(value, str):
+        value = datetime.datetime.fromisoformat(value)
 
-    if time_b is None:
-        time_b = datetime.datetime.now()
-    elif isinstance(time_b, str):
-        time_b = datetime.datetime.fromisoformat(time_b)
+    if not isinstance(value, datetime.datetime):
+        raise TypeError(f"not a time: {value!r}")
+
+    if value.tzinfo is not None:
+        ## Local time without the zone, as datetime.now() is.
+        value = value.astimezone().replace(tzinfo=None)
+
+    return value
+
+
+def datetime_compare(time_a, time_b=None):
+    """
+    Seconds from time_a to time_b (now). A time that can't be read (a hand-edited
+    or broken config) counts as long ago, so whatever was waiting on it happens.
+    """
+    try:
+        time_a = _as_datetime(time_a)
+        time_b = datetime.datetime.now() if time_b is None else _as_datetime(time_b)
+
+    except (TypeError, ValueError) as err:
+        logger.warning(f"datetime_compare({time_a!r}, {time_b!r}): {err}")
+        return float('inf')
 
     return (time_b - time_a).total_seconds()
 

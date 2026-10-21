@@ -70,7 +70,9 @@ class InfoMixin:
             if sha_local != sha_source:
                 self.callback.message(_("Download validation failed."))
                 logger.error(f"File validation failed {sha_local} vs {sha_source}")
+                ## Keep the old file: this went on to copy the deleted download over it.
                 temp_file.unlink()
+                return False
 
             if temp_file != local_file:
                 shutil.copy2(temp_file, local_file)
@@ -107,9 +109,11 @@ class InfoMixin:
             with open(self.runtimes_file, 'r') as fh:
                 self.runtimes_info = json_safe_load(fh)
 
-            self.list_runtimes()
+            ## A cut-off or corrupt runtimes.json crashed every start.
+            if isinstance(self.runtimes_info, dict):
+                self.list_runtimes()
 
-        if self.runtimes_info is None:
+        if not isinstance(self.runtimes_info, dict):
             self.runtimes_info = {}
 
         # These are the base files, and empty versions that are safe.

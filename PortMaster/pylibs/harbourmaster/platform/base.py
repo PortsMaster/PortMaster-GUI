@@ -68,8 +68,22 @@ class PlatformBase():
 
         gamelist_xml = self.gamelist_file()
 
-        if gamelist_xml in (None, SPECIAL_GAMELIST_CODE):
+        if gamelist_xml is None:
             yield gamelist_xml
+            return
+
+        if gamelist_xml is SPECIAL_GAMELIST_CODE:
+            ## The CFW's own catalogue (muOS, TrimUI): nothing to back up, but a failure
+            ## mustn't fail the install either.
+            try:
+                yield gamelist_xml
+
+            except BaseException as err:
+                if isinstance(err, (CancelEvent, KeyboardInterrupt, SystemExit, GeneratorExit)):
+                    raise
+
+                logger.exception(f"Updating the frontend's catalogue failed: {err}")
+
             return
 
         gamelist_bak = gamelist_xml.with_name(gamelist_xml.name + '.bak')

@@ -25,6 +25,11 @@ class RuntimesMixin:
                 runtime_data['remote']['aarch64'] = temp
                 changed = True
 
+            local_info = runtime_data.get('local')
+            if not isinstance(local_info, dict) or (local_info.get('status') == 'Not Installed' and runtime_file.is_file()):
+                ## Never checked, or copied in since (by hand, autoinstall): check it now.
+                runtime_data.pop('local', None)
+
             if 'local' not in runtime_data:
                 changed = True
                 runtime_file = (self.libs_dir / runtime_name)
@@ -66,7 +71,8 @@ class RuntimesMixin:
                     }
 
             else:
-                if not runtime_file.is_file():
+                ## Only when it changes: this runs on every start.
+                if not runtime_file.is_file() and runtime_data['local'].get('status') != 'Not Installed':
                     changed = True
                     runtime_data['local'] = {
                         'status': 'Not Installed',

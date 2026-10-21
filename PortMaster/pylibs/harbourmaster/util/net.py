@@ -19,7 +19,8 @@ def fetch(url):
             logger.error(f"Failed to download {url!r}: {r.status_code}")
             return None
 
-    except requests.exceptions.ConnectionError as err:
+    except requests.RequestException as err:
+        ## Timeouts too: a slow first-boot network used to crash HarbourMaster's startup.
         logger.error(f"Failed to download {url!r}: {err}")
         return None
 
@@ -39,7 +40,13 @@ def fetch_json(url):
     if r is None:
         return None
 
-    return r.json()
+    try:
+        return r.json()
+
+    except ValueError as err:
+        ## A captive portal's login page, or a cut-off download.
+        logger.error(f"Bad json from {url!r}: {err}")
+        return None
 
 
 def fetch_text(url):

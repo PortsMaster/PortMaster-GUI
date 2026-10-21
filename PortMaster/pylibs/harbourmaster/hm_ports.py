@@ -46,7 +46,8 @@ class PortsMixin:
 
                 if len(port_owners) > 0:
                     add_pm_signature(file_name, [port_owners[0], other_name])
-                    return (other_name, file_name.name, port_owners[0])
+                    ## (file_name, original_file_name, port_name), as the other returns.
+                    return (file_name.name, other_name, port_owners[0])
 
             return (file_name.name, file_name.name, None)
 
@@ -74,9 +75,10 @@ class PortsMixin:
                 logger.error(f"Unable to load {port_file}, missing 'name' and 'items' keys.")
                 return None
 
+            ## ports_info.json's items are "script.sh": "port.zip" (a list if shared), in the script's own case.
             for item in port_info['items']:
-                port_temp = ports_info['items'].get(item.casefold(), None)
-                if isinstance(port_temp, str):
+                port_owners = get_dict_list(ports_info['items'], item)
+                if len(port_owners) > 0:
                     break
             else:
                 # Couldn't find the port.
@@ -84,7 +86,7 @@ class PortsMixin:
                 return None
 
             changed = True
-            port_info['name'] = name_cleaner(port_temp[0])
+            port_info['name'] = name_cleaner(port_owners[0])
 
         # Force the port_info['name'] to be lowercase/casefolded.
         if port_info['name'] != name_cleaner(port_info['name']):
@@ -179,7 +181,9 @@ class PortsMixin:
 
         all_ports = {}
         ports_files = {}
+        ## original name -> renamed file, and back.
         file_renames = {}
+        file_originals = {}
 
         ports_info = self.ports_info()
         self._PORT_INFO_CACHE.clear()
@@ -374,6 +378,7 @@ class PortsMixin:
                 if pm_signature[0] != pm_signature[1]:
                     # We atleast know the file is renamed.
                     file_renames[pm_signature[1]] = pm_signature[0]
+                    file_originals[pm_signature[0]] = pm_signature[1]
 
                 if pm_signature[2] is None:
                     # Unknown port?
@@ -407,7 +412,7 @@ class PortsMixin:
 
             elif len(port_owners) == 0:
                 if unknown_file.casefold().endswith('.sh'):
-                    re_name = file_renames.get(unknown_file, None)
+                    re_name = file_originals.get(unknown_file, None)
                     if re_name is not None:
                         port_owners = get_dict_list(ports_info['items'], re_name)
 
@@ -511,6 +516,10 @@ class PortsMixin:
                 file_names = get_dict_list(port_info['files'], port_file)
 
                 for file_name in list(file_names):
+                    ## A new port's port.json is written below.
+                    if port_file == 'port.json' and port_name in ports_files:
+                        continue
+
                     if not self._ports_dir_exists(file_name):
                         remove_dict_list(port_info['files'], port_file, file_name)
                         port_info['changed'] = True

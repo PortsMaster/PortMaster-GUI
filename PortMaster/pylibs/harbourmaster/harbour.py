@@ -8,7 +8,7 @@ from gettext import gettext as _
 from loguru import logger
 from .config import HM_PORTS_DIR, HM_SCRIPTS_DIR, HM_SOURCE_DEFAULTS, HM_TESTING, HM_TOOLS_DIR
 from .hardware import device_info
-from .util import Callback, json_safe_load
+from .util import Callback, json_load_dict, json_safe_load
 from .source import HM_SOURCE_APIS
 from .platform import HM_PLATFORMS
 from .hm_info import InfoMixin
@@ -125,11 +125,8 @@ class HarbourMaster(InfoMixin, PortsMixin, FeaturedMixin, InstallMixin, Runtimes
         with self.callback.enable_messages():
             self.callback.message(_("Loading..."))
 
-            if not self.cfg_file.is_file():
-                self.cfg_data = self.DEFAULT_CONFIG.copy()
-            else:
-                with open(self.cfg_file, 'r') as fh:
-                    self.cfg_data = json.load(fh)
+            ## Missing or broken (cut off by a power off while saving): start afresh.
+            self.cfg_data = json_load_dict(self.cfg_file, self.DEFAULT_CONFIG)
 
             if self.cfg_data.get('first-run', True) or not self.cfg_dir.is_dir():
                 self.cfg_dir.mkdir(0o755, parents=True, exist_ok=True)

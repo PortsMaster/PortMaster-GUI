@@ -41,7 +41,7 @@ class FifoControlMixin:
             fifo_config['done-file'].write_text("FAIL")
             return
 
-        reg_name, key_name, value = args[:2]
+        reg_name, key_name = args[:2]
         register = fifo_config["register"].setdefault(reg_name, {})
         if key_name in register:
             del register[key_name]
@@ -193,7 +193,7 @@ class FifoControlMixin:
         fmt = None
 
         if len(args) > 3 and args[3] in ('data', '%'):
-            total = args[3]
+            fmt = args[3]
 
         if len(args) > 2 and args[2].isnumeric():
             total = int(args[2])
@@ -393,7 +393,7 @@ class FifoControlMixin:
         printf "message_box\1with_false\1This is a message you might want to display." | sudo tee /dev/shm/portmaster/hm_input > /dev/null
 
         """
-        if len(argv[1]) < 2:
+        if len(argv) < 2:
             return 0
 
         logger.info("-- Beginning Fifo Control --")
@@ -438,7 +438,14 @@ class FifoControlMixin:
                     return 0
 
                 if args[0].lower() in self.fifo_commands:
-                    self.fifo_commands[args[0].lower()](self, fifo_config, args[1:])
+                    ## Always answer: the shell script waits until the done file changes,
+                    ## and a command that raises would end fifo_control on WAIT.
+                    try:
+                        self.fifo_commands[args[0].lower()](self, fifo_config, args[1:])
+
+                    except Exception:
+                        logger.exception(f"fifo: {args} failed")
+                        done_file.write_text("FAIL")
 
                 else:
                     logger.warning(f"fifo: unknown command {args[0]}")

@@ -33,7 +33,12 @@ class LanguageScene(BaseScene):
         super().do_update(events)
 
         if events.was_pressed('A'):
-            selected_option, selected_parameter = self.tags['option_list'].selected_option()
+            selected = self.tags['option_list'].selected_option()
+            if not isinstance(selected, tuple):
+                ## The blank row (the d-pad skips it, a theme's list might not).
+                return True
+
+            selected_option, selected_parameter = selected
 
             self.button_activate()
 
@@ -47,7 +52,8 @@ class LanguageScene(BaseScene):
                 if self.gui.message_box(_("Do you want to change language?\n\nYou will have to restart for it to take affect."), want_cancel=True):
                     from pugwash import lang
                     if selected_parameter == lang.DEFAULT_LANG:
-                        del self.gui.hm.cfg_data['language']
+                        ## Not set when the language came from the system.
+                        self.gui.hm.cfg_data.pop('language', None)
 
                     else:
                         self.gui.hm.cfg_data['language'] = selected_parameter
