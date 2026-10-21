@@ -131,3 +131,30 @@ def test_update_gamelist_xml(app, hm_dirs, ports_json_data, tmp_path, monkeypatc
     assert not (hm_dirs['ports_dir'] / "notinstalled").exists()
     assert (app.hm.cfg_dir / "gameinfo_pm.zip").read_bytes() == gameinfo
     assert_idle(app)
+
+
+def test_runtime_manager_shows_the_selected_runtime(app, monkeypatch):
+    ## The details are filled in when the screen opens, not only after the selection moves
+    ## (it showed "{runtime_info.name}" until then).
+    from pugwash.scenes import RuntimesScene
+
+    runtimes = [
+        ("love_11.5.squashfs", {'name': "Love 11.5", 'remote': {'aarch64': {'size': 12582912}}}),
+        ("godot_4.3.squashfs", {'name': "Godot 4.3", 'remote': {'aarch64': {'size': 1048576}}}),
+        ]
+    monkeypatch.setattr(app.hm, "list_runtimes", lambda: runtimes)
+    for key in ('runtime_info.name', 'runtime_info.download_size'):
+        app.set_data(key, None)
+
+    scene = RuntimesScene(app)
+    assert scene.last_select == "godot_4.3.squashfs"
+    assert app.get_data('runtime_info.name') == "Godot 4.3"
+    assert app.get_data('runtime_info.download_size') == harbourmaster.nice_size(1048576)
+
+
+def test_runtime_manager_without_runtimes(app, monkeypatch):
+    ## Only "Download All" (after a separator): nothing to fill in yet, and no crash.
+    from pugwash.scenes import RuntimesScene
+
+    monkeypatch.setattr(app.hm, "list_runtimes", lambda: [])
+    RuntimesScene(app)
