@@ -25,6 +25,7 @@ from harbourmaster import (
 
 
 LOG_FILE = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "harbourmaster.txt"
+LOG_FILE_HANDLE = None
 if LOG_FILE.parent.is_dir():
     LOG_FILE_HANDLE = logger.add(LOG_FILE, level="DEBUG", backtrace=True, diagnose=True)
 
@@ -612,7 +613,8 @@ def main(argv):
             logger.remove(0)  # For the default handler, it's actually '0'.
             logger.add(sys.stderr, level="DEBUG")
 
-        if config['no-log']:
+        ## logger.remove(None) would remove every handler.
+        if config['no-log'] and LOG_FILE_HANDLE is not None:
             logger.remove(LOG_FILE_HANDLE)
             LOG_FILE_HANDLE = None
 

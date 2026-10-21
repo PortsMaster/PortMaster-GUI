@@ -78,10 +78,12 @@ def main(argv):
             logger.add(sys.stderr, level="SUCCESS")
 
             ## Once we reach here we can just reduce it to INFO level.
-            logger.remove(LOG_FILE_HANDLE)
-            LOG_FILE_HANDLE = logger.add(LOG_FILE, level="INFO", backtrace=True, diagnose=True)
+            ## (logger.remove(None) would remove every handler, stderr's too.)
+            if LOG_FILE_HANDLE is not None:
+                logger.remove(LOG_FILE_HANDLE)
+                LOG_FILE_HANDLE = logger.add(LOG_FILE, level="INFO", backtrace=True, diagnose=True)
 
-        if config['no-log']:
+        if config['no-log'] and LOG_FILE_HANDLE is not None:
             logger.remove(LOG_FILE_HANDLE)
             LOG_FILE_HANDLE = None
 

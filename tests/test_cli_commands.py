@@ -463,3 +463,15 @@ def test_main_debug_flag_file(run_main, monkeypatch, tmp_path):
     assert result == 0
     assert config['debug'] is True
     assert removed == [0]
+
+
+def test_main_no_log_without_a_log_file(run_main, monkeypatch, capsys):
+    ## With no PortMaster folder at import there was no LOG_FILE_HANDLE at all: --no-log
+    ## raised NameError, which logger.catch swallowed, so the command never ran.
+    removed = []
+    monkeypatch.setattr(cli, "LOG_FILE_HANDLE", None)
+    monkeypatch.setattr(cli.logger, "remove", lambda handler=None: removed.append(handler))
+
+    assert run_main("--offline", "--no-log", "ports")[0] == 0
+    assert "No ports found." in capsys.readouterr().out
+    assert None not in removed
