@@ -39,6 +39,7 @@ from .files import (
 from .data import (
     json_safe_loads,
     json_safe_load,
+    json_load_dict,
     add_list_unique,
     add_dict_list_unique,
     get_dict_list,
@@ -70,6 +71,7 @@ __all__ = (
     'get_path_fs',
     'hash_file',
     'hash_file_sha',
+    'json_load_dict',
     'json_safe_load',
     'json_safe_loads',
     'list_to_tuple',

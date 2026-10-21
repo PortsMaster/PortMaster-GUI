@@ -417,12 +417,8 @@ class ThemeDownloader(harbourmaster.source.BaseSource):
         self.engine = engine
 
         config_file = self.gui.hm.cfg_dir / "themes.json"
-        if config_file.is_file():
-            with open(config_file, 'r') as fh:
-                config_data = json.load(fh)
-
-        else:
-            config_data = self.DEFAULT_DATA.copy()
+        ## Broken or missing keys: what's missing comes from the defaults.
+        config_data = {**self.DEFAULT_DATA, **harbourmaster.json_load_dict(config_file)}
 
         self._themes = None
 
@@ -567,8 +563,7 @@ class ThemeEngine:
 
         if self.gui.hm is None:
             if cfg_file.is_file():
-                with open(cfg_file, 'r') as fh:
-                    cfg_data = json.load(fh)
+                cfg_data = harbourmaster.json_load_dict(cfg_file)
         else:
             cfg_data = self.gui.hm.cfg_data
 

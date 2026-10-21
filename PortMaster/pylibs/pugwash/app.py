@@ -257,8 +257,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         if self.hm is None:
             if cfg_file.is_file():
-                with open(cfg_file, 'r') as fh:
-                    cfg_data = json.load(fh)
+                cfg_data = harbourmaster.json_load_dict(cfg_file)
         else:
             cfg_data = self.hm.cfg_data
 

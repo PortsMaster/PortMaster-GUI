@@ -34,6 +34,7 @@ from .util import (
     get_dict_list,
     get_path_fs,
     hash_file,
+    json_load_dict,
     json_safe_load,
     json_safe_loads,
     load_pm_signature,

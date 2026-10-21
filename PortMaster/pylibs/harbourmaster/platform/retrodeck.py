@@ -82,6 +82,10 @@ class PlatformRetroDECK(PlatformBase):
             if not rdconfig_file.is_file():
                 rdconfig_file=(Path.home() / ".var/app/net.retrodeck.retrodeck/config/retrodeck/retrodeck.cfg")
 
+            if not rdconfig_file.is_file():
+                logger.error("Unable to find RetroDECK's retrodeck.json or retrodeck.cfg.")
+                return None
+
             with open(rdconfig_file, 'r') as fh:
                 for line in fh:
                     line = line.strip()

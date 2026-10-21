@@ -23,6 +23,32 @@ def json_safe_load(*args):
     except json.JSONDecodeError as err:
         logger.error(f"Unable to load json_data {err.doc}:{err.pos}:{err.lineno}:{err.colno}")
         return None
+    except ValueError as err:
+        ## Not even text (UnicodeDecodeError): a file cut off or scrambled on the SD card.
+        logger.error(f"Unable to load json_data: {err}")
+        return None
+
+
+def json_load_dict(file_name, default=None):
+    """
+    A json file that holds an object (a config file), or a copy of `default` ({})
+    when it is missing, unreadable or not an object. Devices get switched off while
+    saving: a broken config.json must not stop PortMaster from starting.
+    """
+    try:
+        with open(str(file_name), 'r') as fh:
+            data = json_safe_load(fh)
+
+    except OSError:
+        data = None
+
+    if not isinstance(data, dict):
+        if data is not None:
+            logger.error(f"Unable to load {file_name}: not a json object.")
+
+        return dict(default or {})
+
+    return data
 
 
 def add_list_unique(base_list, value):
