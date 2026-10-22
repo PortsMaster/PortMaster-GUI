@@ -58,6 +58,8 @@ Device info comes from `harbourmaster.hardware.HardwareDetector`, which reads th
 
 Installing is covered in `test_install.py` (bad data, layouts, rollback, runtimes, URLs, themes, artwork), `test_fifo_install.py` (fifo_control installs must always answer `OKAY`/`FAIL`, never stay on `WAIT`) and `test_gui_commands.py`.
 
+Port info comes from hand-written files, so `info.port_info_load` (port.json and ports.json entries) and `hm_info.clean_ports_info` (ports_info.json) hand back the types everything else expects, dropping what they can't use. `tests/test_fuzz_port_json.py` fuzzes them through startup, sources, zip installs, ports_info.json/script signatures, the CLI and the GUI screens: nothing may raise, and no delete or write may leave the test's tmp dir. A short fixed-seed run is part of the suite; `PM_FUZZ_N=20000 PM_FUZZ_SEED=<n>` runs a long one.
+
 Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.
 - `test_api_snapshot.py` checks that every public name in `tests/data/api_snapshot.json` is still reachable. Update its `AREAS` table when code moves.

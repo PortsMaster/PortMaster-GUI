@@ -127,8 +127,8 @@ class PlatformmuOS(PlatformBase):
         APP_NAME = port_info['name'].rsplit('.', 1)[0]
         for port_file in port_info['files']:
             if port_file.lower().endswith('.sh'):
-                # Use the first bash script we find.
-                APP_NAME = port_file.rsplit('.', 1)[0]
+                # Use the first bash script we find. (Only its name: it is a folder in MUOSAPP_DIR.)
+                APP_NAME = port_file.replace('\\', '/').rsplit('/', 1)[-1].rsplit('.', 1)[0]
                 break
 
         MUOSAPP_DIR     = Path("/run/muos/storage/application")
@@ -175,8 +175,8 @@ class PlatformmuOS(PlatformBase):
         APP_NAME = port_info['name'].rsplit('.', 1)[0]
         for port_file in port_info['files']:
             if port_file.lower().endswith('.sh'):
-                # Use the first bash script we find.
-                APP_NAME = port_file.rsplit('.', 1)[0]
+                # Use the first bash script we find. (Only its name: it is a folder in MUOSAPP_DIR.)
+                APP_NAME = port_file.replace('\\', '/').rsplit('/', 1)[-1].rsplit('.', 1)[0]
                 break
 
         MUOSAPP_DIR     = Path("/run/muos/storage/application")

@@ -3,6 +3,7 @@
 
 # System imports
 import pathlib
+import re
 
 from pathlib import Path
 
@@ -51,6 +52,14 @@ PORT_INFO_OPTIONAL_ROOT_ATTRS = [
 PORT_INFO_LIST_ATTRS = ('genres', 'porter', 'runtime', 'reqs', 'arch')
 PORT_INFO_TEXT_ATTRS = ('title', 'desc', 'inst', 'min_glibc')
 
+## ports.json's "source" block: dropped when they aren't these types, so the defaults are used.
+PORT_INFO_SOURCE_TEXT = ('md5', 'url', 'date_added', 'date_updated', 'release_id')
+PORT_INFO_SOURCE_NUMBERS = ('size', 'downloads')
+PORT_INFO_STATUS_TEXT = ('source', 'status')
+
+## The longest file name most file systems allow, in bytes.
+NAME_MAX = 255
+
 
 def _clean_attr_types(attr, source_name):
     """
@@ -94,6 +103,85 @@ def _clean_attr_types(attr, source_name):
     for key in ('rtr', 'exp'):
         attr[key] = bool(attr.get(key, False))
 
+    ## Compared with the device's glibc version, so it has to be one: "2.31".
+    if not re.fullmatch(r'\d+(\.\d+)*', attr['min_glibc'].strip()):
+        if attr['min_glibc'].strip() != "":
+            logger.warning(f"port_info['attr']['min_glibc'] is not a version in {source_name!r}: {attr['min_glibc']!r}")
+
+        attr['min_glibc'] = ""
+
+    ## Runtimes are file names in the libs folder.
+    attr['runtime'] = [runtime for runtime in attr['runtime'] if is_safe_file_name(runtime)]
+
+
+def is_safe_file_name(name):
+    """A plain file name, with no folders in it."""
+    return (
+        isinstance(name, str) and name.strip() not in ("", ".", "..") and
+        not any(c in name for c in '/\\\0') and
+        len(name.encode('utf-8', 'surrogatepass')) <= NAME_MAX)
+
+
+def _clean_root_types(port_info, source_name):
+    """
+    The same for the root keys: everything that reads port info expects these types,
+    and a port.json that isn't right stopped PortMaster starting.
+    """
+    if not isinstance(port_info['name'], str) or port_info['name'].strip() == "":
+        if port_info['name'] is not None:
+            logger.warning(f"port_info['name'] has a bad value in {source_name!r}: {port_info['name']!r}")
+
+        port_info['name'] = None
+
+    status = port_info.get('status')
+    if 'status' in port_info and not isinstance(status, dict):
+        logger.warning(f"port_info['status'] has a bad value in {source_name!r}: {status!r}")
+        del port_info['status']
+
+    elif isinstance(status, dict):
+        status = port_info['status'] = dict(status)
+        for key in PORT_INFO_STATUS_TEXT:
+            if key in status and not isinstance(status[key], str):
+                del status[key]
+
+        if not isinstance(status.get('md5'), str):
+            status['md5'] = None
+
+    source = port_info.get('source')
+    if 'source' in port_info and not isinstance(source, dict):
+        logger.warning(f"port_info['source'] has a bad value in {source_name!r}: {source!r}")
+        del port_info['source']
+
+    elif isinstance(source, dict):
+        source = port_info['source'] = dict(source)
+        for key in PORT_INFO_SOURCE_TEXT:
+            if key in source and not isinstance(source[key], str):
+                del source[key]
+
+        for key in PORT_INFO_SOURCE_NUMBERS:
+            if key in source and (isinstance(source[key], bool) or not isinstance(source[key], int) or source[key] < 0):
+                del source[key]
+
+    ## {"port.json": "port/port.json", item: item or [items]}: uninstalling deletes the values.
+    files = port_info.get('files')
+    if 'files' in port_info and files is not None:
+        if not isinstance(files, dict):
+            logger.warning(f"port_info['files'] has a bad value in {source_name!r}: {files!r}")
+            files = {}
+
+        clean_files = {}
+        for key, value in files.items():
+            values = value if isinstance(value, list) else [value]
+            values = [item for item in values if is_safe_port_item(item)]
+
+            if not is_safe_port_item(key) or len(values) == 0:
+                logger.warning(f"port_info['files'] has a bad entry in {source_name!r}: {key!r}: {value!r}")
+                continue
+
+            clean_files[key] = values[0] if len(values) == 1 else values
+
+        port_info['files'] = clean_files
+
 
 def is_safe_port_item(item):
     """
@@ -103,10 +191,11 @@ def is_safe_port_item(item):
     if not isinstance(item, str) or item.strip() in ("", ".", "./"):
         return False
 
-    if item.startswith(('/', '\\')):
+    if item.startswith(('/', '\\')) or '\0' in item:
         return False
 
-    return not any(part == '..' for part in item.replace('\\', '/').split('/'))
+    parts = item.replace('\\', '/').split('/')
+    return not any(part == '..' or len(part.encode('utf-8', 'surrogatepass')) > NAME_MAX for part in parts)
 
 
 def port_info_load(raw_info, source_name=None, do_default=False):
@@ -227,11 +316,13 @@ def port_info_load(raw_info, source_name=None, do_default=False):
     if info.get('version', None) == 3:
         info['version'] = 4
 
-        if info['attr']['runtime'] is None:
-            info['attr']['runtime'] = []
+        ## Hand-written port.json files leave out "attr" or its "runtime"; filled in below.
+        if 'runtime' in info.get('attr', {}):
+            if info['attr']['runtime'] is None:
+                info['attr']['runtime'] = []
 
-        elif isinstance(info['attr']['runtime'], str):
-            info['attr']['runtime'] = [ info['attr']['runtime'] ]
+            elif isinstance(info['attr']['runtime'], str):
+                info['attr']['runtime'] = [ info['attr']['runtime'] ]
 
     # Catch errors because who fucking uses version numbers.
     if info.get('attr', {}).get('runtime', []) == None:
@@ -289,6 +380,8 @@ def port_info_load(raw_info, source_name=None, do_default=False):
         for genre in genres:
             if genre.casefold() in HM_GENRES:
                 port_info['attr']['genres'].append(genre.casefold())
+
+    _clean_root_types(port_info, source_name)
 
     return port_info
 

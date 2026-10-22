@@ -184,3 +184,81 @@ def test_unknown_source_api_is_skipped(make_hm):
 
     assert "custom" not in hm.sources
     assert sorted(hm.sources) == ['pm', 'pmmv']
+
+
+################################################################################
+## A ports.json from any source: entries it can't use are skipped, not fatal.
+def update_with(hm, monkeypatch, data):
+    monkeypatch.setattr(hm_net, "fetch_json", lambda url: json.loads(json.dumps(data)))
+    source = hm.sources['pm']
+    source.update()
+    return source
+
+
+@pytest.mark.parametrize('source_block', [None, "x", [], {}, {'md5': "abc", 'size': 1}])
+def test_port_without_a_download_is_skipped(hm, monkeypatch, ports_json_data, source_block):
+    if source_block is None:
+        del ports_json_data['ports']['sprout.zip']['source']
+    else:
+        ports_json_data['ports']['sprout.zip']['source'] = source_block
+
+    source = update_with(hm, monkeypatch, ports_json_data)
+
+    assert 'sprout.zip' not in source.ports
+    assert sorted(source.ports) == sorted(set(ports_json_data['ports']) - {'sprout.zip'})
+
+
+def test_port_with_bad_source_values(hm, monkeypatch, ports_json_data):
+    ports_json_data['ports']['sprout.zip']['source'].update(size="big", md5=None, date_added=None)
+    source = update_with(hm, monkeypatch, ports_json_data)
+
+    assert source.port_download_size('sprout.zip', check_runtime=False) == 0
+    hm.list_ports_new(sort_by='recently_added')
+
+
+@pytest.mark.parametrize('entry', ["/etc/hostname", 1, None, ["x"]])
+def test_port_entry_that_isnt_an_object(hm, monkeypatch, ports_json_data, entry):
+    ## A string isn't read as a port.json path either.
+    ports_json_data['ports']['sprout.zip'] = entry
+    source = update_with(hm, monkeypatch, ports_json_data)
+
+    assert 'sprout.zip' not in source.ports
+    assert len(source.ports) == len(ports_json_data['ports']) - 1
+
+
+def test_port_with_no_name_uses_its_key(hm, monkeypatch, ports_json_data):
+    ports_json_data['ports']['sprout.zip']['name'] = 5
+    source = update_with(hm, monkeypatch, ports_json_data)
+
+    assert source.port_info('sprout.zip')['name'] == 'sprout.zip'
+    hm.list_ports_new()
+
+
+@pytest.mark.parametrize('key', ["ports", "utils"])
+@pytest.mark.parametrize('value', [None, [], "x"])
+def test_ports_json_with_bad_sections(hm, monkeypatch, ports_json_data, key, value, log_errors):
+    ports_json_data[key] = value
+    update_with(hm, monkeypatch, ports_json_data)
+
+    assert any("Bad ports.json" in message for message in log_errors)
+
+
+@pytest.mark.parametrize('data', [None, [], "x", 1])
+def test_ports_json_that_isnt_an_object(hm, monkeypatch, data):
+    source = update_with(hm, monkeypatch, {'x': data} if data is None else data)
+    assert source.ports == []
+
+
+def test_util_names_are_file_names(hm, monkeypatch, ports_json_data):
+    ## Runtimes are saved in the libs folder under these names.
+    good = next(iter(ports_json_data['utils'].values()))
+    ports_json_data['utils']['../../escape.squashfs'] = dict(good)
+    ports_json_data['utils']['named.squashfs'] = dict(good, runtime_name="../escape.squashfs", runtime_arch="aarch64")
+    ports_json_data['utils']['no-url.squashfs'] = {'name': "x", 'md5': "y"}
+    ports_json_data['utils']['sized.squashfs'] = dict(good, size="big", md5=7)
+
+    source = update_with(hm, monkeypatch, ports_json_data)
+
+    assert not any('escape' in runtime for runtime in hm.runtimes_info)
+    assert 'no-url.squashfs' not in source.utils
+    assert source.port_download_size('sized.squashfs') == 0

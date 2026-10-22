@@ -7,7 +7,7 @@ from loguru import logger
 from . import config as hm_config
 from .config import HM_SORT_ORDER
 from .util import PORT_SORT_FUNCS, add_dict_list_unique, add_list_unique, add_pm_signature, get_dict_list, hash_file, load_pm_signature, match_requirements, name_cleaner, oc_join, remove_dict_list, timeit, version_parse
-from .info import port_info_load, port_info_merge
+from .info import is_safe_port_item, port_info_load, port_info_merge
 
 
 class PortsMixin:
@@ -67,6 +67,10 @@ class PortsMixin:
         changed = False
 
         # Its possible for the port_info to be in a bad way, lets try and fix it.
+        if port_info.get('name', None) is not None and name_cleaner(port_info['name']).strip('.') == "":
+            ## Nothing left of it once cleaned (eg: "/").
+            port_info['name'] = None
+
         if port_info.get('name', None) is None:
             # No name, check the items and see if it matches our internal database, we can get the port name from a script.
             logger.error(f"No 'name' in {port_file!r}")
@@ -83,6 +87,10 @@ class PortsMixin:
             else:
                 # Couldn't find the port.
                 logger.error(f"Unable to load {port_file}, unknown items.")
+                return None
+
+            if name_cleaner(port_owners[0]).strip('.') == "":
+                logger.error(f"Unable to load {port_file}, bad port name {port_owners[0]!r} for its items.")
                 return None
 
             changed = True
@@ -434,6 +442,11 @@ class PortsMixin:
 
         ## Create new port.json files for any new ports, these only contain the most basic of information.
         for new_port in new_ports:
+            if new_port not in ports_info['ports']:
+                ## ports_info.json names a port for this file, but doesn't have the port.
+                logger.warning(f"Unknown port {new_port!r} in ports_info.json")
+                continue
+
             port_info_raw = ports_info['ports'][new_port]
 
             port_info = port_info_load(port_info_raw)
@@ -465,7 +478,8 @@ class PortsMixin:
             if port_info.get('status', None) is None:
                 port_info['status'] = {}
 
-            port_info['name'] = port_info['name'].casefold()
+            ## As _load_port_info() does, so it is found by the cleaned name.
+            port_info['name'] = name_cleaner(port_info['name'])
 
             port_info['status']['source'] = "Unknown"
             port_info['status']['md5'] = None
@@ -953,12 +967,11 @@ class PortsMixin:
         candidates += ['screenshot.png', 'screenshot.jpg']
 
         for candidate in candidates:
-            candidate_path = Path(candidate)
-
-            ## Stay inside the port's own directory.
-            if candidate_path.is_absolute() or '..' in candidate_path.parts:
+            ## Stay inside the port's own directory (and a name the file system takes).
+            if not is_safe_port_item(candidate):
                 continue
 
+            candidate_path = Path(candidate)
             if (port_dir / candidate_path).is_file():
                 return {'screenshot': port_dir / candidate_path}
 

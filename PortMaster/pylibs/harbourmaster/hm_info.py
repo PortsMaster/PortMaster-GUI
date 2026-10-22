@@ -5,7 +5,80 @@ import shutil
 import zipfile
 from gettext import gettext as _
 from loguru import logger
-from .util import calculate_git_blob_sha_data, calculate_git_blob_sha_file, datetime_compare, download, fetch_data, fetch_text, json_safe_load, json_safe_loads
+from .info import is_safe_port_item
+from .util import calculate_git_blob_sha_data, calculate_git_blob_sha_file, datetime_compare, download, fetch_data, fetch_text, json_safe_load, json_safe_loads, name_cleaner
+
+
+def _is_port_name(name):
+    ## Ports are looked up by their cleaned name, so there has to be one.
+    return isinstance(name, str) and name_cleaner(name).strip('.') != ""
+
+
+def _str_or_strs(value, is_valid=lambda item: isinstance(item, str)):
+    ## "x" or ["x", "y"], as get_dict_list() reads them; None when there's nothing usable.
+    if isinstance(value, str):
+        return value if is_valid(value) else None
+
+    if isinstance(value, list):
+        value = [item for item in value if is_valid(item)]
+        if len(value) > 0:
+            return value
+
+    return None
+
+
+def clean_ports_info(data):
+    """
+    ports_info.json as load_ports() reads it. It is downloaded and cached, so a bad copy
+    (or a bad release of it) loses the entries it can't use instead of stopping PortMaster.
+    """
+    result = {"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}
+    if not isinstance(data, dict):
+        return result
+
+    ## items: {"Script.sh": "port.zip" or ["port.zip", ...]}
+    if isinstance(data.get("items"), dict):
+        for name, value in data["items"].items():
+            value = _str_or_strs(value, _is_port_name)
+            if value is not None:
+                result["items"][name] = value
+
+    if isinstance(data.get("portsmd_fix"), dict):
+        for name, value in data["portsmd_fix"].items():
+            value = _str_or_strs(value)
+            if value is not None:
+                result["portsmd_fix"][name] = value
+
+    if isinstance(data.get("md5"), dict):
+        result["md5"] = {
+            md5: name
+            for md5, name in data["md5"].items()
+            if isinstance(name, str)}
+
+    if isinstance(data.get("ports"), dict):
+        for name, port in data["ports"].items():
+            ## A port.json is written to "file", and uninstalling deletes the "items".
+            if (not isinstance(port, dict) or
+                    not isinstance(port.get("items"), list) or
+                    not all(is_safe_port_item(item) for item in port["items"]) or
+                    not is_safe_port_item(port.get("file")) or
+                    not port["file"].endswith("port.json")):
+                logger.warning(f"ports_info.json: skipping bad port {name!r}")
+                continue
+
+            port = dict(port)
+            for port_name in (port.get("name"), name):
+                if _is_port_name(port_name):
+                    port["name"] = port_name
+                    break
+
+            else:
+                logger.warning(f"ports_info.json: skipping port with no name {name!r}")
+                continue
+
+            result["ports"][name] = port
+
+    return result
 
 
 class InfoMixin:
@@ -16,10 +89,7 @@ class InfoMixin:
     def ports_info(self):
         if self._PORTS_INFO is None:
             with open(self.cfg_dir / "ports_info.json", 'r') as fh:
-                self._PORTS_INFO = json_safe_load(fh)
-
-            if self._PORTS_INFO is None:
-               self._PORTS_INFO = {"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}
+                self._PORTS_INFO = clean_ports_info(json_safe_load(fh))
 
         return self._PORTS_INFO
 
@@ -32,12 +102,17 @@ class InfoMixin:
                 with port_stats.open('r') as fh:
                     port_stats_data = json_safe_load(fh)
 
-            if isinstance(port_stats_data, dict) and "ports" in port_stats_data:
+            if isinstance(port_stats_data, dict) and isinstance(port_stats_data.get("ports"), dict):
                 self._PORTS_DOWNLOAD = port_stats_data["ports"]
             else:
                 self._PORTS_DOWNLOAD = {}
 
-        return self._PORTS_DOWNLOAD.get(port_name, 0)
+        downloads = self._PORTS_DOWNLOAD.get(port_name, 0)
+        ## Sorted by, so it has to be a number.
+        if isinstance(downloads, bool) or not isinstance(downloads, int):
+            return 0
+
+        return downloads
 
     def porters(self):
         if self._PORTERS is None:
