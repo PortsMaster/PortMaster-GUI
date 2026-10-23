@@ -24,12 +24,13 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/pytest --cov --cov-report=term-missing   # with coverage (.coveragerc); CI fails below the floor set in .github/workflows/tests.yaml
 python3 PortMaster/pugwash                 # run the GUI locally (windowed)
 python3 PortMaster/harbourmaster help      # CLI: list/ports/install/uninstall/runtime_list/device_info/...
-flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests   # the lint CI enforces; full flake8 still reports lots of existing style issues
+flake8 --select=E9,F63,F7,F82,F811 PortMaster/pugwash PortMaster/harbourmaster PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash PortMaster/pylibs/theme_server tests tools/test_suite tools/theme_server tools/i18n.py   # the lint CI enforces; full flake8 still reports lots of existing style issues
 ./do_release.sh test                       # a test build in dist/: version YYYY-MM-DD_XX69 (next free one today), checkout untouched
 ./do_release.sh testsuite                  # a test build + dist/pmtest.zip, the "PortMaster Test Suite" port for testers (see below)
 ./do_release.sh alpha|beta|stable [VER]    # a release in dist/ (+ version.json); stable (or MAKE_INSTALL=Y) also builds the makeself installers
 ./do_muos_release.sh [stable]              # dist/muos.portmaster.zip (likewise do_trimui_release.sh, do_x86_64_release.sh)
-./do_i18n.sh                               # extract strings with xgettext, sync with Crowdin, compile .mo (needs crowdin CLI)
+python3 -I tools/i18n.py extract           # after changing translatable strings: rewrite locales/strings*.json
+python3 -I tools/i18n.py check             # language files: unused strings, lost {placeholders}
 ```
 
 pugwash flags: `--quiet --no-check --debug --no-colour --force-colour --no-log --offline --no-harbour`.
@@ -63,7 +64,7 @@ Port info comes from hand-written files, so `info.port_info_load` (port.json and
 Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.
 - `test_api_snapshot.py` checks that every public name in `tests/data/api_snapshot.json` is still reachable. Update its `AREAS` table when code moves.
-- `test_i18n_snapshot.py` checks that the set of translatable strings (`tests/data/msgids.txt`) hasn't changed.
+- `test_i18n.py` checks that the translatable strings in the code match `locales/strings.json` (`tools/i18n.py extract` updates it).
 
 **PortMaster Test Suite** (`tools/test_suite/`, built by `./do_release.sh testsuite` into `dist/pmtest.zip`): a port testers drop into `autoinstall/`. It installs the test build it carries, then runs, on the device:
 - the pytest suite (from its own copy of `tests/`, `tools/` and the code, with pytest 7.4 in `pmtest/site/`)
@@ -73,11 +74,27 @@ Guard tests for restructuring:
 
 It shows the results with pugwash's fifo dialogs (`pmtest/fifo.py`) and writes `pmtest/reports/<CFW>-<device>-<date>.zip`, scrubbed of MAC/private IP addresses, serials, Wi-Fi names and the hostname (`suite.scrub`). The tester's own `pugwash.txt`/`harbourmaster.txt`/`log.txt` are set aside in `pmtest/saved-logs/` for the run and put back afterwards (or by the next run after a crash), so a report only holds the run's logs. pugwash and the GUI tests run in the environment the installed launcher gives the GUI (`pm_launch.txt` with `PM_LAUNCH_ENV_ONLY=Y`). The build also writes `dist/pmtest.zip.md5`, for `harbourmaster install <url>/pmtest.zip.md5`. `python3 -I tools/test_suite/matrix.py <folder of reports> --out DIR` turns collected reports into `matrix.json` and a self-contained `matrix.html` coverage page, starting with a device × CFW release heat map. `tools/test_suite/devices.py` names the hardware behind each CFW's device string (`DEVICES`, `FAMILIES`) and reads a vendored copy of PortMaster-Info's `device_info.json` (`--refresh` updates it) for supported-but-untested cells; a report it can't place is printed and listed under Other; it and `receive.py` must keep running on Python 3.7 with only the standard library. A build made with `PM_PMTEST_UPLOAD=http://<host>:8770/` carries `pmtest/upload.txt` and, if the tester agrees on the start screen, POSTs each finished report there, where `python3 -I tools/test_suite/receive.py <folder>` saves it on the LAN. The public endpoint is the `pmtest-reports` Cloudflare Worker (its own repo, with `collect.py` to download reports); HTTPS uses PortMaster's certifi bundle. Builds without the variable send nothing. Tested in `tests/test_test_suite.py` and `tests/test_build.py`.
 
+**Theme preview server** (`PortMaster/pylibs/theme_server/`, run from a checkout with `tools/theme_server/serve.py`; documented in `THEME.md`):
+- `serve.py` serves a page showing every screen rendered with a theme, at any resolution, colour scheme and language, and exports PNGs with `--export`.
+- Each render process, `worker.py`, is a headless pugwash for one screen size (SDL allows one GUI per process, and the size is fixed at start). Its `load` command switches the theme, colour scheme and language in place with `reload_language()`/`reload_theme()`, about a second; `serve.py` sends it whenever a render needs another theme version (a saved file), scheme or language (or saved translations). `tests/test_theme_server.py` checks a switched renderer draws the same as a new one.
+  - Renderers are forked from a zygote (`worker.py --zygote`), which imports pugwash once: `serve.py` sends it a request with the renderer's end of a socket pair attached (`SCM_RIGHTS`), and the renderer talks on that socket. Each renderer's HarbourMaster has its own tools folder (`Renderer(tools_dir=...)`), the zygote's holds the theme links. Without a zygote (it failed to start) each renderer is a `worker.py` of its own. No threads in the zygote: it forks.
+  - It pretends to be a device: the `device_info.txt` screen rules, and `PM_PRETEND_RESOLUTION`, which pugwash honours in `HM_TESTING` mode or headless.
+  - It draws with no window (`PM_HEADLESS=Y`): SDL's software renderer on a surface, with no video or controller subsystem. So it needs no dummy video driver, and it runs on a device next to the GUI that owns the screen (muOS's SDL has only `mali`).
+  - It takes the ports from a PortMaster config folder (`--ports-config`): the cache's (`~/.cache/portmaster-theme-server`, filled by `worker.py --prepare-cache`) or, on a device, PortMaster's own. It copies the files and links the screenshot folders, so that folder is never changed.
+  - `serve.py` unpacks the Chinese/Japanese/Korean fonts (`NotoSans.tar.xz`) at start, as the `PortMaster/pugwash` script does: the workers don't run that script.
+- `shots.py` holds the screen catalogue: one builder per screen, pushing scenes with real port data.
+  - It records which translatable strings each render looked up, for the editor.
+- **Translate view:** a translation editor. `/api/strings` lists a language's strings, and `/api/translate` saves one into the language files, in `strings.json` order. It only accepts requests from the page itself: they need the `X-Theme-Server` header.
+  - Renderers are keyed by the theme and the language files together, so a saved translation re-renders.
+- `translations.py` is the language-file code (`tools/i18n.py` runs its `extract`/`check`).
+- **On a device:** Options → Theme Editor (`pugwash/scenes/theme_server.py`) runs `python3 -m theme_server.serve --managed` on port 8090 (or the next free one), with as many workers as `MemAvailable` allows. The screen shows the address as text and as a QR code (`"image": "qr:{theme_server.url}"`, the default theme's `theme_server` section, or a plain fallback). `--managed` reports `{"ok": true, "port": N}` on stdout and stops when stdin closes, so B, or pugwash dying, stops it. Its log is `PortMaster/theme_server.txt`.
+- Tested in `tests/test_theme_server.py`.
+
 Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is fixed and the marker should then be removed. pugwash's `main()` is wrapped in `logger.catch`, so it exits 0 even after a crash; check its output for tracebacks rather than relying on the exit code.
 
 ## Architecture
 
-**Import setup**: the scripts prepend `pylibs/` and `exlibs/` to `sys.path`. `exlibs/` holds vendored third-party packages (loguru, requests, urllib3, certifi, ...), and `pylibs/` holds the project packages plus vendored `sdl2`, `png` and `pyqrcode`. Don't edit vendored code unless that's the point of the change. There are no star imports and no injected builtins: import names explicitly.
+**Import setup**: the scripts prepend `pylibs/` and `exlibs/` to `sys.path`. `exlibs/` holds vendored third-party packages (loguru, requests, urllib3, certifi, `sdl2`, `png`, `qrcode`, ...), and `pylibs/` holds the project packages. A theme `image` of `qr:<text>` is a QR code (`sdl/images.py`, `tests/test_qr.py`). Don't edit vendored code unless that's the point of the change. There are no star imports and no injected builtins: import names explicitly.
 
 **`harbourmaster` library** (`pylibs/harbourmaster/`):
 - `harbour.py`: `HarbourMaster`, the engine both the GUI and CLI drive. It holds `__init__`, config, sources and GCD modes. Its other methods live in mixins grouped by job:
@@ -110,6 +127,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 - `app.py`: `PortMasterGUI`, covering init, the main loop, drawing and the scene stack. It subclasses the mixins in `app_callbacks.py` (the thread-aware `harbourmaster.Callback` implementation and `run_task`), `app_commands.py` (install/uninstall/update front ends), `app_fifo.py` (fifo_control) and `app_ports.py` (port info/size for templates), plus `sdl.GUI` and `harbourmaster.Callback`.
 - `scenes/`: screens as `BaseScene` subclasses, one module per screen or group of screens. `scenes/base.py` imports no other scene, which keeps the modules free of import cycles.
 - `theme.py`: theme loading. Themes are JSON describing per-scene elements; `pylibs/default_theme/theme.json` is the built-in one. See `THEME.md` for the element/scene spec, inheritance order and text-template tags.
+  - Choosing a theme, colour scheme or language applies at once: `PortMasterGUI.reload_theme(then=...)` drops what the old theme loaded (images, fonts and text textures, sounds, animations, pallet, element rects, its resource path), loads the configured theme again and rebuilds the screens from the main menu up. `reload_language()` also swaps `lang.CURRENT_LANG`, the translations and the language capability (the theme's `font[ja_JP]` & co). Anything a theme loads into the GUI has to be undone there; `tests/test_reload.py` checks a screen is pixel-identical after switching away and back.
 - `tasks.py`: threading helpers (dispatcher, `Task`, `DirectoryScanner`, `FifoReader`, `FrameStats`). It doesn't import SDL.
 - `sdl/`: the low-level SDL2 widget and rendering layer. It's pySDL2gui (port_gui), split by class group; `Region` in `sdl/region.py` is the themeable widget.
 
@@ -157,7 +175,13 @@ The version lives in the `## -- BEGIN PORTMASTER INFO --` block at the top of th
 
 ## Translations
 
-Wrap user-facing strings in `_()` (gettext). `do_i18n.sh` extracts strings from the `pugwash` script and every `.py` under `pylibs/harbourmaster` and `pylibs/pugwash` into `pylibs/locales/messages.pot`; theme strings go into `themes.pot` via `theme_msgfmt.py`. Translations are managed on Crowdin, so don't hand-edit `.po` files for other languages. If you change strings on purpose, regenerate the snapshot with `PM_UPDATE_I18N_SNAPSHOT=1 pytest tests/test_i18n_snapshot.py`.
+Wrap user-facing strings in `_()` from `harbourmaster.i18n`. Translations live in `PortMaster/pylibs/locales` as plain JSON, two files per language: `<lang>.json` for the code's strings and `<lang>.themes.json` for themes' `"text"` values (`{"English": "translation"}`; a missing string shows in English).
+- `strings.json` and `strings.themes.json` list every English string and where it's used.
+- `tools/i18n.py extract` rewrites both lists from the code and the themes. Pass `--themes DIR` to rescan other themes too; themes it doesn't scan keep their strings.
+- `tests/test_i18n.py` fails when the code's strings and `strings.json` differ, so run `extract` after changing strings on purpose.
+- A theme can carry its own translations in a `#translations` section of `theme.json` (`{lang: {text: translation}}`), which win over PortMaster's.
+- `pugwash.lang` picks the language on import and loads it with `harbourmaster.i18n.load_language`.
+- There's no gettext, `.po`/`.mo` or Crowdin any more: translators edit the language files, for example with the theme server's translation editor.
 
 ## Style
 

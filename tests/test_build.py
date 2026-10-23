@@ -21,9 +21,9 @@ from conftest import PM_DIR, REPO_DIR
 
 
 pytestmark = pytest.mark.skipif(
-    not all(shutil.which(tool) for tool in ("zip", "unzip", "msgfmt", "git", "bash")) or
+    not all(shutil.which(tool) for tool in ("zip", "unzip", "git", "bash")) or
     not (REPO_DIR / ".git").exists(),
-    reason="needs zip, unzip, msgfmt, bash and a git checkout")
+    reason="needs zip, unzip, bash and a git checkout")
 
 TODAY = datetime.date.today().strftime("%Y-%m-%d")
 
@@ -42,8 +42,8 @@ def run(script, *args, check=True, **env):
 
 
 def git_status():
-    """Everything git sees in the checkout, ignored files too (an old build left .mo files,
-    version, ...). Not coverage data: under pytest-cov any python the build runs writes one."""
+    """Everything git sees in the checkout, ignored files too (an old build left files like
+    version behind). Not coverage data: under pytest-cov any python the build runs writes one."""
     output = subprocess.check_output(
         ["git", "status", "--porcelain", "--ignored", "--untracked-files=all"], cwd=str(REPO_DIR), universal_newlines=True)
 
@@ -136,12 +136,12 @@ def test_pylibs_zip_contents(test_build):
 
     assert {"pylibs/pugwash/app.py", "pylibs/harbourmaster/platform/__init__.py",
             "pylibs/harbourmaster/platform.py", "exlibs/loguru/__init__.py",
-            "pylibs/locales/de_DE/LC_MESSAGES/messages.mo"} <= names
+            "pylibs/harbourmaster/i18n.py", "pylibs/locales/de_DE.json"} <= names
 
     assert [name for name in names if "__pycache__" in name or name.endswith(".pyc")] == []
-    ## Every translation is compiled.
-    for po_file in (PM_DIR / "pylibs" / "locales").glob("*/LC_MESSAGES/*.po"):
-        assert str(po_file.relative_to(PM_DIR).with_suffix(".mo")) in names
+    ## Every translation ships.
+    for language_file in (PM_DIR / "pylibs" / "locales").glob("*_*.json"):
+        assert str(language_file.relative_to(PM_DIR)) in names
 
 
 def test_release_updates_version_json(tmp_path):

@@ -4,7 +4,7 @@
 
 import os
 import harbourmaster
-from gettext import gettext as _
+from harbourmaster.i18n import _
 
 
 class PortInfoMixin:

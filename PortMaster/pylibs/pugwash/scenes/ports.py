@@ -3,7 +3,7 @@
 # Ports lists.
 
 from loguru import logger
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from .base import BaseScene
 from .filters import FiltersScene
 from .port_info import PortInfoScene

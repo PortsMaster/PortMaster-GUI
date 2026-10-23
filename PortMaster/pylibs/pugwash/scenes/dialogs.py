@@ -2,7 +2,7 @@
 #
 # Message window, message box and selection list dialogs.
 
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from .base import BaseScene
 
 

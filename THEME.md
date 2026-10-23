@@ -4,6 +4,65 @@ PortMasters new gui has a flexible theme system build around a `theme.json` file
 
 This is currently a WIP documenting the theme format.
 
+## Previewing your theme
+
+The theme preview server renders every PortMaster screen with your theme, at any screen size, colour scheme and language, and refreshes the page each time you save a file. It runs from a PortMaster-GUI checkout on Linux or macOS:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # once, gets SDL2
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes
+```
+
+Then open http://localhost:8090/. `--themes` is one theme folder (it has a `theme.json`) or a folder of them; the default theme is always there too.
+
+- **The screens:**
+  - main menu, all, ready-to-run and installed ports, port info (and its popup)
+  - filters, featured ports, options, runtimes, themes, colour schemes, language
+  - on-screen keyboard, theme editor, messages with a progress bar, message box
+  - the autoinstall and dialog screens, which always use the default theme on a device
+  - the disclaimer and the unsupported-system warning, which are built in and look the same in every theme
+  - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
+- **Region boxes:** draws each region's area with its name. In a screen's own view, hover over or click a box (or a name in the list) to see the region's final theme values, after `#base`, `#element` and `[capability]` overrides are applied. **Save PNG** saves the screen, with the boxes if they're on.
+- **One screen, every size:** one screen at every common resolution, to check your `[hires]`, `[4:3]` and other overrides.
+- A screen your theme has no section for says so, rather than failing. Errors pugwash logged while drawing (a missing image, a bad colour) are listed on the screen.
+
+To write the screens to files instead, for a theme's README or to compare before and after a change:
+
+```bash
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes --export out/ \
+    --resolutions 640x480,1280x720 --schemes all --langs en_US,de_DE
+```
+
+That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
+
+### On your device
+
+PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list, and the translation editor saves into the device's PortMaster. Press B on the device to stop it.
+
+- Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
+- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, colour scheme or language (or saving) about a second, and each other screen half a second. Each screen size has a render process; how many are kept at once depends on the device's free memory.
+- Anyone on the same network can open it while it runs.
+
+### Translating PortMaster
+
+The same server is a translation editor: pick **Translate** at the top. It lists every string of PortMaster (and, under **Themes**, every theme's text) with the chosen language's translation.
+- **Filters:** show only the untranslated strings, those with problems, or those on the rendered screens.
+- **Preview:** selecting a string shows the screens that use it, in that language, at the chosen resolution. Saving (leave the box, or Ctrl/⌘+Enter for the next string) updates them a moment later, so you can see whether it fits.
+- **Problems flagged:** a translation that drops a `{placeholder}`, a line break, or a space the English starts or ends with (text joined to other text, like "Music: " + "Disabled").
+- **Where it saves:** the language files in your checkout, `PortMaster/pylibs/locales/<lang>.json` and `<lang>.themes.json`. Pick a language marked "new" to start one.
+
+A theme can also carry its own translations, in a `#translations` section of its `theme.json`:
+
+```json
+    "#translations": {
+        "de_DE": { "Ports List": "Portliste" }
+    },
+```
+
+They win over PortMaster's translations of the same text.
+
+Every theme needs `main_menu`, `option_menu`, `ports_list` and `message_window` sections: pugwash fills in the other screens from those when a theme leaves them out.
+
 ## Scene Format
 
 The theme has a few different sections:
@@ -110,6 +169,7 @@ Currently there are the following scenes:
 - `message_box`: An alert box
 - `filter_list`: Available filters
 - `themes_list`: List themes / downloader.
+- `theme_server`: The theme editor (Options → Theme Editor), with the tags `{theme_server.url}`, the address, empty until the server is up, and `{theme_server.status}`, the instructions or what went wrong. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets a plain screen in PortMaster's own font.
 
 ### Scene: main_menu
 
@@ -323,6 +383,20 @@ It also supports text auto-scrolling if it doesnt fit within the area it is disp
 ### Images
 
 Probably should write something here.
+
+#### QR codes
+
+An `image` starting with `qr:` is a QR code of the text after it, which can use text template tags. It's redrawn when a tag's value changes, and an empty text shows nothing.
+
+```json
+        "server_qr": {
+            "area": [0.65, 0.2, 0.3, 0.4],
+            "image": "qr:{some.url}",
+            "image-mode": "fit"
+        }
+```
+
+The code is black on white with a white border, as phone cameras read best, and it's scaled up without smoothing so it stays sharp at any size. Give it a square area, or `"image-mode": "fit"` (the default), so it isn't stretched.
 
 ### Lists
 

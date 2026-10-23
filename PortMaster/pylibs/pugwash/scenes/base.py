@@ -3,7 +3,7 @@
 # StringFormatter (the {tag} template text) and BaseScene, which loads a theme section into regions.
 
 import functools
-import gettext
+from harbourmaster.i18n import theme_text
 from pugwash import sdl
 from loguru import logger
 
@@ -83,7 +83,7 @@ class StringFormatter:
         stack = [True]
 
         # TRANSLATIONS :D
-        text = gettext.dgettext('themes', text)
+        text = theme_text(text)
 
         for before, key in self.parse_text(text):
             if stack[-1] and before != '':

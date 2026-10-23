@@ -4,7 +4,7 @@ import json
 import pathlib
 import shutil
 from pathlib import Path
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from .config import HM_PORTS_DIR, HM_SCRIPTS_DIR, HM_SOURCE_DEFAULTS, HM_TESTING, HM_TOOLS_DIR
 from .hardware import device_info

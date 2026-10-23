@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: MIT
 #
-# Translations: picks the language and sets up gettext when imported.
+# Translations: picks the language and loads it when imported (harbourmaster.i18n).
 
-import gettext
 import os
 import harbourmaster
-from gettext import gettext as _
+from harbourmaster import i18n
+from harbourmaster.i18n import _
 from pugwash import PYLIB_PATH
 
 
@@ -15,6 +15,8 @@ LANG_DIR = PYLIB_PATH / "locales"
 ## Set by load_lang().
 DEFAULT_LANG = None
 CURRENT_LANG = None
+## The environment variable that holds the language.
+ENVIRON_KEY = 'LANG'
 
 
 ALL_LANGUAGES = {
@@ -43,7 +45,7 @@ ALL_LANGUAGES = {
 
 def check_lang(lang):
     """
-    Check if `LANG_DIR / lang / "LC_MESSAGES"` exists
+    The language PortMaster has a translation file for (`LANG_DIR / "<lang>.json"`), or None.
 
     We simplify the language by removing any encoding eg: `en_AU.utf8` to `en_AU`
     We then simplify the language by removing any sub-language: `en_AU` to `en`
@@ -53,23 +55,20 @@ def check_lang(lang):
     if lang is None:
         return None
 
-    temp = LANG_DIR / lang / "LC_MESSAGES"
-    if temp.is_dir():
+    if i18n.language_file(LANG_DIR, lang).is_file():
         return lang
 
     if '.' in lang:
         lang = lang.rsplit('.', 1)[0]
 
-        temp = LANG_DIR / lang / "LC_MESSAGES"
-        if temp.is_dir():
+        if i18n.language_file(LANG_DIR, lang).is_file():
             return lang
 
     if '_' in lang:
         lang = lang.split('_', 1)[0]
 
     for lang_opt in ALL_LANGUAGES:
-        temp = LANG_DIR / lang_opt / "LC_MESSAGES"
-        if temp.is_dir() and lang_opt.startswith(lang):
+        if i18n.language_file(LANG_DIR, lang_opt).is_file() and lang_opt.startswith(lang):
             return lang_opt
 
     return None
@@ -81,7 +80,7 @@ def load_lang():
     Load the desired language, we check for an override in our config.json, otherwise use the environment variables.
 
     """
-    global DEFAULT_LANG, CURRENT_LANG
+    global DEFAULT_LANG, CURRENT_LANG, ENVIRON_KEY
 
 
     config = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "config" / "config.json"
@@ -124,18 +123,34 @@ def load_lang():
         os.environ[environ_key] = 'en_US'
 
     CURRENT_LANG = os.environ[environ_key]
+    ENVIRON_KEY = environ_key
+
+
+def set_language(language):
+    """
+    Use another language from now on, None for the system's: its translations, CURRENT_LANG
+    and the environment (ports and the scripts PortMaster runs see it too). The GUI also
+    swaps the language capability, which picks the theme's font for it, and reloads the
+    theme: see PortMasterGUI.reload_language().
+    """
+    global CURRENT_LANG
+
+    CURRENT_LANG = (language and check_lang(language)) or DEFAULT_LANG or 'en_US'
+    os.environ[ENVIRON_KEY] = CURRENT_LANG
+    i18n.load_language(LANG_DIR, CURRENT_LANG)
+    return CURRENT_LANG
 
 
 def lang_list():
+    """{code: name} of the languages with a translation, named in the current language
+    (ALL_LANGUAGES holds the English names: it's made before any translation loads)."""
     languages = {
-        lang_id: lang_name
-        for lang_id, lang_name in sorted(ALL_LANGUAGES.items(), key=lambda item: (item[1]))
-        if (LANG_DIR / lang_id).is_dir()}
+        lang_id: _(lang_name)
+        for lang_id, lang_name in ALL_LANGUAGES.items()
+        if i18n.language_file(LANG_DIR, lang_id).is_file()}
 
-    return languages
+    return dict(sorted(languages.items(), key=lambda item: item[1]))
 
 
 load_lang()
-gettext.bindtextdomain('messages', str(LANG_DIR))
-gettext.bindtextdomain('themes', str(LANG_DIR))
-gettext.textdomain('messages')
+i18n.load_language(LANG_DIR, CURRENT_LANG)

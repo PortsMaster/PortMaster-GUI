@@ -79,10 +79,6 @@ jobs:
             echo "version=$(date -u +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
             echo "release=${{ inputs.channel }}" >> $GITHUB_OUTPUT
 
-      - name: Install gettext
-        run: |
-          sudo apt-get install -y gettext
-
       - name: Create PortMaster.zip
         id: create-zip
         run: |

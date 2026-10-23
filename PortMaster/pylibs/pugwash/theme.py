@@ -4,7 +4,6 @@
 import copy
 import datetime
 import functools
-import gettext
 import json
 import zipfile
 
@@ -13,15 +12,14 @@ import sdl2.ext
 
 import harbourmaster
 import harbourmaster.source
+from harbourmaster import i18n
+from harbourmaster.i18n import _
 from harbourmaster.util import net
 from pugwash import sdl
 
 from loguru import logger
 
 from pugwash import PYLIB_PATH
-
-
-_ = gettext.gettext
 
 
 
@@ -141,6 +139,9 @@ def theme_load(gui, theme_file, color_scheme=None):
         raise ValueError(f"Unable to load theme {theme_file}")
 
     capabilities = harbourmaster.device_info()["capabilities"]
+
+    ## The theme's own translations of its text ({lang: {text: translation}}), if it has any.
+    i18n.set_theme_translations(theme_data.get("#translations", {}))
 
     base_data = {}
     elements = {}
@@ -564,9 +565,11 @@ class ThemeDownloader(harbourmaster.source.BaseSource):
 
 
 class ThemeEngine:
-    def __init__(self, gui, force_theme=None):
+    def __init__(self, gui, force_theme=None, force_scheme=None):
         self.gui = gui
+        ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
+        self.force_scheme = force_scheme
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -619,6 +622,8 @@ class ThemeEngine:
         """
         Returns the colour scheme of the current theme
         """
+        if self.force_scheme is not None:
+            return self.force_scheme
 
         cfg_data = self.get_pm_config()
         return cfg_data.setdefault("theme-scheme", None)

@@ -4,7 +4,7 @@
 
 import hashlib
 import sys
-from gettext import gettext as _
+from harbourmaster.i18n import _
 import requests
 from loguru import logger
 from ..console import cprint
