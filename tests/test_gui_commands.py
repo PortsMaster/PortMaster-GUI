@@ -54,6 +54,56 @@ def test_do_install(app, hm_dirs, tmp_path):
     assert_idle(app)
 
 
+@pytest.fixture
+def served_zip(app, monkeypatch, tmp_path):
+    """Downloads of http://pm.test/testport.zip get testport.zip, with net.download's md5 check."""
+    ## URLs are refused offline; requests.get below is all the network there is.
+    monkeypatch.setitem(app.hm.config, 'offline', False)
+    zip_data = write_port_zip(tmp_path / "served.zip", basic_port_files()).read_bytes()
+    md5_sources = []
+    real_download = net.download
+
+    def fake_get(url, stream=False, timeout=None):
+        class Response:
+            status_code = 200
+            headers = {'Content-Length': str(len(zip_data))}
+
+            def iter_content(self, chunk_size=1, decode_unicode=False):
+                yield zip_data
+
+        return Response()
+
+    def download(file_name, file_url, md5_source=None, *args, **kwargs):
+        md5_sources.append(md5_source)
+        return real_download(file_name, file_url, md5_source, *args, **kwargs)
+
+    monkeypatch.setattr(net.requests, "get", fake_get)
+    monkeypatch.setattr(net, "download", download)
+    served = type("Served", (), {})()
+    served.url = "http://pm.test/testport.zip"
+    served.md5 = hashlib.md5(zip_data).hexdigest()
+    served.md5_sources = md5_sources
+    return served
+
+
+def test_do_install_checks_md5_source(app, hm_dirs, served_zip):
+    ## The self-update passes version.json's md5: it was dropped, so PortMaster.zip went unchecked.
+    app.do_install("Test Port", served_zip.url, md5_source=served_zip.md5)
+
+    assert served_zip.md5_sources == [served_zip.md5]
+    assert "testport.zip" in app.hm.installed_ports
+    assert_idle(app)
+
+
+def test_do_install_wrong_md5_installs_nothing(app, hm_dirs, served_zip):
+    app.do_install("Test Port", served_zip.url, md5_source="0" * 32)
+
+    assert served_zip.md5_sources == ["0" * 32]
+    assert list(hm_dirs['ports_dir'].iterdir()) == []
+    assert "Download validation failed." in app.test_boxes
+    assert_idle(app)
+
+
 def test_do_install_bad_zip(app, hm_dirs, tmp_path):
     app.do_install("Bad", str(write_raw_zip(tmp_path / "testport.zip", b"garbage")))
 
