@@ -8,7 +8,7 @@ import zipfile
 from gettext import gettext as _
 from loguru import logger
 from ..config import HM_MAX_TEMP_SIZE
-from ..info import port_info_load, port_info_merge
+from ..info import is_safe_file_name, port_info_load, port_info_merge
 from ..util import json_safe_load
 from ..util import net
 from .base import BaseSource
@@ -59,17 +59,36 @@ class PortMasterV3(BaseSource):
         self.utils = []
         self.images = {}
 
+        ## A ports.json from any source, so nothing in it is trusted to be the right type.
+        ports = data.get('ports') if isinstance(data, dict) else None
+        utils = data.get('utils') if isinstance(data, dict) else None
+        if not isinstance(ports, dict) or not isinstance(utils, dict):
+            logger.error(f"Bad ports.json from {self._config['url']}")
+            ports = ports if isinstance(ports, dict) else {}
+            utils = utils if isinstance(utils, dict) else {}
+
         ## Load data from the assets.
-        for key, asset in data['ports'].items():
-            asset = port_info_load(asset)
+        for key, asset in ports.items():
+            if not isinstance(asset, dict) or not is_safe_file_name(key):
+                logger.warning(f"Skipping bad port {key!r} in ports.json")
+                continue
+
+            asset = port_info_load(asset, source_name=f"ports.json: {key}")
             if asset is None:
                 ## Skip bad items.
                 continue
 
+            if 'url' not in asset.get('source', {}):
+                logger.warning(f"Skipping port {key!r} in ports.json: no download url")
+                continue
+
+            if asset['name'] is None:
+                asset['name'] = key
+
             result = {
                 'name': asset['name'],
-                'size': asset['source']['size'],
-                'md5': asset['source']['md5'],
+                'size': asset['source'].get('size', 0),
+                'md5': asset['source'].get('md5'),
                 'url': asset['source']['url'],
                 }
 
@@ -77,11 +96,19 @@ class PortMasterV3(BaseSource):
             self._info[self.clean_name(key)] = asset
             self._data[self.clean_name(key)] = result
 
-        for key, asset in data['utils'].items():
+        for key, asset in utils.items():
+            ## Runtimes are saved in the libs folder by these names.
+            if (not isinstance(asset, dict) or not is_safe_file_name(key) or
+                    not isinstance(asset.get('url'), str) or not isinstance(asset.get('name', ''), str)):
+                logger.warning(f"Skipping bad util {key!r} in ports.json")
+                continue
+
+            size = asset.get('size', 0)
+            md5 = asset.get('md5')
             result = {
-                'name': asset['name'],
-                'size': asset['size'],
-                'md5': asset['md5'],
+                'name': asset.get('name', key),
+                'size': size if isinstance(size, int) and not isinstance(size, bool) and size >= 0 else 0,
+                'md5': md5 if isinstance(md5, str) else None,
                 'url': asset['url'],
                 }
 
@@ -90,6 +117,10 @@ class PortMasterV3(BaseSource):
 
             if key.endswith('.squashfs'):
                 if 'runtime_name' in asset:
+                    if not is_safe_file_name(asset['runtime_name']) or not isinstance(asset.get('runtime_arch'), str):
+                        logger.warning(f"Skipping bad runtime {key!r} in ports.json")
+                        continue
+
                     key=asset['runtime_name']
                     arch=asset['runtime_arch']
                     self.hm.runtimes_info.setdefault(key, {}).setdefault('remote', {})[arch] = result.copy()

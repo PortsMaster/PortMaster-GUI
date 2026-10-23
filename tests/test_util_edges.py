@@ -567,3 +567,14 @@ def test_uninstall_ignores_files_outside_the_ports_folder(sandbox, value, log_er
     assert sandbox.uninstall_port("testport.zip") == 0
     assert (sandbox.root / "precious.txt").read_text() == "keep me"
     assert not (sandbox.ports_dir / "Test Port.sh").exists()
+
+
+@pytest.mark.parametrize('text', ["[" * 100000, '{"a":' * 100000])
+def test_json_nested_too_deep(text, tmp_path):
+    ## A RecursionError in the json module, from a scrambled file or a bad download.
+    from harbourmaster.util import json_safe_load, json_safe_loads
+
+    assert json_safe_loads(text) is None
+    (tmp_path / "deep.json").write_text(text)
+    with (tmp_path / "deep.json").open() as fh:
+        assert json_safe_load(fh) is None

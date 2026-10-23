@@ -82,6 +82,18 @@ def test_installed_port_found(installed):
     assert installed.unknown_ports == []
 
 
+def test_port_json_without_runtime(hm, ports_dir):
+    ## A hand-written version 3 port.json with no runtime stopped PortMaster starting.
+    files = basic_port_files()
+    files["testport/port.json"] = {"version": 3, "name": "testport.zip", "items": ["Test Port.sh", "testport/"], "attr": {"title": "Test Port"}}
+    install_files(ports_dir, files)
+
+    hm.load_ports()
+
+    assert list(hm.installed_ports) == ["testport.zip"]
+    assert hm.installed_ports["testport.zip"]['attr']['runtime'] == []
+
+
 def test_old_port_json_name_is_renamed(hm, ports_dir):
     files = basic_port_files()
     files["testport/testport.port.json"] = files.pop("testport/port.json")
@@ -771,4 +783,83 @@ def test_installed_port_images(installed, ports_dir, image, files, expected):
 
 def test_installed_port_images_bad_port_json_entry(installed):
     installed.installed_ports["testport.zip"]['files']['port.json'] = ["a", "b"]
+    assert installed.port_images("testport.zip") is None
+
+
+################################################################################
+## load_ports: port.json files and ports_info.json it can't fully use
+@pytest.mark.parametrize('changes', [
+    {'status': "Installed"},
+    {'status': ["x"]},
+    {'files': "port.json"},
+    {'files': ["x"]},
+    {'files': {'port.json': ["a", "b"], 'Test Port.sh': {"x": 1}}},
+    {'source': "x"},
+    ], ids=['status-str', 'status-list', 'files-str', 'files-list', 'files-values', 'source-str'])
+def test_port_json_with_bad_root_values(hm, ports_dir, changes):
+    ## Each of these stopped PortMaster starting.
+    files = basic_port_files()
+    files["testport/port.json"].update(changes)
+    install_files(ports_dir, files)
+
+    hm.load_ports()
+
+    assert list(hm.installed_ports) == ["testport.zip"]
+    assert hm.installed_ports["testport.zip"]['status']['status'] == "Installed"
+    hm.list_ports_new()
+
+
+@pytest.mark.parametrize('name', ["/", "...", "<<>>", "\u202e"])
+def test_port_json_name_with_nothing_left_once_cleaned(hm, ports_dir, name):
+    ## It is found from its items instead, as with no name.
+    set_ports_info(hm)
+    files = basic_port_files()
+    files["testport/port.json"]['name'] = name
+    install_files(ports_dir, files)
+
+    hm.load_ports()
+
+    assert list(hm.installed_ports) == ["testport.zip"]
+    hm.list_ports_new()
+
+
+def test_port_json_named_by_a_bad_ports_info_owner(hm, ports_dir):
+    set_ports_info(hm, items={"Test Port.sh": "\u202e", "testport/": "\u202e"})
+    files = basic_port_files()
+    del files["testport/port.json"]['name']
+    install_files(ports_dir, files)
+
+    hm.load_ports()
+
+    assert hm.installed_ports == {}
+    hm.list_ports_new()
+
+
+def test_new_port_missing_from_ports_info(hm, ports_dir):
+    ## ports_info.json says whose script it is, but doesn't have that port.
+    set_ports_info(hm, items={"Test Port.sh": "gone.zip"})
+    install_files(ports_dir, {"Test Port.sh": "#!/bin/bash\n"})
+
+    hm.load_ports()
+
+    assert hm.installed_ports == {}
+
+
+def test_new_port_json_is_never_written_outside_the_ports_folder(hm, ports_dir, tmp_path):
+    data = json.loads(json.dumps(PORTS_INFO))
+    data['ports']['testport.zip']['file'] = "../outside/port.json"
+    set_ports_info(hm, data)
+    (tmp_path / "outside").mkdir()
+    install_files(ports_dir, {"Test Port.sh": "#!/bin/bash\n", "testport/": ""})
+
+    hm.load_ports()
+
+    assert not (tmp_path / "outside" / "port.json").exists()
+    assert hm.installed_ports == {}
+
+
+@pytest.mark.parametrize('screenshot', ["x" * 300, "a\x00b", "../../etc/passwd", "/etc/passwd"])
+def test_installed_port_screenshot_with_a_bad_name(installed, screenshot):
+    installed.installed_ports["testport.zip"]['attr']['image'] = {'screenshot': screenshot}
+
     assert installed.port_images("testport.zip") is None

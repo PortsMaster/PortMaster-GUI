@@ -353,3 +353,55 @@ def test_git_blob_sha_file(tmp_path):
     path.write_bytes(b"hello\n")
     assert calculate_git_blob_sha_file(path) == "ce013625030ba8dba906f756967f9e9ca394464a"
     assert calculate_git_blob_sha_file(tmp_path / "missing") is None
+
+
+def test_ports_info_with_bad_values_is_cleaned(hm):
+    ## A bad copy of ports_info.json stopped PortMaster starting.
+    (hm.cfg_dir / "ports_info.json").write_text(json.dumps({
+        "items": {"Good.sh": "good.zip", "Shared.sh": ["a.zip", 1, "b.zip"], "Bad.sh": 5, "Nameless.sh": "\u202e", "Empty.sh": []},
+        "md5": {"abc": "Good.sh", "def": 1},
+        "ports": {
+            "good.zip": {"name": "good.zip", "items": ["Good.sh", "good/"], "file": "good/port.json"},
+            "noname.zip": {"name": 1, "items": ["N.sh"], "file": "n/port.json"},
+            "outside.zip": {"name": "outside.zip", "items": ["O.sh"], "file": "../outside/port.json"},
+            "notjson.zip": {"name": "notjson.zip", "items": ["J.sh"], "file": "j/script.sh"},
+            "unsafe.zip": {"name": "unsafe.zip", "items": ["../../home"], "file": "u/port.json"},
+            "noitems.zip": {"name": "noitems.zip", "file": "x/port.json"},
+            "list.zip": ["x"],
+            },
+        "portsmd_fix": {"cebion": ["Cebion"], "x": 1},
+        }))
+    hm._PORTS_INFO = None
+
+    info = hm.ports_info()
+
+    assert info["items"] == {"Good.sh": "good.zip", "Shared.sh": ["a.zip", "b.zip"]}
+    assert info["md5"] == {"abc": "Good.sh"}
+    assert sorted(info["ports"]) == ["good.zip", "noname.zip"]
+    assert info["ports"]["noname.zip"]["name"] == "noname.zip"
+    assert info["portsmd_fix"] == {"cebion": ["Cebion"]}
+
+
+@pytest.mark.parametrize("contents", ["[]", '"x"', '{"items": [], "ports": 1}', "[" * 100000])
+def test_ports_info_wrong_shape(hm, contents):
+    (hm.cfg_dir / "ports_info.json").write_text(contents)
+    hm._PORTS_INFO = None
+
+    assert hm.ports_info() == {"items": {}, "md5": {}, "ports": {}, "portsmd_fix": {}}
+    hm.load_ports()
+
+
+@pytest.mark.parametrize("count, expected", [(5, 5), ("5", 0), (None, 0), (True, 0), ([1], 0)])
+def test_port_downloads_must_be_numbers(hm, count, expected):
+    ## They are sorted by, with each other.
+    (hm.cfg_dir / "port_stats.json").write_text(json.dumps({"ports": {"game.zip": count}}))
+    hm._PORTS_DOWNLOAD = None
+
+    assert hm.port_downloads("game.zip") == expected
+
+
+def test_port_stats_wrong_shape(hm):
+    (hm.cfg_dir / "port_stats.json").write_text('{"ports": ["game.zip"]}')
+    hm._PORTS_DOWNLOAD = None
+
+    assert hm.port_downloads("game.zip") == 0

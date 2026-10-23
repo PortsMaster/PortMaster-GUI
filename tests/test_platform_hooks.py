@@ -842,3 +842,18 @@ def test_muos_install_fills_the_catalogue(make_hm, hm_dirs, device, monkeypatch,
     assert hm.install_port(str(zip_file)) == 0
     assert device.path(catalogue + "/box/Test Port-pre.png").read_text() == "cover"
     assert device.path(catalogue + "/text/Test Port.txt").read_text().startswith("First line")
+
+
+def test_muos_port_uninstall_app_folder_from_a_bad_files_key(hm, device):
+    ## Only the script's own name makes the folder, so `..` in a files key can't reach outside.
+    app_dir = device.mkdir("/run/muos/storage/application")
+    escape = device.mkdir("/run/muos/storage/escape/Test Port")
+    platform = muos.PlatformmuOS(hm)
+    (escape / platform.MUOSAPP_PM_MARKER).write_text("Test Port")
+    (app_dir / "Test Port").mkdir()
+    (app_dir / "Test Port" / platform.MUOSAPP_PM_MARKER).write_text("Test Port")
+
+    platform.port_uninstall("testport.zip", muos_port_info(script="../escape/Test Port.sh"), [])
+
+    assert escape.is_dir()
+    assert not (app_dir / "Test Port").exists()

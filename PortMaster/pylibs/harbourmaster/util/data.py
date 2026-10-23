@@ -15,6 +15,10 @@ def json_safe_loads(*args):
     except json.JSONDecodeError as err:
         logger.error(f"Unable to load json_data {err.doc}:{err.pos}:{err.lineno}:{err.colno}")
         return None
+    except RecursionError:
+        ## Nested too deep for the json module: [[[[[...
+        logger.error("Unable to load json_data: nested too deeply")
+        return None
 
 
 def json_safe_load(*args):
@@ -26,6 +30,9 @@ def json_safe_load(*args):
     except ValueError as err:
         ## Not even text (UnicodeDecodeError): a file cut off or scrambled on the SD card.
         logger.error(f"Unable to load json_data: {err}")
+        return None
+    except RecursionError:
+        logger.error("Unable to load json_data: nested too deeply")
         return None
 
 

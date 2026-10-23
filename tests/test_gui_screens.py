@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
+import sdl2
 
 import harbourmaster
 
@@ -575,3 +576,21 @@ def test_schemes_back_and_blank(screen_gui, schemes, monkeypatch):
 def test_schemes_b(screen_gui, schemes, monkeypatch):
     press(screen_gui, monkeypatch, 'B')
     assert top(screen_gui) is not schemes
+
+
+################################################################################
+## Text from anyone's port.json
+TEXTS = ["\n", "\n" * 50, " \n ", "\r", "\t", "\x00", "a\x00b", "\u200b", "\ufeff", "\u202e", "x" * 2000]
+
+
+@pytest.mark.parametrize('text', TEXTS, ids=[repr(text[:8]) for text in TEXTS])
+@pytest.mark.parametrize('width', [None, 300, 1])
+def test_text_the_font_cant_draw(gui, text, width):
+    ## sdl2.ext fails on these (nothing to draw, or narrower than a character).
+    font = next(iter(gui.text.fonts.values()))
+
+    surface = font.quick_render(text, 20, width=width)
+
+    assert surface.w > 0
+    sdl2.SDL_FreeSurface(surface)
+

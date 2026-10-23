@@ -4,12 +4,18 @@
 # Fonts and rendered text.
 
 import collections
+import unicodedata
 from ctypes import c_int, byref
 import sdl2
 import sdl2.ext
 import sdl2.sdlmixer
+from loguru import logger
 from .errors import GUIValueError
 from .images import Texture
+
+
+## Control, format (zero width), surrogate and unassigned characters: fonts draw nothing for them.
+UNDRAWABLE = ('Cc', 'Cf', 'Cs', 'Co', 'Cn')
 
 
 def get_text_size(font, text=''):
@@ -55,7 +61,26 @@ class FontTTF(sdl2.ext.FontTTF):
         if text == "":
             text = " "
 
-        return self.render_text(text, style_key, width=width, align=align, line_h=line_h)
+        try:
+            return self.render_text(text, style_key, width=width, align=align, line_h=line_h)
+
+        except Exception as err:
+            ## sdl2.ext fails on text with nothing it can draw ("\n", "\u200b"), or a width narrower
+            ## than a character. Port info comes from anyone's port.json, so draw what we can.
+            logger.warning(f"Unable to render {text[:40]!r}: {err}")
+
+        text = ''.join(c for c in text if c == '\n' or unicodedata.category(c) not in UNDRAWABLE).strip('\n')
+        if text.strip() == "":
+            text = " "
+
+        for try_width in (width, None):
+            try:
+                return self.render_text(text, style_key, width=try_width, align=align, line_h=line_h)
+
+            except Exception:
+                pass
+
+        return self.render_text(" ", style_key, align=align, line_h=line_h)
 
 
 class TextManager:
