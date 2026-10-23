@@ -22,6 +22,7 @@ from harbourmaster import (
     add_list_unique,
     runtime_nicename,
     )
+from harbourmaster.util import setup_proxy
 
 
 LOG_FILE = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "harbourmaster.txt"
@@ -622,6 +623,8 @@ def main(argv):
             console.do_color(False)
         elif config['force-colour']:
             console.do_color(True)
+
+        setup_proxy()
 
         ccb = ConsoleCallback(config)
         hm = HarbourMaster(config, temp_dir=temp_dir, callback=ccb)

@@ -36,6 +36,9 @@ from .files import (
     get_path_fs,
     make_temp_directory,
     )
+from .proxy import (
+    setup_proxy,
+    )
 from .data import (
     json_safe_loads,
     json_safe_load,
@@ -85,6 +88,7 @@ __all__ = (
     'remove_dict_list',
     'remove_pm_signature',
     'runtime_nicename',
+    'setup_proxy',
     'timeit',
     'version_parse',
     'PORT_SORT_FUNCS',
