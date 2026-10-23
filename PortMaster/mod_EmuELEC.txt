@@ -27,6 +27,9 @@ if declare -f get_controls >/dev/null 2>&1; then
     }
 fi
 
+# Older ports call get_controls before sourcing this file.
+[ "${#sdl_controllerconfig}" -gt 100000 ] && sdl_controllerconfig=""
+
 pm_platform_helper() {
     pm_message_close
 
