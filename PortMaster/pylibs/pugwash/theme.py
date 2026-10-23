@@ -133,8 +133,9 @@ def theme_apply(gui, section_data, base_data, elements):
 CAPS_ONLY_FONTS = ('AmazDooMLeft.ttf', )
 
 ## Keys only a list uses, left out when a list region becomes text.
+## (Not border-x: the list's margins keep the theme editor's text inside the list's panel.)
 LIST_ONLY_KEYS = ('select', 'alt-fill', 'no-select', 'pointer', 'list', 'line-height', 'autoscroll',
-                  'scroll', 'columns', 'grid', 'text-clip', 'border-x', 'tag')
+                  'scroll', 'columns', 'grid', 'text-clip', 'tag')
 
 
 def section_from_themes_list(section, mode):

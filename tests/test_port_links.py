@@ -172,7 +172,7 @@ THEMES_LIST = {
     "background": {"area": [0, 0, 1.0, 1.0], "fill": "background"},
     "themes_list": {"parent": "port_info_list_area", "area": [0, 0, 1.0, 1.0], "font": "List.ttf",
                     "font[ja_JP]": "NotoSansJP-Regular.ttf", "font-size": 20, "select-fill": "selection",
-                    "autoscroll": "slide", "list": []},
+                    "autoscroll": "slide", "border-x": 16, "list": []},
     "theme_general_info": {"parent": "port_info_text_area", "area": [0, 0, 1.0, 0.3],
                            "text": "Creator: {theme_info.creator}\nStatus: {theme_info.status}"},
     "theme_general_info_back": {"parent": "port_info_text_area", "area": [0, 0, 1.0, 0.3], "image": "panel.png"},
@@ -213,6 +213,8 @@ def test_server_section_from_themes_list():
     assert info["text"] == "{theme_server.status}" and info["text-wrap"] is True
     assert info["font-size"] == 15 and info["font"] == "List.ttf"
     assert not any(key.startswith(("select", "list", "autoscroll")) for key in info)
+    ## Its margins keep the text inside the list's panel (Doom, FFVII and Zelda ran into its edges).
+    assert info["border-x"] == 16
     assert section["server_qr"]["image"] == "qr:{theme_server.url}"
     assert section["server_url"]["text"] == "{theme_server.url}"
     assert section["server_title"]["text"] == "{scene.title}"
