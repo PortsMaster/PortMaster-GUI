@@ -405,6 +405,8 @@ def test_translate_api(pool, locales):
         assert post(dict(good, lang="en_US"))[0] == 400
         assert post(dict(good, lang="../x"))[0] == 400
         assert post(dict(good, domain="other"))[0] == 400
+        assert post(dict(good, lang=5))[0] == 400
+        assert post(dict(good, domain=["messages"]))[0] == 400
         assert post(dict(good, text="Nope"))[0] == 404
         ## One that would break the code's .format(): refused, with why.
         status, body = post(dict(good, text="{lang_name} (Selected)", translation="{bogus} (Ausgewählt)"))
@@ -413,6 +415,14 @@ def test_translate_api(pool, locales):
         status, body = post(good)
         assert status == 200 and body == {'ok': True, 'problems': []}
         assert json.loads((locales / "de_DE.json").read_text(encoding="utf-8"))["Select Theme"] == "Thema wählen"
+
+        ## A theme that isn't there, or a language that isn't one.
+        for query, code in (("theme=../../../etc", 404), ("theme=nope", 404), ("lang=../x", 400), ("lang=%C3%A9%C3%A9_%C3%A9%C3%A9", 400)):
+            try:
+                urllib.request.urlopen(base + "/api/render.png?" + query, timeout=30)
+                assert False, query
+            except urllib.error.HTTPError as error:
+                assert error.code == code, query
 
         with urllib.request.urlopen(base + "/api/info", timeout=30) as response:
             names = {code: (name, has) for code, name, has in json.loads(response.read())['all_languages']}

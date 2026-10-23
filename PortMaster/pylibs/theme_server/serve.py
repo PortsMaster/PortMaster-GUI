@@ -657,9 +657,13 @@ class Handler(BaseHTTPRequestHandler):
                 resolution = query.get('res', "640x480")
                 lang = query.get('lang', "en_US")
                 shot = query.get('shot', "main_menu")
-                if not valid_resolution(resolution) or not re.match(r"^\w\w_\w\w$", lang) or \
+                if not valid_resolution(resolution) or not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang) or \
                         shot not in {name for name, _ in self.server.shots}:
                     self.send(400, {'error': "bad theme, resolution, language or screen"})
+                    return
+
+                if self.server.themes.get(theme_id) is None:
+                    self.send(404, {'error': f"no theme {theme_id!r}"})
                     return
 
                 png, info = self.server.pool.render(theme_id, query.get('scheme') or None, resolution, lang, shot)
@@ -699,6 +703,9 @@ class Handler(BaseHTTPRequestHandler):
 
             if url.path == "/api/translate":
                 lang, domain = body.get('lang', ""), body.get('domain', "")
+                if not isinstance(lang, str) or not isinstance(domain, str):
+                    self.send(400, {'error': "bad language, domain or text"})
+                    return
                 text, translation = body.get('text'), body.get('translation', "")
                 if not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang) or lang == "en_US" or domain not in i18n_tool.DOMAINS or \
                         not isinstance(text, str) or not isinstance(translation, str):
