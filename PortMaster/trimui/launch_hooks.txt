@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+# TrimUI launcher hooks, sourced by utils/pm_launch.txt (see there for what each hook does).
+
+pm_hook_env() {
+  source /mnt/SDCARD/System/etc/ex_config
+
+  ESUDO=""
+  ESUDOKILL="-1" # for 351Elec and EmuELEC use "-1" (numeric one) or "-k"
+  export SDL_GAMECONTROLLERCONFIG_FILE="/$controlfolder/gamecontrollerdb.txt"
+  # export SDL_GAMECONTROLLERCONFIG=$(grep "Deeplay" "/usr/lib/gamecontrollerdb.txt")
+
+  source "$controlfolder/control.txt"
+  [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+}
+
+pm_hook_autoinstall_dirs() {
+  echo "$controlfolder/autoinstall"
+  echo "$directory/ports/autoinstall"
+}
+
+pm_hook_pre_launch() {
+  export TERM=linux
+  chmod 666 $CUR_TTY
+  printf "\033c" > $CUR_TTY
+
+  "$controlfolder/trimui/update.txt"
+
+  echo "Starting PortMaster." > $CUR_TTY
+
+  chmod -R +x .
+}
+
+pm_hook_gui_env() {
+  export PYSDL2_DLL_PATH="/usr/trimui/lib"
+}
+
+pm_hook_run_pugwash() {
+  ./pugwash --debug $PORTMASTER_CMDS
+}
+
+pm_hook_post_launch() {
+  :
+}
+
+pm_hook_frontend_refresh() {
+  if [ -f "$controlfolder/.trimui-refresh" ]; then
+    rm -f "$controlfolder/.trimui-refresh"
+    # HULK SMASH
+
+    "$controlfolder"/trimui/image_smash.txt
+  fi
+}

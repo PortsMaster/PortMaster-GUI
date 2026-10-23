@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest Python shipped by a supported CFW. setup-python only has 3.7 on 22.04.
+          - python-version: '3.7'
+            os: ubuntu-22.04
+          - python-version: '3.12'
+            os: ubuntu-latest
+          # RetroDECK (flatpak) ships 3.13.
+          - python-version: '3.13'
+            os: ubuntu-latest
+          # ROCKNIX ships 3.14.
+          - python-version: '3.14'
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+    name: Python ${{ matrix.python-version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dev requirements
+        run: |
+          pip install -r requirements-dev.txt
+          # xgettext for the translatable strings snapshot test, busybox for device_info.txt under ash
+          sudo apt-get install -y gettext busybox
+
+      - name: Lint (errors only)
+        run: |
+          flake8 --select=E9,F63,F7,F82,F811 \
+            PortMaster/pugwash PortMaster/harbourmaster \
+            PortMaster/pylibs/harbourmaster PortMaster/pylibs/pugwash tests tools/test_suite
+          # The launchers (shellcheck is preinstalled on the runners)
+          cd PortMaster && shellcheck -s bash --severity=error \
+            utils/pm_launch.txt PortMaster.sh */PortMaster.txt */launch_hooks.txt ../tools/installer.sh \
+            "../tools/test_suite/PortMaster Test Suite.sh"
+
+      - name: Run tests
+        # Coverage must not drop below the floor (3.7 measures ~1% lower than 3.12), raise it as coverage improves.
+        run: pytest -v --cov --cov-report=term-missing:skip-covered --cov-fail-under=47

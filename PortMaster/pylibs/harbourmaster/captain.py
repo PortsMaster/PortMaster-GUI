@@ -9,18 +9,18 @@ import shutil
 import subprocess
 import zipfile
 
+from gettext import gettext as _
 from pathlib import Path
 
 # Included imports
-import utility
 
 from loguru import logger
-from utility import cprint
+from .console import cprint
 
 # Module imports
-from .config import *
-from .util import *
-from .info import *
+from .config import HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES
+from .util import HarbourException, json_safe_loads, name_cleaner
+from .info import port_info_load
 
 
 class BadPort(HarbourException):
@@ -38,22 +38,30 @@ def check_port(port_name, zip_file, extra_info=None):
     port_info_file_fix = False
     game_info_file_fix = False
 
-    with zipfile.ZipFile(zip_file, 'r') as zf:
+    ## Not a zip at all is the user's mistake (eg: a download page saved as .zip), not a crash.
+    try:
+        zf = zipfile.ZipFile(zip_file, 'r')
+
+    except zipfile.BadZipFile as err:
+        logger.error(f"Port {port_name} is not a zip file: {err}")
+        raise BadPort(_("This is not a valid zip file.")) from None
+
+    with zf:
         for file_info in zf.infolist():
             if file_info.filename.startswith('/'):
                 ## Sneaky
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if file_info.filename.startswith('../'):
                 ## Little
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting installation.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if '/../' in file_info.filename:
                 ## Shits
                 logger.error(f"Port {port_name} has an illegal file {file_info.filename!r}, aborting.")
-                raise BadPort()
+                raise BadPort(_("illegal file {file_name}").format(file_name=file_info.filename))
 
             if '/' in file_info.filename:
                 parts = file_info.filename.split('/')
@@ -105,20 +113,23 @@ def check_port(port_name, zip_file, extra_info=None):
 
         if len(dirs) == 0:
             logger.error(f"Port {port_name} has no directories, aborting.")
-            raise BadPort()
+            raise BadPort(_("the port has no directory"))
 
         if len(scripts) == 0:
             logger.error(f"Port {port_name} has no scripts, aborting.")
-            raise BadPort()
+            raise BadPort(_("the port has no launch script"))
 
         if port_info_file is not None:
             port_info_data = json_safe_loads(zf.read(port_info_file).decode('utf-8'))
 
             if not isinstance(port_info_data, dict):
                 logger.error(f"Unable to load port.json file from {port_info_file}")
-                raise BadPort()
+                raise BadPort(_("unable to load {file_name}").format(file_name=port_info_file))
 
             port_info = port_info_load(port_info_data)
+            if port_info is None:
+                logger.error(f"Unable to use the port.json file from {port_info_file}")
+                raise BadPort(_("unable to load {file_name}").format(file_name=port_info_file))
 
         else:
             port_info_data = None

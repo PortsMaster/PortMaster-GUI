@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 ## -- BEGIN HARBOURMASTER INFO --
-HARBOURMASTER_VERSION = '2025-06-06'
+HARBOURMASTER_VERSION = '2026-10-15'
 ## -- END HARBOURMASTER INFO --
 
 from .config import (
@@ -34,6 +34,7 @@ from .util import (
     get_dict_list,
     get_path_fs,
     hash_file,
+    json_load_dict,
     json_safe_load,
     json_safe_loads,
     load_pm_signature,

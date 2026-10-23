@@ -14,12 +14,13 @@ ignore =
     ## Multiple spaces before an operator makes it more readable
     E221,
 
-    ## For now i star import
+    ## Unused imports, plenty of the older code has them.
     F401,
-    F403, F405,
+
+    ## `global` declarations that are only read.
+    F824,
 
 per-file-ignores =
-    PortMaster/pylibs/ports_info.py:E121,E501
     PortMaster/pylibs/harbourmaster/*:E225
     PortMaster/pylibs/harbourmaster/hardware.py:E201,E241
     PortMaster/pugwash:E402

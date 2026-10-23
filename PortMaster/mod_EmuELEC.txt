@@ -28,6 +28,8 @@ if declare -f get_controls >/dev/null 2>&1; then
 fi
 
 pm_platform_helper() {
+    pm_message_close
+
     if [ -e "$PM_PIPE" ]; then
         PortMasterDialogExit
     fi

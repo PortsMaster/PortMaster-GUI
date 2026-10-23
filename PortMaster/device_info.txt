@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.0"
+export DEVICE_INFO_VERSION="0.2.6"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -36,11 +36,22 @@ if [ -z "$PM_VERSION" ] && [ -f "$CONTROL_DIR/version" ]; then
 fi
 [ -z "$PM_VERSION" ] && export PM_VERSION="Unknown"
 
+# spruce writes its version, model name and stick count here at every boot (spruce
+# 4b90fb865, nightlies from 2026-10-13 on). Older spruce: the probes and the spruce
+# fallbacks in 3b / 3h below.
+load_spruce_info() {
+    [ "$CFW_NAME" = "spruce" ] && [ -f /tmp/spruce_device_info.env ] || return 0
+    set -a
+    . /tmp/spruce_device_info.env
+    set +a
+}
+
 # ------------------------------------------------------------------------------
 # 1. FAST HOST IDENTITY PROBE (CFW & DEVICE NAME)
 # ------------------------------------------------------------------------------
 export CFW_NAME="Unknown"
 export DEVICE_NAME="Unknown"
+PLY_VERSION=""
 
 if [ -f "/app/bin/retrodeck" ] || [ -f "/app/bin/retrodeck.sh" ] || [ "$FLATPAK_ID" = "net.retrodeck.retrodeck" ]; then
     export CFW_NAME="RetroDECK"
@@ -52,16 +63,34 @@ elif [ -f "/opt/muos/config/system/version" ] || [ -f "/opt/muos/config/version.
     export CFW_NAME="muOS"
 elif [ -d "/mnt/SDCARD/spruce" ]; then
     export CFW_NAME="spruce"
-elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
-    PLY_TITLE="$(grep -i "title=" /usr/share/plymouth/themes/text.plymouth 2>/dev/null)"
-    if echo "$PLY_TITLE" | grep -qi "darkos"; then
-        export CFW_NAME="dArkOS"
-    elif echo "$PLY_TITLE" | grep -qi "thera"; then
-        export CFW_NAME="TheRA"
-    elif echo "$PLY_TITLE" | grep -qi "arkos"; then
-        export CFW_NAME="ArkOS"
-    fi
-elif [ -f "/boot/boot/knulli.board" ] || [ -f "/boot/knulli.board" ] || [ -f "/etc/knulli.version" ] || grep -qi 'knulli' /etc/os-release /usr/lib/os-release 2>/dev/null; then
+elif [ -f "/usr/share/plymouth/themes/text.plymouth" ] && grep -qiE '(darkos|arkos|thera|the r\.a|retrooz)' /usr/share/plymouth/themes/text.plymouth 2>/dev/null; then
+    ## The boot splash title names ArkOS and family, with the version as a date (MMDDYYYY):
+    ## "ArkOS 2.0 (02012025)-3", "dArkOS (05102026)", "dArkOSRE (...)", plus wuMMLe / AeUX
+    ## builds, named as mod_dArkOSRE.txt / "mod_ArkOS wuMMLe.txt" expect.
+    PLY_TITLE="$(grep -a -i -m1 "title=" /usr/share/plymouth/themes/text.plymouth 2>/dev/null | cut -d= -f2- | tr -d '\r')"
+    PLY_LETTERS="$(echo "$PLY_TITLE" | tr -cd 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ' | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
+    ## The update number can follow the date, inside or after the brackets: "(02012025)-3" is 02012025-3.
+    PLY_VERSION="$(echo "$PLY_TITLE" | sed -n 's/^.*(\([0-9]\{8\}\)\(-[0-9][0-9]*\)\{0,1\}[^)]*)\(-[0-9][0-9]*\)\{0,1\}.*$/\1\2\3/p')"
+    case "$PLY_LETTERS" in
+        ## " *TheRA RC 1*", "The R.A RC 1": the rest of the title is its version.
+        *thera*)   CFW_NAME="TheRA"
+                   PLY_VERSION="$(echo "$PLY_TITLE" | tr -d '*' | sed -e 's/[Tt][Hh][Ee] *[Rr]\.*[Aa]//' -e 's/^ *//' -e 's/ *$//')" ;;
+        *retrooz*) CFW_NAME="RetroOZ"; PLY_VERSION="" ;;
+        *arkos*)
+            ## One of the names the mod_*.txt files know: titles say more ("dArkOSen" on an RG351MP).
+            case "$(echo "$PLY_TITLE" | cut -d' ' -f1 | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')" in
+                darkosre*) CFW_NAME="dArkOSRE" ;;
+                *darkos*)  CFW_NAME="dArkOS" ;;
+                *)         case "$PLY_LETTERS" in *darkos*) CFW_NAME="dArkOS" ;; *) CFW_NAME="ArkOS" ;; esac ;;
+            esac
+            case "$PLY_LETTERS" in
+                *wummle*) CFW_NAME="$CFW_NAME wuMMLe" ;;
+                *aeux*)   CFW_NAME="$CFW_NAME AeUX" ;;
+            esac
+            ;;
+    esac
+    export CFW_NAME
+elif [ -f "/usr/share/knulli/knulli.version" ] || [ -f "/boot/boot/knulli.board" ] || [ -f "/boot/knulli.board" ] || [ -f "/etc/knulli.version" ] || grep -qi 'knulli' /etc/os-release /usr/lib/os-release 2>/dev/null; then
     export CFW_NAME="knulli"
 elif [ -f "/etc/retrooz_version" ]; then
     export CFW_NAME="RetroOZ"
@@ -77,7 +106,11 @@ fi
 
 if [ "$CFW_NAME" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
     OS_FILE="/etc/os-release"; [ ! -f "$OS_FILE" ] && OS_FILE="/usr/lib/os-release"
-    CFW_NAME="$(grep -E '^(NAME|ID)=' "$OS_FILE" | head -n1 | cut -d= -f2 | tr -d '"\r')"
+    ## OS_NAME is the distribution's own (UnofficialOS, JELOS) where NAME is the base's or missing.
+    for key in OS_NAME NAME ID; do
+        val="$(grep -E "^${key}=" "$OS_FILE" | head -n1 | cut -d= -f2 | tr -d '"\r')"
+        if [ -n "$val" ]; then CFW_NAME="$val"; break; fi
+    done
 fi
 
 for dfile in \
@@ -107,6 +140,8 @@ for dfile in \
     fi
 done
 
+load_spruce_info
+
 if [ "$DEVICE_NAME" = "Unknown" ]; then
     if [ -f "/sys/devices/virtual/dmi/id/product_name" ]; then
         DMI_NAME="$(tr -d '\r\n' < /sys/devices/virtual/dmi/id/product_name 2>/dev/null)"
@@ -126,8 +161,10 @@ if [ "$DEVICE_NAME" = "Unknown" ]; then
     fi
 fi
 
-SAFE_CFW="$(echo "$CFW_NAME" | tr '[:upper:] ' '[:lower:]_')"
-SAFE_DEV="$(echo "$DEVICE_NAME" | tr '[:upper:] ' '[:lower:]_')"
+## The alphabet spelled out, here and below: some BusyBox tr builds take [:upper:] as
+## literal characters (the TrimUI Brick's turns spruce into swrlce).
+SAFE_CFW="$(echo "$CFW_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ /' 'abcdefghijklmnopqrstuvwxyz__')"
+SAFE_DEV="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ /' 'abcdefghijklmnopqrstuvwxyz__')"
 CACHED_ENV="$CONTROL_DIR/device_info_${SAFE_CFW}_${SAFE_DEV}.env"
 
 # ------------------------------------------------------------------------------
@@ -139,6 +176,7 @@ if [ "$FORCE_REFRESH" -eq 0 ] && [ -f "$CACHED_ENV" ] && [ -s "$CACHED_ENV" ]; t
         set -a
         . "$CACHED_ENV"
         set +a
+        load_spruce_info
 
         if [ "$SOURCED" -eq 0 ]; then
             echo "========================================"
@@ -234,18 +272,49 @@ elif [ "$CFW_NAME" = "ROCKNIX" ] || [ "$CFW_NAME" = "JELOS" ]; then
             export CFW_VERSION="$(tr -d '\r\n' < /etc/jelos-release 2>/dev/null)"
         fi
     fi
+elif [ "$CFW_NAME" = "AmberELEC" ]; then
+    ## Its own VERSION (20211122, prerelease-20261003_1121): VERSION_ID is CoreELEC's (2021.01).
+    OS_F="/etc/os-release"; [ ! -f "$OS_F" ] && OS_F="/usr/lib/os-release"
+    val="$(grep -E '^VERSION=' "$OS_F" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\r ')"
+    [ -n "$val" ] && export CFW_VERSION="$val"
 elif [ "$CFW_NAME" = "muOS" ]; then
     [ -f "/opt/muos/config/system/version" ] && export CFW_VERSION="$(tr -d '\r\n' < /opt/muos/config/system/version 2>/dev/null)"
-elif [ "$CFW_NAME" = "knulli" ]; then
-    for kver in /etc/knulli.version /boot/knulli.version /userdata/system/knulli.version; do
-        if [ -f "$kver" ]; then export CFW_VERSION="$(tr -d '\r\n' < "$kver" 2>/dev/null)"; break; fi
+elif [ "$CFW_NAME" = "knulli" ] || [ "$CFW_NAME" = "Batocera.linux" ]; then
+    ## knulli's own release name: "scarab 2026/08/19 16:06" on a Brick Pro (scarab is built on Batocera 42).
+    for kver in /usr/share/knulli/knulli.version /etc/knulli.version /boot/knulli.version /userdata/system/knulli.version; do
+        if [ -f "$kver" ]; then
+            val="$(head -n1 "$kver" 2>/dev/null | cut -d' ' -f1 | tr -d '\r\n')"
+            [ -n "$val" ] && export CFW_VERSION="$val"
+            break
+        fi
     done
-    [ "$CFW_VERSION" = "Unknown" ] && export CFW_VERSION="scarab"
+    ## Otherwise the Batocera release it's built from ("gladiator", "42", "44-dev"). os-release's
+    ## VERSION_ID is Buildroot's (2024.11), so the generic lookup below would pick the wrong one.
+    if [ "$CFW_VERSION" = "Unknown" ]; then
+        for OS_F in /etc/os-release /usr/lib/os-release; do
+            val="$(grep -E '^VERSION=' "$OS_F" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\\\r ')"
+            if [ -n "$val" ]; then export CFW_VERSION="$val"; break; fi
+        done
+    fi
+    if [ "$CFW_VERSION" = "Unknown" ] && [ -f "/usr/share/batocera/batocera.version" ]; then
+        val="$(head -n1 /usr/share/batocera/batocera.version 2>/dev/null | cut -d' ' -f1 | tr -d '\r')"
+        [ -n "$val" ] && export CFW_VERSION="$val"
+    fi
+    [ -z "$CFW_VERSION" ] && export CFW_VERSION="Unknown"
+elif [ "$CFW_NAME" = "spruce" ]; then
+    ## spruce's own version; os-release is the base system's (Miyoo/TrimUI stock, Debian on dArkMoss).
+    if [ -f "/mnt/SDCARD/spruce/spruce" ]; then
+        export CFW_VERSION="$(head -n1 /mnt/SDCARD/spruce/spruce 2>/dev/null | tr -d '\r\n ')"
+        [ -z "$CFW_VERSION" ] && export CFW_VERSION="Unknown"
+    fi
 fi
+
+## ArkOS and family: the date in the boot splash title (Ubuntu's or Debian's version otherwise).
+[ "$CFW_VERSION" = "Unknown" ] && [ -n "$PLY_VERSION" ] && export CFW_VERSION="$PLY_VERSION"
 
 if [ "$CFW_VERSION" = "Unknown" ] && { [ -f "/etc/os-release" ] || [ -f "/usr/lib/os-release" ]; }; then
     OS_FILE="/etc/os-release"; [ ! -f "$OS_FILE" ] && OS_FILE="/usr/lib/os-release"
-    for key in VERSION_ID VERSION LIBREELEC_VERSION BUILD_ID; do
+    for key in OS_VERSION VERSION_ID VERSION LIBREELEC_VERSION BUILD_ID; do
         val="$(grep -iE "^${key}=" "$OS_FILE" 2>/dev/null | head -n1 | cut -d= -f2 | tr -d '"\r ')"
         if [ -n "$val" ]; then export CFW_VERSION="$val"; break; fi
     done
@@ -375,7 +444,7 @@ detect_dynamic_gpu() {
         done
     fi
 
-    local cpu_l="$(echo "$DEVICE_CPU" | tr '[:upper:]' '[:lower:]')"
+    local cpu_l="$(echo "$DEVICE_CPU" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
     if [ "$GPU_DRIVER" = "Unknown" ]; then
         case "$cpu_l" in
             *qcs*|*sm8*|*sm7*|*sm6*|*sd8*|*sd7*|*sd6*|*snapdragon*)
@@ -425,15 +494,25 @@ detect_dynamic_gpu() {
             /usr/lib*/libgbm.so*; do
             [ -f "$lib" ] || continue
 
+            ## One pass over the library for both versions, through strings where there is
+            ## one: BusyBox grep -a took ~30s per pass over the Miyoo Flip's 45MB libmali.
+            local candidates
+            if command -v strings >/dev/null 2>&1; then
+                candidates="$(strings -n 4 "$lib" 2>/dev/null | grep -E 'Mesa [0-9]|[gr][0-9]+p[0-9]+')"
+            else
+                candidates="$(grep -aE 'Mesa [0-9]|[gr][0-9]+p[0-9]+' "$lib" 2>/dev/null)"
+            fi
+            [ -n "$candidates" ] || continue
+
             local mesa_ver
-            mesa_ver="$(grep -aoE 'Mesa [0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9a-zA-Z.]+)?' "$lib" 2>/dev/null | head -n1)"
+            mesa_ver="$(printf '%s\n' "$candidates" | grep -aoE 'Mesa [0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9a-zA-Z.]+)?' | head -n1)"
             if [ -n "$mesa_ver" ]; then
                 export GPU_DRIVER_VERSION="${mesa_ver#Mesa }"
                 break
             fi
 
             local mali_ver
-            mali_ver="$(grep -aoE '\b[gr][0-9]+p[0-9]+(-[0-9a-zA-Z]+)?\b' "$lib" 2>/dev/null | head -n1)"
+            mali_ver="$(printf '%s\n' "$candidates" | grep -aoE '\b[gr][0-9]+p[0-9]+(-[0-9a-zA-Z]+)?\b' | head -n1)"
             if [ -n "$mali_ver" ]; then
                 export GPU_DRIVER_VERSION="$mali_ver"
                 break
@@ -464,7 +543,6 @@ if [ -d "/sys/class/drm" ]; then
                 fi
             fi
             if [ -f "$card_dir/vrefresh" ]; then
-                local hz
                 hz="$(cat "$card_dir/vrefresh" 2>/dev/null)"
                 [ -n "$hz" ] && [ "$hz" -gt 0 ] 2>/dev/null && export DEVICE_REFRESH_RATE="$hz"
             fi
@@ -785,6 +863,23 @@ detect_dynamic_controls() {
 }
 detect_dynamic_controls
 
+## spruce states each device's stick count in its platform config
+## (spruce/scripts/platform/<PLATFORM>.cfg), take that over probing: the Miyoo Flip's
+## sticks come through miyoo_inputd's virtual pad, which the probe doesn't trust (0).
+## Ports have it in their environment; otherwise helperFunctions.sh sets it (it only
+## sets variables).
+if [ "$CFW_NAME" = "spruce" ]; then
+    SPRUCE_STICKS="$DEVICE_NUM_ANALOG_STICKS"
+    if [ -z "$SPRUCE_STICKS" ] && [ -f "/mnt/SDCARD/spruce/scripts/helperFunctions.sh" ]; then
+        SPRUCE_STICKS="$(. /mnt/SDCARD/spruce/scripts/helperFunctions.sh > /dev/null 2>&1; echo "$DEVICE_NUM_ANALOG_STICKS")"
+    fi
+
+    case "$SPRUCE_STICKS" in
+        [0-2]) export ANALOG_STICKS="$SPRUCE_STICKS" ;;
+    esac
+fi
+load_spruce_info
+
 # Pure Dynamic Touchscreen Detection (Live Active Evdev Nodes Only)
 detect_dynamic_touchscreen() {
     export DEVICE_TOUCH="N"
@@ -796,7 +891,7 @@ detect_dynamic_touchscreen() {
         local dev_props="$(_read_line "$input_dir/properties")"
         local dev_abs="$(_read_line "$input_dir/capabilities/abs")"
         local dev_key="$(_read_line "$input_dir/capabilities/key")"
-        local name_lower="$(echo "$dev_name" | tr '[:upper:]' '[:lower:]')"
+        local name_lower="$(echo "$dev_name" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
         # 1. Ignore non-touch devices (Gamepads, Buttons, Headsets, Keyboards)
         case "$name_lower" in
@@ -847,7 +942,7 @@ detect_dynamic_rumble() {
     for input_dir in /sys/class/input/input*; do
         [ -d "$input_dir" ] || continue
         local dev_name="$(_read_line "$input_dir/name")"
-        local dev_name_l="$(echo "$dev_name" | tr '[:upper:]' '[:lower:]')"
+        local dev_name_l="$(echo "$dev_name" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
         case "$dev_name_l" in
             *loong*|*vibrat*|*rumble*|*haptic*|*ffsm*|*drv2605*|*gamepad*|*joypad*|*retrogame_joypad*|*odroidgo*|*trimui*|*odin*|*dualsense*)
@@ -901,7 +996,7 @@ detect_dynamic_rumble() {
         done
     fi
 
-    local dev_l="$(echo "$DEVICE_NAME" | tr '[:upper:]' '[:lower:]')"
+    local dev_l="$(echo "$DEVICE_NAME" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
     case "$dev_l" in
         *miniloong*|*rgb30*|*rgb10*|*rgb20*|*rk2023*|*x55*|*rg35*|*rg40*|*rg50*|*rg55*|*smart_pro*|*brick*|*retroid*|*odin*|*steam_deck*|*rog_ally*|*legion_go*)
             export DEVICE_HAS_RUMBLE="Y"
@@ -912,13 +1007,16 @@ detect_dynamic_rumble() {
 detect_dynamic_rumble
 
 # 3i. Capabilities & Tags
-CAPS=()
+# A plain string, not a bash array: some firmwares have BusyBox as /bin/bash
+# (TrimUI Smart Pro 1.0.4), and ports run this through it.
+CAPS=""
+add_cap() { CAPS="$CAPS $1"; }
 
-CAPS+=("$DEVICE_ARCH")
-[ "$DEVICE_HAS_ARMHF" = "Y" ] && CAPS+=("armhf")
-[ "$DEVICE_HAS_AARCH64" = "Y" ] && CAPS+=("aarch64")
-[ "$DEVICE_HAS_X86" = "Y" ] && CAPS+=("x86")
-[ "$DEVICE_HAS_X86_64" = "Y" ] && CAPS+=("x86_64")
+add_cap "$DEVICE_ARCH"
+[ "$DEVICE_HAS_ARMHF" = "Y" ] && add_cap "armhf"
+[ "$DEVICE_HAS_AARCH64" = "Y" ] && add_cap "aarch64"
+[ "$DEVICE_HAS_X86" = "Y" ] && add_cap "x86"
+[ "$DEVICE_HAS_X86_64" = "Y" ] && add_cap "x86_64"
 
 HAS_DESKTOP_GL="N"
 HAS_DRI_DRIVERS="N"
@@ -944,19 +1042,19 @@ if [ "$HAS_DRI_DRIVERS" = "Y" ]; then
     done
 fi
 
-[ "$HAS_DESKTOP_GL" = "Y" ] && CAPS+=("opengl")
+[ "$HAS_DESKTOP_GL" = "Y" ] && add_cap "opengl"
 
 for vk_path in /usr/lib*/libvulkan.so* /usr/lib/*/libvulkan.so* /usr/share/vulkan/icd.d/*.json /etc/vulkan/icd.d/*.json; do
-    if [ -e "$vk_path" ]; then CAPS+=("vulkan"); break; fi
+    if [ -e "$vk_path" ]; then add_cap "vulkan"; break; fi
 done
 
-CPU_LOWER="$(echo "$DEVICE_CPU" | tr '[:upper:]' '[:lower:]')"
+CPU_LOWER="$(echo "$DEVICE_CPU" | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz')"
 
 case "$CPU_LOWER" in
     *rk3326*|*px30*)
         ;;
     *)
-        CAPS+=("power")
+        add_cap "power"
         ;;
 esac
 
@@ -965,45 +1063,47 @@ if [ "$DEVICE_RAM" -ge 4 ]; then
         *rk3326*|*h700*|*a133*|*a133plus*|*a527*|*px30*|*sun50iw9*|*sun50iw10*)
             ;;
         *)
-            CAPS+=("ultra")
+            add_cap "ultra"
             ;;
     esac
 fi
 
-CAPS+=("${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}")
-CAPS+=("${ASPECT_X}:${ASPECT_Y}")
-[ "$ASPECT_X" -eq 16 ] && [ "$ASPECT_Y" -eq 10 ] && CAPS+=("16:9")
+add_cap "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}"
+add_cap "${ASPECT_X}:${ASPECT_Y}"
+[ "$ASPECT_X" -eq 16 ] && [ "$ASPECT_Y" -eq 10 ] && add_cap "16:9"
 
 if [ "$DISPLAY_WIDTH" -ge 960 ] || [ "$DISPLAY_HEIGHT" -ge 720 ]; then
-    CAPS+=("hires")
+    add_cap "hires"
 elif [ "$DISPLAY_WIDTH" -lt 640 ] || [ "$DISPLAY_HEIGHT" -lt 480 ]; then
-    CAPS+=("lowres")
+    add_cap "lowres"
 fi
 if [ "$ASPECT_X" -ge 16 ] || [ $(( ASPECT_X * 10 / ASPECT_Y )) -ge 15 ]; then
-    CAPS+=("wide")
+    add_cap "wide"
 elif [ "$ASPECT_X" -eq "$ASPECT_Y" ]; then
-    CAPS+=("square")
+    add_cap "square"
 fi
 
-for ((i=0; i<=$ANALOG_STICKS; i++)); do
-    CAPS+=("analog_$i")
+i=0
+while [ "$i" -le "${ANALOG_STICKS:-0}" ]; do
+    add_cap "analog_$i"
+    i=$((i + 1))
 done
-[ "$ANALOG_TRIGGERS" = "Y" ] && CAPS+=("analog_triggers")
-[ "$DEVICE_TOUCH" = "Y" ] && CAPS+=("touch")
-[ "$DEVICE_HAS_RUMBLE" = "Y" ] && CAPS+=("rumble")
+[ "$ANALOG_TRIGGERS" = "Y" ] && add_cap "analog_triggers"
+[ "$DEVICE_TOUCH" = "Y" ] && add_cap "touch"
+[ "$DEVICE_HAS_RUMBLE" = "Y" ] && add_cap "rumble"
 
 for tier in 1 2 4 8 16 32; do
-    if [ "$DEVICE_RAM" -ge "$tier" ]; then CAPS+=("${tier}gb"); fi
+    if [ "$DEVICE_RAM" -ge "$tier" ]; then add_cap "${tier}gb"; fi
 done
 
 for sav_dir in /userdata/saves /storage/roms/ports /roms/ports /mnt/SDCARD/Roms/PORTS "$HOME/.local/share"; do
     if [ -d "$sav_dir" ] && [ -w "$sav_dir" ]; then
-        CAPS+=("restore")
+        add_cap "restore"
         break
     fi
 done
 
-export DEVICE_CAPABILITIES="$(echo "${CAPS[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/[ \t]*$//')"
+export DEVICE_CAPABILITIES="$(printf '%s\n' $CAPS | sort -u | tr '\n' ' ' | sed 's/[ \t]*$//')"
 
 # ------------------------------------------------------------------------------
 # 4. SAVE CACHED ENVIRONMENT & OUTPUT (No redundant device_info.env)

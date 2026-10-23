@@ -17,6 +17,11 @@ if [ ! -e "/dev/dri/card0" ]; then
   export LIBGL_FB=2
 fi
 
+# SDL2 kmsdrm owns the display, gl4es must not open its own gbm output
+if [ "${SDL_VIDEODRIVER}" = "kmsdrm" ]; then
+  export LIBGL_FB=0
+fi
+
 if [ -d "$PWD/gl4es.$DEVICE_ARCH" ]; then
   export LD_LIBRARY_PATH="$PWD/gl4es.$DEVICE_ARCH:$LD_LIBRARY_PATH"
 elif [ -d "$PWD/gl4es" ]; then

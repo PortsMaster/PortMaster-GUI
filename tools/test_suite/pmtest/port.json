@@ -1,0 +1,24 @@
+{
+    "version": 4,
+    "name": "pmtest.zip",
+    "items": [
+        "PortMaster Test Suite.sh",
+        "pmtest/"
+    ],
+    "items_opt": null,
+    "attr": {
+        "title": "PortMaster Test Suite",
+        "desc": "Installs a PortMaster test build, runs all of PortMaster's tests on this device, shows the results and saves a report for the PortMaster devs.",
+        "inst": "Ready to run. Results are saved in pmtest/reports/.",
+        "genres": [
+            "other"
+        ],
+        "porter": [
+            "PortMaster"
+        ],
+        "rtr": true,
+        "runtime": [],
+        "reqs": [],
+        "arch": []
+    }
+}

@@ -33,6 +33,19 @@ def _safe_int(val: Any, default: int = 0) -> int:
         return default
 
 
+def _script_version(script: Path) -> Optional[str]:
+    """DEVICE_INFO_VERSION as device_info.txt sets it, or None."""
+    try:
+        with open(script, "r", encoding="utf-8", errors="ignore") as f:
+            for line in f:
+                match = re.match(r'\s*(?:export\s+)?DEVICE_INFO_VERSION="?([^"\s]+)"?', line)
+                if match:
+                    return match.group(1)
+    except Exception:
+        pass
+    return None
+
+
 def _read_env_file(env_path: Path) -> Dict[str, str]:
     """Reads key-value pairs from a POSIX shell env file safely."""
     res: Dict[str, str] = {}
@@ -82,6 +95,7 @@ class HardwareDetector:
 
     def __init__(self, control_dir: Optional[Union[str, Path]] = None):
         self.control_dir = Path(control_dir) if control_dir else _find_control_dir()
+        self.env_is_stale = False
 
     def _quick_probe_identity(self) -> Tuple[str, str]:
         """Fast helper to resolve the exact device_info_<cfw>_<device>.env filename."""
@@ -147,59 +161,108 @@ class HardwareDetector:
             except Exception:
                 pass
 
-        # Match bash translation: tr -d '\0\r\n' | tr '[:upper:] ' '[:lower:]_'
-        safe_cfw = _clean_str(cfw_name).lower().replace(" ", "_")
-        safe_dev = _clean_str(dev_name).lower().replace(" ", "_")
+        # Match device_info.txt: lower case, spaces and slashes ("Debian GNU/Linux") to _
+        safe_cfw = _clean_str(cfw_name).lower().replace(" ", "_").replace("/", "_")
+        safe_dev = _clean_str(dev_name).lower().replace(" ", "_").replace("/", "_")
         return safe_cfw, safe_dev
 
+    def _device_info_script(self) -> Optional[Path]:
+        for script_name in ["device_info.txt", "device_info.sh", "PortMaster/device_info.txt", "PortMaster/device_info.sh"]:
+            sh_script = self.control_dir / script_name
+            if sh_script.is_file():
+                return sh_script
+
+        return None
+
     def _load_raw_data(self, force_refresh: bool = False) -> Dict[str, str]:
+        ## Some CFWs replace control.txt with their own that never sources device_info.txt
+        ## (ROCKNIX 20250517), so nothing else replaces a cache an older version wrote.
+        script = self._device_info_script()
+        wanted = _script_version(script) if script is not None else None
+
         # Priority 1: In-memory environment (Zero Disk I/O)
+        self.env_is_stale = False
         if not force_refresh:
             if os.environ.get("DEVICE_NAME") or os.environ.get("DEVICE_CPU") or os.environ.get("CFW_NAME"):
-                return {_clean_str(k).lower(): _clean_str(v) for k, v in os.environ.items()}
+                ## Only what this device_info.txt exported. Another version's (older or newer)
+                ## is left over: PortMaster updated itself and restarted under the launcher
+                ## that was running, and 0.1.x has no DEVICE_CAPABILITIES, so every port was
+                ## "incompatible". With no version at all, only variables set by hand to
+                ## pretend to be a device, which have DEVICE_CAPABILITIES (a CFW's own
+                ## control.txt may export CFW_NAME and nothing else).
+                env_version = _clean_str(os.environ.get("DEVICE_INFO_VERSION", ""))
+                if env_version == "":
+                    trusted = _clean_str(os.environ.get("DEVICE_CAPABILITIES", "")) != ""
+                else:
+                    trusted = wanted is None or env_version == wanted
+
+                if trusted:
+                    return {_clean_str(k).lower(): _clean_str(v) for k, v in os.environ.items()}
+
+                self.env_is_stale = True
 
         safe_cfw, safe_dev = self._quick_probe_identity()
         target_file = self.control_dir / f"device_info_{safe_cfw}_{safe_dev}.env"
 
+        def current(env_file: Path) -> bool:
+            if wanted is None:
+                return True
+
+            return _read_env_file(env_file).get("device_info_version") == wanted
+
+        def usable(env_file: Path) -> bool:
+            return env_file.is_file() and env_file.stat().st_size > 30
+
+        stale = None
+
         # Priority 2: Named cache matching active hardware
-        if not force_refresh and target_file.is_file() and target_file.stat().st_size > 30:
-            return _read_env_file(target_file)
+        if not force_refresh and usable(target_file):
+            if current(target_file):
+                return _read_env_file(target_file)
+
+            stale = target_file
 
         # Priority 3: Fallback check for any valid device_info_*.env in the folder
         if not force_refresh:
-            candidates = [p for p in self.control_dir.glob("device_info_*.env") if p.is_file()]
+            candidates = [p for p in self.control_dir.glob("device_info_*.env") if usable(p)]
             if candidates:
                 newest = max(candidates, key=lambda p: p.stat().st_mtime)
-                if newest.stat().st_size > 30:
+                if current(newest):
                     return _read_env_file(newest)
 
-        # Priority 4: Run device_info.sh to probe hardware and generate env
-        for script_name in ["device_info.txt", "device_info.sh", "PortMaster/device_info.txt", "PortMaster/device_info.sh"]:
-            sh_script = self.control_dir / script_name
-            if sh_script.is_file():
-                try:
-                    run_env = {
-                        **os.environ,
-                        "controlfolder": str(self.control_dir),
-                        "NO_SDL_RESOLUTION": "1",
-                    }
-                    subprocess.run(
-                        ["bash", str(sh_script), "-f"],
-                        cwd=str(self.control_dir),
-                        env=run_env,
-                        timeout=5,
-                        check=False,
-                    )
-                    if target_file.is_file():
-                        return _read_env_file(target_file)
+                stale = stale or newest
 
-                    # Return whichever cache file was updated by the script
-                    candidates = [p for p in self.control_dir.glob("device_info_*.env") if p.is_file()]
-                    if candidates:
-                        newest = max(candidates, key=lambda p: p.stat().st_mtime)
+        # Priority 4: Run device_info.txt to probe hardware and generate env. A full
+        # probe takes 10-15 s on some devices (Miyoo Flip, TrimUI Brick Pro).
+        if script is not None:
+            try:
+                run_env = {
+                    **os.environ,
+                    "controlfolder": str(self.control_dir),
+                    "NO_SDL_RESOLUTION": "1",
+                }
+                subprocess.run(
+                    ["bash", str(script), "-f"],
+                    cwd=str(self.control_dir),
+                    env=run_env,
+                    timeout=60,
+                    check=False,
+                )
+                if usable(target_file) and current(target_file):
+                    return _read_env_file(target_file)
+
+                # Return whichever cache file was updated by the script
+                candidates = [p for p in self.control_dir.glob("device_info_*.env") if usable(p)]
+                if candidates:
+                    newest = max(candidates, key=lambda p: p.stat().st_mtime)
+                    if current(newest):
                         return _read_env_file(newest)
-                except Exception:
-                    pass
+            except Exception:
+                pass
+
+        # An out of date cache beats nothing.
+        if stale is not None:
+            return _read_env_file(stale)
 
         return {}
 
@@ -210,8 +273,11 @@ class HardwareDetector:
 
         raw_env = self._load_raw_data(force_refresh)
 
+        ## Nor anything an older device_info.txt left in the environment.
+        env = {} if self.env_is_stale else os.environ
+
         def get_val(key: str, default: Any) -> Any:
-            val = raw_env.get(key.lower(), os.environ.get(key.upper(), default))
+            val = raw_env.get(key.lower(), env.get(key.upper(), default))
             if val is None or (isinstance(val, str) and not _clean_str(val)):
                 return default
             return _clean_str(val) if isinstance(val, str) else val
