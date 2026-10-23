@@ -436,8 +436,55 @@ def test_listen_tries_the_next_ports():
         with pytest.raises(OSError):
             serve.listen("127.0.0.1", port, 1)
 
+        ## Never past the last port.
+        with pytest.raises(OSError):
+            serve.listen("127.0.0.1", 65536, 3)
+
+        ## --any-port: none of them free, so whichever the system gives.
+        server = serve.listen("127.0.0.1", port, 1, any_port=True)
+        try:
+            assert server.server_address[1] not in (0, port)
+        finally:
+            server.server_close()
+
     finally:
         busy.close()
+
+
+def busy_port_in_range():
+    """A socket listening on a port in the theme editor's range."""
+    import random
+    import socket
+    from pugwash.scenes.theme_server import PORT_RANGE
+
+    for _ in range(200):
+        busy = socket.socket()
+        try:
+            busy.bind(("0.0.0.0", random.randint(PORT_RANGE[0], PORT_RANGE[1] - 20)))
+            busy.listen(1)
+            return busy
+        except OSError:
+            busy.close()
+
+    pytest.skip("no free port in the range to make busy")
+
+
+@pytest.mark.parametrize("saved", [None, 8090, 80, 70000, "50000", True, 49151, 65536])
+def test_server_port_random_in_the_range(saved):
+    ## Not 8090 or anything a CFW's own services might listen on.
+    from pugwash.scenes.theme_server import PORT_RANGE, server_port
+
+    ports = {server_port({} if saved is None else {'theme_server_port': saved}) for _ in range(50)}
+
+    assert all(PORT_RANGE[0] <= port <= PORT_RANGE[1] for port in ports)
+    assert len(ports) > 1
+
+
+@pytest.mark.parametrize("saved", [49152, 55555, 65535])
+def test_server_port_kept(saved):
+    from pugwash.scenes.theme_server import server_port
+
+    assert server_port({'theme_server_port': saved}) == saved
 
 
 def test_worker_count(tmp_path):
@@ -509,6 +556,12 @@ def test_theme_editor_scene(gui, hm_dirs, monkeypatch):
 
         url = gui.text_data['theme_server.url']
         assert url.startswith("http://127.0.0.1:") and url in gui.text_data['theme_server.status']
+
+        ## A random port in the range, kept in the config for next time.
+        port = int(url.rsplit(':', 1)[1].strip('/'))
+        assert scene_module.PORT_RANGE[0] <= port <= scene_module.PORT_RANGE[1]
+        assert gui.hm.cfg_data['theme_server_port'] == port
+        assert json.loads((gui.hm.cfg_dir / "config.json").read_text())['theme_server_port'] == port
         ## The QR code of the address is on screen.
         assert gui.images.load("qr:" + url) is scene.tags['server_qr'].image
 
@@ -598,3 +651,60 @@ def test_status_says_what_the_renderers_do(pool):
     assert seen and seen[0]['starting'] == ["960x544"]
     status = pool.status()
     assert "960x544" in status['running'] and status['starting'] == [] and status['loading'] == []
+
+
+def run_editor(gui, scene_module, monkeypatch):
+    """Starts the theme editor scene and returns (its url, the scene), stopped again."""
+    import time
+
+    scene = scene_module.ThemeServerScene(gui)
+    gui.push_scene('theme-editor', scene)
+    proc = scene.proc
+    try:
+        end = time.monotonic() + 120
+        while not gui.text_data.get('theme_server.url') and proc.poll() is None:
+            gui.do_loop(no_delay=True)
+            assert time.monotonic() < end
+
+        return gui.text_data['theme_server.url'], scene
+
+    finally:
+        with monkeypatch.context() as patch:
+            patch.setattr(gui.events, "was_pressed", lambda button: button == 'B')
+            gui.do_loop(no_delay=True)
+
+        try:
+            proc.wait(timeout=30)
+        except Exception:
+            proc.kill()
+
+
+@pytest.mark.sdl
+def test_theme_editor_keeps_its_port(gui, hm_dirs, monkeypatch):
+    ## The same address every time; a saved port that's taken is swapped for a free one.
+    import harbourmaster
+    from pugwash.scenes import theme_server as scene_module
+
+    monkeypatch.setattr(scene_module, "get_ip_address", lambda force_update=False: "127.0.0.1")
+    gui.hm = harbourmaster.HarbourMaster({'offline': True, 'no-check': True}, callback=gui, **hm_dirs)
+    try:
+        first, _ = run_editor(gui, scene_module, monkeypatch)
+        again, _ = run_editor(gui, scene_module, monkeypatch)
+        assert first == again
+
+        busy = busy_port_in_range()
+        try:
+            taken = busy.getsockname()[1]
+            gui.hm.cfg_data['theme_server_port'] = taken
+            moved, _ = run_editor(gui, scene_module, monkeypatch)
+        finally:
+            busy.close()
+
+        ## The next free one, still in the range.
+        moved_port = int(moved.rsplit(':', 1)[1].strip('/'))
+        assert moved_port != taken
+        assert scene_module.PORT_RANGE[0] <= moved_port <= scene_module.PORT_RANGE[1]
+        assert gui.hm.cfg_data['theme_server_port'] == moved_port
+
+    finally:
+        gui.hm = None

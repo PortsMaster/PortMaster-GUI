@@ -5,6 +5,7 @@
 
 import json
 import os
+import random
 import subprocess
 import sys
 import threading
@@ -17,7 +18,10 @@ from pugwash.util import get_ip_address
 from .base import BaseScene
 
 
-PORT = 8090
+## The dynamic (private) port range: never assigned to a service, so no CFW's own daemons
+## are listening on it. Each device picks a random one and keeps it, so the address stays
+## the same between sessions; if it's taken, the server takes any free port and that's kept.
+PORT_RANGE = (49152, 65535)
 ## Render processes are 60-90 MB each: as many as the free memory allows, up to this.
 MAX_WORKERS = 4
 
@@ -34,6 +38,15 @@ def worker_count(meminfo="/proc/meminfo"):
         pass
 
     return 2
+
+
+def server_port(cfg_data):
+    """The port this device used last time, or a random one the first time."""
+    port = cfg_data.get('theme_server_port')
+    if isinstance(port, bool) or not isinstance(port, int) or not PORT_RANGE[0] <= port <= PORT_RANGE[1]:
+        port = random.randint(*PORT_RANGE)
+
+    return port
 
 
 def fallback_section():
@@ -82,7 +95,7 @@ class ThemeServerScene(BaseScene):
         env['PYTHONPATH'] = os.pathsep.join([str(PYLIB_PATH), str(PYLIB_PATH.parent / "exlibs")])
         command = [
             sys.executable, "-m", "theme_server.serve", "--managed",
-            "--host", "0.0.0.0", "--port", str(PORT), "--try-ports", "10",
+            "--host", "0.0.0.0", "--port", str(server_port(hm.cfg_data)), "--try-ports", "20", "--any-port",
             "--themes", str(hm.themes_dir),
             "--ports-config", str(hm.cfg_dir),
             "--max-workers", str(worker_count()),
@@ -123,6 +136,11 @@ class ThemeServerScene(BaseScene):
                 error=status.get('error', "")))
             self.stop()
             return
+
+        ## Kept for next time (it was random, or the old one was busy).
+        if self.gui.hm.cfg_data.get('theme_server_port') != status['port']:
+            self.gui.hm.cfg_data['theme_server_port'] = status['port']
+            self.gui.hm.save_config()
 
         ip_address = get_ip_address(force_update=True)
         if ip_address is None:

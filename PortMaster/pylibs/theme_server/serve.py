@@ -733,13 +733,23 @@ def export(pool, themes, out, theme_ids, resolutions, schemes, langs, shots):
     return 1 if failures else 0
 
 
-def listen(host, port, tries):
-    """The server on the first free port of port, port + 1, ... (tries of them)."""
+def listen(host, port, tries, any_port=False):
+    """
+    The server on the first free port of port, port + 1, ... (tries of them). any_port: if
+    none is free, on whichever port the system gives it.
+    """
+    last = OSError(f"no ports to try from {port}")
     for offset in range(max(1, tries)):
+        if port + offset > 65535:
+            break
+
         try:
             return Server((host, port + offset), Handler)
         except OSError as error:
             last = error
+
+    if any_port:
+        return Server((host, 0), Handler)
 
     raise last
 
@@ -762,6 +772,7 @@ def main(argv=None):
     parser.add_argument("--themes", help="a theme folder, or a folder of themes")
     parser.add_argument("--port", type=int, default=8090)
     parser.add_argument("--try-ports", type=int, default=1, metavar="N", help="if the port is busy, try the next N-1 too")
+    parser.add_argument("--any-port", action="store_true", help="if those are busy, take any free port")
     parser.add_argument("--host", default="127.0.0.1", help="use 0.0.0.0 to let other machines connect")
     parser.add_argument("--cache", type=Path, default=default_cache())
     parser.add_argument("--ports-config", type=Path, help="a PortMaster config folder to take the ports from, instead of the cache")
@@ -807,7 +818,7 @@ def main(argv=None):
                           [scheme for scheme in options.schemes.split(",") if scheme], options.langs.split(","), shots)
 
         try:
-            server = listen(options.host, options.port, options.try_ports)
+            server = listen(options.host, options.port, options.try_ports, options.any_port)
         except OSError as error:
             if report is not None:
                 report(ok=False, error=f"port {options.port} is busy ({error.strerror})")
