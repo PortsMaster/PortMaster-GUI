@@ -265,7 +265,7 @@ def test_http_api(pool):
 
         assert get("/api/render.png?theme=default_theme&res=640x480&shot=no_such_screen")[0] == 400
         assert get("/api/render.png?theme=default_theme&res=huge&shot=options")[0] == 400
-        assert get("/api/render.png?theme=nope&res=640x480&shot=options")[0] == 500
+        assert get("/api/render.png?theme=nope&res=640x480&shot=options")[0] == 404
         assert get("/api/render.png?theme=Tiny&res=640x480&shot=filters")[0] == 404
         assert json.loads(get("/api/version?theme=Tiny")[2])['version']
         assert get("/api/version?theme=nope")[0] == 404
