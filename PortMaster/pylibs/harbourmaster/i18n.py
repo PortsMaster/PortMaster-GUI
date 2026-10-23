@@ -10,6 +10,7 @@
 # the code and the themes); the theme server's translation editor edits the language files.
 
 import json
+import string
 from pathlib import Path
 
 
@@ -51,9 +52,36 @@ def _read(path):
     return {key: value for key, value in data.items() if isinstance(key, str) and isinstance(value, str) and value}
 
 
+def _fields(text):
+    """The names of a string's {fields}, as str.format reads them. Raises ValueError for a stray { or }."""
+    return {field.split('.', 1)[0].split('[', 1)[0] for _, field, _, _ in string.Formatter().parse(text) if field is not None}
+
+
+def safe_translation(text, translation):
+    """
+    The code calls .format() on what _() returns: a translation with a {field} the English
+    doesn't have, or a stray { or }, would raise there (and stop PortMaster).
+    """
+    try:
+        english = _fields(text)
+    except ValueError:
+        ## Not a format string, so nothing formats it.
+        return True
+
+    try:
+        return _fields(translation) <= english
+    except ValueError:
+        return False
+
+
 def read_language(locales_dir, lang):
-    """{'messages': {...}, 'themes': {...}} for a language, empty where a file can't be read."""
-    return {domain: _read(language_file(locales_dir, lang, domain)) for domain in DOMAINS}
+    """
+    {'messages': {...}, 'themes': {...}} for a language, empty where a file can't be read. A
+    translation that would break .format() is left out: that string shows in English.
+    """
+    data = {domain: _read(language_file(locales_dir, lang, domain)) for domain in DOMAINS}
+    data['messages'] = {text: translation for text, translation in data['messages'].items() if safe_translation(text, translation)}
+    return data
 
 
 def load_language(locales_dir, lang):
@@ -76,6 +104,7 @@ __all__ = (
     'theme_text',
     'load_language',
     'read_language',
+    'safe_translation',
     'language_file',
     'DOMAINS',
     'set_theme_translations',

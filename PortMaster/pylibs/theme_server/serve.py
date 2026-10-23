@@ -24,6 +24,7 @@
 
 import argparse
 import hashlib
+import ipaddress
 import json
 import os
 import re
@@ -574,6 +575,28 @@ def ensure_cache(cache, refresh=False):
 
 ################################################################################
 ## The web server
+def direct_host(host_header):
+    """
+    The Host header names this server directly: an IP address (the address PortMaster shows)
+    or localhost. A DNS rebinding page reaches it under its own domain name instead, so it
+    can't send the page's writes.
+    """
+    host = (host_header or "").strip().lower()
+    if host.startswith("["):
+        host = host[1:].split("]", 1)[0]
+    elif host.count(":") == 1:
+        host = host.split(":", 1)[0]
+
+    if host == "localhost":
+        return True
+
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        return False
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "PortMasterThemeServer/1"
 
@@ -662,7 +685,8 @@ class Handler(BaseHTTPRequestHandler):
         url = urllib.parse.urlparse(self.path)
         ## Only the page itself: another site can't send this header without a CORS
         ## preflight, which this server never answers.
-        if self.headers.get("X-Theme-Server") != "1" or not (self.headers.get("Content-Type") or "").startswith("application/json"):
+        if self.headers.get("X-Theme-Server") != "1" or not (self.headers.get("Content-Type") or "").startswith("application/json") or \
+                not direct_host(self.headers.get("Host")):
             self.send(403, {'error': "forbidden"})
             return
 
@@ -679,6 +703,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not re.match(r"^[a-z]{2,3}_[A-Z]{2}$", lang) or lang == "en_US" or domain not in i18n_tool.DOMAINS or \
                         not isinstance(text, str) or not isinstance(translation, str):
                     self.send(400, {'error': "bad language, domain or text"})
+                    return
+                if domain == "messages" and translation and not i18n_tool.safe_translation(text, translation):
+                    ## PortMaster would leave it out (it would break the code's .format()), so say why now.
+                    self.send(400, {'error': "it has a {placeholder} the English doesn't, or a { or } on its own (write {{ or }})"})
                     return
                 try:
                     problems = self.server.pool.translations.save(lang, domain, text, translation)

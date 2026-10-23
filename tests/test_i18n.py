@@ -108,3 +108,51 @@ def test_every_language_loads(restore_language):
 
     i18n.load_language(LOCALES_DIR, "de_DE")
     assert i18n._("Options") != "Options"
+
+
+SAFETY_CASES = [
+    ("{lang_name} (Selected)", "{lang_name} (Ausgewählt)", True),
+    ("{lang_name} (Selected)", "(Ausgewählt)", True),
+    ("{lang_name} (Selected)", "{bogus} (Ausgewählt)", False),
+    ("{lang_name} (Selected)", "{lang_name (Ausgewählt)", False),
+    ("{lang_name} (Selected)", "lang_name} (Ausgewählt)", False),
+    ("{lang_name} (Selected)", "{{lang_name}} literal", True),
+    ("{lang_name} (Selected)", "{0}", False),
+    ("Installing {port_name}", "{port_name} wird installiert", True),
+    ("Installing {port_name}", "{port_name.title} wird installiert", True),
+    ("Installing {port_name}", "{port_name!r:>10}", True),
+    ("Options", "Optionen {", False),
+    ("Options", "Optionen {x}", False),
+    ("Options", "Optionen", True),
+    ("Not {a format", "anything {goes", True),
+    ]
+
+
+@pytest.mark.parametrize("text, translation, safe", SAFETY_CASES)
+def test_safe_translation(text, translation, safe):
+    ## The same answer from PortMaster and from the translation editor's own copy.
+    assert i18n.safe_translation(text, translation) is safe
+    assert i18n_tool.safe_translation(text, translation) is safe
+
+
+def test_unsafe_translations_are_english(tmp_path, restore_language):
+    ## Would raise in the code's .format() and stop PortMaster: shown in English instead.
+    (tmp_path / "xx_XX.json").write_text(json.dumps({
+        "{lang_name} (Selected)": "{bogus} (Ausgewählt)",
+        "Installing {port_name}": "{port_name} wird installiert",
+        "Options": "Optionen {",
+        }))
+
+    i18n.load_language(tmp_path, "xx_XX")
+
+    assert i18n._("{lang_name} (Selected)").format(lang_name="Deutsch") == "Deutsch (Selected)"
+    assert i18n._("Installing {port_name}").format(port_name="2048") == "2048 wird installiert"
+    assert i18n._("Options") == "Options"
+
+
+def test_every_shipped_translation_formats(restore_language):
+    ## Each language's translations are safe to .format() as the English is.
+    for lang in LANGUAGES:
+        translations = i18n_tool.read_translations(lang)['messages']
+        bad = [text for text, translation in translations.items() if translation and not i18n.safe_translation(text, translation)]
+        assert bad == [], f"{lang}: {bad}"

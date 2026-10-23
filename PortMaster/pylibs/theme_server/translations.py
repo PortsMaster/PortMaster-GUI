@@ -17,6 +17,7 @@ import argparse
 import ast
 import json
 import re
+import string
 import sys
 from pathlib import Path
 
@@ -152,6 +153,26 @@ def extract(themes_dirs=()):
 
 
 PLACEHOLDER = re.compile(r"\{[^{}]*\}")
+
+
+def _format_fields(text):
+    return {field.split('.', 1)[0].split('[', 1)[0] for _, field, _, _ in string.Formatter().parse(text) if field is not None}
+
+
+def safe_translation(text, translation):
+    """
+    As harbourmaster.i18n.safe_translation (which PortMaster uses to leave out the ones that
+    would break the code's .format()); this module is standard library only.
+    """
+    try:
+        english = _format_fields(text)
+    except ValueError:
+        return True
+
+    try:
+        return _format_fields(translation) <= english
+    except ValueError:
+        return False
 
 
 def problems(source, translation):

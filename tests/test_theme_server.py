@@ -400,10 +400,16 @@ def test_translate_api(pool, locales):
         ## Only from the page: another site's form or script can't send the header.
         assert post(good, {"Content-Type": "application/json"})[0] == 403
         assert post(good, {"Content-Type": "text/plain", "X-Theme-Server": "1"})[0] == 403
+        ## A DNS rebinding page comes with its own domain name as the Host.
+        assert post(good, {"Content-Type": "application/json", "X-Theme-Server": "1", "Host": "evil.example:8090"})[0] == 403
         assert post(dict(good, lang="en_US"))[0] == 400
         assert post(dict(good, lang="../x"))[0] == 400
         assert post(dict(good, domain="other"))[0] == 400
         assert post(dict(good, text="Nope"))[0] == 404
+        ## One that would break the code's .format(): refused, with why.
+        status, body = post(dict(good, text="{lang_name} (Selected)", translation="{bogus} (Ausgewählt)"))
+        assert status == 400 and "placeholder" in body['error']
+        assert post(dict(good, translation="Thema {")) [0] == 400
         status, body = post(good)
         assert status == 200 and body == {'ok': True, 'problems': []}
         assert json.loads((locales / "de_DE.json").read_text(encoding="utf-8"))["Select Theme"] == "Thema wählen"
@@ -708,3 +714,13 @@ def test_theme_editor_keeps_its_port(gui, hm_dirs, monkeypatch):
 
     finally:
         gui.hm = None
+
+
+@pytest.mark.parametrize("host, direct", [
+    ("192.168.68.119:55555", True), ("127.0.0.1", True), ("localhost:8090", True), ("LOCALHOST", True),
+    ("[::1]:8090", True), ("[fe80::1]", True), ("::1", True),
+    ("evil.example", False), ("evil.example:8090", False), ("192.168.68.119.evil.example", False),
+    ("", False), (None, False), ("localhost.evil.example", False),
+    ])
+def test_direct_host(host, direct):
+    assert serve.direct_host(host) is direct
