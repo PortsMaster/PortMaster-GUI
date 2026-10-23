@@ -101,10 +101,11 @@ class CommandsMixin:
             self.message(_("Installing {port_name}").format(port_name=port_name))
 
             with self.enable_cancellable(allow_cancel):
-                self.run_task(self._install_task, port_url)
+                self.run_task(self._install_task, port_url, md5_source)
 
-    def _install_task(self, port_url):
-        self.hm.install_port(port_url)
+    def _install_task(self, port_url, md5_source=None):
+        ## md5_source: the self-update's md5 from version.json, the download is checked against it.
+        self.hm.install_port(port_url, md5_source=md5_source)
         self.hm.load_ports()
 
     def do_uninstall(self, port_name):
