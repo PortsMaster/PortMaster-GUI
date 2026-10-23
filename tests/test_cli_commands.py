@@ -486,3 +486,13 @@ def test_main_no_log_without_a_log_file(run_main, monkeypatch, capsys):
     assert run_main("--offline", "--no-log", "ports")[0] == 0
     assert "No ports found." in capsys.readouterr().out
     assert None not in removed
+
+
+def test_main_sets_up_the_proxy(run_main, monkeypatch):
+    calls = []
+    monkeypatch.setattr(cli, "setup_proxy", lambda: calls.append(True))
+
+    result, config = run_main("--offline", "nothing")
+
+    assert result == 0
+    assert calls == [True]

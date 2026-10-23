@@ -203,3 +203,13 @@ def test_frontend_refresh(on_device, es_name, changed, expected):
 
     calls = [call if isinstance(call, str) else call[0] for call in FakeGUI.made[-1].calls]
     assert calls == ['run'] + expected + ['quit']
+
+
+def test_proxy_is_set_up_first(main, monkeypatch):
+    ## Before the update check, HarbourMaster's sources and autoinstall go online.
+    calls = []
+    monkeypatch.setattr(main, "setup_proxy", lambda: calls.append(len(main.hms)))
+
+    assert run(main) == 0
+    assert run(main, "fifo_control", "pipe", "done") == 0
+    assert calls == [0, 1]

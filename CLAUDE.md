@@ -93,6 +93,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 - `util/`:
   - `callback.py`: the `Callback` progress interface, `CancelEvent`
   - `net.py`: fetch and download
+  - `proxy.py`: `setup_proxy()`, called by both `main()`s after sudo, adds EmulationStation's HTTP proxy (es_settings.cfg, ArkOS4Clone's Wi-Fi settings) to the environment for requests, unless a proxy is set already
   - `text.py`, `files.py`, `data.py`
 
   Every name is re-exported from `harbourmaster.util`.

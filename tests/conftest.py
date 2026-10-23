@@ -431,3 +431,10 @@ def reset_hardware_cache():
     harbourmaster.hardware._CACHED_DICT = None
     yield
     harbourmaster.hardware._CACHED_DICT = None
+
+
+@pytest.fixture(autouse=True)
+def no_real_proxy_settings(monkeypatch):
+    """main() reads EmulationStation's proxy settings: never the real ones (devices run the suite too)."""
+    from harbourmaster.util import proxy
+    monkeypatch.setattr(proxy, "es_settings_files", lambda environ: [])

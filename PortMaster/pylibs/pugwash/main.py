@@ -8,6 +8,7 @@ import harbourmaster
 from loguru import logger
 from pugwash.scenes import BlankScene
 from harbourmaster import HarbourMaster, make_temp_directory
+from harbourmaster.util import setup_proxy
 from gettext import gettext as _
 from pugwash import PORTMASTER_DEBUG
 from pugwash.app import PortMasterGUI
@@ -92,6 +93,9 @@ def main(argv):
 
         elif config['force-colour']:
             console.do_color(True)
+
+        ## Before anything goes online: the update check, sources, autoinstall's runtimes.
+        setup_proxy()
 
         if not get_ip_address():
             config['offline'] = True
