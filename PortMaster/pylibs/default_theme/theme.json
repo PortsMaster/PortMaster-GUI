@@ -168,6 +168,7 @@
         "font[zh_HK]": "NotoSansHK-Regular.ttf",
         "font[ko_KR]": "NotoSansKR-Regular.ttf",
         "font[ja_JP]": "NotoSansJP-Regular.ttf",
+        "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 0.8,
         "font-scale[30:17]": 1.0,
         "font-scale[16:9]": 1.4,
         "font-scale[3:2]": 0.85,

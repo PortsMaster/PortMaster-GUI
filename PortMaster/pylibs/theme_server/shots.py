@@ -245,7 +245,7 @@ def shot_theme_editor(gui):
     shot_options(gui)
     scene = pug_scenes.ThemeServerScene(gui, start=False)
     gui.push_scene('theme-editor', scene)
-    scene.show("http://192.168.0.2:8090/")
+    scene.show("http://192.168.0.2:52817/")
 
 
 def shot_messages(gui):
