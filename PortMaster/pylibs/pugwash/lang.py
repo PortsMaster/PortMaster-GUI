@@ -52,9 +52,11 @@ def check_lang(lang):
 
     We then check all languages on the list of languages.
     """
-    if lang is None:
+    ## Nothing left of it ("", ".UTF-8", "_US") would match every language: the first one won.
+    if not isinstance(lang, str) or not lang.strip():
         return None
 
+    lang = lang.strip()
     if i18n.language_file(LANG_DIR, lang).is_file():
         return lang
 
@@ -66,6 +68,9 @@ def check_lang(lang):
 
     if '_' in lang:
         lang = lang.split('_', 1)[0]
+
+    if not lang:
+        return None
 
     for lang_opt in ALL_LANGUAGES:
         if i18n.language_file(LANG_DIR, lang_opt).is_file() and lang_opt.startswith(lang):

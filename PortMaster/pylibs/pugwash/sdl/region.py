@@ -1469,9 +1469,11 @@ class Region:
         if val is None and optional:
             return None
 
-        if not isinstance(val, float):
-            raise GUIThemeError(f'{name} is not an float')
-        #print(f'{name}: {val}')
+        ## A whole number is a float too: "font-scale": 2 is as good as 2.0.
+        if isinstance(val, bool) or not isinstance(val, (int, float)):
+            raise GUIThemeError(f'{name} is not a number')
+
+        val = float(val)
 
         if minimum is not None and val < minimum:
             val = minimum
@@ -1541,10 +1543,9 @@ class Region:
         if val is None and optional: return None
 
         if isinstance(val, str):
-            #print(f'{name}: {val}')
             return val
-        else:
-            raise(f'{name} is not text')
+
+        raise GUIThemeError(f'{name} is not text')
 
     def _verify_list(self, name, default=None, optional=False, allow_null=False):
         'verify that value of self._dict[name] is valid list'

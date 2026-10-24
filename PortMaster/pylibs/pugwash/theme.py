@@ -257,7 +257,8 @@ def theme_load(gui, theme_file, color_scheme=None):
         for scheme_name in theme_data.get("#schemes", {})
         if not scheme_name.startswith("#")]
 
-    if color_scheme is None:
+    ## One it doesn't have (renamed in an update, say): its default, then its first.
+    if color_scheme not in all_schemes:
         color_scheme = theme_data.get("#info", {}).get("default-scheme", None)
 
     if color_scheme not in all_schemes:
@@ -360,11 +361,13 @@ def theme_load(gui, theme_file, color_scheme=None):
     ## ^^^^^^^^ HARD CODED - DO NOT TOUCH ^^^^^^^^
 
 
+    ## Before any section, wherever it is in the file (a colour scheme's #base is added last).
+    base_data = theme_data.get("#base", {})
+
     for section_name, section_data in theme_data.items():
         if section_name.startswith('#'):
             if section_name == "#base":
-                logger.debug("- loading base_data")
-                base_data = section_data
+                pass
 
             elif section_name == "#resources":
                 logger.debug("- loading resources:")
@@ -436,8 +439,13 @@ def theme_load(gui, theme_file, color_scheme=None):
                     logger.error(f"{section_name} not yet defined, skipping.")
                     continue
 
+                ## Changes the regions it has, the section keeps the rest ("main_menu[640x480]").
                 logger.debug(f"  - loading section {section_name}")
-                sections[section_name] = theme_apply(gui, section_data, sections[section_name], elements)
+                merged = dict(sections[section_name])
+                for region_name, region_data in theme_apply(gui, section_data, {}, elements).items():
+                    merged[region_name] = theme_merge(merged.get(region_name, {} if region_name.startswith('#') else base_data), region_data)
+
+                sections[section_name] = merged
             else:
                 logger.debug(f"  - loading section {section_name}")
                 sections[section_name] = theme_apply(gui, section_data, base_data, elements)
