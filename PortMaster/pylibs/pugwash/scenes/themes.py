@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 #
-# Theme and colour scheme selection.
+# Theme and color scheme selection.
 
 import harbourmaster
 from harbourmaster.i18n import _
@@ -103,7 +103,7 @@ class ThemesScene(BaseScene):
 class ThemeSchemeScene(BaseScene):
     def __init__(self, gui):
         super().__init__(gui)
-        self.scene_title = _("Select Colour Scheme")
+        self.scene_title = _("Select Color Scheme")
 
         self.load_regions("option_menu", ['option_list', ])
 

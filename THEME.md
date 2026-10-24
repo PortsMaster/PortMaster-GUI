@@ -6,7 +6,7 @@ This is currently a WIP documenting the theme format.
 
 ## Previewing your theme
 
-The theme preview server renders every PortMaster screen with your theme, at any screen size, colour scheme and language, and refreshes the page each time you save a file. It runs from a PortMaster-GUI checkout on Linux or macOS:
+The theme preview server renders every PortMaster screen with your theme, at any screen size, color scheme and language, and refreshes the page each time you save a file. It runs from a PortMaster-GUI checkout on Linux or macOS:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # once, gets SDL2
@@ -17,14 +17,14 @@ Then open http://localhost:8090/. `--themes` is one theme folder (it has a `them
 
 - **The screens:**
   - main menu, all, ready-to-run and installed ports, port info (and its popup)
-  - filters, featured ports, options, runtimes, themes, colour schemes, language
+  - filters, featured ports, options, runtimes, themes, color schemes, language
   - on-screen keyboard, theme editor, messages with a progress bar, message box
   - the autoinstall and dialog screens, which always use the default theme on a device
   - the disclaimer and the unsupported-system warning, which are built in and look the same in every theme
   - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
 - **Region boxes:** draws each region's area with its name. In a screen's own view, hover over or click a box (or a name in the list) to see the region's final theme values, after `#base`, `#element` and `[capability]` overrides are applied. **Save PNG** saves the screen, with the boxes if they're on.
 - **One screen, every size:** one screen at every common resolution, to check your `[hires]`, `[4:3]` and other overrides.
-- A screen your theme has no section for says so, rather than failing. Errors pugwash logged while drawing (a missing image, a bad colour) are listed on the screen.
+- A screen your theme has no section for says so, rather than failing. Errors pugwash logged while drawing (a missing image, a bad color) are listed on the screen.
 
 To write the screens to files instead, for a theme's README or to compare before and after a change:
 
@@ -40,7 +40,7 @@ That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a 
 PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Each device picks a random port the first time and keeps it, so the address stays the same. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list, and the translation editor saves into the device's PortMaster. Press B on the device to stop it.
 
 - Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
-- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, colour scheme or language (or saving) about a second, and each other screen half a second. Each screen size has a render process; how many are kept at once depends on the device's free memory.
+- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, color scheme or language (or saving) about a second, and each other screen half a second. Each screen size has a render process; how many are kept at once depends on the device's free memory.
 - Anyone on the same network can open it while it runs.
 
 ### Translating PortMaster
@@ -69,7 +69,7 @@ The theme has a few different sections:
 
 - `#info`: Info about the theme
 - `#base`: The base element, which every gui element in the theme inherits from
-- `#pallet`: Predefined colours for the theme.
+- `#pallet`: Predefined colors for the theme.
 - `#resources`: Images the theme uses, can either be an atlas or individual images.
 - `#elements`: Reusable elements that different scenes in your theme can use.
 - **scenes**: Scenes that the gui uses
@@ -315,7 +315,7 @@ Elements can be themed by setting a `fill`, `outline`, `thickness`, and `roundne
 - `outline`: the color of the outline for the elements rect
 - `thickness`: how thick the stroke of the outline is
 - `roundess`: if sdlGFX is available, it will make a roundrect with x pixels of roundness in the corners.
-- `progress-fill`: this is a special fill colour, used for the progress bar.
+- `progress-fill`: this is a special fill color, used for the progress bar.
 
 
 

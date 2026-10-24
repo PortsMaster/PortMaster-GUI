@@ -68,18 +68,16 @@
   "PortMaster.zip is damaged, download it again.": [
     "pylibs/harbourmaster/hm_install.py:105"
   ],
-  "Port {download_name} installed failed.": [
-    "pylibs/harbourmaster/hm_install.py:107",
-    "pylibs/harbourmaster/hm_install.py:397"
+  "PortMaster failed to install.": [
+    "pylibs/harbourmaster/hm_install.py:107"
   ],
   "Installing {download_name}.": [
     "pylibs/harbourmaster/hm_install.py:124",
     "pylibs/harbourmaster/hm_install.py:251",
     "pylibs/pugwash/autoinstall.py:126"
   ],
-  "Port {download_name!r} installed successfully.": [
-    "pylibs/harbourmaster/hm_install.py:168",
-    "pylibs/harbourmaster/hm_install.py:421"
+  "PortMaster installed successfully.": [
+    "pylibs/harbourmaster/hm_install.py:168"
   ],
   "Installation failed, removing files...": [
     "pylibs/harbourmaster/hm_install.py:186"
@@ -110,11 +108,17 @@
   "Installation failed: {reason}": [
     "pylibs/harbourmaster/hm_install.py:394"
   ],
+  "Port {download_name} failed to install.": [
+    "pylibs/harbourmaster/hm_install.py:397"
+  ],
   "Port {download_name!r} and {runtime_name!r} installed successfully.": [
     "pylibs/harbourmaster/hm_install.py:411"
   ],
-  "Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\nEither reinstall to try again, or check the wiki for help.": [
+  "Port {download_name!r} installed successfully, but {runtime_name!r} failed to install!!\n\nEither reinstall to try again, or check the wiki for help.": [
     "pylibs/harbourmaster/hm_install.py:416"
+  ],
+  "Port {download_name!r} installed successfully.": [
+    "pylibs/harbourmaster/hm_install.py:421"
   ],
   "Unable to download in offline mode.": [
     "pylibs/harbourmaster/hm_install.py:432",
@@ -167,7 +171,7 @@
   "Broken": [
     "pylibs/harbourmaster/hm_runtimes.py:131"
   ],
-  "Unable do download a runtime when in offline mode.": [
+  "Unable to download a runtime in offline mode.": [
     "pylibs/harbourmaster/hm_runtimes.py:142"
   ],
   "Verifying runtime {runtime}": [
@@ -225,19 +229,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:562"
+    "pylibs/pugwash/theme.py:563"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:572"
+    "pylibs/pugwash/theme.py:573"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:595"
+    "pylibs/pugwash/theme.py:596"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:601"
+    "pylibs/pugwash/theme.py:602"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -707,9 +711,10 @@
     "pylibs/pugwash/scenes/options.py:37"
   ],
   "Select Color Scheme": [
-    "pylibs/pugwash/scenes/options.py:43"
+    "pylibs/pugwash/scenes/options.py:43",
+    "pylibs/pugwash/scenes/themes.py:106"
   ],
-  "Select a colour scheme for PortMaster": [
+  "Select a color scheme for PortMaster.": [
     "pylibs/pugwash/scenes/options.py:44"
   ],
   "Theme Editor": [
@@ -733,7 +738,7 @@
     "pylibs/pugwash/scenes/options.py:59",
     "pylibs/pugwash/scenes/options.py:329"
   ],
-  "Enable or Disable soundfx in PortMaster.": [
+  "Enable or Disable sound effects in PortMaster.": [
     "pylibs/pugwash/scenes/options.py:60"
   ],
   "Port Metadata": [
@@ -889,7 +894,7 @@
   "Are you sure you want to update your gamelist.xml?\n\nThis will override any scraped artwork or port information and will require a 50+ MB download.": [
     "pylibs/pugwash/scenes/options.py:363"
   ],
-  "Are you sure you want to move ports from the {from_mode} to the {to_mode}": [
+  "Are you sure you want to move ports from the {from_mode} to the {to_mode}?": [
     "pylibs/pugwash/scenes/options.py:384"
   ],
   "SDCARD 1": [
@@ -1048,14 +1053,11 @@
   "Download": [
     "pylibs/pugwash/scenes/themes.py:51"
   ],
-  "Select Colour Scheme": [
-    "pylibs/pugwash/scenes/themes.py:106"
-  ],
   "{item_name} (Selected)": [
     "pylibs/pugwash/scenes/themes.py:120"
   ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:569"
+    "pylibs/pugwash/theme.py:570"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

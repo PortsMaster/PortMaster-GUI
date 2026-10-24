@@ -139,7 +139,7 @@ class RuntimesMixin:
                 return 0
 
             cprint(f"Unable to download {runtime} when offline")
-            self.callback.message_box(_("Unable do download a runtime when in offline mode."))
+            self.callback.message_box(_("Unable to download a runtime in offline mode."))
             return 255
 
         if runtime_file.is_file():

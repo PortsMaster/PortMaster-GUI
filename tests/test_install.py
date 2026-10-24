@@ -59,7 +59,7 @@ def test_unusable_port_is_rejected(case, hm, hm_dirs, tmp_path, callback):
 
     assert hm.install_port(str(zip_file)) == 255
     assert ports_left(hm_dirs) == []
-    assert callback.message_boxes[-1] == "Port testport.zip installed failed."
+    assert callback.message_boxes[-1] == "Port testport.zip failed to install."
 
     hm.load_ports()
     assert hm.installed_ports == {}
@@ -230,7 +230,7 @@ def test_failure_part_way_rolls_back(failing_extract, hm, hm_dirs, tmp_path, cal
     assert hm.install_port(str(zip_file)) == 255
     assert len(failing_extract) == 3
     assert ports_left(hm_dirs) == []
-    assert callback.message_boxes[-1] == "Port testport.zip installed failed."
+    assert callback.message_boxes[-1] == "Port testport.zip failed to install."
 
 
 def test_interrupted_part_way_rolls_back_and_propagates(hm, hm_dirs, tmp_path, monkeypatch):
@@ -598,7 +598,7 @@ def test_damaged_portmaster_zip_installs_nothing(hm, tmp_path, callback, damage)
     assert hm.install_port(str(zip_file)) == 255
     assert not (hm.tools_dir / "PortMaster" / "first.txt").exists()
     assert hm.last_install_error == "PortMaster.zip is damaged, download it again."
-    assert callback.message_boxes[-1] == "Port PortMaster installed failed."
+    assert callback.message_boxes[-1] == "PortMaster failed to install."
 
 
 def test_portmaster_zip_replaces_running_launcher(hm, tmp_path):

@@ -41,7 +41,7 @@ class OptionScene(BaseScene):
             self.tags['option_list'].add_option(
                 'select-scheme',
                 _("Select Color Scheme"),
-            description=_("Select a colour scheme for PortMaster"))
+            description=_("Select a color scheme for PortMaster."))
 
         self.tags['option_list'].add_option(
             'theme-editor',
@@ -57,7 +57,7 @@ class OptionScene(BaseScene):
         self.tags['option_list'].add_option(
             'toggle-sfx',
             _("Sound FX: ") + (self.gui.sounds.sound_is_disabled and _("Disabled") or _("Enabled")),
-            description=_("Enable or Disable soundfx in PortMaster."))
+            description=_("Enable or Disable sound effects in PortMaster."))
 
         if self.gui.hm.platform.gamelist_file() is not None:
             self.tags['option_list'].add_option(None, _("Port Metadata"))
@@ -381,7 +381,7 @@ class OptionScene(BaseScene):
                 from_mode = self.gui.hm.cfg_data.get('trimui-port-mode', 'roms')
                 to_mode = change_map[from_mode]
                 if self.gui.message_box(
-                        _("Are you sure you want to move ports from the {from_mode} to the {to_mode}").format(
+                        _("Are you sure you want to move ports from the {from_mode} to the {to_mode}?").format(
                             from_mode=language_map[from_mode],
                             to_mode=language_map[to_mode]),
                         want_cancel=True):

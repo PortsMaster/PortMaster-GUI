@@ -20,7 +20,7 @@
     "ff_VII/theme.json:435",
     "Zelda/theme.json:485",
     "Stardew/theme.json:541",
-    "default_theme/theme.json:423"
+    "default_theme/theme.json:424"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total\nTime: {system.time_24hr}\nBattery: {system.battery_level}": [
     "Fallout/theme.json:726"
@@ -31,8 +31,8 @@
     "ff_VII/theme.json:523",
     "Zelda/theme.json:551",
     "Stardew/theme.json:651",
-    "default_theme/theme.json:567",
-    "default_theme/theme.json:567"
+    "default_theme/theme.json:568",
+    "default_theme/theme.json:568"
   ],
   "Creator: {theme_info.creator}\nStatus: {theme_info.status}": [
     "Fallout/theme.json:831",
@@ -40,7 +40,7 @@
     "ff_VII/theme.json:612",
     "Zelda/theme.json:633",
     "Stardew/theme.json:739",
-    "default_theme/theme.json:617"
+    "default_theme/theme.json:618"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free": [
     "Stardew/theme.json:613"
@@ -58,23 +58,23 @@
     "basic_theme/theme.json:77"
   ],
   "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \nFilters: {ports_list.filters}{endif}": [
-    "default_theme/theme.json:326"
+    "default_theme/theme.json:327"
   ],
   "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}": [
-    "default_theme/theme.json:353",
-    "default_theme/theme.json:353"
+    "default_theme/theme.json:354",
+    "default_theme/theme.json:354"
   ],
   "{port_links.name}\n{port_links.url}": [
-    "default_theme/theme.json:480"
+    "default_theme/theme.json:481"
   ],
   "Time: {system.time_24hr}\nCFW: {system.cfw_name} ({system.cfw_version})\nDevice: {system.device_name}\nBattery: {system.battery_level}": [
     "ff_VII/theme.json:480",
     "Stardew/theme.json:605",
-    "default_theme/theme.json:507"
+    "default_theme/theme.json:508"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total": [
     "ff_VII/theme.json:488",
-    "default_theme/theme.json:515"
+    "default_theme/theme.json:516"
   ],
   "• Porter: {port_info.porter}\n• Genres: {port_info.genres}\n• Description: {port_info.description}": [
     "hiviz/theme.json:267"
@@ -90,7 +90,7 @@
   ],
   "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}": [
     "hiviz/theme.json:526",
-    "default_theme/theme.json:710"
+    "default_theme/theme.json:711"
   ],
   "{ports_list.filter_ports} games": [
     "jimmyhat999_grid_dark/theme.json:239",
@@ -123,8 +123,5 @@
   "{if:runtime_info.name}Status: {runtime_info.status}\nIn use: {runtime_info.in_use}\nDownload: {runtime_info.download_size}{if:runtime_info.disk_size}\nOn disk: {runtime_info.disk_size}{endif}{if:runtime_info.ports}\n\nUsed by: {runtime_info.ports}{endif}{endif}": [
     "jimmyhat999_grid_dark/theme.json:492",
     "jimmyhat999_grid_wii/theme.json:492"
-  ],
-  "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\nInstruction: \nPlace file x in folder y then dance until tomorrow": [
-    "unknown"
   ]
 }

@@ -108,7 +108,7 @@ def test_do_install_bad_zip(app, hm_dirs, tmp_path):
     app.do_install("Bad", str(write_raw_zip(tmp_path / "testport.zip", b"garbage")))
 
     assert list(hm_dirs['ports_dir'].iterdir()) == []
-    assert app.test_boxes[-1] == "Port testport.zip installed failed."
+    assert app.test_boxes[-1] == "Port testport.zip failed to install."
     assert_idle(app)
 
 
