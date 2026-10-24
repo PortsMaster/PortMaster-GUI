@@ -124,7 +124,7 @@ class DisclaimerScene(BaseScene):
 
         if elapsed != self.last_elapsed:
             if elapsed < self.disclaimer_wait:
-                self.tags['button_bar'].bar = [f'Wait {self.disclaimer_wait - elapsed} seconds']
+                self.tags['button_bar'].bar = [_('Wait {seconds} seconds').format(seconds=self.disclaimer_wait - elapsed)]
             else:
                 self.set_buttons({'A': _('Accept'), 'B': _('Quit')})
 
@@ -207,7 +207,7 @@ class StartupWarningScene(BaseScene):
 
         if elapsed != self.last_elapsed:
             if elapsed < self.warning_wait:
-                self.tags['button_bar'].bar = [f'Wait {self.warning_wait - elapsed} seconds']
+                self.tags['button_bar'].bar = [_('Wait {seconds} seconds').format(seconds=self.warning_wait - elapsed)]
             else:
                 self.set_buttons({'A': _('I Understand'), 'B': _('Quit')})
 

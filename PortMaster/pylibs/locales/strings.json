@@ -229,19 +229,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:563"
+    "pylibs/pugwash/theme.py:581"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:573"
+    "pylibs/pugwash/theme.py:591"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:596"
+    "pylibs/pugwash/theme.py:614"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:602"
+    "pylibs/pugwash/theme.py:620"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -1014,6 +1014,10 @@
   "Disclaimer": [
     "pylibs/pugwash/scenes/startup.py:103"
   ],
+  "Wait {seconds} seconds": [
+    "pylibs/pugwash/scenes/startup.py:127",
+    "pylibs/pugwash/scenes/startup.py:210"
+  ],
   "Accept": [
     "pylibs/pugwash/scenes/startup.py:129"
   ],
@@ -1056,8 +1060,11 @@
   "{item_name} (Selected)": [
     "pylibs/pugwash/scenes/themes.py:120"
   ],
+  "Please wait.": [
+    "pylibs/pugwash/theme.py:358"
+  ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:570"
+    "pylibs/pugwash/theme.py:588"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

@@ -282,9 +282,16 @@ def theme_load(gui, theme_file, color_scheme=None):
                 theme_data[section_name] = theme_merge(base_scheme.get(section_name, {}), section_data)
 
     ## vvvvvvvv HARD CODED - DO NOT TOUCH vvvvvvvv
+    ## (The same in every theme. Its fonts are the default theme's for each language, as
+    ## the warnings are translated: DejaVu Sans has no Chinese, Japanese or Korean.)
     theme_data['disclaimer'] = {
             "background": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.0, 0.0, 1.0, 1.0],
                 "fill": [ 200, 200, 200, 255 ],
                 "border": 8,
@@ -293,6 +300,11 @@ def theme_load(gui, theme_file, color_scheme=None):
             },
             "disclaimer_text": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.05, 0.05, 0.95, 0.95],
                 "fill": [ 230, 230, 230 ],
                 "thickness": 6,
@@ -321,6 +333,11 @@ def theme_load(gui, theme_file, color_scheme=None):
             },
             "button_bar": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.0, 0.93, 0.95, -5],
                 "font-scale[1920x1152]": 3.0,
                 "font-scale[1920x1080]": 3.0,
@@ -337,7 +354,7 @@ def theme_load(gui, theme_file, color_scheme=None):
                 "font-size": 16,
                 "font-color": [ 0, 0, 0 ],
                 "align": "midright",
-                "bar": ["Please wait."],
+                "bar": [_("Please wait.")],
             },
         }
     ## ^^^^^^^^ HARD CODED - DO NOT TOUCH ^^^^^^^^
