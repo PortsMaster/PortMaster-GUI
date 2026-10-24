@@ -75,7 +75,7 @@ def test_install_failure_reason_is_shown(fifo, tmp_path):
     fifo.install(str(write_raw_zip(tmp_path / "testport.zip", b"garbage")))
 
     assert any(m.startswith("Installation failed:") for m in fifo.shown), fifo.shown
-    assert any("installed failed" in m for m in fifo.shown), fifo.shown
+    assert any("failed to install" in m for m in fifo.shown), fifo.shown
 
 
 def test_install_missing_file(fifo, tmp_path):

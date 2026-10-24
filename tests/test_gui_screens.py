@@ -482,22 +482,16 @@ def test_themes_list(screen_gui, themes):
 
 
 def test_themes_select(screen_gui, themes, monkeypatch):
-    ## Asks, saves it, and quits: it applies at the next start.
+    ## Applies straight away; a new theme starts on its own default colour scheme.
+    reloads = []
+    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append([name for name, _ in then]))
     screen_gui.hm.cfg_data['theme-scheme'] = "Night"
+
     choose(screen_gui, monkeypatch, 'default_theme', tag='themes_list')
 
-    assert "change theme" in screen_gui.boxes[-1]
+    assert reloads == [['option', 'select-theme']]
     assert screen_gui.hm.cfg_data['theme'] == 'default_theme'
     assert screen_gui.hm.cfg_data['theme-scheme'] is None
-    assert screen_gui.events.running is False
-
-
-def test_themes_select_declined(screen_gui, themes, monkeypatch):
-    screen_gui.answer = False
-    screen_gui.hm.cfg_data['theme-scheme'] = "Night"
-    choose(screen_gui, monkeypatch, 'default_theme', tag='themes_list')
-
-    assert screen_gui.hm.cfg_data['theme-scheme'] == "Night"
     assert screen_gui.events.running is True
 
 
@@ -551,12 +545,15 @@ def test_schemes_list(screen_gui, schemes):
 
 
 def test_schemes_choose(screen_gui, schemes, monkeypatch):
+    reloads = []
+    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append([name for name, _ in then]))
     other = [option for option in schemes.tags['option_list'].options if isinstance(option, tuple) and option[0] == 'select-scheme'][0]
 
     choose(screen_gui, monkeypatch, other)
 
     assert screen_gui.hm.cfg_data['theme-scheme'] == other[1]
-    assert screen_gui.events.running is False
+    assert reloads == [['option', 'select-scheme']]
+    assert screen_gui.events.running is True
 
 
 def test_schemes_back_and_blank(screen_gui, schemes, monkeypatch):

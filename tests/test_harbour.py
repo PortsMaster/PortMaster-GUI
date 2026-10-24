@@ -86,7 +86,7 @@ def test_install_bad_zip_rolls_back(hm, hm_dirs, tmp_path, callback):
 
     assert hm.install_port(str(zip_file)) == 255
     assert list(hm_dirs['ports_dir'].iterdir()) == []
-    assert "installed failed" in callback.message_boxes[-1]
+    assert "failed to install" in callback.message_boxes[-1]
 
 
 def test_install_incompatible_port_still_installs_from_cli(hm, tmp_path):

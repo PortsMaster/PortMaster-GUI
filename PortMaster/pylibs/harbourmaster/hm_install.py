@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import zipfile
 from pathlib import Path
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from .console import cprint
 from .config import HM_ACCEPTABLE_NON_BASH_TOP_LEVEL_FILES
@@ -104,7 +104,7 @@ class InstallMixin:
             logger.error(f"PortMaster.zip is damaged: {err}")
             self.last_install_error = _("PortMaster.zip is damaged, download it again.")
             self.callback.message(self.last_install_error)
-            self.callback.message_box(_("Port {download_name} installed failed.").format(download_name="PortMaster"))
+            self.callback.message_box(_("PortMaster failed to install."))
 
             if do_delete:
                 download_file.unlink()
@@ -165,7 +165,7 @@ class InstallMixin:
             for bash_file in bash_files:
                 self._fix_permissions(bash_file)
 
-            self.callback.message_box(_("Port {download_name!r} installed successfully.").format(download_name="PortMaster"))
+            self.callback.message_box(_("PortMaster installed successfully."))
 
         finally:
             if do_delete:
@@ -394,7 +394,7 @@ class InstallMixin:
                 self.callback.message(_("Installation failed: {reason}").format(reason=failure_reason))
                 self.last_install_error = failure_reason
 
-            self.callback.message_box(_("Port {download_name} installed failed.").format(download_name=port_nice_name))
+            self.callback.message_box(_("Port {download_name} failed to install.").format(download_name=port_nice_name))
 
             return 255
 
@@ -413,7 +413,7 @@ class InstallMixin:
                     runtime_name=runtime_name))
 
             else:
-                self.callback.message_box(_("Port {download_name!r} installed sucessfully, but {runtime_name!r} failed to install!!\n\nEither reinstall to try again, or check the wiki for help.").format(
+                self.callback.message_box(_("Port {download_name!r} installed successfully, but {runtime_name!r} failed to install!!\n\nEither reinstall to try again, or check the wiki for help.").format(
                     download_name=port_nice_name,
                     runtime_name=runtime_name))
 

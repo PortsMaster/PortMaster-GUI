@@ -5,7 +5,7 @@
 import datetime
 import json
 import zipfile
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from loguru import logger
 from ..config import HM_MAX_TEMP_SIZE
 from ..info import is_safe_file_name, port_info_load, port_info_merge

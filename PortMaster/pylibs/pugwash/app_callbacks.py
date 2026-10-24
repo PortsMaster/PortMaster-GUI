@@ -8,7 +8,7 @@ import requests
 from pugwash import tasks
 from loguru import logger
 from pugwash.scenes import MessageBoxScene, MessageWindowScene
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pugwash.util import format_progress
 
 

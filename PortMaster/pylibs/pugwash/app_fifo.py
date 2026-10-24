@@ -8,7 +8,7 @@ from pathlib import Path
 from pugwash import autoinstall, tasks
 from loguru import logger
 from pugwash.scenes import DialogSelectionList
-from gettext import gettext as _
+from harbourmaster.i18n import _
 
 
 class FifoControlMixin:

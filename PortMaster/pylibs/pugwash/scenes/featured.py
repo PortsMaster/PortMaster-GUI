@@ -2,7 +2,7 @@
 #
 # Featured ports navigation.
 
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from .base import BaseScene
 from .ports import FeaturedPortsScene
 

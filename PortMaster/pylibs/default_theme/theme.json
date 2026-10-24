@@ -168,6 +168,7 @@
         "font[zh_HK]": "NotoSansHK-Regular.ttf",
         "font[ko_KR]": "NotoSansKR-Regular.ttf",
         "font[ja_JP]": "NotoSansJP-Regular.ttf",
+        "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 0.8,
         "font-scale[30:17]": 1.0,
         "font-scale[16:9]": 1.4,
         "font-scale[3:2]": 0.85,
@@ -431,6 +432,63 @@
         },
         "#element:button_bar": {}
     },
+    "port_links": {
+        "#element:background": {},
+        "links_list": {
+            "parent": "port_info_list_area",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "border-x": 16,
+            "font-size": 17,
+            "font-size[427:240]": 22,
+            "font-size[16:9]": 19,
+            "font-size[1920x1152]": 22,
+            "alt-fill": "secondary-selection-fill",
+            "select-fill": "selection-fill",
+            "font-color": "list_text",
+            "select-color": "list_selected",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 500,
+            "scroll-delay-end": 500
+        },
+        "links_panel": {
+            "parent": "port_info_area",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "fill": "panels"
+        },
+        "links_title": {
+            "parent": "port_info_title_area",
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "text": "{port_info.title}",
+            "font-size": 22,
+            "font-color": "list_selected",
+            "text-clip": true,
+            "align": "center"
+        },
+        "link_qr": {
+            "parent": "port_info_area",
+            "area": [ 0.05, 0.11, 0.95, 0.74 ],
+            "area[320x240]": [ 0.1, 0.11, 0.9, 0.6 ],
+            "image": "qr:{port_links.url}",
+            "image-mode": "fit"
+        },
+        "link_info": {
+            "parent": "port_info_area",
+            "area": [ 0.03, 0.76, 0.97, 0.99 ],
+            "area[320x240]": [ 0.02, 0.61, 0.98, 0.86 ],
+            "text": "{port_links.name}\n{port_links.url}",
+            "font-size": 15,
+            "font-size[320x240]": 10,
+            "font-size[427:240]": 18,
+            "font-size[1920x1152]": 20,
+            "font-color": "general_font",
+            "text-wrap": true,
+            "align": "center"
+        },
+        "#element:button_bar": {}
+    },
     "main_menu": {
         "#element:background": {},
         "#element:option_list": {
@@ -590,6 +648,35 @@
             "parent": "port_info_image_area",
             "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "{theme_info.image}"
+        },
+        "#element:button_bar": {}
+    },
+    "theme_server": {
+        "#element:background": {},
+        "server_title": {
+            "area": [0.04, 0.02, 0.96, 0.12],
+            "text": "{scene.title}",
+            "font-size": 24,
+            "font-color": "list_selected",
+            "align": "center"
+        },
+        "server_qr_panel": {
+            "area": [0.04, 0.14, 0.46, 0.9],
+            "fill": "panels"
+        },
+        "server_qr": {
+            "area": [0.06, 0.16, 0.44, 0.88],
+            "image": "qr:{theme_server.url}",
+            "image-mode": "fit"
+        },
+        "server_info": {
+            "area": [0.5, 0.14, 0.96, 0.9],
+            "fill": "panels",
+            "border": 10,
+            "font-size": 15,
+            "font-color": "general_font",
+            "text-wrap": true,
+            "text": "{theme_server.status}"
         },
         "#element:button_bar": {}
     },

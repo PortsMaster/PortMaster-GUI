@@ -4,6 +4,7 @@
 # Textures and images, including background loading of port screenshots.
 
 import contextlib
+import ctypes
 import os
 import sdl2
 import sdl2.ext
@@ -12,6 +13,50 @@ from loguru import logger
 from .errors import GUIRuntimeError, GUIValueError
 from .geometry import Rect
 from .helpers import set_color_mod
+
+
+QR_PREFIX = "qr:"
+
+
+def qr_matrix(text):
+    '''
+    The QR code of text as rows of booleans (True is dark), with its quiet zone. None
+    for no text.
+    '''
+    if not text:
+        return None
+
+    import qrcode
+
+    code = qrcode.QRCode(border=4, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    code.add_data(text)
+    code.make(fit=True)
+    return code.get_matrix()
+
+
+def qr_surface(text):
+    'The QR code of text as an SDL surface, one pixel per module (free it after use).'
+    matrix = qr_matrix(text)
+    if matrix is None:
+        return None
+
+    size = len(matrix)
+    dark, light = b"\x00\x00\x00\xff", b"\xff\xff\xff\xff"
+    pixels = b"".join(dark if module else light for row in matrix for module in row)
+
+    surf = sdl2.SDL_CreateRGBSurfaceWithFormat(0, size, size, 32, sdl2.SDL_PIXELFORMAT_RGBA32)
+    if not surf:
+        raise GUIRuntimeError(sdl2.SDL_GetError().decode("utf-8", "replace"))
+
+    sdl2.SDL_LockSurface(surf)
+    try:
+        for y in range(size):
+            ctypes.memmove(surf.contents.pixels + y * surf.contents.pitch, pixels[y * size * 4:(y + 1) * size * 4], size * 4)
+
+    finally:
+        sdl2.SDL_UnlockSurface(surf)
+
+    return surf
 
 
 class Texture:
@@ -413,6 +458,19 @@ class ImageManager():
         self.async_dispatcher = dispatcher
         self.async_executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="image-load")
 
+    def unload_all(self):
+        '''
+        Forget every image and destroy its texture: a theme reload. Screenshots still
+        decoding are dropped when they finish (_decoded checks they're still wanted).
+        '''
+        for texture in self.textures.values():
+            texture.destroy()
+
+        self.images = {}
+        self.textures = {}
+        self.cache = []
+        self.max_images = self.MAX_IMAGES
+
     def disable_async(self):
         if self.async_executor is not None:
             self.async_executor.shutdown(wait=False)
@@ -468,6 +526,14 @@ class ImageManager():
         elif filename in self.images:
             return self.images[filename]
 
+        elif isinstance(filename, str) and filename.startswith(QR_PREFIX):
+            image = self._load_qr(filename)
+            if image is not None:
+                self.images[filename] = image
+                self.cache.insert(0, filename)
+
+            return image
+
         else:
             res_filename = self.gui.resources.find(filename)
 
@@ -492,6 +558,36 @@ class ImageManager():
             self.cache.insert(0, filename)
 
             return self.images[filename]
+
+    def _load_qr(self, filename):
+        '''
+        "qr:<text>": a QR code of the text, black on white with a quiet zone, one pixel
+        per module and drawn without smoothing, so it stays sharp at any size.
+        '''
+        try:
+            surf = qr_surface(filename[len(QR_PREFIX):])
+
+        except Exception as err:
+            logger.error(f"Unable to make a QR code of {filename!r}: {err}")
+            return None
+
+        if surf is None:
+            return None
+
+        ## No smoothing: per texture from SDL 2.0.12, before that the scale quality hint
+        ## is read when a texture is made.
+        quality = sdl2.SDL_GetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY)
+        sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, b"0")
+        try:
+            texture = sdl2.ext.renderer.Texture(self.renderer, surf)
+            texture.set_scale_mode("nearest")
+
+        finally:
+            sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, quality or b"")
+            sdl2.SDL_FreeSurface(surf)
+
+        self.textures[filename] = texture
+        return Image(texture, renderer=self.renderer)
 
     def load_data_lazy(self, file_name, data):
         res_filename = self.gui.resources.find(file_name)
