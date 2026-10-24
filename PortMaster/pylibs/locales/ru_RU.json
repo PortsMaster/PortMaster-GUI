@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Не удается загрузить {runtime}, игра может работать некорректно.",
   "Successfully downloaded {runtime}.": "{runtime} Успешно загружено.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nЧтобы сделать это:\nМЕНЮ -> ПРОГРАММЫ -> Повторить поиск каталога",
+  "Unable to download file, its md5 is not valid.": "Не удалось загрузить файл: неверный md5.",
   "Unable to download verification file.": "Не удалось загрузить проверочный файл.",
   "Unable to download non zip files.": "Невозможно загрузить не zip-файлы.",
   "Cache out of date.": "Кэш устарел.",

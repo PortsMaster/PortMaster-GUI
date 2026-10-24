@@ -149,6 +149,132 @@ def test_raw_download_md5_unavailable(tmp_path, callback, monkeypatch):
 
 
 ################################################################################
+## raw_download: "?md5=<hex>" on the url is the md5 the download must have.
+ZIP_DATA = b"PK\x05\x06" + b"\x00" * 18
+
+
+class FakeDownload:
+    status_code = 200
+    headers = {}
+
+    def __init__(self, data):
+        self.data = data
+
+    def iter_content(self, chunk_size=1, decode_unicode=False):
+        yield self.data
+
+
+@pytest.fixture
+def served(monkeypatch):
+    """The urls downloaded and md5 files fetched; every download is ZIP_DATA, every md5 file `served.md5_file`."""
+    import hashlib
+    served = type("Served", (), {})()
+    served.got = []
+    served.fetched = []
+    served.md5 = hashlib.md5(ZIP_DATA).hexdigest()
+    served.md5_file = served.md5 + "  port.zip\n"
+
+    def get(url, **kwargs):
+        served.got.append(url)
+        return FakeDownload(ZIP_DATA)
+
+    def fetch_text(url):
+        served.fetched.append(url)
+        return served.md5_file
+
+    monkeypatch.setattr(hm_net.requests, "get", get)
+    monkeypatch.setattr(hm_net, "fetch_text", fetch_text)
+    return served
+
+
+def test_raw_download_md5_query(tmp_path, callback, served):
+    url = f"https://example.com/files/port.zip?md5={served.md5}"
+    result = hm_source.raw_download(tmp_path, url, callback=callback)
+
+    assert result['zip_file'] == tmp_path / "port.zip" and result['zip_file'].read_bytes() == ZIP_DATA
+    assert result['status']['md5'] == served.md5 and result['status']['url'] == url
+    ## The md5 isn't sent to the server.
+    assert served.got == ["https://example.com/files/port.zip"]
+    assert "Passed file validation." in callback.messages
+
+
+@pytest.mark.parametrize("query, sent", [
+    ("token=abc&md5={md5}", "?token=abc"),
+    ("md5={md5}&token=abc&x=", "?token=abc&x="),
+    ("MD5={MD5}", ""),
+    ])
+def test_raw_download_md5_query_keeps_the_rest(tmp_path, callback, served, query, sent):
+    url = "https://example.com/port.zip?" + query.format(md5=served.md5, MD5=served.md5.upper())
+    assert hm_source.raw_download(tmp_path, url, callback=callback) is not None
+    assert served.got == ["https://example.com/port.zip" + sent]
+
+
+def test_raw_download_md5_query_wrong(tmp_path, callback, served):
+    result = hm_source.raw_download(tmp_path, f"https://example.com/port.zip?md5={'0' * 32}", callback=callback)
+
+    assert result is None
+    assert callback.message_boxes == ["Download validation failed."]
+    assert not (tmp_path / "port.zip").exists()
+
+
+@pytest.mark.parametrize("md5", ["", "abc", "z" * 32, "0" * 31, "0" * 33, "0" * 32 + "%00"])
+def test_raw_download_md5_query_not_an_md5(tmp_path, callback, served, md5):
+    result = hm_source.raw_download(tmp_path, f"https://example.com/port.zip?md5={md5}", callback=callback)
+
+    assert result is None and served.got == []
+    assert callback.message_boxes == ["Unable to download file, its md5 is not valid."]
+
+
+def test_raw_download_md5_file(tmp_path, callback, served):
+    ## The .md5 file form: as before, and an upper case md5sum is fine too.
+    served.md5_file = served.md5.upper() + "\tport.zip\n"
+    result = hm_source.raw_download(tmp_path, "https://example.com/port.zip.md5", callback=callback)
+
+    assert result is not None and result['name'] == "port.zip"
+    assert served.fetched == ["https://example.com/port.zip.md5"] and served.got == ["https://example.com/port.zip"]
+
+
+def test_raw_download_md5_file_and_query(tmp_path, callback, served):
+    url = f"https://example.com/port.zip.md5?md5={served.md5}"
+    assert hm_source.raw_download(tmp_path, url, callback=callback) is not None
+    assert served.got == ["https://example.com/port.zip"]
+
+
+def test_raw_download_md5_file_and_query_disagree(tmp_path, callback, served):
+    ## Which one is right? Neither is trusted: nothing is downloaded.
+    result = hm_source.raw_download(tmp_path, f"https://example.com/port.zip.md5?md5={'0' * 32}", callback=callback)
+
+    assert result is None and served.got == []
+    assert callback.message_boxes == ["Download validation failed."]
+
+
+def test_raw_download_no_md5(tmp_path, callback, served):
+    assert hm_source.raw_download(tmp_path, "https://example.com/port.zip?x=1", callback=callback) is not None
+    assert served.got == ["https://example.com/port.zip?x=1"]
+    assert "Unable to validate download." in callback.messages
+
+
+@pytest.mark.parametrize("url", ["https://example.com", "https://example.com/", "https://example.com/?md5=" + "0" * 32])
+def test_raw_download_no_file_name(tmp_path, callback, served, url):
+    assert hm_source.raw_download(tmp_path, url, callback=callback) is None
+    assert callback.message_boxes == ["Unable to download non zip files."] and served.got == []
+
+
+def test_install_md5_query(hm, callback, served, monkeypatch):
+    ## harbourmaster install <url>?md5=...: the CLI and the GUI both end up here.
+    monkeypatch.setitem(hm.config, 'offline', False)
+    monkeypatch.setattr(hm, "callback", callback)
+    installed = []
+    monkeypatch.setattr(hm, "_install_portmaster", lambda zip_file, do_delete=False: installed.append(zip_file.name) or 0)
+
+    assert hm.install_port(f"https://example.com/PortMaster.zip?md5={served.md5}") == 0
+    assert installed == ["PortMaster.zip"] and served.got == ["https://example.com/PortMaster.zip"]
+
+    assert hm.install_port(f"https://example.com/PortMaster.zip?md5={'0' * 32}") == 255
+    assert len(installed) == 1
+
+
+################################################################################
 ## Old source files are upgraded to PortMasterV3 when loaded.
 LEGACY_SOURCES = {
     "020_portmaster.source.json": ("pm", "PortMaster",

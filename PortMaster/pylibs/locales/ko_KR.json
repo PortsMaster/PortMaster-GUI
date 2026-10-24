@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "{runtime} 다운로드할 수 없습니다. 게임이 제대로 실행되지 않을 수 있습니다.",
   "Successfully downloaded {runtime}.": "{runtime} 다운로드 성공",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\n그렇게 하기 위해:\n메뉴 -> 유틸리티 -> 롬 디렉토리 다시 스캔",
+  "Unable to download file, its md5 is not valid.": "파일을 다운로드할 수 없습니다. md5가 올바르지 않습니다.",
   "Unable to download verification file.": "검증 파일을 다운로드할 수 없습니다.",
   "Unable to download non zip files.": "Zip 파일이 아니면 다운로드할 수 없습니다.",
   "Cache out of date.": "캐시가 오래되었습니다.",

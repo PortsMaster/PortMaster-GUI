@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Kan {runtime} niet downloaden, het spel kan mogelijk niet correct worden uitgevoerd.",
   "Successfully downloaded {runtime}.": "{runtime} succesvol gedownload.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nOm dit te doen:\nMENU → HULPPROGRAMMA'S → Rom-map opnieuw scannen",
+  "Unable to download file, its md5 is not valid.": "Kan bestand niet downloaden, de md5 is ongeldig.",
   "Unable to download verification file.": "Kan verificatiebestand niet downloaden.",
   "Unable to download non zip files.": "Kan geen non-zip bestanden downloaden.",
   "Cache out of date.": "Cache verouderd.",

@@ -27,6 +27,7 @@
   "Download validation failed.": [
     "pylibs/harbourmaster/hm_info.py:146",
     "pylibs/harbourmaster/hm_info.py:168",
+    "pylibs/harbourmaster/source/__init__.py:69",
     "pylibs/harbourmaster/util/net.py:148"
   ],
   "Unable to download file.": [
@@ -212,11 +213,14 @@
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": [
     "pylibs/harbourmaster/platform/retrodeck.py:18"
   ],
+  "Unable to download file, its md5 is not valid.": [
+    "pylibs/harbourmaster/source/__init__.py:38"
+  ],
   "Unable to download verification file.": [
-    "pylibs/harbourmaster/source/__init__.py:35"
+    "pylibs/harbourmaster/source/__init__.py:60"
   ],
   "Unable to download non zip files.": [
-    "pylibs/harbourmaster/source/__init__.py:46"
+    "pylibs/harbourmaster/source/__init__.py:79"
   ],
   "Cache out of date.": [
     "pylibs/harbourmaster/source/base.py:34"
@@ -229,19 +233,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:581"
+    "pylibs/pugwash/theme.py:588"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:591"
+    "pylibs/pugwash/theme.py:598"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:614"
+    "pylibs/pugwash/theme.py:621"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:620"
+    "pylibs/pugwash/theme.py:627"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -1064,7 +1068,7 @@
     "pylibs/pugwash/theme.py:358"
   ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:588"
+    "pylibs/pugwash/theme.py:595"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

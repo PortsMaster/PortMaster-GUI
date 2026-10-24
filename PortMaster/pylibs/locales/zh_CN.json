@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "无法下载 {runtime}，游戏可能无法正常运行。",
   "Successfully downloaded {runtime}.": "成功下载 {runtime}。",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\n操作方法：\nMENU -> UTILITIES -> Rescan Rom Directory",
+  "Unable to download file, its md5 is not valid.": "无法下载文件，其 md5 无效。",
   "Unable to download verification file.": "无法下载验证信息。",
   "Unable to download non zip files.": "无法下载非zip文件。",
   "Cache out of date.": "缓存过期。",

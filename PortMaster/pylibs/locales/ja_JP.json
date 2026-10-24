@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "{runtime} をダウンロードできません。ゲームが正しく実行されない可能性があります。",
   "Successfully downloaded {runtime}.": "{runtime} のダウンロードに成功しました。",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\n手順:\nMENU -> UTILITIES -> Rescan Rom Directory",
+  "Unable to download file, its md5 is not valid.": "ファイルをダウンロードできません。md5 が正しくありません。",
   "Unable to download verification file.": "確認情報が見つかりません。",
   "Unable to download non zip files.": "非 zip ファイルをダウンロードできません。",
   "Cache out of date.": "キャッシュが古いです。",
