@@ -521,8 +521,8 @@ def test_save_theme_file_refused(server, themes_dir, body, status):
 
 def test_save_theme_file_syntax_error_says_where(server):
     version = json.loads(get(server[0], "/api/theme_file?theme=good")[1])['version']
-    status, answer = post(server[0], "/api/theme_file", {'theme': "good", 'text': '{\n  "a": 1,\n}', 'version': version})
-    assert status == 400 and answer['line'] == 3 and "valid JSON" in answer['error']
+    status, answer = post(server[0], "/api/theme_file", {'theme': "good", 'text': '{\n  "a": 1\n  "b": 2\n}', 'version': version})
+    assert status == 400 and answer['line'] == 3 and answer['column'] == 3 and "valid JSON" in answer['error']
 
 
 @pytest.mark.parametrize("path", ["/api/theme_file", "/api/theme_draft", "/api/theme_copy"])

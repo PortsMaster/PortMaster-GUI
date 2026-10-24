@@ -158,7 +158,7 @@ def test_default_theme_has_no_unknown_keys():
     ('{}', None),
     ('[]', "has to be a JSON object"),
     ('5', "has to be a JSON object"),
-    ('{"a": 1,}', "Expecting property name"),
+    ('{"a": 1 "b": 2}', "Expecting ',' delimiter"),
     ('{"a": 1', "Expecting"),
     ('', "Expecting value"),
     ])
@@ -171,8 +171,14 @@ def test_check_text(text, error):
 
 
 def test_check_text_position():
-    problem = theme_editor.check_text('{\n  "a": 1,\n  "b": 2,\n}')
-    assert problem['line'] == 4 and problem['column'] == 1
+    problem = theme_editor.check_text('{\n  "a": 1\n  "b": 2\n}')
+    assert problem['line'] == 3 and problem['column'] == 3
+
+
+def test_check_text_trailing_comma():
+    ## Python 3.13 says so and points at the comma; before, at the } after it.
+    problem = theme_editor.check_text('{\n  "a": 1,\n}')
+    assert problem['error'] and (problem['line'], problem['column']) in ((2, 9), (3, 1))
 
 
 def test_rename_keeps_the_layout():
