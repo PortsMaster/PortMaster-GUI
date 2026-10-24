@@ -155,6 +155,19 @@ class SoundManager():
             self.song = None
             self.filename = None
 
+    def unload_all(self):
+        '''
+        Stop the music and free every sound: a theme reload.
+        '''
+        self.stop()
+        self.music_position = {}
+        if self.is_init:
+            sdl2.sdlmixer.Mix_HaltChannel(-1)
+            for sample in self.sounds.values():
+                sdl2.sdlmixer.Mix_FreeChunk(sample)
+
+        self.sounds = {}
+
     @property
     def music_is_disabled(self):
         return self._music_is_disabled

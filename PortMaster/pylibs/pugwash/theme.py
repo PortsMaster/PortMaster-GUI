@@ -4,7 +4,6 @@
 import copy
 import datetime
 import functools
-import gettext
 import json
 import zipfile
 
@@ -13,15 +12,14 @@ import sdl2.ext
 
 import harbourmaster
 import harbourmaster.source
+from harbourmaster import i18n
+from harbourmaster.i18n import _
 from harbourmaster.util import net
 from pugwash import sdl
 
 from loguru import logger
 
 from pugwash import PYLIB_PATH
-
-
-_ = gettext.gettext
 
 
 
@@ -131,6 +129,111 @@ def theme_apply(gui, section_data, base_data, elements):
     return new_data
 
 
+## Fonts with capital letters only, an address in them reads wrong: the list's font instead.
+CAPS_ONLY_FONTS = ('AmazDooMLeft.ttf', )
+
+## Keys only a list uses, left out when a list region becomes text.
+## (Not border-x: the list's margins keep the theme editor's text inside the list's panel.)
+LIST_ONLY_KEYS = ('select', 'alt-fill', 'no-select', 'pointer', 'list', 'line-height', 'autoscroll',
+                  'scroll', 'columns', 'grid', 'text-clip', 'tag')
+
+
+def section_from_themes_list(section, mode):
+    """
+    A "port_links" (mode 'links') or "theme_server" (mode 'server') section made from a
+    theme's "themes_list" section (with its elements applied), for themes made before those
+    screens: the theme's own panels and fonts, the QR code where the theme screenshot goes
+    and the address where the description goes. None if the section hasn't the list and
+    screenshot regions to make it from.
+    """
+    def tag(name, region):
+        return region.get('tag', name)
+
+    list_regions = [(name, region) for name, region in section.items()
+                    if isinstance(region, dict) and tag(name, region) == 'themes_list']
+    if len(list_regions) == 0:
+        return None
+
+    list_name, list_region = list_regions[0]
+    list_fonts = {key: value for key, value in list_region.items() if key == 'font' or key.startswith('font[')}
+
+    def address(region, text):
+        new = copy.deepcopy(region)
+        if new.get('font') in CAPS_ONLY_FONTS:
+            new.update(list_fonts)
+
+        new.pop('tag', None)
+        new.pop('autoscroll', None)
+        new['text'] = text
+        return new
+
+    address_text = "{port_links.name}\n{port_links.url}" if mode == 'links' else "{theme_server.url}"
+
+    out = {}
+    dropped = set()
+    has_qr = False
+    for name, region in section.items():
+        if not isinstance(region, dict) or name == '#config':
+            continue
+
+        text = region.get('text', '')
+        text = text if isinstance(text, str) else ''
+        image = region.get('image', '')
+        image = image if isinstance(image, str) else ''
+
+        if name == list_name:
+            if mode == 'links':
+                new = copy.deepcopy(region)
+                new.pop('tag', None)
+                out['links_list'] = new
+
+            else:
+                new = {key: value for key, value in region.items() if not key.startswith(LIST_ONLY_KEYS)}
+                for key, value in list(new.items()):
+                    if key.startswith('font-size') and isinstance(value, (int, float)):
+                        new[key] = max(10, round(value * 0.75))
+
+                new.update({"text": "{theme_server.status}", "text-wrap": True})
+                out['server_info'] = new
+
+        elif '{theme_info.name}' in text:
+            new = copy.deepcopy(region)
+            new.pop('tag', None)
+            new['text'] = "{port_info.title}" if mode == 'links' else "{scene.title}"
+            out['links_title' if mode == 'links' else 'server_title'] = new
+
+        elif '{theme_info.description}' in text and '{theme_info.creator}' not in text:
+            out['link_info' if mode == 'links' else 'server_url'] = address(region, address_text)
+
+        elif '{theme_info.' in text:
+            dropped.add(name)
+
+        elif '{theme_info.image}' in image:
+            new = {key: value for key, value in region.items() if not key.startswith(('image[', 'image-mode', 'tag'))}
+            new['image'] = "qr:{port_links.url}" if mode == 'links' else "qr:{theme_server.url}"
+            new['image-mode'] = "fit"
+            out['link_qr' if mode == 'links' else 'server_qr'] = new
+            has_qr = True
+
+        else:
+            out[name] = copy.deepcopy(region)
+
+    if not has_qr:
+        return None
+
+    ## A description that also had the creator in it (hiviz): the text goes there.
+    info_name = 'link_info' if mode == 'links' else 'server_url'
+    for name in sorted(dropped):
+        if info_name not in out and '{theme_info.description}' in section[name].get('text', ''):
+            out[info_name] = address(section[name], address_text)
+
+    ## The panels behind the text left out ("theme_general_info_back").
+    for name in dropped:
+        out.pop(name + '_back', None)
+
+    return out
+
+
 def theme_load(gui, theme_file, color_scheme=None):
     logger.info(f"Loading theme {theme_file}")
 
@@ -142,6 +245,9 @@ def theme_load(gui, theme_file, color_scheme=None):
 
     capabilities = harbourmaster.device_info()["capabilities"]
 
+    ## The theme's own translations of its text ({lang: {text: translation}}), if it has any.
+    i18n.set_theme_translations(theme_data.get("#translations", {}))
+
     base_data = {}
     elements = {}
     sections = {}
@@ -151,7 +257,8 @@ def theme_load(gui, theme_file, color_scheme=None):
         for scheme_name in theme_data.get("#schemes", {})
         if not scheme_name.startswith("#")]
 
-    if color_scheme is None:
+    ## One it doesn't have (renamed in an update, say): its default, then its first.
+    if color_scheme not in all_schemes:
         color_scheme = theme_data.get("#info", {}).get("default-scheme", None)
 
     if color_scheme not in all_schemes:
@@ -176,9 +283,16 @@ def theme_load(gui, theme_file, color_scheme=None):
                 theme_data[section_name] = theme_merge(base_scheme.get(section_name, {}), section_data)
 
     ## vvvvvvvv HARD CODED - DO NOT TOUCH vvvvvvvv
+    ## (The same in every theme. Its fonts are the default theme's for each language, as
+    ## the warnings are translated: DejaVu Sans has no Chinese, Japanese or Korean.)
     theme_data['disclaimer'] = {
             "background": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.0, 0.0, 1.0, 1.0],
                 "fill": [ 200, 200, 200, 255 ],
                 "border": 8,
@@ -187,6 +301,11 @@ def theme_load(gui, theme_file, color_scheme=None):
             },
             "disclaimer_text": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.05, 0.05, 0.95, 0.95],
                 "fill": [ 230, 230, 230 ],
                 "thickness": 6,
@@ -215,6 +334,11 @@ def theme_load(gui, theme_file, color_scheme=None):
             },
             "button_bar": {
                 "font": "DejaVuSans.ttf",
+                "font[zh_TW]": "NotoSansTC-Regular.ttf",
+                "font[zh_CN]": "NotoSansSC-Regular.ttf",
+                "font[zh_HK]": "NotoSansHK-Regular.ttf",
+                "font[ko_KR]": "NotoSansKR-Regular.ttf",
+                "font[ja_JP]": "NotoSansJP-Regular.ttf",
                 "area": [0.0, 0.93, 0.95, -5],
                 "font-scale[1920x1152]": 3.0,
                 "font-scale[1920x1080]": 3.0,
@@ -231,17 +355,19 @@ def theme_load(gui, theme_file, color_scheme=None):
                 "font-size": 16,
                 "font-color": [ 0, 0, 0 ],
                 "align": "midright",
-                "bar": ["Please wait."],
+                "bar": [_("Please wait.")],
             },
         }
     ## ^^^^^^^^ HARD CODED - DO NOT TOUCH ^^^^^^^^
 
 
+    ## Before any section, wherever it is in the file (a colour scheme's #base is added last).
+    base_data = theme_data.get("#base", {})
+
     for section_name, section_data in theme_data.items():
         if section_name.startswith('#'):
             if section_name == "#base":
-                logger.debug("- loading base_data")
-                base_data = section_data
+                pass
 
             elif section_name == "#resources":
                 logger.debug("- loading resources:")
@@ -313,8 +439,13 @@ def theme_load(gui, theme_file, color_scheme=None):
                     logger.error(f"{section_name} not yet defined, skipping.")
                     continue
 
+                ## Changes the regions it has, the section keeps the rest ("main_menu[640x480]").
                 logger.debug(f"  - loading section {section_name}")
-                sections[section_name] = theme_apply(gui, section_data, sections[section_name], elements)
+                merged = dict(sections[section_name])
+                for region_name, region_data in theme_apply(gui, section_data, {}, elements).items():
+                    merged[region_name] = theme_merge(merged.get(region_name, {} if region_name.startswith('#') else base_data), region_data)
+
+                sections[section_name] = merged
             else:
                 logger.debug(f"  - loading section {section_name}")
                 sections[section_name] = theme_apply(gui, section_data, base_data, elements)
@@ -342,6 +473,15 @@ def theme_load(gui, theme_file, color_scheme=None):
     if 'featured_ports' not in sections:
         ## Temporary Hack
         sections['featured_ports'] = copy.deepcopy(sections['ports_list'])
+
+    ## Themes made before the port links and theme editor screens: made from their themes list.
+    ## (Without a screenshot region there, the scenes show their own plain screen.)
+    for section_name, mode in (('port_links', 'links'), ('theme_server', 'server')):
+        if section_name not in sections and 'themes_list' in sections:
+            section = section_from_themes_list(sections['themes_list'], mode)
+            if section is not None:
+                logger.debug(f"  - {section_name} made from themes_list")
+                sections[section_name] = section
 
 
 
@@ -564,9 +704,11 @@ class ThemeDownloader(harbourmaster.source.BaseSource):
 
 
 class ThemeEngine:
-    def __init__(self, gui, force_theme=None):
+    def __init__(self, gui, force_theme=None, force_scheme=None):
         self.gui = gui
+        ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
+        self.force_scheme = force_scheme
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -619,6 +761,8 @@ class ThemeEngine:
         """
         Returns the colour scheme of the current theme
         """
+        if self.force_scheme is not None:
+            return self.force_scheme
 
         cfg_data = self.get_pm_config()
         return cfg_data.setdefault("theme-scheme", None)

@@ -18,8 +18,8 @@ from pugwash import sdl
 from pugwash import tasks
 from loguru import logger
 from pugwash.theme import ThemeEngine
-from pugwash.scenes import StringFormatter, TempMenuScene
-from gettext import gettext as _
+from pugwash.scenes import MainMenuScene, StringFormatter, TempMenuScene
+from harbourmaster.i18n import _
 from pugwash import PYLIB_PATH, PORTMASTER_VERSION, PORTMASTER_DEBUG
 from pugwash.lang import lang_list
 from pugwash.util import battery_level, get_ip_address, is_process_running
@@ -28,6 +28,15 @@ from pugwash.app_commands import CommandsMixin
 from pugwash.app_fifo import FifoControlMixin
 from pugwash.app_ports import PortInfoMixin
 from pugwash import lang
+
+
+def parse_resolution(text):
+    """(width, height) from "1024x768", None for anything else."""
+    width, _x, height = text.strip().lower().partition('x')
+    if not (width.isdigit() and height.isdigit() and int(width) > 0 and int(height) > 0):
+        return None
+
+    return (int(width), int(height))
 
 
 class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixin, sdl.GUI, harbourmaster.Callback):
@@ -41,10 +50,17 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
     TASK_INPUT_LAYERS = ('messages', 'message_box')
     FRAME_TIME = 1000 // 30
 
-    def __init__(self, *, first_scene=None, force_theme=None):
+    def __init__(self, *, first_scene=None, force_theme=None, force_scheme=None):
+        ## PM_HEADLESS=Y: no window, no video and no controllers, it draws onto a surface
+        ## with the software renderer. The theme server's render workers (theme_server/
+        ## worker.py) use it, on a device too: muOS's SDL has only its "mali" driver, and
+        ## the PortMaster that started the server owns the screen.
+        self.headless = os.environ.get('PM_HEADLESS', '') == 'Y'
+
         # Initialize SDL
         sdl2.ext.init(
-            controller=True)
+            video=not self.headless,
+            controller=not self.headless)
 
         def nice_version(v):
             return f"{v.major}.{v.minor}.{v.patch}"
@@ -81,7 +97,10 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         display_mode = sdl2.video.SDL_DisplayMode()
         capabilities = harbourmaster.device_info()
 
-        if sdl2.video.SDL_GetCurrentDisplayMode(0, display_mode) != 0:
+        if self.headless:
+            self.display_width, self.display_height = capabilities['resolution']
+
+        elif sdl2.video.SDL_GetCurrentDisplayMode(0, display_mode) != 0:
             logger.error("Failed to get display mode:", sdl2.SDL_GetError())
             self.display_width, self.display_height = capabilities['resolution']
 
@@ -91,23 +110,30 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             # Print the display width and height
             logger.info(f"Display size: {self.display_width}x{self.display_height}")
 
-        if harbourmaster.HM_TESTING:
+        pretend_resolution = None
+        if harbourmaster.HM_TESTING or self.headless:
             ## To pretend to be a different device set the device_info environment
-            ## variables, eg: DEVICE_NAME=RG353V CFW_NAME=ArkOS DEVICE_ARCH=aarch64
-            pretend_resolution = None
-            ## Uncomment to choose a particular resolution
-            # pretend_resolution = (1024, 768)
+            ## variables, eg: DEVICE_NAME=RG353V CFW_NAME=ArkOS DEVICE_ARCH=aarch64,
+            ## and PM_PRETEND_RESOLUTION=1024x768 for its screen (the theme server).
+            pretend_resolution = parse_resolution(os.environ.get('PM_PRETEND_RESOLUTION', ''))
 
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=pretend_resolution)
 
-        if capabilities['device'] == 'default':
+        if capabilities['device'] == 'default' and pretend_resolution is None:
             device = harbourmaster.find_device_by_resolution((self.display_width, self.display_height))
             logger.info(f"FOUND: {device}")
             if device != 'default':
                 capabilities = harbourmaster.device_info(device)
 
-        if capabilities['device'] == 'default':
+        if capabilities['device'] == 'default' and pretend_resolution is None:
             capabilities = harbourmaster.expand_info(dict(capabilities), override_resolution=(self.display_width, self.display_height))
+
+        ## The theme matches against harbourmaster.device_info(): give it the screen worked
+        ## out above and the language (its "font[ja_JP]" & co).
+        device_info = harbourmaster.device_info()
+        if capabilities is not device_info:
+            device_info.update(capabilities)
+            capabilities = device_info
 
         capabilities['capabilities'].append(lang.CURRENT_LANG)
 
@@ -115,7 +141,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         print(capabilities)
 
         # Create the window
-        if harbourmaster.HM_TESTING:
+        if harbourmaster.HM_TESTING or self.headless:
             window_flags = None
         else:
             window_flags = sdl2.SDL_WINDOW_FULLSCREEN
@@ -138,11 +164,18 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
                     touch_file.unlink()
 
 
-        self.window = sdl2.ext.Window("PortMaster", size=capabilities['resolution'], flags=window_flags)
-        self.window.show()
+        if self.headless:
+            self.window = None
+            self.surface = sdl2.SDL_CreateRGBSurfaceWithFormat(
+                0, *capabilities['resolution'], 32, sdl2.SDL_PIXELFORMAT_ARGB8888)
+            renderer = sdl2.ext.Renderer(self.surface.contents)
 
-        # Create a renderer for drawing on the window
-        renderer = sdl2.ext.Renderer(self.window, flags=sdl2.SDL_RENDERER_ACCELERATED)
+        else:
+            self.window = sdl2.ext.Window("PortMaster", size=capabilities['resolution'], flags=window_flags)
+            self.window.show()
+
+            # Create a renderer for drawing on the window
+            renderer = sdl2.ext.Renderer(self.window, flags=sdl2.SDL_RENDERER_ACCELERATED)
 
         sdl2.SDL_SetHint(sdl2.SDL_HINT_RENDER_SCALE_QUALITY, b"2")
 
@@ -183,9 +216,10 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         self.cancellable = True
 
-        self.themes = ThemeEngine(self, force_theme=force_theme)
+        self.themes = ThemeEngine(self, force_theme=force_theme, force_scheme=force_scheme)
 
         self.theme_data = self.themes.gui_init()
+        self.theme_dir = self.themes.get_theme_dir(self.themes.get_current_theme())
         self.resources.add_path(PYLIB_PATH / 'resources')
         self.theme_downloader = None
 
@@ -436,9 +470,9 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         self.clean()
 
-    def create_screenshot(self):
+    def create_screenshot(self, file_name='screenshot.png'):
         """
-        Creates a screenshot and saves it to screenshot.png
+        Creates a screenshot and saves it to file_name (screenshot.png)
         """
         # Create a texture to render onto
         self.in_screenshot = True
@@ -459,10 +493,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         # Draw the GUI
         self.do_draw()
 
-        # Reset the rendering target to the default (the window)
-        sdl2.SDL_SetRenderTarget(self.renderer.sdlrenderer, None)
-
-        # Capture screenshot
+        # Capture screenshot, from the texture: read before the target goes back to the window.
         width, height = ctypes.c_int(0), ctypes.c_int(0)
         sdl2.SDL_QueryTexture(texture, None, None, ctypes.byref(width), ctypes.byref(height))
         pixels = (ctypes.c_uint8 * (width.value * height.value * 4))()
@@ -473,8 +504,11 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             pixels,
             width.value * 4)
 
+        # Reset the rendering target to the default (the window)
+        sdl2.SDL_SetRenderTarget(self.renderer.sdlrenderer, None)
+
         # Save the screenshot using pypng
-        with open('screenshot.png', 'wb') as f:
+        with open(file_name, 'wb') as f:
             writer = png.Writer(width=width.value, height=height.value, greyscale=False, alpha=True)
             writer.write_array(f, pixels)
 
@@ -496,6 +530,58 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
     def format_data(self, input_string, used_keys=None):
         return self.formatter.format_string(input_string, used_keys)
 
+    def reload_theme(self, then=()):
+        """
+        Loads the theme again, the one in the config (or force_theme) with its colour
+        scheme, so a new theme, scheme or language applies without a restart. Everything
+        the old theme loaded is dropped first. The screens were made from the old theme:
+        this makes a new main menu, then pushes then's (layer name, scene class) on it.
+        """
+        logger.info("Reloading the theme")
+        self.sounds.unload_all()
+        self.images.unload_all()
+        self.text.unload_all()
+        self.animations.clear()
+        self.pallet.clear()
+        self.override.clear()
+        self.default_rects = sdl.NamedRects([0, 0, *self.renderer.logical_size])
+
+        ## The theme's folder first, then PortMaster's own resources, as at start.
+        self.resources.remove_path(self.theme_dir)
+        self.resources.remove_path(PYLIB_PATH / 'resources')
+        self.theme_data = self.themes.gui_init()
+        self.theme_dir = self.themes.get_theme_dir(self.themes.get_current_theme())
+        self.resources.add_path(PYLIB_PATH / 'resources')
+
+        for scene in self.all_scenes():
+            scene.scene_deactivate()
+
+        self.message_box_scene = None
+        self.scenes = [('root', [MainMenuScene(self)])]
+        self.scenes[-1][1][-1].scene_activate()
+        for name, scene_class in then:
+            self.push_scene(name, scene_class(self))
+
+        self.updated = True
+
+    def reload_language(self, language, then=()):
+        """
+        Use another language now (None for the system's): its translations, the theme's
+        font for it ("font[ja_JP]" & co, matched as a capability), and new screens, as
+        reload_theme().
+        """
+        old_lang = lang.CURRENT_LANG
+        new_lang = lang.set_language(language)
+
+        capabilities = harbourmaster.device_info()['capabilities']
+        if old_lang in capabilities:
+            capabilities.remove(old_lang)
+        capabilities.append(new_lang)
+
+        self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
+        self.lang_list = lang_list()
+        self.reload_theme(then)
+
     def quit(self):
         # Clean up. Anything SDL owns has to be destroyed before SDL_Quit, otherwise the
         # garbage collector frees it afterwards, which segfaults on some drivers (muOS/Mali).
@@ -507,7 +593,11 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
 
         ## Any texture still referenced becomes a no-op once its renderer is gone.
         self.renderer.destroy()
-        self.window.close()
+        if self.window is not None:
+            self.window.close()
+
+        else:
+            sdl2.SDL_FreeSurface(self.surface)
 
         sdl2.ext.quit()
 

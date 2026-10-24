@@ -28,6 +28,9 @@ from .themes import (
     ThemesScene,
     ThemeSchemeScene,
     )
+from .theme_server import (
+    ThemeServerScene,
+    )
 from .language import (
     LanguageScene,
     )
@@ -46,6 +49,9 @@ from .ports import (
 from .port_info import (
     PortInfoPopup,
     PortInfoScene,
+    )
+from .port_links import (
+    PortLinksScene,
     )
 from .filters import (
     FiltersScene,
@@ -73,10 +79,12 @@ __all__ = (
     'OnScreenKeyboard',
     'OptionScene',
     'PortInfoScene',
+    'PortLinksScene',
     'PortsListScene',
     'RuntimesScene',
     'SourceScene',
     'TempMenuScene',
     'ThemeSchemeScene',
+    'ThemeServerScene',
     'ThemesScene',
     )

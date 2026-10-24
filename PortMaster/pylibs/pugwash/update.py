@@ -7,7 +7,7 @@ import json
 import harbourmaster
 from loguru import logger
 from harbourmaster import HarbourMaster
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from pugwash import PORTMASTER_VERSION, PORTMASTER_RELEASE_CHANNEL, PORTMASTER_MIN_VERSION, PORTMASTER_RELEASE_URL, PORTMASTER_RELEASE_VALUES, PORTMASTER_UPDATE_FREQUENCY
 
 

@@ -17,7 +17,7 @@ PortMaster is a convenient script designed to facilitate the downloading and ins
     - *Zelda*: LTTP Inspired theme
     - *FF VII*: A beautifully done FF7 theme
     - *Basic Theme*: A super bare bones theme so you can get started designing your own!
-  - Colour Schemes, themes can support multiple colour schemes for darkmode / lightmode / different colour ways.
+  - Color Schemes, themes can support multiple color schemes for darkmode / lightmode / different color ways.
   - Builtin theme downloader!
 
 # Nerdy features

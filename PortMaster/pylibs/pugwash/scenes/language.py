@@ -2,9 +2,8 @@
 #
 # Language selection.
 
-import os
-import harbourmaster
-from gettext import gettext as _
+from harbourmaster.i18n import _
+from pugwash import lang
 from .base import BaseScene
 
 
@@ -15,13 +14,14 @@ class LanguageScene(BaseScene):
 
         self.load_regions("option_menu", ['option_list', ])
 
-        languages = gui.lang_list
-        selected_lang = os.environ['LANG']
+        languages = lang.lang_list()
+        selected_lang = lang.CURRENT_LANG
 
         self.tags['option_list'].reset_options()
-        for lang_code, lang_name in languages.items():
+        for index, (lang_code, lang_name) in enumerate(languages.items()):
             if lang_code == selected_lang:
                 self.tags['option_list'].add_option((None, ''), _("{lang_name} (Selected)").format(lang_name=lang_name))
+                self.tags['option_list'].list_select(index)
             else:
                 self.tags['option_list'].add_option(('select-language', lang_code), lang_name)
 
@@ -49,24 +49,17 @@ class LanguageScene(BaseScene):
                 return True
 
             elif selected_option == 'select-language':
-                if self.gui.message_box(_("Do you want to change language?\n\nYou will have to restart for it to take affect."), want_cancel=True):
-                    from pugwash import lang
-                    if selected_parameter == lang.DEFAULT_LANG:
-                        ## Not set when the language came from the system.
-                        self.gui.hm.cfg_data.pop('language', None)
+                ## Applies straight away, back in this list.
+                from .options import OptionScene
+                if selected_parameter == lang.DEFAULT_LANG:
+                    self.gui.hm.cfg_data.pop('language', None)
 
-                    else:
-                        self.gui.hm.cfg_data['language'] = selected_parameter
+                else:
+                    self.gui.hm.cfg_data['language'] = selected_parameter
 
-                    self.gui.hm.save_config()
-                    self.gui.events.running = False
-
-                    if not harbourmaster.HM_TESTING:
-                        reboot_file = (harbourmaster.HM_TOOLS_DIR / "PortMaster" / ".pugwash-reboot")
-                        if not reboot_file.is_file():
-                            reboot_file.touch(0o644)
-
-                    return True
+                self.gui.hm.save_config()
+                self.gui.reload_language(selected_parameter, then=[('option', OptionScene), ('select-language', LanguageScene)])
+                return True
 
         elif events.was_pressed('B'):
             self.button_back()

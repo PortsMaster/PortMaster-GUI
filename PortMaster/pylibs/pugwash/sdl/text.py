@@ -97,6 +97,21 @@ class TextManager:
         if font_name not in self.fonts:
             self.fonts[font_name] = FontTTF(str(font_file), 22, (255, 255, 255, 255))
 
+    def unload_all(self):
+        """
+        Forget every font and rendered text: a theme reload (a font name can be another
+        file in the next theme).
+        """
+        for texture in self._textures.values():
+            texture.texture.destroy()
+
+        for font in self.fonts.values():
+            font.close()
+
+        self._textures = {}
+        self._texture_list = collections.deque([])
+        self.fonts = {}
+
     def clean(self):
         """
         Call at the end of a frame to clean up any of the oldest textures.

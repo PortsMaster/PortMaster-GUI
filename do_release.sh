@@ -95,7 +95,7 @@ if [ -n "$IS_TEST" ]; then
   STAMP_CHANNEL="${PM_TEST_CHANNEL:-beta}"
 fi
 
-for tool in zip msgfmt python3; do
+for tool in zip python3; do
   if ! command -v "$tool" > /dev/null; then
     echo "do_release.sh needs $tool."
     exit 1
@@ -109,14 +109,13 @@ trap 'rm -rf "$BUILD_DIR"' EXIT
 
 ## -- A clean copy of the sources -------------------------------------------------
 ## From a checkout: what git knows about (tracked files as they are on disk, and new
-## files that aren't ignored), plus Crowdin's .pot files. Logs, config/, __pycache__,
+## files that aren't ignored). Logs, config/, __pycache__,
 ## ports installed while testing, ... never get in. Without git (the release
 ## workflow deletes .git): the tree as it is.
 cd "$REPO_DIR"
 if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
   {
     git ls-files -z --cached --others --exclude-standard -- PortMaster tools tests pytest.ini
-    find PortMaster/pylibs/locales -name '*.pot' -print0
   } | while IFS= read -r -d '' file_name; do
     ## (tracked files deleted on disk are still listed)
     [ -f "$file_name" ] && printf '%s\0' "$file_name"
@@ -130,22 +129,6 @@ cd "$BUILD_DIR"
 ## -- Version -----------------------------------------------------------------------
 python3 tools/pm_release.py "$STAMP_CHANNEL" "$VERSION"
 echo "$VERSION" > PortMaster/version
-
-## -- Translations ------------------------------------------------------------------
-for lang_dir in PortMaster/pylibs/locales/*/; do
-  for pot_file in messages themes; do
-    messages_dir="${lang_dir}LC_MESSAGES"
-
-    ## Crowdin downloads them as .pot
-    if [ -f "$messages_dir/$pot_file.pot" ]; then
-      mv -f "$messages_dir/$pot_file.pot" "$messages_dir/$pot_file.po"
-    fi
-
-    if [ -f "$messages_dir/$pot_file.po" ]; then
-      msgfmt -o "$messages_dir/$pot_file.mo" "$messages_dir/$pot_file.po"
-    fi
-  done
-done
 
 ## -- The zips ----------------------------------------------------------------------
 echo "Creating pylibs.zip"

@@ -86,6 +86,10 @@ class AnimationManager:
         self._animations[animation_name] = animation
         self._gui.set_data(f"animation.{animation_name}", f"{animation['frame']:03d}")
 
+    def clear(self):
+        'Forget every animation: a theme reload.'
+        self._animations = {}
+
     def update_animations(self):
         time = sdl2.SDL_GetTicks64()
         for animation_name, animation in self._animations.items():

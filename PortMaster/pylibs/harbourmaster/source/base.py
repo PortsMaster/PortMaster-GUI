@@ -2,7 +2,7 @@
 #
 # BaseSource, the interface every port source implements.
 
-from gettext import gettext as _
+from harbourmaster.i18n import _
 from ..config import HM_UPDATE_FREQUENCY
 from ..util import datetime_compare, name_cleaner
 

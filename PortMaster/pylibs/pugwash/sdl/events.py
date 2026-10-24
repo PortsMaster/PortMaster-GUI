@@ -100,7 +100,8 @@ class EventManager:
 
     def __init__(self, gui):
         self.gui = gui
-        sdl2.ext.init(controller=True)
+        headless = getattr(gui, 'headless', False)
+        sdl2.ext.init(video=not headless, controller=not headless)
 
         self.XBOX_FIXED = False
 
