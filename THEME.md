@@ -35,12 +35,31 @@ To write the screens to files instead, for a theme's README or to compare before
 
 That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
 
+### Editing theme.json in the page
+
+Pick **Edit** at the top to change the theme's `theme.json` in the page, with one screen beside it.
+- **Preview as you type:** the screen redraws a moment after you stop typing, from your unsaved text. Your theme isn't changed until you save. Pick the screen, color scheme, size and language as usual.
+- **Region boxes:** click a box to jump to that region in `theme.json`. Put the cursor in a region of the screen's section to light up its box.
+- **Suggestions:** they appear as you type, or press Ctrl+Space. They cover keys (with their type), the values a key takes (alignments, your `#pallet` colors, the theme's images and fonts, `#elements` for `parent`), `{tags}` in text, and `[capabilities]` in keys. They come from PortMaster's own code, so they match what it accepts.
+- **Checks:**
+  - JSON mistakes, in plain words: a missing comma, a comma before `}`, single quotes, comments
+  - keys PortMaster doesn't know, which it ignores, with "did you mean" for typos like `barwidth` (it's `bar-width`)
+  - values of the wrong type
+  - colors that aren't in `#pallet`, and images and fonts that aren't there
+  - `#element:` and `parent` names that don't exist
+  - errors pugwash logged while drawing the screen
+
+  The list under the screen jumps to each one.
+- **Saving:** Save (Ctrl/⌘+S) writes `theme.json`. The previous version is kept as `theme.json.bak`. If the file changed on disk since you opened it, you're asked before it's overwritten. If you edit `theme.json` in another editor while the page is open, the page loads the new version, unless you have unsaved changes there.
+- **A new theme:** the built-in default theme can't be changed. **Copy to a new theme…** copies any theme, your unsaved changes included, into the themes folder under a new name, and you carry on editing the copy.
+- **Downloaded themes:** you can edit a theme downloaded from PortMaster's theme list, but downloading an update of it there replaces your changes. Copy it first to keep them.
+
 ### On your device
 
-PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Each device picks a random port the first time and keeps it, so the address stays the same. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list, and the translation editor saves into the device's PortMaster. Press B on the device to stop it.
+PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Each device picks a random port the first time and keeps it, so the address stays the same. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list. **Edit** saves into the device's `PortMaster/themes/`, and a copy made there shows up in PortMaster's theme list. The translation editor saves into the device's PortMaster. Press B on the device to stop it.
 
 - Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
-- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, color scheme or language (or saving) about a second, and each other screen half a second. Each screen size has a render process; how many are kept at once depends on the device's free memory.
+- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, color scheme or language (or saving) about a second, and each other screen half a second. In the Edit view, the preview takes about 2.5 seconds to catch up with your typing. Each screen size has a render process; how many are kept at once depends on the device's free memory.
 - Anyone on the same network can open it while it runs.
 
 ### Translating PortMaster

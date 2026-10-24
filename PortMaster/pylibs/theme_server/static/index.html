@@ -110,12 +110,50 @@ dialog::backdrop { background: rgba(0, 0, 0, .55); }
 pre.data { font: 11px/1.4 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); padding: 8px; border-radius: 6px; margin: 0; }
 .errors { color: var(--error); margin: 0; padding-left: 16px; }
 @media (max-width: 900px) { .detail { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) 40%; } .detail aside { border-left: 0; border-top: 1px solid var(--line); } }
+/* Edit view */
+.edit { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr); gap: 16px; align-items: start; }
+.ebar { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.ebar button, .epreview button { font: 13px var(--sans); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+.ebar button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ebar button:disabled { opacity: .45; cursor: default; }
+#estate { font-size: 12px; color: var(--muted); }
+#estate.dirty { color: var(--warn); }
+.ehelp { margin-left: auto; font-size: 11px; color: var(--muted); }
+.eeditor { min-width: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.eeditor .CodeMirror { height: calc(100vh - 170px); min-height: 360px; font: 13px/1.5 var(--mono); background: var(--surface); color: var(--fg); }
+.eeditor .CodeMirror-gutters { background: var(--bg); border-right: 1px solid var(--line); }
+.eeditor .CodeMirror-linenumber { color: var(--muted); }
+.eeditor .CodeMirror-cursor { border-left-color: var(--fg); }
+.eeditor .CodeMirror-activeline-background { background: rgba(var(--box), .07); }
+.eeditor .CodeMirror-selected, .eeditor .CodeMirror-focused .CodeMirror-selected { background: rgba(var(--box), .22); }
+.eeditor .cm-string.cm-property { color: var(--accent); }
+.eeditor .cm-string { color: #1f7a4d; } .eeditor .cm-number { color: #a0522d; } .eeditor .cm-atom { color: #8a3ab9; }
+:root[data-theme="dark"] .eeditor .cm-string { color: #8fd19e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .eeditor .cm-string { color: #8fd19e; } :root:not([data-theme="light"]) .eeditor .cm-number { color: #f0a46b; } :root:not([data-theme="light"]) .eeditor .cm-atom { color: #d7a6f5; } }
+.eeditor .CodeMirror-matchingbracket { color: inherit !important; background: rgba(var(--box), .25); }
+.CodeMirror-hints { font: 12px var(--mono); background: var(--surface); color: var(--fg); border-color: var(--line); max-height: 18em; z-index: 50; }
+.CodeMirror-hint { color: var(--fg); display: flex; justify-content: space-between; gap: 16px; }
+li.CodeMirror-hint-active { background: var(--accent); color: #fff; }
+.hint-doc { color: var(--muted); font-size: 11px; } li.CodeMirror-hint-active .hint-doc { color: #e6ecff; }
+.CodeMirror-lint-tooltip { font: 12px var(--sans); background: var(--surface); color: var(--fg); border: 1px solid var(--line); z-index: 60; }
+.epreview { position: sticky; top: 92px; display: grid; gap: 10px; max-height: calc(100vh - 110px); overflow: auto; }
+.epreview .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+#eshotview { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); transition: opacity .2s; }
+#eshotview.rendering { opacity: .6; }
+#eshotview .box { pointer-events: auto; cursor: pointer; }
+#eshotview .boxes { pointer-events: none; }
+.epreview h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 4px 0 0; }
+#eproblems { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 12px; }
+#eproblems li { padding: 3px 6px; border-radius: 4px; cursor: pointer; border-left: 3px solid var(--line); }
+#eproblems li:hover { background: rgba(var(--box), .1); }
+#eproblems li.error { border-left-color: var(--error); } #eproblems li.warning { border-left-color: var(--warn); } #eproblems li.info { border-left-color: var(--muted); color: var(--muted); }
+@media (max-width: 900px) { .edit { grid-template-columns: 1fr; } .epreview { position: static; max-height: none; } .eeditor .CodeMirror { height: 60vh; } .ehelp { display: none; } }
 </style>
 </head>
 <body>
 <header>
   <h1>Theme Preview</h1>
-  <span class="seg" id="view" style="margin-bottom:2px"><button data-view="preview" aria-pressed="true">Preview</button><button data-view="translate" aria-pressed="false">Translate</button></span>
+  <span class="seg" id="view" style="margin-bottom:2px"><button data-view="preview" aria-pressed="true">Preview</button><button data-view="translate" aria-pressed="false">Translate</button><button data-view="edit" aria-pressed="false">Edit</button></span>
   <label class="field">Theme <select id="theme"></select></label>
   <label class="field">Color scheme <select id="scheme"></select></label>
   <label class="field">Resolution <select id="res"></select></label>
@@ -148,6 +186,26 @@ pre.data { font: 11px/1.4 var(--mono); white-space: pre-wrap; overflow-wrap: any
       <div class="tlist" id="tlist"></div>
     </div>
     <aside class="tpreview" id="tpreview"><p class="tempty">Select a string to see it on the screens that use it.</p></aside>
+  </div>
+  <div class="edit" id="edit" hidden>
+    <div class="ebar">
+      <button id="esave" class="primary" disabled>Save</button>
+      <button id="erevert" disabled>Revert</button>
+      <button id="ecopy" hidden>Copy to a new theme…</button>
+      <button id="eformat" title="Rewrite with even indents">Tidy</button>
+      <span id="estate"></span>
+      <span class="ehelp">Ctrl+Space suggestions · Ctrl+S save · Ctrl+F find · Alt+G go to line · click a box to find its region</span>
+    </div>
+    <div class="eeditor"><textarea id="etext" aria-label="theme.json"></textarea></div>
+    <aside class="epreview">
+      <div class="row">
+        <label class="field">Screen <select id="eshot"></select></label>
+        <label class="toggle"><input type="checkbox" id="eboxes" checked> Region boxes</label>
+      </div>
+      <div id="eshotview"></div>
+      <h3 id="eproblems-title">Problems</h3>
+      <ul id="eproblems"></ul>
+    </aside>
   </div>
 </main>
 <dialog id="detail">
@@ -224,10 +282,11 @@ function setView(view) {
   for (const el of document.querySelectorAll(".preview-only")) el.hidden = view !== "preview" || (el.id === "mode-shot-field" && state.mode !== "resolutions");
   $("grid").hidden = view !== "preview";
   $("translate").hidden = view !== "translate";
+  $("edit").hidden = view !== "edit";
   fillLanguages();
   save();
   state.version = null;
-  poll().then(() => (view === "translate" ? buildTranslate() : build()));
+  poll().then(() => (view === "translate" ? buildTranslate() : view === "edit" ? buildEdit() : build()));
 }
 function fillSchemes() {
   const t = theme();
@@ -484,8 +543,13 @@ document.addEventListener("keydown", (event) => {
 });
 
 /* Controls */
-function changed() { cancelRenders(); save(); if (state.view === "translate") buildTranslate(); else build(); }
-$("theme").onchange = () => { state.theme = $("theme").value; state.version = null; fillSchemes(); poll().then(changed); };
+function changed() { cancelRenders(); save(); if (state.view === "translate") buildTranslate(); else if (state.view === "edit") preview(); else build(); }
+$("theme").onchange = () => {
+  if (state.view === "edit" && edit.dirty && !confirm("You have unsaved changes to this theme. Switch theme and lose them?")) { $("theme").value = state.theme; return; }
+  state.theme = $("theme").value; state.version = null; fillSchemes();
+  if (state.view === "edit") { edit.dirty = false; poll().then(() => { save(); buildEdit(); }); return; }
+  poll().then(changed);
+};
 $("scheme").onchange = () => { state.scheme = $("scheme").value; changed(); };
 $("res").onchange = () => {
   $("custom-res-field").hidden = $("res").value !== "custom";
@@ -698,6 +762,7 @@ async function poll() {
       cancelRenders();
       const detail = state.detail;
       if (state.view === "translate") { if (!state.usageKey) scanUsage(); showPreview(); }
+      if (state.view === "edit") editThemeChanged();
       for (const card of state.view === "preview" ? state.cards || [] : []) fill(card);
       if (detail !== null) Promise.all(state.cards.map((c) => render(c.shot, c.res))).then(() => { if (state.detail === detail) openDetail(detail); });
       // Refresh the scheme list too, in case theme.json changed it.
@@ -712,7 +777,8 @@ function status() {
   $("status").innerHTML = t ? `<span class="live">● live</span> ${t.name}${lastChange ? ` · updated ${lastChange.toLocaleTimeString()}` : ""}` : "";
 }
 
-(async function main() {
+/* Started once editor.js (after this script) has loaded too. */
+window.addEventListener("DOMContentLoaded", async function main() {
   load();
   try {
     state.info = await (await fetch("/api/info")).json();
@@ -720,9 +786,16 @@ function status() {
     $("status").textContent = "Can't reach the server."; return;
   }
   fillControls();
-  setView(state.view === "translate" ? "translate" : "preview");
+  setView(["translate", "edit"].includes(state.view) ? state.view : "preview");
   setInterval(poll, 1000);
-})();
+});
+</script>
+<script src="/static/editor.js"></script>
+<script>
+document.addEventListener("keydown", (event) => {
+  /* Ctrl+S anywhere in the Edit view saves, not the browser's "save page". */
+  if (state.view === "edit" && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") { event.preventDefault(); saveTheme(); }
+});
 </script>
 </body>
 </html>
