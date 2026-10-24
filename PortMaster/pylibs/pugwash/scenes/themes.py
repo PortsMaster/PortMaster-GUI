@@ -52,6 +52,18 @@ class ThemesScene(BaseScene):
 
         self.set_buttons(keys)
 
+    def download_theme(self):
+        theme_info = self.themes[self.last_select]
+
+        with self.gui.enable_cancellable(True):
+            with self.gui.enable_messages():
+                self.gui.do_install(theme_info['name'], theme_info['url'] + ".md5")
+
+                self.themes = self.gui.themes.get_themes_list(
+                    self.gui.theme_downloader.get_theme_list())
+
+                self.update_selection()
+
     def do_update(self, events):
         super().do_update(events)
 
@@ -63,9 +75,24 @@ class ThemesScene(BaseScene):
             theme_info = self.themes[self.last_select]
 
             if theme_info['status'] not in ("Installed", "Update Available"):
-                return True
+                if theme_info['url'] is None:
+                    return True
 
-            self.button_activate()
+                if not self.gui.message_box(
+                        _("Theme {theme_name} is not downloaded, would you like to download it?").format(
+                            theme_name=theme_info['name']),
+                        want_cancel=True):
+                    return True
+
+                self.button_activate()
+                self.download_theme()
+
+                ## Downloaded: on to what A does for it, using it.
+                if self.themes.get(self.last_select, {}).get('status') not in ("Installed", "Update Available"):
+                    return True
+
+            else:
+                self.button_activate()
 
             ## Applies straight away, back in this list.
             from .options import OptionScene
@@ -82,16 +109,7 @@ class ThemesScene(BaseScene):
                 return True
 
             self.button_activate()
-
-            with self.gui.enable_cancellable(True):
-                with self.gui.enable_messages():
-                    self.gui.do_install(theme_info['name'], theme_info['url'] + ".md5")
-
-                    self.themes = self.gui.themes.get_themes_list(
-                        self.gui.theme_downloader.get_theme_list())
-
-                    self.update_selection()
-
+            self.download_theme()
             return True
 
         elif events.was_pressed('B'):

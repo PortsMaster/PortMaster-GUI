@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "主题编辑器已停止。请查看 PortMaster 文件夹中的 theme_server.txt。",
   "{theme_name} (Selected)": "{theme_name} （已选）",
   "Download": "下载",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "主题 {theme_name} 尚未下载，是否要下载？",
   "{item_name} (Selected)": "{item_name}  （已选）",
   "Please wait.": "请稍候。",
   "Up to date already": "已经更新",

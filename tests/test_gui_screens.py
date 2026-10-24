@@ -495,7 +495,7 @@ def test_themes_select(screen_gui, themes, monkeypatch):
     assert screen_gui.events.running is True
 
 
-def test_themes_not_installed_cant_be_selected(screen_gui, themes, monkeypatch):
+def test_themes_x_downloads(screen_gui, themes, monkeypatch):
     themes.themes['remote_theme'] = dict(themes.themes['default_theme'], name="Remote", status="Not Installed", url="https://example.com/remote.theme.zip")
     ## Still listed after the download reloads the list.
     listed = dict(themes.themes)
@@ -509,11 +509,71 @@ def test_themes_not_installed_cant_be_selected(screen_gui, themes, monkeypatch):
     screen_gui.do_loop(no_delay=True)
     assert "Download" in bar(themes) and "Select" not in bar(themes)
 
-    press(screen_gui, monkeypatch, 'A')
-    assert screen_gui.boxes == []
-
     press(screen_gui, monkeypatch, 'X')
     assert installs == [("Remote", "https://example.com/remote.theme.zip.md5")]
+
+
+@pytest.fixture
+def remote_theme(screen_gui, themes, monkeypatch):
+    """A theme that isn't downloaded, selected; `installs` gets what was downloaded, `reloads` what was applied."""
+    themes.themes['remote_theme'] = dict(themes.themes['default_theme'], name="Remote", status="Not Installed", url="https://example.com/remote.theme.zip")
+    listed = {name: dict(info) for name, info in themes.themes.items()}
+    monkeypatch.setattr(screen_gui.themes, "get_themes_list", lambda *args: {name: dict(info) for name, info in listed.items()})
+    themes.tags['themes_list'].add_option('remote_theme', "Remote")
+
+    remote_theme = type("Remote", (), {})()
+    remote_theme.installs = []
+    remote_theme.reloads = []
+    remote_theme.listed = listed
+
+    def do_install(name, url):
+        remote_theme.installs.append((name, url))
+        if remote_theme.works:
+            listed['remote_theme']['status'] = "Installed"
+
+    remote_theme.works = True
+    monkeypatch.setattr(screen_gui, "do_install", do_install)
+    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: remote_theme.reloads.append([name for name, _ in then]))
+    monkeypatch.setitem(screen_gui.hm.cfg_data, 'theme', 'default_theme')
+
+    select(themes, 'remote_theme', tag='themes_list')
+    screen_gui.do_loop(no_delay=True)
+    return remote_theme
+
+
+def test_themes_a_asks_to_download(screen_gui, themes, remote_theme, monkeypatch):
+    ## A on a theme that isn't downloaded asks; yes downloads it, then uses it.
+    press(screen_gui, monkeypatch, 'A')
+
+    assert screen_gui.boxes == ["Theme Remote is not downloaded, would you like to download it?"]
+    assert remote_theme.installs == [("Remote", "https://example.com/remote.theme.zip.md5")]
+    assert screen_gui.hm.cfg_data['theme'] == 'remote_theme'
+    assert remote_theme.reloads == [['option', 'select-theme']]
+
+
+def test_themes_a_download_declined(screen_gui, themes, remote_theme, monkeypatch):
+    screen_gui.answer = False
+    press(screen_gui, monkeypatch, 'A')
+
+    assert len(screen_gui.boxes) == 1
+    assert remote_theme.installs == [] and remote_theme.reloads == []
+    assert screen_gui.hm.cfg_data['theme'] == 'default_theme'
+
+
+def test_themes_a_download_failed(screen_gui, themes, remote_theme, monkeypatch):
+    ## Still not installed afterwards (failed, cancelled): the theme stays as it was.
+    remote_theme.works = False
+    press(screen_gui, monkeypatch, 'A')
+
+    assert len(remote_theme.installs) == 1
+    assert remote_theme.reloads == [] and screen_gui.hm.cfg_data['theme'] == 'default_theme'
+
+
+def test_themes_a_without_a_url(screen_gui, themes, remote_theme, monkeypatch):
+    ## Not installed and nowhere to download it from: nothing to ask.
+    themes.themes['remote_theme']['url'] = None
+    press(screen_gui, monkeypatch, 'A')
+    assert screen_gui.boxes == [] and remote_theme.installs == []
 
 
 def test_themes_x_without_a_url(screen_gui, themes, monkeypatch):

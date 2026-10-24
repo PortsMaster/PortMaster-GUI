@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "Editorul de teme s-a oprit. Vezi theme_server.txt în folderul PortMaster.",
   "{theme_name} (Selected)": "{theme_name} (Selectat)",
   "Download": "Descarcă",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "Tema {theme_name} nu este descărcată, vrei să o descarci?",
   "{item_name} (Selected)": "{item_name} (Selectat)",
   "Please wait.": "Te rugăm să aștepți.",
   "Up to date already": "Deja la zi",

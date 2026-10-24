@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "Temaredigeraren stoppades. Se theme_server.txt i PortMaster-mappen.",
   "{theme_name} (Selected)": "{theme_name} (Vald)",
   "Download": "Hämta",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "Temat {theme_name} är inte nedladdat, vill du ladda ner det?",
   "{item_name} (Selected)": "{item_name} (Vald)",
   "Please wait.": "Vänta.",
   "Up to date already": "Redan uppdaterad",

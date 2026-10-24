@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "De thema-editor is gestopt. Zie theme_server.txt in de PortMaster-map.",
   "{theme_name} (Selected)": "{theme_name} (Geselecteerd)",
   "Download": "Download",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "Thema {theme_name} is niet gedownload, wilt u het downloaden?",
   "{item_name} (Selected)": "{item_name} (Geselecteerd)",
   "Please wait.": "Even geduld.",
   "Up to date already": "Al bijgewerkt",

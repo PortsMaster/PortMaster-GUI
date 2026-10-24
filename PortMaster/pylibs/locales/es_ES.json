@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "El editor de temas se ha detenido. Consulta theme_server.txt en la carpeta de PortMaster.",
   "{theme_name} (Selected)": "{theme_name} (seleccionado)",
   "Download": "Descargar",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "El tema {theme_name} no está descargado, ¿quieres descargarlo?",
   "{item_name} (Selected)": "{item_name} (seleccionado)",
   "Please wait.": "Espera, por favor.",
   "Up to date already": "Ya está actualizado",
