@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.6"
+export DEVICE_INFO_VERSION="0.2.7"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -341,10 +341,14 @@ export DEVICE_KERNEL_VERSION="$(uname -r 2>/dev/null | cut -d- -f1)"
 
 # 3d. CPU SoC Discovery
 detect_dynamic_cpu() {
+    ## On mainline arm64 kernels the SMCCC soc_id driver fills machine with the board's
+    ## device-tree model ("Anbernic RG CubeXX"), not the SoC: then the compatible below.
+    local dt_model="$(tr -d '\0\r\n' < /proc/device-tree/model 2>/dev/null)"
+    [ -z "$dt_model" ] && dt_model="$(tr -d '\0\r\n' < /sys/firmware/devicetree/base/model 2>/dev/null)"
     for soc_dir in /sys/devices/soc0 /sys/bus/soc/devices/soc0; do
         if [ -f "$soc_dir/machine" ]; then
             local soc_mach="$(tr -d '\0\r\n' < "$soc_dir/machine" 2>/dev/null)"
-            if [ -n "$soc_mach" ]; then echo "$soc_mach"; return; fi
+            if [ -n "$soc_mach" ] && [ "$soc_mach" != "$dt_model" ]; then echo "$soc_mach"; return; fi
         fi
     done
 
