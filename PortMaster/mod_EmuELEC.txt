@@ -26,6 +26,11 @@ if declare -f get_controls >/dev/null 2>&1 && ! declare -f _pm_get_controls_orig
     get_controls() {
         _pm_get_controls_orig "$@"
         [ "${#sdl_controllerconfig}" -gt 100000 ] && sdl_controllerconfig=""
+
+        # Override SDL_GAMECONTROLLERCONFIG_FILE because PortMaster sets it to
+        # /tmp/gamecontrollerdb.txt, a copy of ${HOME}/ports/PortMaster/gamecontrollerdb.txt
+        # that lacks the user-defined button mappings.
+        export SDL_GAMECONTROLLERCONFIG_FILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
     }
 fi
 
