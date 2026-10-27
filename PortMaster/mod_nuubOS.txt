@@ -14,6 +14,14 @@
 
 export SDL_VIDEODRIVER="wayland"
 
+# westonwrap.sh (the weston_pkg runtime of Godot 4 and other ports) sources this file
+# too. nuubOS has its own Wayland compositor on Panfrost, as ROCKNIX on Panfrost: take
+# westonwrap's direct path there (the program on the compositor, no Weston of its own).
+if [[ "${0##*/}" == westonwrap*.sh ]]; then
+    CFW_NAME="ROCKNIX"
+    glxinfo() { echo "OpenGL version string: nuubOS Wayland compositor (Panfrost)"; }
+fi
+
 # Use for Godot 2
 GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
 
