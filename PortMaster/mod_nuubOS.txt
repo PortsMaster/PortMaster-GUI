@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+## Modular - nuubOS
+#
+# A modular file that is sourced for specific script lines required by ports running on nuubOS.
+#
+# usage `[ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"`
+#
+# Ports run inside a sandbox that only sees /roms/ports, under the Wayland compositor
+# (labwc): SDL2 talks Wayland, controllers are the nuubOS virtual gamepads.
+
+export SDL_VIDEODRIVER="wayland"
+
+# Use for Godot 2
+GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+# Use for Godot 3+
+GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+# The nuubOS game gamepad (buttons south, east, north, west, D-pad on hat 0), the only
+# kind of controller ports see: every physical pad reaches them through it. Mapped by
+# the Anbernic labels, as ports expect on these consoles: A east, B south, X north, Y west.
+NUUBOS_GAMEPAD_MAPPING="060000006e7575624f532047616d6500,nuubOS Gamepad,a:b1,b:b0,x:b2,y:b3,leftshoulder:b4,rightshoulder:b5,lefttrigger:b6,righttrigger:b7,back:b8,start:b9,leftstick:b10,rightstick:b11,leftx:a0,lefty:a1,rightx:a2,righty:a3,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,platform:Linux,"
+
+get_controls() {
+  ANALOGSTICKS="${ANALOG_STICKS:-2}"
+  LOWRES="N"
+  DEVICE="060000006e7575624f532047616d6500"
+  param_device="nuubos"
+
+  export SDL_GAMECONTROLLERCONFIG_FILE="/tmp/gamecontrollerdb.txt"
+  echo "${NUUBOS_GAMEPAD_MAPPING}" > /tmp/gamecontrollerdb.txt
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
+}
+
+pm_platform_helper() {
+    # Older PortMaster releases have no pm_message_close.
+    if declare -F pm_message_close > /dev/null; then
+        pm_message_close
+    fi
+
+    if [ -e "$PM_PIPE" ]; then
+        PortMasterDialogExit
+    fi
+}
