@@ -43,7 +43,9 @@ def test_prepare_tools_dir(tmp_path):
     theme.mkdir()
     (theme / "theme.json").write_text("{}")
 
+    ## (Its callers make the work folder: it never makes the folders above tools.)
     work = tmp_path / "work"
+    work.mkdir()
     assert worker.prepare_tools_dir(work, cache_config, theme, "Dark") == "My Theme"
     config = work / "tools" / "PortMaster" / "config"
     ## The screenshot folders are linked, the files copied: on a device this is PortMaster's
@@ -546,6 +548,32 @@ def test_managed_server(tmp_path):
         ## folder: ctypes' find_library can leave gcc's temporary files there too.)
         proc.stdin.close()
         assert proc.wait(timeout=30) == 0
+        assert [path for path in (tmp_path / "tmp").iterdir() if path.name.startswith("pm-theme-server-")] == []
+
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+@pytest.mark.parametrize("delay", [0, 0.05, 0.2, 0.5, 1.0])
+def test_managed_server_stopped_while_starting(tmp_path, delay):
+    ## Stopped (B, or PortMaster quitting) while its first renderer is still starting:
+    ## that start mustn't carry on into the folder the server has already removed.
+    import time
+
+    proc = start_managed(tmp_path)
+    try:
+        ready = json.loads(proc.stdout.readline() or "{}")
+        if not ready.get('ok'):
+            pytest.skip(f"the renderer can't start here: {ready.get('error')}")
+
+        time.sleep(delay)
+        proc.stdin.close()
+        assert proc.wait(timeout=60) == 0
+        ## A renderer left behind would still be writing there.
+        time.sleep(0.5)
         assert [path for path in (tmp_path / "tmp").iterdir() if path.name.startswith("pm-theme-server-")] == []
 
     finally:
