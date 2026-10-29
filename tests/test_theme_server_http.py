@@ -70,6 +70,7 @@ def server(locales, themes_dir):
     pool = FakePool()
     server = serve.Server(("127.0.0.1", 0), serve.Handler)
     server.themes, server.pool, server.shots, server.verbose = serve.Themes(themes_dir), pool, pool.shots(), False
+    server.editor = serve.ThemeEditor(server.themes, themes_dir.parent / "work", serve.DEFAULT_THEME_DIR)
     ## (Polled often, so shutting it down after each test is quick.)
     threading.Thread(target=server.serve_forever, kwargs={'poll_interval': 0.02}, daemon=True).start()
     yield f"http://127.0.0.1:{server.server_address[1]}", pool
@@ -438,3 +439,138 @@ def test_export_missing_section(tmp_path):
     assert serve.export(pool, serve.Themes(None), tmp_path / "out", ["default_theme"], ["640x480"], [], ["en_US"], pool.shots()) == 0
     folder = tmp_path / "out" / "default_theme" / "640x480" / "Light Mode" / "en_US"
     assert not (folder / "main_menu.png").exists() and (folder / "main_menu.json").is_file()
+
+
+################################################################################
+## The Edit view
+@pytest.mark.parametrize("path, content_type, cached", [
+    ("/static/codemirror.js", "text/javascript", True),
+    ("/static/codemirror.css", "text/css", True),
+    ("/static/editor.js", "text/javascript", False),
+    ])
+def test_static_files(server, path, content_type, cached):
+    status, body, headers = get(server[0], path)
+    assert status == 200 and headers["Content-Type"].startswith(content_type) and len(body) > 1000
+    assert ("max-age" in headers["Cache-Control"]) == cached
+
+
+@pytest.mark.parametrize("path", ["/static/", "/static/index.html", "/static/codemirror/LICENSE", "/static/codemirror/codemirror.js", "/static/../editor.py"])
+def test_static_only_the_listed_files(server, path):
+    assert get(server[0], path)[0] == 404
+
+
+def test_page_loads_the_editor(server):
+    body = get(server[0], "/")[1].decode()
+    assert '<script src="/static/editor.js">' in body and 'data-view="edit"' in body
+    ## Everything the page asks for is served.
+    for path in serve.STATIC_FILES:
+        assert (serve.HERE / "static" / serve.STATIC_FILES[path][0]).is_file()
+
+
+def test_codemirror_licence():
+    folder = serve.HERE / "static" / "codemirror"
+    assert "MIT License" in (folder / "LICENSE").read_text()
+    for name in ("codemirror.js", "codemirror.css"):
+        assert "MIT License, see LICENSE" in (folder / name).read_text(encoding="utf-8")[:300]
+
+
+def test_schema(server):
+    status, body, _ = get(server[0], "/api/schema?theme=good")
+    data = json.loads(body)
+    assert status == 200 and data['keys']['font-size'] == {'type': "int"}
+    assert data['names']['schemes'] == ["Light", "Dark"]
+    assert get(server[0], "/api/schema?theme=nope")[0] == 404
+
+
+def test_theme_file(server, themes_dir):
+    status, body, _ = get(server[0], "/api/theme_file?theme=good")
+    file = json.loads(body)
+    assert status == 200 and file['text'] == (themes_dir / "good" / "theme.json").read_text()
+    assert file['writable'] and file['can_copy']
+    assert json.loads(get(server[0], "/api/theme_file?theme=default_theme")[1])['writable'] is False
+    assert get(server[0], "/api/theme_file?theme=nope")[0] == 404
+    assert get(server[0], "/api/theme_file")[0] == 404
+
+
+def test_save_theme_file(server, themes_dir):
+    version = json.loads(get(server[0], "/api/theme_file?theme=good")[1])['version']
+
+    status, answer = post(server[0], "/api/theme_file", {'theme': "good", 'text': '{"#info": {"name": "New"}}', 'version': version})
+
+    assert status == 200 and answer['ok']
+    assert json.loads((themes_dir / "good" / "theme.json").read_text()) == {"#info": {"name": "New"}}
+    assert (themes_dir / "good" / "theme.json.bak").is_file()
+    ## The version it sent is old now.
+    status, answer = post(server[0], "/api/theme_file", {'theme': "good", 'text': "{}", 'version': version})
+    assert status == 409 and answer['text'] == '{"#info": {"name": "New"}}' and answer['version'] != version
+
+
+@pytest.mark.parametrize("body, status", [
+    ({'theme': "good", 'text': "{ nope", 'version': "x"}, 400),
+    ({'theme': "good", 'text': 5, 'version': "x"}, 400),
+    ({'theme': "good", 'text': "{}"}, 400),
+    ({'theme': "default_theme", 'text': "{}", 'version': "x"}, 403),
+    ({'theme': "nope", 'text': "{}", 'version': "x"}, 404),
+    ({'theme': ["good"], 'text': "{}", 'version': "x"}, 404),
+    ])
+def test_save_theme_file_refused(server, themes_dir, body, status):
+    before = (themes_dir / "good" / "theme.json").read_text()
+    assert post(server[0], "/api/theme_file", body)[0] == status
+    assert (themes_dir / "good" / "theme.json").read_text() == before
+
+
+def test_save_theme_file_syntax_error_says_where(server):
+    version = json.loads(get(server[0], "/api/theme_file?theme=good")[1])['version']
+    status, answer = post(server[0], "/api/theme_file", {'theme': "good", 'text': '{\n  "a": 1\n  "b": 2\n}', 'version': version})
+    assert status == 400 and answer['line'] == 3 and answer['column'] == 3 and "valid JSON" in answer['error']
+
+
+@pytest.mark.parametrize("path", ["/api/theme_file", "/api/theme_draft", "/api/theme_copy"])
+def test_editor_posts_need_the_page(server, path):
+    ## Without the header (another site's page): refused before anything is read.
+    body = {'theme': "good", 'text': "{}", 'version': "x", 'name': "Evil"}
+    assert post(server[0], path, body, headers={"Content-Type": "application/json"})[0] == 403
+    assert post(server[0], path, body, headers={"Content-Type": "text/plain", "X-Theme-Server": "1"})[0] == 403
+
+
+def test_draft_renders(server, themes_dir):
+    base, pool = server
+    status, answer = post(base, "/api/theme_draft", {'theme': "good", 'text': '{"#info": {"name": "Draft"}}'})
+    assert status == 200 and answer['theme'] == "good~draft"
+
+    status, body, _ = get(base, "/api/render.json?theme=good~draft&shot=main_menu")
+    assert status == 200 and pool.calls[-1][0] == "good~draft"
+    assert json.loads(get(base, "/api/version?theme=good~draft")[1])['version']
+    ## Not listed, and the theme itself is as it was.
+    assert "good~draft" not in [theme['id'] for theme in json.loads(get(base, "/api/info")[1])['themes']]
+    assert "Draft" not in (themes_dir / "good" / "theme.json").read_text()
+
+
+@pytest.mark.parametrize("body", [{'theme': "good", 'text': "["}, {'theme': "good"}, {'theme': "nope", 'text': "{}"}, {'theme': "good~draft", 'text': "{}"}])
+def test_draft_refused(server, body):
+    assert post(server[0], "/api/theme_draft", body)[0] in (400, 404)
+
+
+def test_big_theme_file(server, themes_dir):
+    ## Bigger than a translation may be, as theme.json files are.
+    version = json.loads(get(server[0], "/api/theme_file?theme=good")[1])['version']
+    text = json.dumps({"main_menu": {f"region_{n}": {"text": "x" * 100} for n in range(3000)}})
+    assert len(text) > 256 * 1024
+    assert post(server[0], "/api/theme_file", {'theme': "good", 'text': text, 'version': version})[0] == 200
+
+
+def test_copy_theme(server, themes_dir):
+    status, answer = post(server[0], "/api/theme_copy", {'theme': "good", 'name': "Good Copy"})
+
+    assert status == 200 and answer['theme'] == "Good_Copy"
+    assert json.loads((themes_dir / "Good_Copy" / "theme.json").read_text())["#info"]["name"] == "Good Copy"
+    assert "Good_Copy" in [theme['id'] for theme in json.loads(get(server[0], "/api/info")[1])['themes']]
+
+    status, answer = post(server[0], "/api/theme_copy", {'theme': "good", 'name': "Good Copy"})
+    assert status == 409
+
+
+def test_copy_theme_with_changes(server, themes_dir):
+    status, answer = post(server[0], "/api/theme_copy", {'theme': "default_theme", 'name': "Mine", 'text': '{"#info": {"name": "x"}, "main_menu": {}}'})
+    assert status == 200
+    assert json.loads((themes_dir / "Mine" / "theme.json").read_text()) == {"#info": {"name": "Mine"}, "main_menu": {}}

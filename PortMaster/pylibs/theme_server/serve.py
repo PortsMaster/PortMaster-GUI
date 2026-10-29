@@ -41,7 +41,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 
-from theme_server import catalogue, translations as i18n_tool
+from theme_server import catalogue, schema, translations as i18n_tool
+from theme_server.editor import EditorError, MAX_THEME_SIZE, ThemeEditor
 
 
 HERE = Path(__file__).resolve().parent
@@ -75,6 +76,8 @@ class Themes:
     """The themes the server shows: the default theme, then each theme in --themes."""
     def __init__(self, themes_dir):
         self.themes_dir = Path(themes_dir).resolve() if themes_dir else None
+        ## The Edit view's unsaved theme.json texts, "<theme>~draft": rendered, never listed.
+        self.drafts = {}
 
     def all(self):
         found = {"default_theme": DEFAULT_THEME_DIR}
@@ -88,6 +91,8 @@ class Themes:
         return found
 
     def get(self, theme_id):
+        if theme_id in self.drafts:
+            return self.drafts[theme_id]
         return self.all().get(theme_id)
 
     def info(self, theme_id, theme_dir):
@@ -624,6 +629,21 @@ class Handler(BaseHTTPRequestHandler):
             if url.path in ("/", "/index.html"):
                 self.send(200, (HERE / "static" / "index.html").read_bytes(), "text/html; charset=utf-8")
 
+            elif url.path in STATIC_FILES:
+                ## The editor's CodeMirror: a fixed list, nothing else of the folder is served.
+                name, content_type, cache = STATIC_FILES[url.path]
+                self.send(200, (HERE / "static" / name).read_bytes(), content_type, cache=cache)
+
+            elif url.path == "/api/schema":
+                theme_dir = self.server.themes.get(query.get('theme', "default_theme"))
+                if theme_dir is None:
+                    self.send(404, {'error': "no such theme"})
+                    return
+                self.send(200, schema.schema(theme_dir, [path / "theme.json" for path in self.server.themes.all().values()]))
+
+            elif url.path == "/api/theme_file":
+                self.send(200, self.server.editor.read(query.get('theme', "")))
+
             elif url.path == "/api/info":
                 themes = self.server.themes
                 self.send(200, {
@@ -682,6 +702,9 @@ class Handler(BaseHTTPRequestHandler):
         except WorkerError as error:
             self.send(500, {'error': str(error)})
 
+        except EditorError as error:
+            self.send(error.status, {**error.extra, 'error': str(error)})
+
         except (BrokenPipeError, ConnectionResetError):
             pass
 
@@ -696,7 +719,9 @@ class Handler(BaseHTTPRequestHandler):
 
         try:
             length = int(self.headers.get("Content-Length") or 0)
-            if not 0 < length <= 256 * 1024:
+            ## A theme.json can be big (JSON escapes make it bigger still), a translation can't.
+            limit = 2 * MAX_THEME_SIZE if url.path in ("/api/theme_file", "/api/theme_draft") else 256 * 1024
+            if not 0 < length <= limit:
                 self.send(400, {'error': "bad request"})
                 return
             body = json.loads(self.rfile.read(length).decode("utf-8"))
@@ -722,14 +747,39 @@ class Handler(BaseHTTPRequestHandler):
                     return
                 self.send(200, {'ok': True, 'problems': problems})
 
+            elif url.path in ("/api/theme_file", "/api/theme_draft", "/api/theme_copy"):
+                theme_id, text = body.get('theme'), body.get('text')
+                editor = self.server.editor
+                if url.path == "/api/theme_copy":
+                    self.send(200, editor.copy(theme_id, body.get('name'), text if isinstance(text, str) else None))
+                elif not isinstance(text, str):
+                    self.send(400, {'error': "bad request"})
+                elif url.path == "/api/theme_draft":
+                    self.send(200, editor.draft(theme_id, text))
+                elif not isinstance(body.get('version'), str):
+                    self.send(400, {'error': "bad request"})
+                else:
+                    self.send(200, editor.save(theme_id, text, body['version']))
+
             else:
                 self.send(404, {'error': "not found"})
+
+        except EditorError as error:
+            self.send(error.status, {**error.extra, 'error': str(error)})
 
         except (ValueError, UnicodeDecodeError, AttributeError):
             self.send(400, {'error': "bad request"})
 
         except (BrokenPipeError, ConnectionResetError):
             pass
+
+
+STATIC_FILES = {
+    ## path: (file in static/, type, cached: CodeMirror only changes with PortMaster)
+    "/static/codemirror.js":  ("codemirror/codemirror.js", "text/javascript; charset=utf-8", True),
+    "/static/codemirror.css": ("codemirror/codemirror.css", "text/css; charset=utf-8", True),
+    "/static/editor.js":      ("editor.js", "text/javascript; charset=utf-8", False),
+    }
 
 
 class Server(ThreadingHTTPServer):
@@ -862,6 +912,7 @@ def main(argv=None):
 
         ## Managed: every request goes in PortMaster's theme_server.txt.
         server.themes, server.pool, server.shots, server.verbose = themes, pool, shots, options.verbose or report is not None
+        server.editor = ThemeEditor(themes, work_dir, DEFAULT_THEME_DIR)
         port = server.server_address[1]
 
         ## Up straight away; the first renderer starts meanwhile (6-15 seconds on a handheld).
