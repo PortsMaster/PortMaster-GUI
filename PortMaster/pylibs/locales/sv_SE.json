@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Kunde inte ladda ner {runtime}, spelet kanske inte körs korrekt.",
   "Successfully downloaded {runtime}.": "Hämtat {runtime}.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nSå här gör du:\nMENU -> UTILITIES -> Rescan Rom Directory",
+  "Unable to download file, its md5 is not valid.": "Kan inte ladda ner filen, dess md5 är ogiltig.",
   "Unable to download verification file.": "Kunde inte hämta verifieringsfilen.",
   "Unable to download non zip files.": "Kan inte hämta icke-zip-filer.",
   "Cache out of date.": "Cache är föråldrad.",

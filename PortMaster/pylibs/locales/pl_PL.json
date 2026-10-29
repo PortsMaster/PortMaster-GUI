@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Nie można pobrać {runtime}, gra może nie działać poprawnie.",
   "Successfully downloaded {runtime}.": "Pomyślnie pobrano {runtime}.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nAby to zrobić:\nMENU -> UTILITY -> Przeskanuj katalog Rom",
+  "Unable to download file, its md5 is not valid.": "Nie można pobrać pliku, jego md5 jest nieprawidłowe.",
   "Unable to download verification file.": "Nie można pobrać pliku weryfikacyjnego.",
   "Unable to download non zip files.": "Nie można pobrać plików bez zip.",
   "Cache out of date.": "Pamięć podręczna nieaktualna.",

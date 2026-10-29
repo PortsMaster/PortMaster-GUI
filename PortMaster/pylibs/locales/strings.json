@@ -27,6 +27,7 @@
   "Download validation failed.": [
     "pylibs/harbourmaster/hm_info.py:146",
     "pylibs/harbourmaster/hm_info.py:168",
+    "pylibs/harbourmaster/source/__init__.py:69",
     "pylibs/harbourmaster/util/net.py:148"
   ],
   "Unable to download file.": [
@@ -212,11 +213,14 @@
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": [
     "pylibs/harbourmaster/platform/retrodeck.py:18"
   ],
+  "Unable to download file, its md5 is not valid.": [
+    "pylibs/harbourmaster/source/__init__.py:38"
+  ],
   "Unable to download verification file.": [
-    "pylibs/harbourmaster/source/__init__.py:35"
+    "pylibs/harbourmaster/source/__init__.py:60"
   ],
   "Unable to download non zip files.": [
-    "pylibs/harbourmaster/source/__init__.py:46"
+    "pylibs/harbourmaster/source/__init__.py:79"
   ],
   "Cache out of date.": [
     "pylibs/harbourmaster/source/base.py:34"

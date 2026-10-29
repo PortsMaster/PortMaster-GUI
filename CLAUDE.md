@@ -35,7 +35,7 @@ python3 -I tools/i18n.py check             # language files: unused strings, los
 
 pugwash flags: `--quiet --no-check --debug --no-colour --force-colour --no-log --offline --no-harbour`.
 
-To test on a device: `./do_release.sh test`, copy `dist/PortMaster.zip` over (stream it over ssh: `scp` has truncated files on some devices), then on the device run `./PortMaster/harbourmaster --no-check install ./PortMaster.zip` (the `./` prefix makes it install a local file).
+To test on a device: `./do_release.sh test`, copy `dist/PortMaster.zip` over (stream it over ssh: `scp` has truncated files on some devices), then on the device run `./PortMaster/harbourmaster --no-check install ./PortMaster.zip` (the `./` prefix makes it install a local file). `harbourmaster install` also takes a URL: `<url>/X.zip.md5` fetches the md5 file and then `X.zip`, and `<url>/X.zip?md5=<hex>` checks the download against that md5 (the `md5` parameter isn't sent to the server); both must agree when given together (`raw_download` in `source/__init__.py`).
 
 ## Local-dev mode (HM_TESTING)
 

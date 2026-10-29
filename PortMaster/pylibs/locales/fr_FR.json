@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Impossible de télécharger {runtime}, le jeu pourrait ne pas s'exécuter correctement.",
   "Successfully downloaded {runtime}.": "Téléchargement de {runtime} réussi.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nPour ce faire :\nMENU -> UTILITIES -> Rescan Rom Directory",
+  "Unable to download file, its md5 is not valid.": "Impossible de télécharger le fichier, son md5 n'est pas valide.",
   "Unable to download verification file.": "Impossible de télécharger le fichier de vérification.",
   "Unable to download non zip files.": "Impossible de télécharger des fichiers non compressés.",
   "Cache out of date.": "Cache obsolète.",

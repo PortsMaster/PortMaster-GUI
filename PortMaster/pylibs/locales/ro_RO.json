@@ -60,6 +60,7 @@
   "Unable to download {runtime}, game may not run correctly.": "Nu s-a putut descărca {runtime}, jocul ar putea să nu ruleze corect.",
   "Successfully downloaded {runtime}.": "{runtime} a fost descărcat cu succes.",
   "\n\nIn order to do so:\nMENU -> UTILITIES -> Rescan Rom Directory": "\n\nPentru a face acest lucru:\nMENU -> UTILITARE -> Rescanare Director ROM",
+  "Unable to download file, its md5 is not valid.": "Nu se poate descărca fișierul, md5-ul său nu este valid.",
   "Unable to download verification file.": "Nu s-a putut descărca fișierul de verificare.",
   "Unable to download non zip files.": "Nu s-au putut descărca fișierele non zip.",
   "Cache out of date.": "Cache-ul este expirat.",
