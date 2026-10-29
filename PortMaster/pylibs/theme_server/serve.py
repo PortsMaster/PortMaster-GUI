@@ -369,6 +369,8 @@ class RenderPool:
         self.counter = 0
         ## Screen sizes whose renderer is starting, for /api/status.
         self.starting = set()
+        ## Set by stop(): no renderer starts after it.
+        self.stopping = False
 
     def status(self):
         """What the renderers are doing, so the page can say: {'starting': [resolution],
@@ -401,6 +403,9 @@ class RenderPool:
 
         ## One start at a time: the page asks for every screen at once.
         with self.start_lock:
+            if self.stopping:
+                raise WorkerError("the server is stopping")
+
             with self.lock:
                 worker = self.workers.get(resolution)
                 if worker is not None and worker.alive():
@@ -470,14 +475,24 @@ class RenderPool:
         theme_dir, scheme, loaded = self._wanted(theme_id, scheme, lang)
         self._worker(resolution, theme_dir, scheme, lang, loaded)
 
-    def stop(self):
-        with self.lock:
-            workers, self.workers = list(self.workers.values()), {}
-        for worker in workers:
-            worker.stop()
-        if self.zygote:
-            self.zygote.stop()
-            self.zygote = None
+    def stop(self, start_timeout=10):
+        """Stops the renderers and the zygote: also one still starting (the first one, warm(),
+        can still be starting when PortMaster stops the server), which would otherwise go on
+        into the work folder after it's removed. Waits up to start_timeout seconds for that
+        start: PortMaster kills the server after 15."""
+        self.stopping = True
+        started = self.start_lock.acquire(timeout=start_timeout)
+        try:
+            with self.lock:
+                workers, self.workers = list(self.workers.values()), {}
+            for worker in workers:
+                worker.stop()
+            if self.zygote:
+                self.zygote.stop()
+                self.zygote = None
+        finally:
+            if started:
+                self.start_lock.release()
 
 
 ################################################################################

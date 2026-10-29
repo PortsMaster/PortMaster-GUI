@@ -102,7 +102,11 @@ def prepare_tools_dir(work, ports_config, theme_dir, scheme):
     if tools.exists():
         shutil.rmtree(str(tools))
 
-    config.mkdir(parents=True)
+    ## One level at a time, never parents=True: if serve.py has already removed its
+    ## folder (stopped while this one was starting), this fails instead of making it again.
+    tools.mkdir()
+    (tools / "PortMaster").mkdir()
+    config.mkdir()
     (tools / "PortMaster" / "themes").mkdir()
     (tools / "PortMaster" / "libs").mkdir()
     (work / "ports").mkdir(exist_ok=True)
@@ -293,7 +297,8 @@ def zygote(options):
 
     control = socket.socket(fileno=options.control_fd)
     shared = Path(options.work)
-    shared.mkdir(parents=True, exist_ok=True)
+    ## In serve.py's folder, which is gone if it stopped while this was starting.
+    shared.mkdir(exist_ok=True)
     ## The themes (linked as renderers load them) and the config pugwash reads at start;
     ## each renderer's HarbourMaster has its own copy of the ports.
     prepare_tools_dir(shared, Path(options.ports_config), PM_DIR / "pylibs" / "default_theme", None)
@@ -341,7 +346,7 @@ def zygote(options):
                 control.close()
                 signal.signal(signal.SIGCHLD, signal.SIG_DFL)
                 work = Path(spawn['work'])
-                work.mkdir(parents=True, exist_ok=True)
+                work.mkdir(exist_ok=True)
                 log = open(str(work.with_suffix(".log")), "w")
                 os.dup2(log.fileno(), 2)
                 os.dup2(log.fileno(), 1)
@@ -391,7 +396,7 @@ def main(argv=None):
 
     width, height = parse_resolution(options.resolution)
     work = Path(options.work)
-    work.mkdir(parents=True, exist_ok=True)
+    work.mkdir(exist_ok=True)
     prepare_tools_dir(work, Path(options.ports_config), PM_DIR / "pylibs" / "default_theme", None)
     renderer_env(width, height, options.lang)
     use_tools_dir(work)

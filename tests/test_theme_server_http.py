@@ -574,3 +574,88 @@ def test_copy_theme_with_changes(server, themes_dir):
     status, answer = post(server[0], "/api/theme_copy", {'theme': "default_theme", 'name': "Mine", 'text': '{"#info": {"name": "x"}, "main_menu": {}}'})
     assert status == 200
     assert json.loads((themes_dir / "Mine" / "theme.json").read_text()) == {"#info": {"name": "Mine"}, "main_menu": {}}
+
+
+################################################################################
+## Stopping while a renderer starts
+class SlowZygote:
+    """A zygote that takes `delay` seconds to start, and says when it was stopped."""
+    delay = 0.5
+    made = []
+
+    def __init__(self, ports_config, work):
+        time.sleep(self.delay)
+        self.stopped = False
+        SlowZygote.made.append(self)
+
+    def alive(self):
+        return not self.stopped
+
+    def stop(self):
+        self.stopped = True
+
+
+class FakeWorker:
+    made = []
+
+    def __init__(self, *args, **kwargs):
+        self.stopped = False
+        FakeWorker.made.append(self)
+
+    def alive(self):
+        return not self.stopped
+
+    def stop(self):
+        self.stopped = True
+
+
+@pytest.fixture
+def slow_pool(tmp_path, themes_dir, monkeypatch):
+    SlowZygote.made, FakeWorker.made = [], []
+    monkeypatch.setattr(serve, "Zygote", SlowZygote)
+    monkeypatch.setattr(serve, "Worker", FakeWorker)
+    return serve.RenderPool(serve.Themes(themes_dir), tmp_path / "config", tmp_path / "work")
+
+
+def test_stop_waits_for_a_start(slow_pool):
+    ## warm() is still starting the first renderer when PortMaster stops the server: stop()
+    ## waits for it and stops what it started, or it would carry on in the removed folder.
+    warm = threading.Thread(target=slow_pool.warm)
+    warm.start()
+    time.sleep(0.1)
+
+    slow_pool.stop()
+    warm.join()
+
+    assert len(SlowZygote.made) == 1 and SlowZygote.made[0].stopped
+    assert len(FakeWorker.made) == 1 and FakeWorker.made[0].stopped
+    assert slow_pool.workers == {} and slow_pool.zygote is None
+
+
+def test_nothing_starts_after_stop(slow_pool):
+    slow_pool.stop()
+    with pytest.raises(serve.WorkerError):
+        slow_pool.warm()
+    assert SlowZygote.made == [] and FakeWorker.made == []
+
+
+def test_stop_gives_up_waiting(slow_pool, monkeypatch):
+    ## A start that never ends: stop() still returns (PortMaster kills the server at 15 s).
+    monkeypatch.setattr(SlowZygote, "delay", 3)
+    warm = threading.Thread(target=slow_pool.warm, daemon=True)
+    warm.start()
+    time.sleep(0.1)
+
+    began = time.monotonic()
+    slow_pool.stop(start_timeout=0.3)
+    assert time.monotonic() - began < 2
+
+
+def test_renderer_folders_need_the_servers(tmp_path):
+    ## A renderer starting after serve.py removed its folder fails, rather than making it again.
+    from theme_server import worker
+
+    gone = tmp_path / "pm-theme-server-x" / "zygote"
+    with pytest.raises(FileNotFoundError):
+        worker.prepare_tools_dir(gone, tmp_path / "config", serve.DEFAULT_THEME_DIR, None)
+    assert not (tmp_path / "pm-theme-server-x").exists()
