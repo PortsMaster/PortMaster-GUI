@@ -229,19 +229,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:581"
+    "pylibs/pugwash/theme.py:588"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:591"
+    "pylibs/pugwash/theme.py:598"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:614"
+    "pylibs/pugwash/theme.py:621"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:620"
+    "pylibs/pugwash/theme.py:627"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -433,7 +433,7 @@
     "pylibs/pugwash/scenes/keyboard.py:41",
     "pylibs/pugwash/scenes/language.py:30",
     "pylibs/pugwash/scenes/themes.py:46",
-    "pylibs/pugwash/scenes/themes.py:127"
+    "pylibs/pugwash/scenes/themes.py:145"
   ],
   "Back": [
     "pylibs/pugwash/scenes/featured.py:30",
@@ -451,8 +451,8 @@
     "pylibs/pugwash/scenes/runtimes.py:109",
     "pylibs/pugwash/scenes/runtimes.py:112",
     "pylibs/pugwash/scenes/themes.py:48",
-    "pylibs/pugwash/scenes/themes.py:126",
-    "pylibs/pugwash/scenes/themes.py:127"
+    "pylibs/pugwash/scenes/themes.py:144",
+    "pylibs/pugwash/scenes/themes.py:145"
   ],
   "No featured ports found, internet connection is required.": [
     "pylibs/pugwash/scenes/featured.py:47"
@@ -712,7 +712,7 @@
   ],
   "Select Color Scheme": [
     "pylibs/pugwash/scenes/options.py:43",
-    "pylibs/pugwash/scenes/themes.py:106"
+    "pylibs/pugwash/scenes/themes.py:124"
   ],
   "Select a color scheme for PortMaster.": [
     "pylibs/pugwash/scenes/options.py:44"
@@ -1057,14 +1057,17 @@
   "Download": [
     "pylibs/pugwash/scenes/themes.py:51"
   ],
+  "Theme {theme_name} is not downloaded, would you like to download it?": [
+    "pylibs/pugwash/scenes/themes.py:82"
+  ],
   "{item_name} (Selected)": [
-    "pylibs/pugwash/scenes/themes.py:120"
+    "pylibs/pugwash/scenes/themes.py:138"
   ],
   "Please wait.": [
     "pylibs/pugwash/theme.py:358"
   ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:588"
+    "pylibs/pugwash/theme.py:595"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

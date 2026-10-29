@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "テーマエディターが停止しました。PortMaster フォルダーの theme_server.txt を確認してください。",
   "{theme_name} (Selected)": "{theme_name} (選択済み)",
   "Download": "ダウンロード",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "テーマ {theme_name} はダウンロードされていません。ダウンロードしますか？",
   "{item_name} (Selected)": "{item_name} (選択済み)",
   "Please wait.": "お待ちください。",
   "Up to date already": "既に最新の状態です",

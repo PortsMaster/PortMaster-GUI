@@ -304,6 +304,7 @@
   "The theme editor stopped. See theme_server.txt in the PortMaster folder.": "Редактор тем остановился. См. theme_server.txt в папке PortMaster.",
   "{theme_name} (Selected)": "{theme_name} (Выбрана)",
   "Download": "Скачать",
+  "Theme {theme_name} is not downloaded, would you like to download it?": "Тема {theme_name} не загружена. Загрузить её?",
   "{item_name} (Selected)": "{item_name} (Выбранная)",
   "Please wait.": "Пожалуйста, подождите.",
   "Up to date already": "Актуальная версия уже существует",
