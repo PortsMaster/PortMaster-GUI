@@ -119,16 +119,30 @@ def load_lang():
     DEFAULT_LANG = check_lang(environ_lang) or 'en_US'
 
     if config_lang and check_lang(config_lang):
-        os.environ[environ_key] = check_lang(config_lang)
+        CURRENT_LANG = check_lang(config_lang)
 
     elif environ_lang and check_lang(environ_lang):
-        os.environ[environ_key] = check_lang(environ_lang)
+        CURRENT_LANG = check_lang(environ_lang)
 
     else:
-        os.environ[environ_key] = 'en_US'
+        CURRENT_LANG = 'en_US'
 
-    CURRENT_LANG = os.environ[environ_key]
+    os.environ[environ_key] = environ_value(environ_key, CURRENT_LANG)
     ENVIRON_KEY = environ_key
+
+
+def environ_value(key, language):
+    """
+    What the environment variable `key` gets for `language`: the locale with its UTF-8
+    codeset (LANG, LC_ALL, LC_MESSAGES), or just the language for LANGUAGE (a gettext list).
+
+    A bare "ru_RU" is a legacy codeset (ISO-8859-5) on systems that have the locale (dArkOS),
+    so the programs PortMaster starts (df, the theme server, ports) wrote in it: harbourmaster
+    couldn't read df and every install failed.
+    """
+    if key == 'LANGUAGE':
+        return language
+    return language + '.UTF-8'
 
 
 def set_language(language):
@@ -141,7 +155,7 @@ def set_language(language):
     global CURRENT_LANG
 
     CURRENT_LANG = (language and check_lang(language)) or DEFAULT_LANG or 'en_US'
-    os.environ[ENVIRON_KEY] = CURRENT_LANG
+    os.environ[ENVIRON_KEY] = environ_value(ENVIRON_KEY, CURRENT_LANG)
     i18n.load_language(LANG_DIR, CURRENT_LANG)
     return CURRENT_LANG
 

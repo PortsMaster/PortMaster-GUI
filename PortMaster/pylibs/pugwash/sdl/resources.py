@@ -42,6 +42,15 @@ class ResourceManager:
             self._paths.remove(path)
             self.find.cache_clear()
 
+    @staticmethod
+    def _is_file(path):
+        ## Theme values that are text ("Zurück" on a button bar) get looked up too; a name the
+        ## filesystem refuses (EPERM on exFAT for one that isn't UTF-8) is just not a file.
+        try:
+            return path.is_file()
+        except (OSError, ValueError):
+            return False
+
     @functools.lru_cache(512)
     def find(self, file_name):
         if isinstance(file_name, pathlib.PurePath):
@@ -59,13 +68,13 @@ class ResourceManager:
         if file_name.name in ('.', '..'):
             return None
 
-        if file_name.is_file():
+        if self._is_file(file_name):
             return file_name
 
         for path in reversed(self._paths):
             full_file_name = path / file_name
 
-            if full_file_name.is_file():
+            if self._is_file(full_file_name):
                 return full_file_name
 
         return None

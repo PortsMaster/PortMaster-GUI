@@ -259,9 +259,13 @@ def get_path_fs(path):
     else:
         return None
 
+    ## df's own words in the C locale: PortMaster sets LANG for the language the user chose,
+    ## and a legacy codeset there (ISO-8859-5 for ru_RU on dArkOS) couldn't be decoded.
+    env = dict(os.environ, LC_ALL='C')
     try:
-        lines = subprocess.check_output(['df', '-PT', str(path)]).decode().split('\n')
-    except subprocess.CalledProcessError as err:
+        lines = subprocess.check_output(['df', '-PT', str(path)], env=env).decode('utf-8', 'replace').split('\n')
+    except (subprocess.CalledProcessError, OSError):
+        ## No df on this CFW, or it failed: we don't know the filesystem.
         return None
 
     if len(lines) < 2:

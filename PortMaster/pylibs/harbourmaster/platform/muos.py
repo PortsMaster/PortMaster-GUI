@@ -102,7 +102,7 @@ class PlatformmuOS(PlatformBase):
                         text = child.text.strip().split('\n', 1)[0].strip()
 
                         logger.debug(f"creating {str(target_file)}")
-                        with open(target_file, 'w') as fh:
+                        with open(target_file, 'w', encoding='utf-8') as fh:
                             print(text, file=fh)
 
             # HAHA THIS IS FUCKED

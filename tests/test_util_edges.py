@@ -302,6 +302,34 @@ def test_get_path_fs_missing_and_errors(tmp_path, monkeypatch):
     assert util.get_path_fs(tmp_path) is None
 
 
+@pytest.mark.parametrize("error", [FileNotFoundError(2, "No such file or directory: 'df'"), PermissionError(13, "df")])
+def test_get_path_fs_without_df(tmp_path, monkeypatch, error):
+    ## A CFW without df (or one we can't run): the filesystem is unknown, installs go on.
+    monkeypatch.setattr(util_files, "HM_TESTING", False)
+
+    def fail(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(util_files.subprocess, "check_output", fail)
+    assert util.get_path_fs(tmp_path) is None
+
+
+def test_get_path_fs_runs_df_in_the_c_locale(tmp_path, monkeypatch):
+    ## PortMaster sets LANG to the user's language; df's header in a legacy codeset
+    ## (ru_RU is ISO-8859-5 on dArkOS: "Файловая система" starts with 0xC4) failed every install.
+    monkeypatch.setattr(util_files, "HM_TESTING", False)
+    monkeypatch.setenv("LANG", "ru_RU")
+    calls = []
+
+    def df(args, **kwargs):
+        calls.append(kwargs.get('env') or {})
+        return "Файловая система Тип\n".encode("iso8859-5") + b"/dev/mmcblk2p1 exfat 100 50 50 50% /roms2\n"
+
+    monkeypatch.setattr(util_files.subprocess, "check_output", df)
+    assert util.get_path_fs(tmp_path) == "exfat"
+    assert calls[0].get('LC_ALL') == "C" and calls[0].get('LANG') == "ru_RU"
+
+
 ################################################################################
 ## Network
 class Response:

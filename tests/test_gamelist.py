@@ -72,6 +72,31 @@ def test_add_creates_gamelist(platform, gameinfo):
     assert platform.ports_changed()
 
 
+def test_add_writes_utf8_whatever_the_locale(platform, gameinfo, monkeypatch):
+    ## PortMaster sets LANG to the user's language; a bare "en_US" is Latin-1 where the locale
+    ## exists (dArkOS), and open() without an encoding follows it: "’" couldn't be written (the
+    ## update failed and was rolled back), and "é" went out as Latin-1 in a file that says utf-8.
+    from harbourmaster.platform import base
+
+    def latin1_open(file, mode='r', *args, **kwargs):
+        if 'b' not in mode and 'encoding' not in kwargs and not args:
+            kwargs['encoding'] = 'latin-1'
+        return open(file, mode, *args, **kwargs)
+
+    monkeypatch.setattr(base, "open", latin1_open, raising=False)
+    platform.test_gamelist.write_bytes(
+        "<gameList><game><path>./Other.sh</path><name>It’s a café</name></game></gameList>".encode("utf-8"))
+    gameinfo.write_bytes(GAMEINFO.replace("Test Port</name>", "Test Port ’é</name>").encode("utf-8"))
+
+    platform.gamelist_add(gameinfo)
+
+    raw = platform.test_gamelist.read_bytes()
+    raw.decode("utf-8")
+    result = games(platform.test_gamelist)
+    assert result["./Test Port.sh"]['name'] == "Test Port ’é"
+    assert result["./Other.sh"]['name'] == "It’s a café"
+
+
 def test_add_updates_existing_entry(platform, gameinfo):
     platform.test_gamelist.write_text(
         "<gameList><game><path>./Test Port.sh</path><name>Old</name><playcount>3</playcount></game>"
