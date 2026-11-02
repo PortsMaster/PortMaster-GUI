@@ -641,14 +641,19 @@ def test_nothing_starts_after_stop(slow_pool):
 
 def test_stop_gives_up_waiting(slow_pool, monkeypatch):
     ## A start that never ends: stop() still returns (PortMaster kills the server at 15 s).
-    monkeypatch.setattr(SlowZygote, "delay", 3)
+    monkeypatch.setattr(SlowZygote, "delay", 1.5)
     warm = threading.Thread(target=slow_pool.warm, daemon=True)
     warm.start()
     time.sleep(0.1)
 
     began = time.monotonic()
     slow_pool.stop(start_timeout=0.3)
-    assert time.monotonic() - began < 2
+    assert time.monotonic() - began < 1.2
+
+    ## Let the start finish here: left running, it woke after monkeypatch had put the real
+    ## Worker back and failed in a later test's thread (seen on a slow device).
+    warm.join(10)
+    assert not warm.is_alive()
 
 
 def test_renderer_folders_need_the_servers(tmp_path):

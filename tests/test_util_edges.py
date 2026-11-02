@@ -270,8 +270,9 @@ def test_make_temp_directory_cleans_up_after_errors():
     assert not temp_dir.exists()
 
 
-def test_get_path_fs_testing():
-    ## Never shells out from a checkout.
+def test_get_path_fs_testing(monkeypatch):
+    ## Never shells out from a checkout. (The suite also runs outside one, on devices.)
+    monkeypatch.setattr(util_files, "HM_TESTING", True)
     assert util.get_path_fs("/") is None
 
 

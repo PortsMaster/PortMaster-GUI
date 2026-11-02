@@ -68,8 +68,9 @@ if "PM_TEST_VIDEODRIVER" in os.environ:
         del TEST_ENV["SDL_VIDEODRIVER"]
         os.environ.pop("SDL_VIDEODRIVER", None)
 
-for _dir in ("tools", "ports"):
-    (SESSION_DIR / _dir).mkdir()
+## tools/PortMaster as installed: outside a git checkout (a device) some scenes write .pugwash-reboot there.
+for _dir in ("tools/PortMaster", "ports"):
+    (SESSION_DIR / _dir).mkdir(parents=True)
 
 ## Run on a device (eg: by the PortMaster Test Suite port), the environment already
 ## describes that device and PortMaster (control.txt, device_info.txt, funcs.txt):

@@ -251,6 +251,7 @@ def test_json_load_dict_default_is_copied(tmp_path):
     assert default == {"a": 1}
 
 
+@pytest.mark.sdl
 def test_gui_get_config_broken(gui, monkeypatch, tmp_path):
     tools = tmp_path / "guitools"
     (tools / "PortMaster" / "config").mkdir(parents=True)
