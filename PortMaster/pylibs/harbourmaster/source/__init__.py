@@ -52,7 +52,13 @@ def raw_download(save_path, file_url, callback=None, file_name=None, md5_source=
     if file_name is None:
         file_name = url_info.path.rsplit('/', 1)[-1]
 
-    if file_name.endswith('.md5') or file_name.endswith('.md5sum'):
+    if (file_name.endswith('.md5') or file_name.endswith('.md5sum')) and md5_query is not None:
+        ## "<url>/X.zip.md5?md5=<hex>": the md5 is right here, so the .md5 file isn't fetched; X.zip is.
+        ## (Older PortMasters fetch the .md5 file and then X.zip, so the one link works for both.)
+        file_name = file_name.rsplit('.', 1)[0]
+        file_url = urlunparse(url_info._replace(path=url_info.path.rsplit('.', 1)[0]))
+
+    elif file_name.endswith('.md5') or file_name.endswith('.md5sum'):
         ## If it is an md5 file, we assume the actual zip is sans the md5/md5sum
         md5_source = net.fetch_text(file_url)
         if md5_source is None:
@@ -62,14 +68,6 @@ def raw_download(save_path, file_url, callback=None, file_name=None, md5_source=
             return None
 
         md5_source = md5_source.strip().split(None, 1)[0].lower() if md5_source.strip() else ""
-
-        if md5_query is not None and md5_source != md5_query:
-            ## Two answers to "what should it be": neither can be trusted.
-            if callback is not None:
-                callback.message_box(_("Download validation failed."))
-
-            logger.error(f"Unable to download file: {file_url!r} [md5 file {md5_source!r} != url md5 {md5_query!r}]")
-            return None
 
         file_name = file_name.rsplit('.', 1)[0]
         file_url = urlunparse(url_info._replace(path=url_info.path.rsplit('.', 1)[0]))

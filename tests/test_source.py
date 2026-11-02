@@ -235,17 +235,21 @@ def test_raw_download_md5_file(tmp_path, callback, served):
 
 
 def test_raw_download_md5_file_and_query(tmp_path, callback, served):
+    ## The md5 is in the link, so the .md5 file isn't fetched: the zip is downloaded and checked.
+    ## (DeviceHub sends these: older PortMasters fetch the .md5 file, then the zip, from the same link.)
     url = f"https://example.com/port.zip.md5?md5={served.md5}"
-    assert hm_source.raw_download(tmp_path, url, callback=callback) is not None
-    assert served.got == ["https://example.com/port.zip"]
+    result = hm_source.raw_download(tmp_path, url, callback=callback)
+    assert result is not None and result['name'] == "port.zip"
+    assert served.fetched == [] and served.got == ["https://example.com/port.zip"]
 
 
-def test_raw_download_md5_file_and_query_disagree(tmp_path, callback, served):
-    ## Which one is right? Neither is trusted: nothing is downloaded.
+def test_raw_download_md5_file_and_wrong_query(tmp_path, callback, served):
+    ## The link's md5 is what the download is checked against.
     result = hm_source.raw_download(tmp_path, f"https://example.com/port.zip.md5?md5={'0' * 32}", callback=callback)
 
-    assert result is None and served.got == []
+    assert result is None and served.fetched == []
     assert callback.message_boxes == ["Download validation failed."]
+    assert not (tmp_path / "port.zip").exists()
 
 
 def test_raw_download_no_md5(tmp_path, callback, served):
