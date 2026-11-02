@@ -353,3 +353,26 @@ def test_animation_scene_change(pugwash, ticks):
     manager.change_scene()
     assert gui.data["animation.resets"] == "000"
     assert gui.data["animation.keeps"] == "002"
+
+
+################################################################################
+## ResourceManager
+def test_resource_find_survives_names_the_filesystem_refuses(pugwash, tmp_path, monkeypatch):
+    ## Button bar text ("Zurück") is looked up as a file too; on exFAT a name that isn't UTF-8
+    ## gives EPERM, and Path.is_file() lets that through: the theme server's render crashed.
+    import pathlib
+    from pugwash.sdl.resources import ResourceManager
+
+    (tmp_path / "icon.png").write_bytes(b"png")
+    resources = ResourceManager(None)
+    resources.add_path(tmp_path)
+    real_is_file = pathlib.Path.is_file
+
+    def is_file(self):
+        if "Zurück" in str(self):
+            raise PermissionError(1, "Operation not permitted", str(self))
+        return real_is_file(self)
+
+    monkeypatch.setattr(pathlib.Path, "is_file", is_file)
+    assert resources.find("Zurück") is None
+    assert resources.find("icon.png") == tmp_path / "icon.png"

@@ -73,7 +73,7 @@ def test_check_lang_nothing(lang, value):
 ## load_lang: config.json's language, else the system's, else English
 def test_system_language(lang):
     assert load(lang, LANG="fr_FR.UTF-8") == ("fr_FR", "fr_FR")
-    assert os.environ['LANG'] == "fr_FR"
+    assert os.environ['LANG'] == "fr_FR.UTF-8"
 
 
 def test_chosen_language_wins(lang):
@@ -93,7 +93,7 @@ def test_no_usable_system_language_is_english(lang, value):
 
 def test_no_language_variable_at_all(lang):
     assert load(lang) == ("en_US", "en_US")
-    assert lang.ENVIRON_KEY == "LANG" and os.environ["LANG"] == "en_US"
+    assert lang.ENVIRON_KEY == "LANG" and os.environ["LANG"] == "en_US.UTF-8"
 
 
 def test_first_language_variable_is_used(lang):
@@ -102,9 +102,26 @@ def test_first_language_variable_is_used(lang):
     assert "LANGUAGE" not in os.environ and "LC_ALL" not in os.environ
 
 
+@pytest.mark.parametrize("value", ["ru_RU", "ru_RU.KOI8-R", "ja_JP.eucJP", "zh_CN.GB2312"])
+def test_the_environment_gets_utf8(lang, value):
+    ## A bare or legacy locale is a legacy codeset where the locale exists (dArkOS has them
+    ## all): df, the theme server and ports PortMaster starts wrote in it, and installs failed.
+    load(lang, LANG=value)
+    assert os.environ["LANG"].endswith(".UTF-8")
+    assert lang.CURRENT_LANG == lang.check_lang(value)
+
+
+def test_language_variable_stays_a_language_list(lang):
+    ## LANGUAGE is gettext's list of languages, not a locale: no codeset.
+    assert load(lang, LANGUAGE="de_DE") == ("de_DE", "de_DE")
+    assert os.environ["LANGUAGE"] == "de_DE"
+    lang.set_language("fr_FR")
+    assert os.environ["LANGUAGE"] == "fr_FR"
+
+
 def test_other_language_variable(lang):
     assert load(lang, LC_ALL="ru_RU.UTF-8") == ("ru_RU", "ru_RU")
-    assert lang.ENVIRON_KEY == "LC_ALL" and os.environ["LC_ALL"] == "ru_RU"
+    assert lang.ENVIRON_KEY == "LC_ALL" and os.environ["LC_ALL"] == "ru_RU.UTF-8"
 
 
 ################################################################################
@@ -113,7 +130,7 @@ def test_set_language(lang):
     load(lang, LANG="en_US")
 
     assert lang.set_language("de_DE") == "de_DE"
-    assert lang.CURRENT_LANG == "de_DE" and os.environ[lang.ENVIRON_KEY] == "de_DE"
+    assert lang.CURRENT_LANG == "de_DE" and os.environ[lang.ENVIRON_KEY] == "de_DE.UTF-8"
     assert i18n._("Options") == "Optionen"
 
     ## None, or one PortMaster hasn't: the system's.

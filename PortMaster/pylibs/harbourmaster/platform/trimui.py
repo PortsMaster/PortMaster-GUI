@@ -117,7 +117,7 @@ class PlatformTrimUI(PlatformBase):
             new_port_dir.mkdir(0o755, parents=True, exist_ok=True)
 
             logger.debug(f"Creating {str(new_port_dir / 'config.json')}")
-            with open(new_port_dir / "config.json", "w") as fh:
+            with open(new_port_dir / "config.json", "w", encoding="utf-8") as fh:
                 fh.write(
                     PORT_CONFIG_JSON
                     .replace("{{PORTTITLE}}", port_script.stem)
@@ -258,7 +258,7 @@ class PlatformTrimUI(PlatformBase):
                     new_port_dir.mkdir(0o755, parents=True, exist_ok=True)
 
                     logger.debug(f"Creating {str(new_port_dir / 'config.json')}")
-                    with open(new_port_dir / "config.json", "w") as fh:
+                    with open(new_port_dir / "config.json", "w", encoding="utf-8") as fh:
                         fh.write(
                             PORT_CONFIG_JSON
                             .replace("{{PORTTITLE}}", port_title)

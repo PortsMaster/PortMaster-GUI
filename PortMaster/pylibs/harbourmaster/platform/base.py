@@ -107,7 +107,7 @@ class PlatformBase():
 
         if broken:
             logger.debug(f"Creating empty {gamelist_xml}")
-            with open(gamelist_xml, 'w') as fh:
+            with open(gamelist_xml, 'w', encoding='utf-8') as fh:
                 print(self.BLANK_GAMELIST_XML, file=fh)
 
         try:
@@ -193,7 +193,7 @@ class PlatformBase():
             if hasattr(ET, 'indent'):
                 ET.indent(gamelist_root, space="  ", level=0)
 
-            with open(gamelist_xml, 'w') as fh:
+            with open(gamelist_xml, 'w', encoding='utf-8') as fh:
                 print("<?xml version='1.0' encoding='utf-8'?>", file=fh)
                 print("", file=fh)
                 print(ET.tostring(gamelist_root, encoding='unicode'), file=fh)
@@ -277,7 +277,8 @@ class PlatformBase():
         temp_dir = None if self.hm.temp_dir is None else str(self.hm.temp_dir)
         with tempfile.TemporaryDirectory(dir=temp_dir) as work_dir:
             temp_gameinfo = Path(work_dir) / "gameinfo.xml"
-            gameinfo_tree.write(str(temp_gameinfo), encoding='unicode')
+            ## Bytes in UTF-8, as gamelist_add() reads it back (encoding='unicode' wrote the locale's codeset).
+            gameinfo_tree.write(str(temp_gameinfo), encoding='utf-8')
             self.gamelist_add(temp_gameinfo)
 
     def set_gcd_mode(self, mode=None):
