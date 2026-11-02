@@ -83,8 +83,22 @@ def test_theme_files(tmp_path):
 
     assert files['image'] == ["a.png", "images/b.JPG"]
     assert files['sound'] == ["click.ogg"]
-    ## The theme's fonts, then PortMaster's (the Noto fonts even before they're unpacked).
-    assert files['font'][0] == "font.ttf" and "DejaVuSans.ttf" in files['font'] and "NotoSansJP-Regular.ttf" in files['font']
+    ## The theme's fonts, then PortMaster's (the Noto fonts even before they're unpacked;
+    ## the PortMaster Test Suite leaves them out, so only where PortMaster has them).
+    assert files['font'][0] == "font.ttf" and "DejaVuSans.ttf" in files['font']
+    if (schema.RESOURCES / "NotoSans.tar.xz").is_file() or (schema.RESOURCES / "NotoSansJP-Regular.ttf").is_file():
+        assert "NotoSansJP-Regular.ttf" in files['font']
+
+
+def test_theme_files_lists_noto_from_the_archive(tmp_path, monkeypatch):
+    resources = tmp_path / "resources"
+    resources.mkdir()
+    (resources / "DejaVuSans.ttf").write_bytes(b"x")
+    (resources / "NotoSans.tar.xz").write_bytes(b"x")
+    monkeypatch.setattr(schema, "RESOURCES", resources)
+    assert schema.theme_files(None)['font'] == [
+        "DejaVuSans.ttf", "NotoSansJP-Regular.ttf", "NotoSansKR-Regular.ttf", "NotoSansSC-Regular.ttf",
+        "NotoSansTC-Regular.ttf", "NotoSansHK-Regular.ttf"]
 
 
 def test_theme_names():

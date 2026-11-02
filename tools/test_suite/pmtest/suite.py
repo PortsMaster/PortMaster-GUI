@@ -40,6 +40,8 @@ REPORTS = HERE / "reports"
 ## PortMaster's own logs: the tester's are set aside during a run, so a report holds only the run's.
 PM_LOGS = ("pugwash.txt", "harbourmaster.txt", "log.txt")
 SAVED_LOGS = HERE / "saved-logs"
+## Every file the build put in tree/ and site/: installing over an older suite keeps its files.
+FILES_LIST = HERE / "files.txt"
 ## Only in builds made with PM_PMTEST_UPLOAD: where finished reports are sent.
 UPLOAD_FILE = HERE / "upload.txt"
 
@@ -1195,6 +1197,35 @@ class Suite:
         return 1 if any(section.status == FAIL for section in self.sections) else 0
 
 
+def prune_stale(here=HERE, roots=("tree", "site")):
+    """
+    Removes what an older suite left in tree/ and site/: installing a port only adds and
+    replaces files, so a test file the new build dropped still ran (and failed). Only
+    files not in files.txt go, and folders left empty; nothing without files.txt.
+    """
+    here = Path(here)
+    listing = here / FILES_LIST.name
+    if not listing.is_file():
+        return []
+    keep = set(line.strip() for line in listing.read_text(encoding="utf-8").splitlines() if line.strip())
+    removed = []
+    for root in roots:
+        top = here / root
+        if not top.is_dir():
+            continue
+        for dirpath, dirnames, filenames in os.walk(str(top), topdown=False):
+            if "__pycache__" in Path(dirpath).parts:
+                continue
+            for name in filenames:
+                path = Path(dirpath) / name
+                if path.relative_to(here).as_posix() not in keep:
+                    path.unlink()
+                    removed.append(path.relative_to(here).as_posix())
+            if dirpath != str(top) and not os.listdir(dirpath):
+                os.rmdir(dirpath)
+    return removed
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="PortMaster Test Suite")
     parser.add_argument("--no-ui", action="store_true", help="don't use the screen (pugwash)")
@@ -1202,6 +1233,10 @@ def main(argv=None):
     parser.add_argument("--controlfolder", default=None)
     options = parser.parse_args(argv)
     options.skip = [step for step in options.skip.split(",") if step]
+
+    removed = prune_stale()
+    if removed:
+        print(f"removed {len(removed)} files an older Test Suite left behind")
 
     return Suite(options).main()
 

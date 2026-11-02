@@ -239,6 +239,8 @@ if [ "$CHANNEL" = "testsuite" ]; then
       --exclude='PortMaster/portmsg.*' --exclude='PortMaster/*.so' --exclude='PortMaster/pylibs.zip' \
       --exclude='NotoSans.tar.xz' --exclude='__pycache__' \
       PortMaster tests tools pytest.ini | tar -xf - -C "$PMTEST/tree"
+  ## What the suite keeps when it starts: installing over an older suite leaves its files.
+  (cd "$PMTEST" && find tree site -type f ! -path '*/__pycache__/*' | LC_ALL=C sort > files.txt)
 
   (cd pmtest_build && zip -9qr ../pmtest.zip "PortMaster Test Suite.sh" pmtest)
   cp pmtest.zip "$DIST_DIR/"

@@ -1104,3 +1104,31 @@ def test_step_smoke_fetches_the_port_list(tmp_path, monkeypatch):
     assert section.status == suite.PASS, section.details
     assert len(commands) == 4
     assert not any("--no-check" in command for command in commands)
+
+
+################################################################################
+## Installing over an older suite
+def test_prune_stale_removes_what_an_older_suite_left(tmp_path):
+    ## harbourmaster only adds and replaces files: a test the new build dropped still ran.
+    for name in ("tree/tests/test_new.py", "tree/tests/test_old_snapshot.py", "tree/tests/data/old/msgids.txt",
+                 "tree/tests/__pycache__/test_old.cpython-311.pyc", "site/pytest/__init__.py", "site/oldpkg/x.py",
+                 "reports/last-run.txt", "suite.py"):
+        (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / name).write_text("x")
+    (tmp_path / "files.txt").write_text("tree/tests/test_new.py\nsite/pytest/__init__.py\n")
+
+    removed = suite.prune_stale(tmp_path)
+
+    assert sorted(removed) == ["site/oldpkg/x.py", "tree/tests/data/old/msgids.txt", "tree/tests/test_old_snapshot.py"]
+    assert (tmp_path / "tree/tests/test_new.py").is_file() and (tmp_path / "site/pytest/__init__.py").is_file()
+    assert not (tmp_path / "tree/tests/data").exists() and not (tmp_path / "site/oldpkg").exists()
+    ## Outside tree/ and site/, and compiled files, are left alone.
+    assert (tmp_path / "reports/last-run.txt").is_file() and (tmp_path / "suite.py").is_file()
+    assert (tmp_path / "tree/tests/__pycache__/test_old.cpython-311.pyc").is_file()
+
+
+def test_prune_stale_without_a_list_keeps_everything(tmp_path):
+    (tmp_path / "tree").mkdir()
+    (tmp_path / "tree" / "test_x.py").write_text("x")
+    assert suite.prune_stale(tmp_path) == []
+    assert (tmp_path / "tree" / "test_x.py").is_file()

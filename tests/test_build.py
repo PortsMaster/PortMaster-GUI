@@ -211,6 +211,12 @@ def test_testsuite_port(tmp_path):
     ## Reports are only sent from builds made with PM_PMTEST_UPLOAD.
     assert "pmtest/upload.txt" not in names
 
+    ## The files the suite keeps when it starts (installing over an older suite leaves its files).
+    with zipfile.ZipFile(dist / "pmtest.zip") as zf:
+        listed = zf.read("pmtest/files.txt").decode().splitlines()
+    assert sorted(listed) == sorted(name[len("pmtest/"):] for name in names
+                                    if name.startswith(("pmtest/tree/", "pmtest/site/")) and not name.endswith("/"))
+
     ## The build it installs is the one it was made with, and harbourmaster takes it as a port.
     with zipfile.ZipFile(dist / "pmtest.zip") as zf:
         inner = zf.read("pmtest/PortMaster.zip")

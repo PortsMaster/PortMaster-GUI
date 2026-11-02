@@ -26,8 +26,24 @@ import pytest
 
 from harbourmaster.config import HM_SORT_ORDER
 from harbourmaster.util import net as hm_net
+## Imported here, not in a fuzz case: on import it opens its log in HM_TOOLS_DIR/PortMaster
+## (made, like an install has it, since the device test fixes), which the sandbox would count.
+from harbourmaster import cli
 
 from conftest import DATA_DIR, basic_port_files, write_port_zip
+
+
+def _json_keeps_non_finite():
+    ## Some CFWs' Python can't recognise NaN (AmberELEC's: math.isnan(nan) is False), so json.dumps
+    ## writes it as a bare `nan` that json.loads refuses. The fuzzer's own round trips would fail
+    ## there, so it only makes NaN/infinity where they survive (PortMaster itself reads them fine).
+    try:
+        return json.loads(json.dumps([float('nan'), float('inf')]))[1] == float('inf')
+    except ValueError:
+        return False
+
+
+NON_FINITE = [float('nan'), float('inf'), -float('inf')] if _json_keeps_non_finite() else []
 
 
 ## Cases per test (the GUI test does a tenth, at least 20).
@@ -58,7 +74,7 @@ def weird_strings(outside):
 
 
 def weird_values(rng, outside, depth=0):
-    simple = [None, True, False, 0, 1, -1, 2 ** 64, 1.5, float('nan'), float('inf'), -float('inf')]
+    simple = [None, True, False, 0, 1, -1, 2 ** 64, 1.5] + NON_FINITE
     pool = simple + weird_strings(outside)
     if depth > 2:
         return rng.choice(pool)
@@ -264,7 +280,6 @@ def record(stage, err, case):
 def run_cli(hm, command, argv):
     import contextlib
     import io
-    from harbourmaster import cli
 
     with contextlib.redirect_stdout(io.StringIO()):
         getattr(cli, command)(hm, argv)
