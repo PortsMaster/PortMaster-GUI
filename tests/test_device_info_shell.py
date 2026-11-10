@@ -192,3 +192,24 @@ def test_screen_capabilities_shell_and_theme_server_agree(width, height):
         width, height, aspect_x, aspect_y)) + text[start:end]
     result = subprocess.run([shell_or_skip(SHELLS[0])[0], "-c", script], stdout=subprocess.PIPE, universal_newlines=True)
     assert set(result.stdout.split()) == set(worker.screen_capabilities(width, height))
+
+
+## The version and a hash of the rest of device_info.txt. Devices keep their device_info_*.env
+## while its DEVICE_INFO_VERSION matches (device_info.txt's fast path and hardware.py both reuse
+## it), so a change without a new version never reaches a device that ran the old one: 0.2.6's
+## new screen rules didn't, and the Retroid Pocket Classic stayed "wide".
+DEVICE_INFO_HASH = ("0.2.7", "f450a0946c2314c7")
+
+
+def test_device_info_changes_come_with_a_new_version():
+    import hashlib
+
+    text = (PM_DIR / "device_info.txt").read_text(encoding="utf-8").replace("\r\n", "\n")
+    version = re.search(r'(?m)^export DEVICE_INFO_VERSION="([^"]+)"$', text).group(1)
+    digest = hashlib.sha256(re.sub(r'(?m)^export DEVICE_INFO_VERSION=.*$', "", text).encode("utf-8")).hexdigest()[:16]
+    if version == DEVICE_INFO_HASH[0]:
+        assert digest == DEVICE_INFO_HASH[1], (
+            f"device_info.txt changed but DEVICE_INFO_VERSION is still {version}: raise it (devices keep their "
+            f"cached device_info_*.env until it changes), then set DEVICE_INFO_HASH = (\"<new version>\", \"{digest}\")")
+    else:
+        assert False, f"DEVICE_INFO_VERSION is now {version}: set DEVICE_INFO_HASH = (\"{version}\", \"{digest}\")"
