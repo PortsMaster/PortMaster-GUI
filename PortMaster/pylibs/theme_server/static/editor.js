@@ -182,6 +182,7 @@ function valueProblem(key, v, names) {
   switch (type) {
     case "int": return isInt(v) ? range(v) : `${key} is a whole number`;
     case "float": return isNum(v) ? range(v) : `${key} is a number`;
+    case "scale": return isNum(v) || (typeof v === "string" && /^\s*auto\s*(\*\s*[0-9.]+\s*)?$/i.test(v)) ? null : `${key} is a number, or "auto" (the screen's size: "auto*1.2" for more)`;
     case "bool": return typeof v === "boolean" ? null : `${key} is true or false`;
     case "color": return colorProblem(v, names.colors);
     case "rect": return Array.isArray(v) && v.length === 4 && v.every(isNum) ? null : "area is [x, y, width, height] or fractions [left, top, right, bottom]";

@@ -1077,9 +1077,13 @@ if [ "$DISPLAY_WIDTH" -ge 960 ] || [ "$DISPLAY_HEIGHT" -ge 720 ]; then
 elif [ "$DISPLAY_WIDTH" -lt 640 ] || [ "$DISPLAY_HEIGHT" -lt 480 ]; then
     add_cap "lowres"
 fi
-if [ "$ASPECT_X" -ge 16 ] || [ $(( ASPECT_X * 10 / ASPECT_Y )) -ge 15 ]; then
+## Wide by the ratio (3:2 and up). Not by "ASPECT_X >= 16": the Retroid Pocket Classic's 1240x1080 is 31:27,
+## which made a nearly square screen "wide".
+if [ $(( ASPECT_X * 10 / ASPECT_Y )) -ge 15 ]; then
     add_cap "wide"
-elif [ "$ASPECT_X" -eq "$ASPECT_Y" ]; then
+elif [ $(( DISPLAY_WIDTH * 100 / DISPLAY_HEIGHT )) -le 125 ] && [ $(( DISPLAY_HEIGHT * 100 / DISPLAY_WIDTH )) -le 125 ]; then
+    ## Square, or nearly: 1:1 screens, and the Retroid Pocket Classic's 1240x1080 (31:27) and its kind, which the
+    ## 4:3 layouts don't fit.
     add_cap "square"
 fi
 

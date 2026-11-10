@@ -25,7 +25,7 @@ def keys():
 
 def test_region_key_types(keys):
     assert keys['font-size'] == {'type': "int"}
-    assert keys['font-scale']['type'] == "float"
+    assert keys['font-scale']['type'] == "scale"      ## a number or "auto"
     assert keys['area'] == {'type': "rect"}
     assert keys['font-color'] == {'type': "color"}
     assert keys['text-wrap'] == {'type': "bool"}

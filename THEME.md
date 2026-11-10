@@ -154,7 +154,8 @@ Currently the capabilities are:
 - `lowres`: devices with a screen resolution smaller then 640:480
 - `power`: any device above an `rk3326` cpu.
 - `opengl`: any device with `OpenGL`, not OpenGLES.
-- `wide`: any aspect ratio above 4:3
+- `wide`: an aspect ratio of 3:2 or wider (16:9, 16:10, 5:3, ...)
+- `square`: square or nearly (up to 1.25:1 either way): 1:1, and screens like the Retroid Pocket Classic's 1240x1080
 - `3:2`: aspect ratio of 3:2
 - `4:3`: aspect ratio of 4:3
 - `5:3`: aspect ratio of 5:3
@@ -359,6 +360,15 @@ A special option is `font-scale` which should be used to broadly scale fonts acr
 ```json
     "#base": {
         "font-scale[hires]": 2.0,
+    }
+```
+
+`"font-scale": "auto"` follows the screen: the size text has at 640x480, times `min(width / 640, height / 480)` (never below 1), so 1280x720 gets 1.5 and 1920x1080 2.25. `"auto*1.2"` makes that a fifth bigger. Put it first, and the sizes you give for particular screens after it still win: a screen you didn't list (a 1240x1080 one) then gets a sensible size instead of 640x480's. The default theme does this:
+
+```json
+    "#base": {
+        "font-scale": "auto",
+        "font-scale[1280x720]": 1.5
     }
 ```
 

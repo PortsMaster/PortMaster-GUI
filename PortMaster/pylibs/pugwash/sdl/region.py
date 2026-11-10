@@ -179,7 +179,7 @@ class Region:
         # TODO figure out how to use default/system fonts
         self.font = self._verify_file('font', optional=True)
         self.fontsize = self._verify_int('font-size', 30)
-        self.fontsize *= self._verify_float('font-scale', 1.0, optional=True)
+        self.fontsize *= self._verify_scale('font-scale', 1.0)
         self.font_color = self._verify_color('font-color', (255, 255, 255))
         self.fontoutline = self._verify_outline('font-outline', None, optional=True)
         self._text = self._verify_text('text', optional=True)
@@ -1461,6 +1461,31 @@ class Region:
             val = maximum
 
         return val
+
+    def _verify_scale(self, name, default=1.0):
+        """
+        A scale: a number, or "auto" (optionally "auto*<factor>") for one that follows the screen: the size a
+        640x480 screen gets, times min(width / 640, height / 480), and never below 1. A theme lists scales for the screens it knows;
+        "auto" first covers the rest (a 1240x1080 screen kept 640x480-sized text).
+        """
+        val = self._dict.get(name, default)
+        if isinstance(val, str):
+            text = val.replace(' ', '').lower()
+            if not text.startswith('auto'):
+                raise GUIThemeError(f'{name} is a number or "auto"')
+            factor = 1.0
+            if text[4:]:
+                try:
+                    if not text[4:].startswith('*'):
+                        raise ValueError(text)
+                    factor = float(text[5:])
+                except ValueError:
+                    raise GUIThemeError(f'{name}: "auto" can only be followed by *<number>, as in "auto*1.2"')
+            size = tuple(self.renderer.logical_size)
+            width, height = max(size), min(size)
+            ## Only up: small screens have their own sizes in the themes, and shrinking those isn't this.
+            return max(1.0, min(width / 640, height / 480)) * factor
+        return self._verify_float(name, default, minimum=0.1)
 
     def _verify_float(self, name, default=0, optional=False, minimum=None, maximum=None):
         'verify that value of self._dict[name] is valid float value'
