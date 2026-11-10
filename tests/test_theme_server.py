@@ -294,6 +294,24 @@ def test_export(pool, tmp_path):
     assert not (folder / "filters.png").exists()
 
 
+## Screen sizes no theme lists (portrait, ultrawide, small, nearly square) and some it does: the
+## default theme has to hold together at all of them, without a size of its own for each.
+LAYOUT_SIZES = ["640x480", "1240x1080", "720x1280", "3440x1440", "480x272", "1920x1152", "1024x600"]
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_default_theme_layout(pool, tmp_path):
+    from theme_server import layout
+
+    assert serve.export(pool, pool.themes, tmp_path, ["default_theme"], LAYOUT_SIZES, [], ["en_US"], pool.shots()) == 0
+    results = layout.check_export(tmp_path)
+    assert len(results) == len(LAYOUT_SIZES) * len(pool.shots())
+    failed = {"%s %s" % (key[1], key[4]): [problem['text'] for problem in layout.errors(found)]
+              for key, found in results.items() if layout.errors(found)}
+    assert failed == {}
+
+
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_port_screens_with_port_data(online_hm, hm_dirs, tmp_path):

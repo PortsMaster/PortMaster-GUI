@@ -348,7 +348,82 @@ def _json_safe(value):
         return str(value)
 
 
-def scene_regions(gui):
+class DrawnRecorder:
+    """While on (a with block around a frame), what each region drew and where: every
+    piece of text (a line, a list row, a button label) with the scale it was drawn at
+    (1.0 is its font size; text drawn to fit its box is scaled), and every image. Panel
+    images (9-patch) are left out: they're backgrounds. A list's pointer is a 'pointer'. For the layout check
+    (theme_server.layout): content of two regions on top of each other is a clash."""
+    def __init__(self):
+        self.region = None
+        self.drawn = {}
+
+    def add(self, kind, rect, scale=1.0):
+        self.drawn.setdefault(id(self.region), []).append(
+            [kind, int(rect.x), int(rect.y), int(rect.width), int(rect.height), round(scale, 3)])
+
+    def __enter__(self):
+        from pugwash.sdl import images
+        from pugwash.sdl.geometry import Rect
+        from pugwash.sdl.region import Region
+
+        recorder = self
+        draw, draw_patch = Region.draw, Region._draw_patch
+        text_draw_in, image_draw_in = images.Texture.draw_in, images.Image.draw_in
+        self._saved = [(Region, 'draw', draw), (Region, '_draw_patch', draw_patch),
+                       (images.Texture, 'draw_in', text_draw_in), (images.Image, 'draw_in', image_draw_in)]
+
+        def as_rect(value):
+            if isinstance(value, Rect):
+                return value
+            if hasattr(value, 'w') and hasattr(value, 'x'):
+                return Rect.from_sdl(value)
+            return Rect(*value)
+
+        def drawing(region, *args, **kwargs):
+            outer, recorder.region = recorder.region, region
+            try:
+                return draw(region, *args, **kwargs)
+            finally:
+                recorder.region = outer
+
+        def drawing_patch(region, *args, **kwargs):
+            outer, recorder.region = recorder.region, None
+            try:
+                return draw_patch(region, *args, **kwargs)
+            finally:
+                recorder.region = outer
+
+        def recorded_text(texture, dest, fit=False, clip=False):
+            result = text_draw_in(texture, dest, fit=fit, clip=clip)
+            if recorder.region is not None and result is not None:
+                height = texture.size.height
+                recorder.add('text', result, (result.height / height) if fit and height else 1.0)
+            return result
+
+        def recorded_image(image, dest, *args, **kwargs):
+            result = image_draw_in(image, dest, *args, **kwargs)
+            if recorder.region is not None and getattr(image, 'texture', None) is not None:
+                rect = as_rect(dest)
+                if kwargs.get('fit'):
+                    rect = Rect.from_sdl(image.srcrect).fitted(rect)
+                ## A list's pointer sits beside the selected row, outside the list by design.
+                recorder.add('pointer' if image is getattr(recorder.region, 'pointer', None) else 'image', rect)
+            return result
+
+        Region.draw = drawing
+        Region._draw_patch = drawing_patch
+        images.Texture.draw_in = recorded_text
+        images.Image.draw_in = recorded_image
+        return self
+
+    def __exit__(self, *exc):
+        for owner, name, value in self._saved:
+            setattr(owner, name, value)
+        return False
+
+
+def scene_regions(gui, drawn=None):
     """The regions on screen, bottom to top, as the debug boxes show them."""
     found = []
     for depth, scene in enumerate(gui.scenes[-1][1]):
@@ -364,6 +439,7 @@ def scene_regions(gui):
                 'visible': bool(region.visible),
                 'z': [region.z_index, region.z_position],
                 'rect': [area.x, area.y, area.width, area.height],
+                'drawn': (drawn or {}).get(id(region), []),
                 'data': {key: _json_safe(value) for key, value in region._dict.items()},
                 })
 
@@ -436,8 +512,10 @@ class Renderer:
         gui.callback_amount = 0
         builder(gui)
         self.settle()
-        gui.create_screenshot(str(out_file))
-        regions = scene_regions(gui)
+        ## The screenshot's frame is always drawn (an ordinary one waits 20 ms after the last).
+        with DrawnRecorder() as recorder:
+            gui.create_screenshot(str(out_file))
+        regions = scene_regions(gui, recorder.drawn)
         if gui.message_box_scene is not None:
             gui.messages_end(internal=True)
 

@@ -17,6 +17,10 @@ try:
 except ImportError:
     sdlgfx = False
 
+## "font-scale": "auto" goes no smaller than this (a 320x240 screen would get half size).
+AUTO_SCALE_MIN = 0.75
+
+
 class Region:
     '''
     The Region class is the primary building block of pySDL2gui interfaces.
@@ -527,7 +531,9 @@ class Region:
                 if self.pointer_attach == 'list':
                     text_area = Rect(area.x + pointer_w, text_area.y, max(0, area.width - pointer_w * 2), text_area.height)
 
-            self.page_size = max(area.height // (itemsize + self.item_spacer), 1)
+            ## The rows start inside the border, so they count in the space inside it: counted in
+            ## the whole area, the last one ran past the bottom by the border.
+            self.page_size = max(text_area.height // (itemsize + self.item_spacer), 1)
             self.selected = self.selected % len(self.list)
 
             # self.fonts.load(self.font, self.fontsize)
@@ -1241,7 +1247,9 @@ class Region:
                     v,
                     self.font, self.fontsize, align='left')
 
-                dest = Rect(x, y, max(texture.size.width, self.barwidth), texture.size.width)
+                ## As tall as the text, or the bar if that's less: text drawn to fit a short bar
+                ## shrinks with it instead of spilling over its edges.
+                dest = Rect(x, y, max(texture.size.width, self.barwidth), min(texture.size.height, max(area.height, 1)))
                 dest.centery = area.centery
                 x = dest.right + self.barspace
                 items.append((dest, v))
@@ -1253,6 +1261,20 @@ class Region:
                 raise GUIThemeError(f'bar item {i}({v}) not valid type')
 
             max_width = x - area.x
+
+        ## Wider than its area (long labels, a narrow screen): it all shrinks to fit, instead
+        ## of running past the area's edge, off the screen even.
+        needed = max_width - self.barspace
+        if len(right) == 0 and left and area.width > 0 and needed > area.width:
+            scale = area.width / needed
+            for dest, item in left:
+                middle = dest.centery
+                dest.x = area.x + int((dest.x - area.x) * scale)
+                dest.width = max(int(dest.width * scale), 1)
+                dest.height = max(int(dest.height * scale), 1)
+                dest.centery = middle
+
+            max_width = area.width
 
         if align is not None and len(right) == 0 and ('center' in align or 'right' in align):
             if 'center' in align:
@@ -1475,8 +1497,9 @@ class Region:
     def _verify_scale(self, name, default=1.0):
         """
         A scale: a number, or "auto" (optionally "auto*<factor>") for one that follows the screen: the size a
-        640x480 screen gets, times min(width / 640, height / 480), and never below 1. A theme lists scales for the screens it knows;
-        "auto" first covers the rest (a 1240x1080 screen kept 640x480-sized text).
+        640x480 screen gets, times min(width / 640, height / 480), and never below AUTO_SCALE_MIN, so text on
+        small screens stays readable. A theme lists scales for the screens it knows; "auto" first covers the rest
+        (a 1240x1080 screen kept 640x480-sized text, a 480x272 one too big for its boxes).
         """
         val = self._dict.get(name, default)
         if isinstance(val, str):
@@ -1493,8 +1516,7 @@ class Region:
                     raise GUIThemeError(f'{name}: "auto" can only be followed by *<number>, as in "auto*1.2"')
             size = tuple(self.renderer.logical_size)
             width, height = max(size), min(size)
-            ## Only up: small screens have their own sizes in the themes, and shrinking those isn't this.
-            return max(1.0, min(width / 640, height / 480)) * factor
+            return max(AUTO_SCALE_MIN, min(width / 640, height / 480)) * factor
         return self._verify_float(name, default, minimum=0.1)
 
     def _verify_float(self, name, default=0, optional=False, minimum=None, maximum=None):

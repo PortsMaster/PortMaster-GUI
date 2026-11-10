@@ -901,6 +901,8 @@ def main(argv=None):
     parser.add_argument("--resolutions", default="640x480", help="export: comma separated, or 'all'")
     parser.add_argument("--schemes", default="", help="export: comma separated, 'all', or the theme's default")
     parser.add_argument("--langs", default="en_US", help="export: comma separated")
+    parser.add_argument("--check", action="store_true",
+                        help="export: then check the screens' layout (overlaps, text off its box): theme_server/layout.py")
     options = parser.parse_args(argv)
 
     report = reporter() if options.managed else None
@@ -930,8 +932,12 @@ def main(argv=None):
             if bad:
                 sys.exit(f"Not a resolution: {', '.join(bad)}")
 
-            return export(pool, themes, options.export, options.theme or list(themes.all()), resolutions,
-                          [scheme for scheme in options.schemes.split(",") if scheme], options.langs.split(","), shots)
+            failed = export(pool, themes, options.export, options.theme or list(themes.all()), resolutions,
+                            [scheme for scheme in options.schemes.split(",") if scheme], options.langs.split(","), shots)
+            if options.check:
+                from theme_server import layout
+                failed = layout.main([str(options.export)]) or failed
+            return failed
 
         try:
             server = listen(options.host, options.port, options.try_ports, options.any_port)

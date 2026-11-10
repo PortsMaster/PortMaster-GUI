@@ -77,7 +77,8 @@ def test_float_bad(region, ThemeError, value):
     ((1920, 1080), "auto", 2.25),
     ((1240, 1080), "auto", 1240 / 640),         ## the Retroid Pocket Classic: it kept 640x480-sized text
     ((1080, 1240), "auto", 1240 / 640),         ## a portrait panel: the same
-    ((320, 240), "auto", 1.0),                  ## never smaller: small screens have their own sizes
+    ((800, 400), "auto", 400 / 480),            ## smaller screens: smaller text, so it fits the same boxes
+    ((320, 240), "auto", 0.75),                 ## but no smaller than AUTO_SCALE_MIN, to stay readable
     ((1280, 720), " Auto * 1.2 ", 1.8),
     ((1280, 720), 2, 2.0),
     ((1280, 720), 0.85, 0.85),
