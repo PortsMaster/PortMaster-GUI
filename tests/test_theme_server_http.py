@@ -318,6 +318,26 @@ def test_save_bad_bodies(server, raw):
     assert post(server[0], "/api/translate", raw=raw)[0] == 400
 
 
+def test_too_big_body_sent_slowly_still_gets_the_answer(server):
+    ## The server used to answer 400 and close without reading the body: a client still sending (a slow
+    ## device, a browser on Wi-Fi) got a broken pipe instead of the answer.
+    import socket
+    import urllib.parse
+    url = urllib.parse.urlparse(server[0])
+    size = 256 * 1024 + 1
+    with socket.create_connection((url.hostname, url.port), timeout=10) as sock:
+        sock.sendall(("POST /api/translate HTTP/1.1\r\nHost: %s\r\nContent-Type: application/json\r\n"
+                      "X-Theme-Server: 1\r\nContent-Length: %d\r\n\r\n" % (url.netloc, size)).encode())
+        sent = 0
+        while sent < size:
+            piece = min(64 * 1024, size - sent)
+            sock.sendall(b"x" * piece)
+            sent += piece
+            time.sleep(0.1)
+        answer = sock.recv(4096)
+    assert answer.startswith(b"HTTP/1.") and b" 400 " in answer.split(b"\r\n", 1)[0]
+
+
 def test_post_elsewhere(server):
     assert post(server[0], "/api/nope", {})[0] == 404
 

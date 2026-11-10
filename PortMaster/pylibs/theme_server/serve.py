@@ -737,6 +737,15 @@ class Handler(BaseHTTPRequestHandler):
             ## A theme.json can be big (JSON escapes make it bigger still), a translation can't.
             limit = 2 * MAX_THEME_SIZE if url.path in ("/api/theme_file", "/api/theme_draft") else 256 * 1024
             if not 0 < length <= limit:
+                ## Read what the client is sending before answering: closing on a client still sending made
+                ## it see a broken pipe (a browser: a network error) instead of this answer. Up to a cap.
+                if 0 < length <= DRAIN_MAX:
+                    left = length
+                    while left > 0:
+                        chunk = self.rfile.read(min(left, 1 << 16))
+                        if not chunk:
+                            break
+                        left -= len(chunk)
                 self.send(400, {'error': "bad request"})
                 return
             body = json.loads(self.rfile.read(length).decode("utf-8"))
@@ -788,6 +797,9 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+
+## A request body over its limit is still read (and dropped) up to this much, so the client gets the answer.
+DRAIN_MAX = 64 * 1024 * 1024
 
 STATIC_FILES = {
     ## path: (file in static/, type, cached: CodeMirror only changes with PortMaster)
