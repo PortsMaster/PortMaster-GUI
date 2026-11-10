@@ -357,8 +357,11 @@ def test_draft_version_changes_with_the_text(editor, themes):
     editor.draft("mine", '{"a": 1}')
     assert serve.version(themes.get("mine~draft"), "en_US") == first
 
-    os.utime(str(themes.get("mine~draft") / "theme.json"), (1, 1))
+    ## Same size, and the same time (two saves in one timestamp tick): still a new version.
+    draft_file = themes.get("mine~draft") / "theme.json"
+    stamp = draft_file.stat().st_mtime_ns
     editor.draft("mine", '{"a": 2}')
+    os.utime(str(draft_file), ns=(stamp, stamp))
     assert serve.version(themes.get("mine~draft"), "en_US") != first
 
 

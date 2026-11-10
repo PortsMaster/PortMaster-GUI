@@ -113,7 +113,11 @@ class Themes:
 
     @staticmethod
     def fingerprint(theme_dir, extra_files=()):
-        """Changes whenever a file in the theme (or one of extra_files) is added, removed or saved."""
+        """Changes whenever a file in the theme (or one of extra_files) is added, removed or saved.
+
+        Saves write a new file and rename it over the old one, so the inode changes too: a
+        save of the same size within one timestamp tick (a few ms on some filesystems) still
+        counts."""
         digest = hashlib.md5()
         paths = []
         for root, dirs, files in os.walk(str(theme_dir)):
@@ -125,7 +129,7 @@ class Themes:
                 stat = os.stat(path)
             except OSError:
                 continue
-            digest.update(f"{path}\0{stat.st_size}\0{stat.st_mtime_ns}\n".encode("utf-8", "replace"))
+            digest.update(f"{path}\0{stat.st_size}\0{stat.st_mtime_ns}\0{stat.st_ino}\n".encode("utf-8", "replace"))
 
         return digest.hexdigest()[:12]
 
