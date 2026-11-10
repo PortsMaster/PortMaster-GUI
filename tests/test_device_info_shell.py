@@ -170,3 +170,25 @@ def test_name_and_version_from_os_release(shell, os_release, expected, tmp_path)
     version = text[text.index('export CFW_VERSION="Unknown"'):text.index("# 3c.")]
     script = re.sub(r'(?<=[\s"])/(etc|usr|boot|userdata|opt|var|mnt|app|storage)/', lambda m: f"{tmp_path}/{m.group(1)}/", detect + version)
     assert run_fragment(command, script + '\necho "$CFW_NAME|$CFW_VERSION"\n', tmp_path) == expected
+
+
+@pytest.mark.parametrize("width, height", [
+    (640, 480), (1280, 720), (720, 720), (480, 320), (1280, 800), (720, 480), (1240, 1080), (1080, 1240),
+    (1024, 768), (1920, 1152), (320, 240), (854, 480)])
+def test_screen_capabilities_shell_and_theme_server_agree(width, height):
+    ## device_info.txt's screen rules (hires, wide, square, ...) and the theme server's copy of them
+    ## (theme_server.worker.screen_capabilities): the preview pretends to be a device, so they must match.
+    import math
+    from theme_server import worker
+
+    text = (PM_DIR / "device_info.txt").read_text()
+    start = text.index('add_cap "${DISPLAY_WIDTH}x${DISPLAY_HEIGHT}"')
+    end = text.index('i=0', start)
+    gcd = math.gcd(width, height)
+    aspect_x, aspect_y = width // gcd, height // gcd
+    if (aspect_x, aspect_y) == (8, 5):
+        aspect_x, aspect_y = 16, 10
+    script = ('add_cap() { echo "$1"; }\nDISPLAY_WIDTH=%d\nDISPLAY_HEIGHT=%d\nASPECT_X=%d\nASPECT_Y=%d\n' % (
+        width, height, aspect_x, aspect_y)) + text[start:end]
+    result = subprocess.run([shell_or_skip(SHELLS[0])[0], "-c", script], stdout=subprocess.PIPE, universal_newlines=True)
+    assert set(result.stdout.split()) == set(worker.screen_capabilities(width, height))

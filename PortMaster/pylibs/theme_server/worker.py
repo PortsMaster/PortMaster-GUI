@@ -59,10 +59,10 @@ def screen_capabilities(width, height):
     elif width < 640 or height < 480:
         caps.append("lowres")
 
-    if aspect_x >= 16 or aspect_x * 10 // aspect_y >= 15:
+    if aspect_x * 10 // aspect_y >= 15:       ## by the ratio: 31:27 (1240x1080) isn't wide
         caps.append("wide")
-    elif aspect_x == aspect_y:
-        caps.append("square")
+    elif width * 100 // height <= 125 and height * 100 // width <= 125:
+        caps.append("square")      ## or nearly: the Retroid Pocket Classic's 1240x1080
 
     return caps
 

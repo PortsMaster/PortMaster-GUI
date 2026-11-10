@@ -27,6 +27,10 @@ DEFAULT_THEME = PM_DIR / "pylibs" / "default_theme"
     ((480, 320), {"480x320", "3:2", "lowres", "wide"}, {"hires"}),
     ((1280, 800), {"1280x800", "16:10", "16:9", "hires", "wide"}, set()),
     ((720, 480), {"720x480", "3:2", "wide"}, {"hires", "lowres"}),
+    ## Nearly square: the Retroid Pocket Classic. 4:3 isn't.
+    ((1240, 1080), {"1240x1080", "31:27", "hires", "square"}, {"wide"}),
+    ((1080, 1240), {"1080x1240", "square"}, {"wide"}),
+    ((1024, 768), {"1024x768", "4:3", "hires"}, {"square", "wide"}),
     ])
 def test_screen_capabilities_match_device_info(size, expected, absent):
     ## The same rules as device_info.txt, so a theme's [hires] / [4:3] overrides apply.

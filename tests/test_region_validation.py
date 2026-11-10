@@ -71,6 +71,31 @@ def test_float_bad(region, ThemeError, value):
         region({'v': value})._verify_float('v')
 
 
+@pytest.mark.parametrize("size, value, expected", [
+    ((640, 480), "auto", 1.0),
+    ((1280, 720), "auto", 1.5),
+    ((1920, 1080), "auto", 2.25),
+    ((1240, 1080), "auto", 1240 / 640),         ## the Retroid Pocket Classic: it kept 640x480-sized text
+    ((1080, 1240), "auto", 1240 / 640),         ## a portrait panel: the same
+    ((320, 240), "auto", 1.0),                  ## never smaller: small screens have their own sizes
+    ((1280, 720), " Auto * 1.2 ", 1.8),
+    ((1280, 720), 2, 2.0),
+    ((1280, 720), 0.85, 0.85),
+    ])
+def test_scale(region, size, value, expected):
+    r = region({'font-scale': value})
+    r.renderer = SimpleNamespace(logical_size=size)
+    assert r._verify_scale('font-scale') == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("value", ["big", "auto*", "auto+1", "auto*x", True, [1]])
+def test_scale_bad(region, ThemeError, value):
+    r = region({'font-scale': value})
+    r.renderer = SimpleNamespace(logical_size=(640, 480))
+    with pytest.raises(ThemeError):
+        r._verify_scale('font-scale')
+
+
 def test_float_clamped(region):
     assert region({'v': 9})._verify_float('v', maximum=2.5) == 2.5
     assert region({'v': -9})._verify_float('v', minimum=0.1) == 0.1
