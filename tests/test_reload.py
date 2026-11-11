@@ -111,6 +111,13 @@ def test_saved_scheme_the_theme_has_not(app, tmp_path):
     app.reload_theme(then=options(app))
 
 
+def test_font_scale_auto_capability(app):
+    ## Themes for older PortMasters too put "auto" under it: older ones skip the key.
+    app.reload_language("de_DE", then=options(app))
+    app.reload_language("en_US", then=options(app))
+    assert harbourmaster.device_info()['capabilities'].count('font_scale_auto') == 1
+
+
 def test_language_reload_redoes_translated_status(app, monkeypatch):
     ## system.battery_level is "N/A" in the language it was set in; a new language redoes it
     ## at once, not at the next status update.

@@ -136,6 +136,10 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             capabilities = device_info
 
         capabilities['capabilities'].append(lang.CURRENT_LANG)
+        ## What this PortMaster understands, for themes that also run on older ones:
+        ## "font-scale[font_scale_auto]": "auto" is skipped where "auto" would be an error.
+        if 'font_scale_auto' not in capabilities['capabilities']:
+            capabilities['capabilities'].append('font_scale_auto')
 
         logger.info(capabilities)
         print(capabilities)
@@ -582,6 +586,8 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         if old_lang in capabilities:
             capabilities.remove(old_lang)
         capabilities.append(new_lang)
+        if 'font_scale_auto' not in capabilities:
+            capabilities.append('font_scale_auto')
 
         self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
         self.update_system_data()

@@ -389,6 +389,16 @@ A special option is `font-scale` which should be used to broadly scale fonts acr
     }
 ```
 
+PortMaster before 2026.11 doesn't know `"auto"`: there a theme using it doesn't load. A theme meant for those too gives a number first, then `auto` under the `font_scale_auto` capability, which only PortMasters that understand it have; older ones skip that key and keep the number:
+
+```json
+    "#base": {
+        "font-scale": 1.0,
+        "font-scale[font_scale_auto]": "auto",
+        "font-scale[1280x720]": 1.5
+    }
+```
+
 You can align text to different positions of the element.
 
 - `topleft`
