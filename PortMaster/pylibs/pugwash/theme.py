@@ -5,6 +5,7 @@ import copy
 import datetime
 import functools
 import json
+import re
 import zipfile
 
 import sdl2
@@ -47,9 +48,36 @@ def extract_requirements(text, strict=False):
 ## where "auto" would be an error. Only themes see them, not the device's info (ports).
 THEME_CAPABILITIES = ('font_scale_auto',)
 
+## The current theme's layout as a capability ("layout_grid"), set by theme_load().
+LAYOUT_CAPABILITIES = []
+
 
 def theme_capabilities():
-    return list(harbourmaster.device_info()['capabilities']) + list(THEME_CAPABILITIES)
+    return list(harbourmaster.device_info()['capabilities']) + list(THEME_CAPABILITIES) + LAYOUT_CAPABILITIES
+
+
+def theme_layouts(theme_data):
+    """The layouts a theme offers ("#layouts": {"List": {}, "Grid": {}}), in its order."""
+    layouts = theme_data.get("#layouts", {})
+    if not isinstance(layouts, dict):
+        return []
+    return [name for name in layouts if isinstance(name, str) and not name.startswith("#")]
+
+
+def layout_capability(layout_name):
+    """The capability a layout gives a theme's keys: "Grid" -> "layout_grid"."""
+    return "layout_" + (re.sub(r"[^a-z0-9]+", "_", layout_name.lower()).strip("_") or "x")
+
+
+def pick_layout(theme_data, layout):
+    """layout, if the theme has it; else its "default-layout", else its first; None without layouts."""
+    layouts = theme_layouts(theme_data)
+    if layout in layouts:
+        return layout
+    default = theme_data.get("#info", {}).get("default-layout")
+    if default in layouts:
+        return default
+    return layouts[0] if layouts else None
 
 
 def theme_update(target, source):
@@ -244,7 +272,7 @@ def section_from_themes_list(section, mode):
     return out
 
 
-def theme_load(gui, theme_file, color_scheme=None):
+def theme_load(gui, theme_file, color_scheme=None, layout=None):
     logger.info(f"Loading theme {theme_file}")
 
     with open(theme_file, 'r') as fh:
@@ -252,6 +280,10 @@ def theme_load(gui, theme_file, color_scheme=None):
 
     if theme_data is None:
         raise ValueError(f"Unable to load theme {theme_file}")
+
+    ## Its layout (list or grid, say) is a capability its keys can name: "list-columns[layout_grid]".
+    layout = pick_layout(theme_data, layout)
+    LAYOUT_CAPABILITIES[:] = [layout_capability(layout)] if layout is not None else []
 
     capabilities = theme_capabilities()
 
@@ -551,9 +583,13 @@ class Theme:
             if not scheme_name.startswith('#')]
 
 
-    def gui_init(self, gui, color_scheme=None):
+    @property
+    def layouts(self):
+        return theme_layouts(self.theme_data)
+
+    def gui_init(self, gui, color_scheme=None, layout=None):
         gui.resources.add_path(self.theme_dir)
-        return theme_load(gui, self.theme_file, color_scheme)
+        return theme_load(gui, self.theme_file, color_scheme, layout)
 
 
 class ThemeDownloader(harbourmaster.source.BaseSource):
@@ -721,6 +757,7 @@ class ThemeEngine:
         ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
         self.force_scheme = force_scheme
+        self.force_layout = None
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -778,6 +815,16 @@ class ThemeEngine:
 
         cfg_data = self.get_pm_config()
         return cfg_data.setdefault("theme-scheme", None)
+
+    def get_current_theme_layout(self):
+        """The layout chosen in Options (None: the theme's default), or the forced one."""
+        if self.force_layout is not None:
+            return self.force_layout
+
+        return self.get_pm_config().setdefault("theme-layout", None)
+
+    def get_theme_layouts_list(self, theme_name=None):
+        return self.get_theme(theme_name or self.get_current_theme()).layouts
 
     def get_theme_dir(self, theme_name):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -880,9 +927,10 @@ class ThemeEngine:
     def gui_init(self):
         theme_name = self.get_current_theme()
         scheme = self.get_current_theme_scheme()
+        layout = self.get_current_theme_layout()
 
         try:
-            return self.get_theme(theme_name).gui_init(self.gui, scheme)
+            return self.get_theme(theme_name).gui_init(self.gui, scheme, layout)
 
         except Exception:
             ## A custom theme that doesn't load (eg: no option_menu section) would stop

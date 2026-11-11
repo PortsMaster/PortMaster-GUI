@@ -190,3 +190,22 @@ def test_font_scale_auto_is_a_theme_capability():
     theme.theme_update(target, {"font-scale": 1.0, "font-scale[font_scale_auto]": "auto"})
     assert target["font-scale"] == "auto"
     assert "font_scale_auto" not in harbourmaster.device_info()["capabilities"]
+
+
+def test_layouts_are_capabilities(tmp_path):
+    ## "#layouts" names the theme's layouts; the chosen one is a capability its keys name.
+    from pugwash import theme
+    data = {"#info": {"default-layout": "List"}, "#layouts": {"List": {}, "Big Grid": {}}}
+    assert theme.theme_layouts(data) == ["List", "Big Grid"]
+    assert theme.layout_capability("Big Grid") == "layout_big_grid"
+    assert theme.pick_layout(data, "Big Grid") == "Big Grid"
+    assert theme.pick_layout(data, "Gone") == "List"          ## the theme's default
+    assert theme.pick_layout({"#layouts": {"A": {}, "B": {}}}, None) == "A"
+    assert theme.pick_layout({}, "Grid") is None
+    theme.LAYOUT_CAPABILITIES[:] = [theme.layout_capability("Big Grid")]
+    try:
+        target = {}
+        theme.theme_update(target, {"list-columns": 1, "list-columns[layout_big_grid]": 4, "list-columns[layout_list]": 2})
+        assert target["list-columns"] == 4
+    finally:
+        theme.LAYOUT_CAPABILITIES[:] = []

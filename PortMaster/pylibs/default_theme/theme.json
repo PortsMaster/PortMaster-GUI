@@ -4,7 +4,12 @@
         "name": "PortMaster Web",
         "creator": "PortMaster",
         "description": "The default PortMaster theme, restyled after the portmaster.games website: dark header and footer, rounded cards, Roboto and the site's orange.\n\nColor schemes: Dark Mode, Light Mode and OLED Mode.",
-        "default-scheme": "Dark Mode"
+        "default-scheme": "Dark Mode",
+        "default-layout": "List"
+    },
+    "#layouts": {
+        "List": {},
+        "Grid": {}
     },
     "#schemes": {
         "#base": {
@@ -170,6 +175,19 @@
         },
         "card_inner": {
             "parent": "right_pane",
+            "area": [ 16, 14, -16, -14 ],
+            "area[hires]": [ 24, 20, -24, -20 ]
+        },
+        "grid_left": {
+            "comment": "Grid layout: the ports list, wide",
+            "area": [ 0.035, 0.115, 0.56, 0.905 ]
+        },
+        "grid_right": {
+            "comment": "Grid layout: the port's card, narrow",
+            "area": [ 0.585, 0.115, 0.97, 0.905 ]
+        },
+        "grid_card_inner": {
+            "parent": "grid_right",
             "area": [ 16, 14, -16, -14 ],
             "area[hires]": [ 24, 20, -24, -20 ]
         },
@@ -442,7 +460,8 @@
             "font-size": 17,
             "font-color": "text",
             "align": "midleft",
-            "text-clip": true
+            "text-clip": true,
+            "parent[layout_grid]": "grid_left"
         },
         "port_filters": {
             "font": "Roboto-Regular.ttf",
@@ -461,16 +480,31 @@
             "autoscroll": "marquee",
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500
+            "scroll-delay-end": 1500,
+            "parent[layout_grid]": "grid_left"
         },
-        "#element:side_list:ports_list": {},
+        "#element:side_list:ports_list": {
+            "list-columns[layout_grid]": 3,
+            "list-columns[layout_grid,wide]": 4,
+            "item-spacer[layout_grid]": 6,
+            "item-spacer[layout_grid,hires]": 10,
+            "item-padding[layout_grid]": 5,
+            "item-padding[layout_grid,hires]": 8,
+            "roundness[layout_grid]": 8,
+            "roundness[layout_grid,hires]": 12,
+            "font-size[layout_grid]": 12,
+            "line-height[layout_grid]": 1.4,
+            "alt-fill[layout_grid]": "card_fill",
+            "parent[layout_grid]": "grid_left"
+        },
         "port_card": {
             "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
             "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
             "patch[hires]": [ 20, 20, 20, 20 ],
-            "parent": "right_pane"
+            "parent": "right_pane",
+            "parent[layout_grid]": "grid_right"
         },
         "port_title": {
             "font": "Roboto-Medium.ttf",
@@ -489,7 +523,8 @@
             "autoscroll": "marquee",
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500
+            "scroll-delay-end": 1500,
+            "parent[layout_grid]": "grid_card_inner"
         },
         "port_byline": {
             "font": "Roboto-Regular.ttf",
@@ -504,7 +539,8 @@
             "font-size": 13,
             "font-color": "text_faint",
             "align": "topleft",
-            "text-clip": true
+            "text-clip": true,
+            "parent[layout_grid]": "grid_card_inner"
         },
         "port_image": {
             "parent": "card_inner",
@@ -513,7 +549,9 @@
             "area[1:1|square]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
-            "image-align": "topleft"
+            "image-align": "topleft",
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.15, 1.0, 0.5 ]
         },
         "port_image_corners": {
             "parent": "card_inner",
@@ -523,7 +561,9 @@
             "image-align": "topleft",
             "image": "shot_mask.png",
             "image-mode": "fit",
-            "image-mod": "card_fill"
+            "image-mod": "card_fill",
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.15, 1.0, 0.5 ]
         },
         "port_status": {
             "font": "Roboto-Medium.ttf",
@@ -540,14 +580,18 @@
             "font-size": 15,
             "font-color": "accent_text",
             "align": "midleft",
-            "text-clip": true
+            "text-clip": true,
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.53, 1.0, 0.585 ]
         },
         "port_rule": {
             "fill": "divider",
             "area": [ 0.64, 0.245, 1.0, 0.2475 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.245, 1.0, 0.2475 ],
-            "area[1:1|square]": [ 0.0, 0.6, 1.0, 0.6025 ]
+            "area[1:1|square]": [ 0.0, 0.6, 1.0, 0.6025 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.6, 1.0, 0.6025 ]
         },
         "spec_label_0": {
             "font": "Roboto-Regular.ttf",
@@ -564,7 +608,10 @@
             "area": [ 0.64, 0.26, 1.0, 0.305 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.26, 1.0, 0.305 ],
-            "area[1:1|square]": [ 0.0, 0.615, 0.3133, 0.655 ]
+            "area[1:1|square]": [ 0.0, 0.615, 0.3133, 0.655 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.615, 0.3133, 0.655 ],
+            "font-size[layout_grid]": 10
         },
         "spec_value_0": {
             "font": "Roboto-Medium.ttf",
@@ -586,7 +633,10 @@
             "area": [ 0.64, 0.305, 1.0, 0.36 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.305, 1.0, 0.36 ],
-            "area[1:1|square]": [ 0.0, 0.655, 0.3133, 0.71 ]
+            "area[1:1|square]": [ 0.0, 0.655, 0.3133, 0.71 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.655, 0.3133, 0.71 ],
+            "font-size[layout_grid]": 12
         },
         "spec_label_1": {
             "font": "Roboto-Regular.ttf",
@@ -603,7 +653,10 @@
             "area": [ 0.64, 0.38, 1.0, 0.425 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.38, 1.0, 0.425 ],
-            "area[1:1|square]": [ 0.3333, 0.615, 0.6467, 0.655 ]
+            "area[1:1|square]": [ 0.3333, 0.615, 0.6467, 0.655 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.3333, 0.615, 0.6467, 0.655 ],
+            "font-size[layout_grid]": 10
         },
         "spec_value_1": {
             "font": "Roboto-Medium.ttf",
@@ -625,7 +678,10 @@
             "area": [ 0.64, 0.425, 1.0, 0.48 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.425, 1.0, 0.48 ],
-            "area[1:1|square]": [ 0.3333, 0.655, 0.6467, 0.71 ]
+            "area[1:1|square]": [ 0.3333, 0.655, 0.6467, 0.71 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.3333, 0.655, 0.6467, 0.71 ],
+            "font-size[layout_grid]": 12
         },
         "spec_label_2": {
             "font": "Roboto-Regular.ttf",
@@ -642,7 +698,10 @@
             "area": [ 0.64, 0.5, 1.0, 0.545 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.5, 1.0, 0.545 ],
-            "area[1:1|square]": [ 0.6667, 0.615, 0.98, 0.655 ]
+            "area[1:1|square]": [ 0.6667, 0.615, 0.98, 0.655 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.6667, 0.615, 0.98, 0.655 ],
+            "font-size[layout_grid]": 10
         },
         "spec_value_2": {
             "font": "Roboto-Medium.ttf",
@@ -664,14 +723,19 @@
             "area": [ 0.64, 0.545, 1.0, 0.6 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.6, 0.545, 1.0, 0.6 ],
-            "area[1:1|square]": [ 0.6667, 0.655, 0.98, 0.71 ]
+            "area[1:1|square]": [ 0.6667, 0.655, 0.98, 0.71 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.6667, 0.655, 0.98, 0.71 ],
+            "font-size[layout_grid]": 12
         },
         "port_rule_2": {
             "fill": "divider",
             "area": [ 0.0, 0.655, 1.0, 0.6575 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.0, 0.72, 1.0, 0.7225 ],
-            "area[1:1|square]": [ 0.0, 0.735, 1.0, 0.7375 ]
+            "area[1:1|square]": [ 0.0, 0.735, 1.0, 0.7375 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.735, 1.0, 0.7375 ]
         },
         "port_desc": {
             "font": "Roboto-Regular.ttf",
@@ -693,7 +757,9 @@
             "area": [ 0.0, 0.68, 1.0, 1.0 ],
             "parent": "card_inner",
             "area[wide|3:2]": [ 0.0, 0.745, 1.0, 1.0 ],
-            "area[1:1|square]": [ 0.0, 0.76, 1.0, 1.0 ]
+            "area[1:1|square]": [ 0.0, 0.76, 1.0, 1.0 ],
+            "parent[layout_grid]": "grid_card_inner",
+            "area[layout_grid]": [ 0.0, 0.76, 1.0, 1.0 ]
         }
     },
     "port_info": {

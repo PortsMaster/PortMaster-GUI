@@ -13,7 +13,7 @@ from .keyboard import OnScreenKeyboard
 from .language import LanguageScene
 from .runtimes import RuntimesScene
 from .theme_server import ThemeServerScene
-from .themes import ThemeSchemeScene, ThemesScene
+from .themes import ThemeLayoutScene, ThemeSchemeScene, ThemesScene
 
 
 class OptionScene(BaseScene):
@@ -42,6 +42,12 @@ class OptionScene(BaseScene):
                 'select-scheme',
                 _("Select Color Scheme"),
             description=_("Select a color scheme for PortMaster."))
+
+        if len(self.gui.themes.get_theme_layouts_list()) > 1:
+            self.tags['option_list'].add_option(
+                'select-layout',
+                _("Select Layout"),
+                description=_("Choose how this theme shows PortMaster's lists: as a list, or as a grid of images, say."))
 
         self.tags['option_list'].add_option(
             'theme-editor',
@@ -442,6 +448,10 @@ class OptionScene(BaseScene):
 
             if selected_option == 'select-scheme':
                 self.gui.push_scene('select-scheme', ThemeSchemeScene(self.gui))
+                return True
+
+            if selected_option == 'select-layout':
+                self.gui.push_scene('select-layout', ThemeLayoutScene(self.gui))
                 return True
 
             if selected_option == 'theme-editor':

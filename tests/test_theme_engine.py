@@ -196,7 +196,7 @@ def loading(theme, engine, hm, monkeypatch):
     add_theme(hm, "Typo", "Typo")
     tried = []
 
-    def gui_init(self, gui, color_scheme=None):
+    def gui_init(self, gui, color_scheme=None, layout=None):
         tried.append(self.theme_dir.name)
         if self.theme_dir.name == "Typo":
             raise GUIThemeError("Region area incorrect length")
@@ -229,7 +229,7 @@ def test_forced_theme_that_fails_to_load_raises(loading):
 
 
 def test_default_theme_failing_raises(loading, theme, monkeypatch):
-    def fail(self, gui, color_scheme=None):
+    def fail(self, gui, color_scheme=None, layout=None):
         raise ValueError("broken install")
 
     monkeypatch.setattr(theme.Theme, "gui_init", fail)

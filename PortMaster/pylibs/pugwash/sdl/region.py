@@ -766,6 +766,10 @@ class Region:
                     'center',
                     self.scroll_pos,
                     False)
+            elif texture.size.width > label_area.width:
+                ## Too long for its tile: its start shows, not its middle ("\ Meta Data Gam").
+                alignment = 'midleft'
+                x, y = label_area.midleft
             else:
                 alignment = 'center'
                 x, y = label_area.center

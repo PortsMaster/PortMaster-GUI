@@ -96,6 +96,30 @@ def test_scheme_reload(app, tmp_path):
     assert screen(app, tmp_path, "after") == before
 
 
+def test_layout_reload(app, tmp_path):
+    ## The default theme's Grid layout draws the ports list as tiles; back to List, as before.
+    from pugwash.scenes import PortsListScene
+    ports = [('option', lambda gui: PortsListScene(gui, {'mode': 'all'}))]
+    ## Screenshots decoded as they're drawn, not in the background: the same in every capture.
+    app.images.disable_async()
+    try:
+        app.hm.cfg_data['theme-layout'] = None
+        app.reload_theme(then=ports)
+        before = screen(app, tmp_path, "list")
+        assert app.scenes[-1][1][-1].tags['ports_list'].list_columns == 1
+
+        app.hm.cfg_data['theme-layout'] = "Grid"
+        app.reload_theme(then=ports)
+        assert app.scenes[-1][1][-1].tags['ports_list'].list_columns == 3
+        assert screen(app, tmp_path, "grid") != before
+
+        app.hm.cfg_data['theme-layout'] = None
+        app.reload_theme(then=ports)
+        assert screen(app, tmp_path, "after") == before
+    finally:
+        app.images.enable_async(app.dispatcher)
+
+
 def test_saved_scheme_the_theme_has_not(app, tmp_path):
     ## A scheme the old default theme had (Dracula, Darker Mode...) saved in config.json: the
     ## theme's own default scheme instead.

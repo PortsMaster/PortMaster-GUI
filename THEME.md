@@ -540,6 +540,33 @@ In a grid LEFT/RIGHT move one tile, UP/DOWN move one row and L1/R1 move one page
 ```
 
 
+### Layouts: a list or a grid, to choose
+
+A theme can offer more than one layout, for example its ports as a list or as a grid, and the player picks one in **Options › Select Layout** (shown when the theme has more than one). List them in `#layouts`, and name the default in `#info`:
+
+```json
+    "#info": {
+        "default-layout": "List"
+    },
+    "#layouts": {
+        "List": {},
+        "Grid": {}
+    }
+```
+
+The chosen layout is a capability its keys can name, `layout_` and its name in lower case with anything but letters and digits as `_` ("Grid" is `layout_grid`, "Big Grid" `layout_big_grid`). So a key for it goes after the theme's own and wins while that layout is chosen:
+
+```json
+    "ports_list": {
+        "list-columns": 1,
+        "list-columns[layout_grid]": 3,
+        "list-columns[layout_grid,wide]": 4,
+        "parent[layout_grid]": "grid_left"
+    }
+```
+
+The default theme's Grid layout does this: the ports list gets its own wider pane (`grid_left`), the port's card a narrower one with its screenshot above its details. The choice is saved as `theme-layout` in config.json; choosing another theme goes back to that theme's default layout, and a layout a theme doesn't have (renamed in an update, say) means its default.
+
 ## Special Words
 
 Within the templating system we have special words for things like button bindings and checkboxes. They are used for showing buttons and actions, and checkboxes.

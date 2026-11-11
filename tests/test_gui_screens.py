@@ -616,6 +616,32 @@ def test_schemes_choose(screen_gui, schemes, monkeypatch):
     assert screen_gui.events.running is True
 
 
+@pytest.fixture
+def layouts(screen_gui, monkeypatch):
+    return push(screen_gui, 'select-layout', screen_gui.scenes_mod.ThemeLayoutScene(screen_gui))
+
+
+def test_layouts_list_and_choose(screen_gui, layouts, monkeypatch):
+    ## The default theme has List and Grid: List selected, Grid to choose.
+    region = layouts.tags['option_list']
+    assert [str(text) for text in region.list if "(Selected)" in str(text)] == ["List (Selected)"]
+    reloads = []
+    monkeypatch.setattr(screen_gui, "reload_theme", lambda then=None: reloads.append([name for name, _ in then]))
+    grid = [option for option in region.options if isinstance(option, tuple) and option[0] == 'select-layout'][0]
+    assert grid == ('select-layout', "Grid")
+
+    choose(screen_gui, monkeypatch, grid)
+
+    assert screen_gui.hm.cfg_data['theme-layout'] == "Grid"
+    assert reloads == [['option', 'select-layout']]
+    screen_gui.hm.cfg_data['theme-layout'] = None
+
+
+def test_options_offers_layouts(screen_gui, monkeypatch):
+    options = push(screen_gui, 'option', screen_gui.scenes_mod.OptionScene(screen_gui))
+    assert 'select-layout' in options.tags['option_list'].options
+
+
 def test_schemes_back_and_blank(screen_gui, schemes, monkeypatch):
     region = schemes.tags['option_list']
     region.selected = region.options.index(None)
