@@ -42,8 +42,18 @@ def extract_requirements(text, strict=False):
     return text, list(requirements)
 
 
+## What this PortMaster's theme engine understands, as capabilities a theme's keys can name, for
+## themes that also run on older PortMasters: "font-scale[font_scale_auto]": "auto" is skipped
+## where "auto" would be an error. Only themes see them, not the device's info (ports).
+THEME_CAPABILITIES = ('font_scale_auto',)
+
+
+def theme_capabilities():
+    return list(harbourmaster.device_info()['capabilities']) + list(THEME_CAPABILITIES)
+
+
 def theme_update(target, source):
-    capabilities = harbourmaster.device_info()['capabilities']
+    capabilities = theme_capabilities()
 
     for key, value in source.items():
         key, requirements = extract_requirements(key)
@@ -85,7 +95,7 @@ def theme_check_images(gui, region_data):
 
 def theme_apply(gui, section_data, base_data, elements):
     new_data = {}
-    capabilities = harbourmaster.device_info()['capabilities']
+    capabilities = theme_capabilities()
 
     for region_name, region_data in section_data.items():
         if region_name == "#base":
@@ -243,7 +253,7 @@ def theme_load(gui, theme_file, color_scheme=None):
     if theme_data is None:
         raise ValueError(f"Unable to load theme {theme_file}")
 
-    capabilities = harbourmaster.device_info()["capabilities"]
+    capabilities = theme_capabilities()
 
     ## The theme's own translations of its text ({lang: {text: translation}}), if it has any.
     i18n.set_theme_translations(theme_data.get("#translations", {}))

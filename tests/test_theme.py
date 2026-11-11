@@ -180,3 +180,13 @@ def test_theme_image_with_capitals(downloader, theme_release, monkeypatch):
 
     image = themes_downloader.get_theme_list()["zelda"]["image"]
     assert image is not None and image.read_bytes() == b"png data"
+
+
+def test_font_scale_auto_is_a_theme_capability():
+    ## Themes for older PortMasters too put "auto" under it; the device's info doesn't have it.
+    import harbourmaster
+    from pugwash import theme
+    target = {}
+    theme.theme_update(target, {"font-scale": 1.0, "font-scale[font_scale_auto]": "auto"})
+    assert target["font-scale"] == "auto"
+    assert "font_scale_auto" not in harbourmaster.device_info()["capabilities"]
