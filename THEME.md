@@ -459,6 +459,24 @@ The list system is quite adequate
         "pointer-mirror": false,                  // mirror the pointer and display on the other side of the list item
         "pointer-mirror-x": false,                // flip the mirrored pointer horizontally
         "pointer-mirror-y": false,                // flip the mirrored pointer vertically
+        "pointer-fit": "row",                     // size a list's pointer from its rows (see below)
+    }
+```
+
+`pointer-size`, `pointer-offset` and `border-x` are pixels, which `font-scale` doesn't change, so a pointer sized for one screen can be too big or too small for the rows on another. With `"pointer-fit": "row"` a list's pointer is exactly as tall as a row, and its width keeps the image's shape: it fits the rows at any font size and screen size. With `"pointer-attach": "list"` as well, the list's side padding is the pointer's width (instead of `border-x`), so the pointer sits beside the row inside the list. A row-fitted pointer is also drawn on selected rows made of several items (the filters' checkbox rows).
+
+For example, a pill-shaped selection: a half-disc image at both ends of the selected row's fill.
+
+```json
+    "option_list": {
+        "select-fill": "accent",
+        "pointer": "pill_cap.png",                // a left half-disc, as tall as it is twice wide
+        "pointer-fit": "row",
+        "pointer-attach": "list",
+        "pointer-align": ["midleft", "midright"],
+        "pointer-mirror": true,
+        "pointer-size": [19, 38],                 // for older PortMasters, which ignore pointer-fit
+        "border-x": 19
     }
 ```
 

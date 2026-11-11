@@ -175,6 +175,10 @@ class Region:
         self.pointer_mirror = self._verify_bool('pointer-mirror', False)
         self.pointer_mirror_x = self._verify_bool('pointer-mirror-x', self.pointer_mirror)
         self.pointer_mirror_y = self._verify_bool('pointer-mirror-y', False)
+        ## "row": a list's pointer is as tall as a row (its width keeps the image's shape), and with
+        ## "pointer-attach": "list" the list's side padding is the pointer's width. It then fits the
+        ## rows at any font size. Older PortMasters ignore the key and use pointer-size and border-x.
+        self.pointer_fit = self._verify_option('pointer-fit', ['row'], optional=True)
 
         # TODO figure out how to use default/system fonts
         self.font = self._verify_file('font', optional=True)
@@ -515,6 +519,14 @@ class Region:
 
             itemsize = int(itemsize * self.lineheight)
 
+            ## "pointer-fit": "row": the pointer is a row tall, and attached to the list it sits in
+            ## the side padding, which is then as wide as the pointer.
+            pointer_w = None
+            if self.pointer is not None and self.pointer_fit == 'row':
+                pointer_w = max(1, int(itemsize * self.pointer.srcrect.w / self.pointer.srcrect.h + 0.5))
+                if self.pointer_attach == 'list':
+                    text_area = Rect(area.x + pointer_w, text_area.y, max(0, area.width - pointer_w * 2), text_area.height)
+
             self.page_size = max(area.height // (itemsize + self.item_spacer), 1)
             self.selected = self.selected % len(self.list)
 
@@ -548,6 +560,10 @@ class Region:
 
                     self._draw_bar(irect, bar, x, active=(self.selected==i))
 
+                    ## A row-fitted pointer marks a selected bar row too (checkbox rows like the filters).
+                    if pointer_w is not None and self.selected == i:
+                        self._draw_pointer(irect, irect, align_opposite, pointer_w)
+
                 elif self.selected == i:
                     ## Not sure what this is used for.
                     #
@@ -579,50 +595,7 @@ class Region:
                             drawn_rect = texture.draw_in(irect, fit=True)
 
                     if self.pointer is not None:
-                        if self.pointer_size is not None:
-                            pointer_rect = Rect(*(0, 0, self.pointer_size[0], self.pointer_size[1]))
-
-                        else:
-                            pointer_rect = Rect(*(0, 0, self.pointer.srcrect.w, self.pointer.srcrect.h))
-
-                        if self.pointer_attach == 'list':
-                            drawn_rect = irect
-
-                        (x, y) = getattr(drawn_rect, self.pointer_align[0])
-                        setattr(pointer_rect, self.pointer_align[1], (x, y))
-
-                        pointer_rect.x += self.pointer_offset[0]
-                        pointer_rect.y += self.pointer_offset[1]
-
-                        self.pointer.draw_in(
-                            pointer_rect, fit=True, flip_x=self.pointer_flip_x, flip_y=self.pointer_flip_y)
-
-                        if self.pointer_mirror:
-                            if self.pointer_size is not None:
-                                pointer_rect = Rect(*(0, 0, self.pointer_size[0], self.pointer_size[1]))
-
-                            else:
-                                pointer_rect = Rect(*(0, 0, self.pointer.srcrect.w, self.pointer.srcrect.h))
-
-                            if self.pointer_attach == 'list':
-                                drawn_rect = irect
-
-                            (x, y) = getattr(drawn_rect, align_opposite[self.pointer_align[0]])
-                            setattr(pointer_rect, align_opposite[self.pointer_align[1]], (x, y))
-
-                            pointer_rect.x -= self.pointer_offset[0]
-                            pointer_rect.y -= self.pointer_offset[1]
-
-                            pointer_flip_x = self.pointer_flip_x
-                            if self.pointer_mirror_x:
-                                pointer_flip_x = not pointer_flip_x
-
-                            pointer_flip_y = self.pointer_flip_y
-                            if self.pointer_mirror_y:
-                                pointer_flip_y = not pointer_flip_y
-
-                            self.pointer.draw_in(
-                                pointer_rect, fit=True, flip_x=pointer_flip_x, flip_y=pointer_flip_y)                            
+                        self._draw_pointer(drawn_rect, irect, align_opposite, pointer_w)
 
                 else:
                     if self.noselect_color and not self.list_selectable(i):
@@ -645,6 +618,43 @@ class Region:
 
                 irect.y += itemsize + self.item_spacer
                 i += 1
+
+    def _draw_pointer(self, drawn_rect, irect, align_opposite, fit_width=None):
+        '''
+        Draw the pointer next to the selected list item, and its mirror image on the other side.
+
+        drawn_rect: the rect of the item's drawn text (pointer-attach "text")
+        irect: the item's row (pointer-attach "list")
+        fit_width: the pointer's width with "pointer-fit": "row", which draws it a row tall
+        '''
+        if self.pointer_attach == 'list':
+            drawn_rect = irect
+
+        if fit_width is not None:
+            size = (fit_width, irect.height)
+        elif self.pointer_size is not None:
+            size = (self.pointer_size[0], self.pointer_size[1])
+        else:
+            size = (self.pointer.srcrect.w, self.pointer.srcrect.h)
+
+        ## A row-fitted pointer fills its rect exactly: fitting it into the rect would round
+        ## its size down and leave a gap beside the row.
+        fit = fit_width is None
+
+        sides = [(self.pointer_align[0], self.pointer_align[1], 1, self.pointer_flip_x, self.pointer_flip_y)]
+        if self.pointer_mirror:
+            sides.append((
+                align_opposite[self.pointer_align[0]], align_opposite[self.pointer_align[1]], -1,
+                self.pointer_flip_x != self.pointer_mirror_x, self.pointer_flip_y != self.pointer_mirror_y))
+
+        for item_point, pointer_point, offset_sign, flip_x, flip_y in sides:
+            pointer_rect = Rect(0, 0, size[0], size[1])
+            setattr(pointer_rect, pointer_point, getattr(drawn_rect, item_point))
+            pointer_rect.x += self.pointer_offset[0] * offset_sign
+            pointer_rect.y += self.pointer_offset[1] * offset_sign
+
+            self.pointer.draw_in(
+                pointer_rect if fit else pointer_rect.tuple(), fit=fit, flip_x=flip_x, flip_y=flip_y)
 
     def _draw_grid(self, area):
         '''
