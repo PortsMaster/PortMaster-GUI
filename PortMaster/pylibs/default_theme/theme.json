@@ -1,7 +1,7 @@
 {
     "#info": {
         "version": 1,
-        "name": "PortMaster Web",
+        "name": "PortMaster New",
         "creator": "PortMaster",
         "description": "The default PortMaster theme, restyled after the portmaster.games website: dark header and footer, rounded cards, Roboto and the site's orange.\n\nColor schemes: Dark Mode, Light Mode and OLED Mode.",
         "default-scheme": "Dark Mode",
