@@ -1277,11 +1277,13 @@ class Region:
             max_width = area.width
 
         if align is not None and len(right) == 0 and ('center' in align or 'right' in align):
+            ## Never left of the area: max_width counts the gap after the last item, so a bar that
+            ## only just fits would start that gap before the area's left edge.
             if 'center' in align:
-                offset = (area.width - max_width) // 2
+                offset = max(0, (area.width - max_width) // 2)
 
             elif 'right' in align:
-                offset = (area.width - max_width)
+                offset = max(0, area.width - max_width)
 
             for dest, item in left:
                 dest.x += offset
