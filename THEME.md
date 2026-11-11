@@ -328,6 +328,23 @@ You can also use the element overrides to further customise for different screen
         },
 ```
 
+#### Any screen size
+
+PortMaster runs on screens no theme lists: portrait, ultrawide, nearly square, smaller than 640x480. A layout holds together on all of them when:
+
+- **The screen is split into pieces, and each piece into smaller ones.** Give each a `parent` and fractions of it, so that pieces next to each other meet where one ends (`[0.0, 0.11, 1.0, 0.52]`, then `[0.0, 0.52, 1.0, 1.0]`), instead of overlapping and being moved apart screen by screen. Then `area[...]` overrides only move the splits (`"area[wide]"` on a pane), never single regions. The default theme's ports list is built this way: `right_pane` › `port_info_content` (above the button bar) › title, image, text area › general info and description.
+- **Pixels are only padding inside a region's own box.** A region at `[5, 65, -5, -45]` stays 65 pixels down when the text above it is twice the size.
+- **Content ends above the button bar** (`0.92`), or sits beside it. A button bar longer than its area shrinks to fit it.
+- **Text sizes follow the screen:** `"font-scale": "auto"` first in `#base` (see Displaying Text).
+
+`serve.py --export OUT --resolutions 720x1280,3440x1440,480x272 --check` renders every screen and then checks what each region drew where. It lists:
+
+- text or images of two regions on top of each other
+- content off the screen, or outside its own region
+- text drawn smaller or bigger than its font size (a warning: its box doesn't fit it)
+
+It exits 1 if anything worse than a warning turns up. `tests/test_theme_server.py` runs it on the default theme at seven sizes (`LAYOUT_SIZES`).
+
 
 Elements can be themed by setting a `fill`, `outline`, `thickness`, and `roundness`:
 
@@ -363,7 +380,7 @@ A special option is `font-scale` which should be used to broadly scale fonts acr
     }
 ```
 
-`"font-scale": "auto"` follows the screen: the size text has at 640x480, times `min(width / 640, height / 480)` (never below 1), so 1280x720 gets 1.5 and 1920x1080 2.25. `"auto*1.2"` makes that a fifth bigger. Put it first, and the sizes you give for particular screens after it still win: a screen you didn't list (a 1240x1080 one) then gets a sensible size instead of 640x480's. The default theme does this:
+`"font-scale": "auto"` follows the screen: the size text has at 640x480, times `min(width / 640, height / 480)` (never below 0.75, so it stays readable), so 1280x720 gets 1.5, 1920x1080 2.25 and 640x360 0.75. `"auto*1.2"` makes that a fifth bigger. Put it first, and the sizes you give for particular screens after it still win: a screen you didn't list (a 1240x1080 one) then gets a sensible size instead of 640x480's. The default theme does this:
 
 ```json
     "#base": {
