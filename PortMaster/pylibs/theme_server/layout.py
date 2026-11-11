@@ -5,7 +5,8 @@ scale it was drawn at, and each image. Here that becomes a list of problems:
 
   - clash: content of two regions of the same screen on top of each other (a popup over
     the screen below it is fine: that's another depth, and so is an image laid over another
-    region in the very same box, a mask or a frame)
+    region in the very same box, a mask or a frame). The theme's own art (panels, backdrops,
+    logos: a region showing an image file and nothing else) isn't content.
   - off screen: content past the edge of the screen
   - outside its box: content past the edge of its own region's area
   - scaled text (a warning): text drawn smaller or bigger than its font size, because the
@@ -37,12 +38,31 @@ def _overlap(a, b):
     return (x2 - x1, y2 - y1) if x2 - x1 > SLACK and y2 - y1 > SLACK else None
 
 
+def is_decoration(region):
+    """A region that only draws the theme's own art (a panel, a backdrop, scanlines, a logo): its
+    image is a file, not a {tag}, and it has no text, list or bar. It sits behind or over the
+    content on purpose, so it can't clash. Screenshots ({port_info.image}) are content."""
+    data = region.get('data') or {}
+    image = data.get('image')
+    return (isinstance(image, str) and image != "" and "{" not in image
+            and not data.get('text') and not data.get('bar') and not data.get('list'))
+
+
+def content(region):
+    """What a region draws that is content: everything, but a fixed image (a file, not a {tag})
+    behind its own text, list or bar is its panel."""
+    data = region.get('data') or {}
+    image = data.get('image')
+    own_art = isinstance(image, str) and image != "" and "{" not in image
+    return [item for item in region['drawn'] if not (own_art and item[0] == 'image')]
+
+
 def problems(regions, size):
     """[{'kind', 'regions', 'rect', 'text'}] for one rendered screen. regions: as a render
     reports them (shots.scene_regions); size: (width, height)."""
     found = []
     width, height = size
-    shown = [region for region in regions if region.get('visible', True) and region.get('drawn')]
+    shown = [region for region in regions if region.get('visible', True) and region.get('drawn') and not is_decoration(region)]
 
     for region in shown:
         for kind, x, y, w, h, scale in region['drawn']:
@@ -64,13 +84,18 @@ def problems(regions, size):
             if first.get('depth') != second.get('depth'):
                 continue
 
+            ## The same text twice (a shadow, an outline, two colors): layered on purpose.
+            first_text = (first.get('data') or {}).get('text')
+            if first_text and first_text == (second.get('data') or {}).get('text'):
+                continue
+
             ## Two regions in the very same box, one of them drawing an image: a mask or frame
             ## laid over the other on purpose (rounded corners over a screenshot).
             same_box = first.get('rect') is not None and first.get('rect') == second.get('rect')
 
             clash = None
-            for a in first['drawn']:
-                for b in second['drawn']:
+            for a in content(first):
+                for b in content(second):
                     if same_box and 'image' in (a[0], b[0]):
                         continue
                     overlap = _overlap(a[1:5], b[1:5])
