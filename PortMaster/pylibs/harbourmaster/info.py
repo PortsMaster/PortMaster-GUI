@@ -316,13 +316,14 @@ def port_info_load(raw_info, source_name=None, do_default=False):
     if info.get('version', None) == 3:
         info['version'] = 4
 
-        ## Hand-written port.json files leave out "attr" or its "runtime"; filled in below.
-        if 'runtime' in info.get('attr', {}):
-            if info['attr']['runtime'] is None:
-                info['attr']['runtime'] = []
-
-            elif isinstance(info['attr']['runtime'], str):
-                info['attr']['runtime'] = [ info['attr']['runtime'] ]
+       ## Hand-written port.json files leave out "attr" or its "runtime"; filled in below.
+        attr = info.setdefault('attr', {})
+        if isinstance(attr, dict):
+            runtime = attr.get('runtime')
+            if runtime is None:
+                attr['runtime'] = []
+            elif isinstance(runtime, str):
+                attr['runtime'] = [runtime]
 
     # Catch errors because who fucking uses version numbers.
     if info.get('attr', {}).get('runtime', []) == None:
