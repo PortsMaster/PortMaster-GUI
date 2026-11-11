@@ -261,6 +261,30 @@ def test_theme_translations(load, capabilities, monkeypatch):
     assert i18n.theme_text("Hello") == "Hello"
 
 
+def test_text_without_tags_is_translated(gui, monkeypatch):
+    ## A theme's text with no {tags} (a label like "GENRE") is translated when its screen loads,
+    ## like text with tags: tools/i18n.py lists both for translators.
+    from pugwash.scenes.base import BaseScene
+
+    monkeypatch.setattr(i18n, "LANGUAGE", "xx_XX")
+    i18n.set_theme_translations({"xx_XX": {"GENRE": "GENERE", "by {port_info.porter}": "di {port_info.porter}"}})
+    region = {"area": [0, 0, 1.0, 0.3], "font": "DejaVuSans.ttf"}
+    monkeypatch.setitem(gui.theme_data, "test_section", {
+        "label": dict(region, text="GENRE"),
+        "byline": dict(region, text="by {port_info.porter}"),
+        "other": dict(region, text="Untranslated"),
+        })
+    try:
+        scene = BaseScene(gui)
+        scene.load_regions("test_section", [])
+    finally:
+        i18n.set_theme_translations({})
+
+    assert scene.tags["label"].text == "GENERE"
+    assert scene.tags["byline"].text.startswith("di ")
+    assert scene.tags["other"].text == "Untranslated"
+
+
 ################################################################################
 ## What PortMaster adds
 def test_disclaimer_is_always_the_same(load, capabilities):

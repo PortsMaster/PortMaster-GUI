@@ -213,6 +213,10 @@ class BaseScene:
                 for key in text_keys:
                     self.update_regions.setdefault(key, []).append(region_name)
 
+            elif isinstance(region_data.get("text"), str) and region_data["text"]:
+                ## Text with no {tags} never changes: translated once, here.
+                region.text = theme_text(region_data["text"])
+
             if "bar" in region_data:
                 ## Fill in the {templates} for the region, the theme's own list stays as it is
                 ## so the next scene made from it (eg: the next messages window) has them too.
