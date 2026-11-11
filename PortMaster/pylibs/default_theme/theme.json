@@ -14,96 +14,21 @@
                 },
                 "buttons.png": {
                     "atlas": {
-                        "_A": [
-                            0,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_B": [
-                            180,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_X": [
-                            360,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_Y": [
-                            540,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_START": [
-                            0,
-                            180,
-                            360,
-                            180
-                        ],
-                        "_SELECT": [
-                            360,
-                            180,
-                            360,
-                            180
-                        ],
-                        "_L": [
-                            0,
-                            360,
-                            270,
-                            180
-                        ],
-                        "_R": [
-                            270,
-                            360,
-                            270,
-                            180
-                        ],
-                        "_UNCHECKED": [
-                            720,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_CHECKED": [
-                            900,
-                            0,
-                            180,
-                            180
-                        ],
-                        "_MORE": [
-                            720,
-                            180,
-                            180,
-                            180
-                        ],
-                        "_LEFT": [
-                            900,
-                            180,
-                            90,
-                            180
-                        ],
-                        "_RIGHT": [
-                            990,
-                            180,
-                            90,
-                            180
-                        ],
-                        "_UP": [
-                            900,
-                            360,
-                            180,
-                            90
-                        ],
-                        "_DOWN": [
-                            900,
-                            450,
-                            180,
-                            90
-                        ]
+                        "_A": [ 0, 0, 180, 180 ],
+                        "_B": [ 180, 0, 180, 180 ],
+                        "_X": [ 360, 0, 180, 180 ],
+                        "_Y": [ 540, 0, 180, 180 ],
+                        "_START": [ 0, 180, 360, 180 ],
+                        "_SELECT": [ 360, 180, 360, 180 ],
+                        "_L": [ 0, 360, 270, 180 ],
+                        "_R": [ 270, 360, 270, 180 ],
+                        "_UNCHECKED": [ 720, 0, 180, 180 ],
+                        "_CHECKED": [ 900, 0, 180, 180 ],
+                        "_MORE": [ 720, 180, 180, 180 ],
+                        "_LEFT": [ 900, 180, 90, 180 ],
+                        "_RIGHT": [ 990, 180, 90, 180 ],
+                        "_UP": [ 900, 360, 180, 90 ],
+                        "_DOWN": [ 900, 450, 180, 90 ]
                     }
                 },
                 "no-image.png": {
@@ -131,12 +56,7 @@
                 "on_accent": "#111111",
                 "divider": "#3a3a3a",
                 "track": "#3a3a3a",
-                "fade": [
-                    0,
-                    0,
-                    0,
-                    150
-                ],
+                "fade": [ 0, 0, 0, 150 ],
                 "card_fill": "#2b2b2b"
             },
             "#resources": {
@@ -163,12 +83,7 @@
                 "on_accent": "#111111",
                 "divider": "#e0e0e0",
                 "track": "#d6d6d6",
-                "fade": [
-                    0,
-                    0,
-                    0,
-                    110
-                ],
+                "fade": [ 0, 0, 0, 110 ],
                 "card_fill": "#ffffff"
             },
             "#resources": {
@@ -195,12 +110,7 @@
                 "on_accent": "#111111",
                 "divider": "#2a2a2a",
                 "track": "#2a2a2a",
-                "fade": [
-                    0,
-                    0,
-                    0,
-                    170
-                ],
+                "fade": [ 0, 0, 0, 170 ],
                 "card_fill": "#121212"
             },
             "#resources": {
@@ -247,79 +157,24 @@
     },
     "#elements": {
         "left_pane": {
-            "area": [
-                0.035,
-                0.115,
-                0.335,
-                0.905
-            ],
-            "area[3:2]": [
-                0.035,
-                0.115,
-                0.375,
-                0.905
-            ],
-            "area[wide]": [
-                0.035,
-                0.115,
-                0.375,
-                0.905
-            ],
-            "area[1:1|square]": [
-                0.035,
-                0.115,
-                0.38,
-                0.905
-            ]
+            "area": [ 0.035, 0.115, 0.335, 0.905 ],
+            "area[3:2]": [ 0.035, 0.115, 0.375, 0.905 ],
+            "area[wide]": [ 0.035, 0.115, 0.375, 0.905 ],
+            "area[1:1|square]": [ 0.035, 0.115, 0.38, 0.905 ]
         },
         "right_pane": {
-            "area": [
-                0.36,
-                0.115,
-                0.97,
-                0.905
-            ],
-            "area[3:2]": [
-                0.4,
-                0.115,
-                0.97,
-                0.905
-            ],
-            "area[wide]": [
-                0.4,
-                0.115,
-                0.97,
-                0.905
-            ],
-            "area[1:1|square]": [
-                0.405,
-                0.115,
-                0.97,
-                0.905
-            ]
+            "area": [ 0.36, 0.115, 0.97, 0.905 ],
+            "area[3:2]": [ 0.4, 0.115, 0.97, 0.905 ],
+            "area[wide]": [ 0.4, 0.115, 0.97, 0.905 ],
+            "area[1:1|square]": [ 0.405, 0.115, 0.97, 0.905 ]
         },
         "card_inner": {
             "parent": "right_pane",
-            "area": [
-                16,
-                14,
-                -16,
-                -14
-            ],
-            "area[hires]": [
-                24,
-                20,
-                -24,
-                -20
-            ]
+            "area": [ 16, 14, -16, -14 ],
+            "area[hires]": [ 24, 20, -24, -20 ]
         },
         "background": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "fill": "background",
             "font-size": 36,
             "font-color": "text",
@@ -327,12 +182,7 @@
             "music-volume": 50
         },
         "header_bar": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.085
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.085 ],
             "fill": "chrome"
         },
         "header_brand": {
@@ -342,12 +192,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.035,
-                0.0,
-                0.5,
-                0.085
-            ],
+            "area": [ 0.035, 0.0, 0.5, 0.085 ],
             "text": "PortMaster",
             "font-size": 18,
             "font-color": "chrome_text",
@@ -360,12 +205,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.26,
-                0.0,
-                0.74,
-                0.085
-            ],
+            "area": [ 0.26, 0.0, 0.74, 0.085 ],
             "text": "{scene.title}",
             "font-size": 15,
             "font-color": "chrome_muted",
@@ -379,24 +219,14 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.6,
-                0.0,
-                0.965,
-                0.085
-            ],
+            "area": [ 0.6, 0.0, 0.965, 0.085 ],
             "text": "{system.battery_level}    {system.time_24hr}",
             "font-size": 15,
             "font-color": "chrome_muted",
             "align": "midright"
         },
         "footer_bar": {
-            "area": [
-                0.0,
-                0.925,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.925, 1.0, 1.0 ],
             "fill": "chrome"
         },
         "button_bar": {
@@ -406,22 +236,12 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.035,
-                0.939,
-                0.965,
-                0.986
-            ],
+            "area": [ 0.035, 0.939, 0.965, 0.986 ],
             "font-size": 15,
             "font-color": "chrome_text",
             "align": "midright",
             "bar-space": 6,
-            "bar": [
-                "_A",
-                "Accept",
-                "_B",
-                "Back"
-            ],
+            "bar": [ "_A", "Accept", "_B", "Back" ],
             "button-sound": "click"
         },
         "footer_note": {
@@ -431,12 +251,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.035,
-                0.925,
-                0.6,
-                1.0
-            ],
+            "area": [ 0.035, 0.925, 0.6, 1.0 ],
             "font-size": 12,
             "font-color": "chrome_muted",
             "align": "midleft",
@@ -459,122 +274,69 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.6042,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.3276,
-            "pointer-size": [
-                19,
-                38
-            ],
+            "pointer-size": [ 19, 38 ],
             "border-x": 19,
             "line-height[640x480]": 1.6042,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.3276,
-            "pointer-size[640x480]": [
-                19,
-                38
-            ],
+            "pointer-size[640x480]": [ 19, 38 ],
             "border-x[640x480]": 19,
             "line-height[30:17]": 1.6042,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.3276,
-            "pointer-size[30:17]": [
-                19,
-                38
-            ],
+            "pointer-size[30:17]": [ 19, 38 ],
             "border-x[30:17]": 19,
             "line-height[16:9]": 1.5909,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2805,
-            "pointer-size[16:9]": [
-                26,
-                52
-            ],
+            "pointer-size[16:9]": [ 26, 52 ],
             "border-x[16:9]": 26,
             "line-height[3:2]": 1.625,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.3,
-            "pointer-size[3:2]": [
-                16,
-                32
-            ],
+            "pointer-size[3:2]": [ 16, 32 ],
             "border-x[3:2]": 16,
             "line-height[427:240]": 1.5682,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2778,
-            "pointer-size[427:240]": [
-                17,
-                34
-            ],
+            "pointer-size[427:240]": [ 17, 34 ],
             "border-x[427:240]": 17,
             "line-height[720x480]": 1.6042,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.3276,
-            "pointer-size[720x480]": [
-                19,
-                38
-            ],
+            "pointer-size[720x480]": [ 19, 38 ],
             "border-x[720x480]": 19,
             "line-height[720x720]": 1.5441,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.25,
-            "pointer-size[720x720]": [
-                26,
-                52
-            ],
+            "pointer-size[720x720]": [ 26, 52 ],
             "border-x[720x720]": 26,
             "line-height[960x720]": 1.5694,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2841,
-            "pointer-size[960x720]": [
-                28,
-                56
-            ],
+            "pointer-size[960x720]": [ 28, 56 ],
             "border-x[960x720]": 28,
             "line-height[1024x768]": 1.5395,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2447,
-            "pointer-size[1024x768]": [
-                29,
-                58
-            ],
+            "pointer-size[1024x768]": [ 29, 58 ],
             "border-x[1024x768]": 29,
             "line-height[1280x720]": 1.5694,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2841,
-            "pointer-size[1280x720]": [
-                28,
-                56
-            ],
+            "pointer-size[1280x720]": [ 28, 56 ],
             "border-x[1280x720]": 28,
             "line-height[1280x800]": 1.5395,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2447,
-            "pointer-size[1280x800]": [
-                29,
-                58
-            ],
+            "pointer-size[1280x800]": [ 29, 58 ],
             "border-x[1280x800]": 29,
             "line-height[1920x1080]": 1.5481,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2578,
-            "pointer-size[1920x1080]": [
-                40,
-                80
-            ],
+            "pointer-size[1920x1080]": [ 40, 80 ],
             "border-x[1920x1080]": 40,
             "line-height[1920x1152]": 1.5648,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2612,
-            "pointer-size[1920x1152]": [
-                42,
-                84
-            ],
+            "pointer-size[1920x1152]": [ 42, 84 ],
             "border-x[1920x1152]": 42,
-            "area": [
-                0.07,
-                0.15,
-                0.47,
-                0.88
-            ]
+            "area": [ 0.07, 0.15, 0.47, 0.88 ]
         },
         "side_list": {
             "font-size": 16,
@@ -593,123 +355,70 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.1875,
-            "pointer-size": [
-                14,
-                28
-            ],
+            "pointer-size": [ 14, 28 ],
             "border-x": 14,
             "line-height[640x480]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.1875,
-            "pointer-size[640x480]": [
-                14,
-                28
-            ],
+            "pointer-size[640x480]": [ 14, 28 ],
             "border-x[640x480]": 14,
             "line-height[30:17]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.1875,
-            "pointer-size[30:17]": [
-                14,
-                28
-            ],
+            "pointer-size[30:17]": [ 14, 28 ],
             "border-x[30:17]": 14,
             "line-height[16:9]": 1.4808,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2031,
-            "pointer-size[16:9]": [
-                19,
-                38
-            ],
+            "pointer-size[16:9]": [ 19, 38 ],
             "border-x[16:9]": 19,
             "line-height[3:2]": 1.5312,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2895,
-            "pointer-size[3:2]": [
-                12,
-                24
-            ],
+            "pointer-size[3:2]": [ 12, 24 ],
             "border-x[3:2]": 12,
             "line-height[427:240]": 1.4412,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.1667,
-            "pointer-size[427:240]": [
-                12,
-                24
-            ],
+            "pointer-size[427:240]": [ 12, 24 ],
             "border-x[427:240]": 12,
             "line-height[720x480]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.1875,
-            "pointer-size[720x480]": [
-                14,
-                28
-            ],
+            "pointer-size[720x480]": [ 14, 28 ],
             "border-x[720x480]": 14,
             "line-height[720x720]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.1912,
-            "pointer-size[720x720]": [
-                20,
-                40
-            ],
+            "pointer-size[720x720]": [ 20, 40 ],
             "border-x[720x720]": 20,
             "line-height[960x720]": 1.4655,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2143,
-            "pointer-size[960x720]": [
-                21,
-                42
-            ],
+            "pointer-size[960x720]": [ 21, 42 ],
             "border-x[960x720]": 21,
             "line-height[1024x768]": 1.4833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2027,
-            "pointer-size[1024x768]": [
-                22,
-                44
-            ],
+            "pointer-size[1024x768]": [ 22, 44 ],
             "border-x[1024x768]": 22,
             "line-height[1280x720]": 1.4655,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2143,
-            "pointer-size[1280x720]": [
-                21,
-                42
-            ],
+            "pointer-size[1280x720]": [ 21, 42 ],
             "border-x[1280x720]": 21,
             "line-height[1280x800]": 1.4833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2027,
-            "pointer-size[1280x800]": [
-                22,
-                44
-            ],
+            "pointer-size[1280x800]": [ 22, 44 ],
             "border-x[1280x800]": 22,
             "line-height[1920x1080]": 1.4405,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.1863,
-            "pointer-size[1920x1080]": [
-                30,
-                60
-            ],
+            "pointer-size[1920x1080]": [ 30, 60 ],
             "border-x[1920x1080]": 30,
             "line-height[1920x1152]": 1.4535,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.1792,
-            "pointer-size[1920x1152]": [
-                31,
-                62
-            ],
+            "pointer-size[1920x1152]": [ 31, 62 ],
             "border-x[1920x1152]": 31,
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.11,
-                1.0,
-                1.0
-            ]
+            "area": [ 0.0, 0.11, 1.0, 1.0 ]
         }
     },
     "ports_list": {
@@ -728,12 +437,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.055
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.055 ],
             "text": "{ports_list.filter_ports} games",
             "font-size": 17,
             "font-color": "text",
@@ -748,12 +452,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.055,
-                1.0,
-                0.095
-            ],
+            "area": [ 0.0, 0.055, 1.0, 0.095 ],
             "text": "{if:!ports_list.total_ports::ports_list.filter_ports}{ports_list.filters}{else}All ports{endif}",
             "font-size": 12,
             "font-color": "text_faint",
@@ -766,26 +465,11 @@
         },
         "#element:side_list:ports_list": {},
         "port_card": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
+            "patch[hires]": [ 20, 20, 20, 20 ],
             "parent": "right_pane"
         },
         "port_title": {
@@ -796,12 +480,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.085
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.085 ],
             "text": "{port_info.title}",
             "font-size": 21,
             "font-color": "text",
@@ -820,12 +499,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.088,
-                1.0,
-                0.135
-            ],
+            "area": [ 0.0, 0.088, 1.0, 0.135 ],
             "text": "{if:port_info.porter}by {port_info.porter}{endif}",
             "font-size": 13,
             "font-color": "text_faint",
@@ -834,48 +508,18 @@
         },
         "port_image": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.165,
-                0.6,
-                0.62
-            ],
-            "area[wide|3:2]": [
-                0.0,
-                0.165,
-                0.56,
-                0.7
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.15,
-                1.0,
-                0.5
-            ],
+            "area": [ 0.0, 0.165, 0.6, 0.62 ],
+            "area[wide|3:2]": [ 0.0, 0.165, 0.56, 0.7 ],
+            "area[1:1|square]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
             "image-align": "topleft"
         },
         "port_image_corners": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.165,
-                0.6,
-                0.62
-            ],
-            "area[wide|3:2]": [
-                0.0,
-                0.165,
-                0.56,
-                0.7
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.15,
-                1.0,
-                0.5
-            ],
+            "area": [ 0.0, 0.165, 0.6, 0.62 ],
+            "area[wide|3:2]": [ 0.0, 0.165, 0.56, 0.7 ],
+            "area[1:1|square]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image-align": "topleft",
             "image": "shot_mask.png",
             "image-mode": "fit",
@@ -889,24 +533,9 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.64,
-                0.165,
-                1.0,
-                0.23
-            ],
-            "area[wide|3:2]": [
-                0.6,
-                0.165,
-                1.0,
-                0.23
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.53,
-                0.5,
-                0.585
-            ],
+            "area": [ 0.64, 0.165, 1.0, 0.23 ],
+            "area[wide|3:2]": [ 0.6, 0.165, 1.0, 0.23 ],
+            "area[1:1|square]": [ 0.0, 0.53, 0.5, 0.585 ],
             "text": "{port_info.ready_to_run}",
             "font-size": 15,
             "font-color": "accent_text",
@@ -915,25 +544,10 @@
         },
         "port_rule": {
             "fill": "divider",
-            "area": [
-                0.64,
-                0.245,
-                1.0,
-                0.2475
-            ],
+            "area": [ 0.64, 0.245, 1.0, 0.2475 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.245,
-                1.0,
-                0.2475
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.6,
-                1.0,
-                0.6025
-            ]
+            "area[wide|3:2]": [ 0.6, 0.245, 1.0, 0.2475 ],
+            "area[1:1|square]": [ 0.0, 0.6, 1.0, 0.6025 ]
         },
         "spec_label_0": {
             "font": "Roboto-Regular.ttf",
@@ -947,25 +561,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.26,
-                1.0,
-                0.305
-            ],
+            "area": [ 0.64, 0.26, 1.0, 0.305 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.26,
-                1.0,
-                0.305
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.615,
-                0.3133,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.26, 1.0, 0.305 ],
+            "area[1:1|square]": [ 0.0, 0.615, 0.3133, 0.655 ]
         },
         "spec_value_0": {
             "font": "Roboto-Medium.ttf",
@@ -984,25 +583,10 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.305,
-                1.0,
-                0.36
-            ],
+            "area": [ 0.64, 0.305, 1.0, 0.36 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.305,
-                1.0,
-                0.36
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.655,
-                0.3133,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.305, 1.0, 0.36 ],
+            "area[1:1|square]": [ 0.0, 0.655, 0.3133, 0.71 ]
         },
         "spec_label_1": {
             "font": "Roboto-Regular.ttf",
@@ -1016,25 +600,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.38,
-                1.0,
-                0.425
-            ],
+            "area": [ 0.64, 0.38, 1.0, 0.425 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.38,
-                1.0,
-                0.425
-            ],
-            "area[1:1|square]": [
-                0.3333,
-                0.615,
-                0.6467,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.38, 1.0, 0.425 ],
+            "area[1:1|square]": [ 0.3333, 0.615, 0.6467, 0.655 ]
         },
         "spec_value_1": {
             "font": "Roboto-Medium.ttf",
@@ -1053,25 +622,10 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.425,
-                1.0,
-                0.48
-            ],
+            "area": [ 0.64, 0.425, 1.0, 0.48 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.425,
-                1.0,
-                0.48
-            ],
-            "area[1:1|square]": [
-                0.3333,
-                0.655,
-                0.6467,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.425, 1.0, 0.48 ],
+            "area[1:1|square]": [ 0.3333, 0.655, 0.6467, 0.71 ]
         },
         "spec_label_2": {
             "font": "Roboto-Regular.ttf",
@@ -1085,25 +639,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.5,
-                1.0,
-                0.545
-            ],
+            "area": [ 0.64, 0.5, 1.0, 0.545 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.5,
-                1.0,
-                0.545
-            ],
-            "area[1:1|square]": [
-                0.6667,
-                0.615,
-                0.98,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.5, 1.0, 0.545 ],
+            "area[1:1|square]": [ 0.6667, 0.615, 0.98, 0.655 ]
         },
         "spec_value_2": {
             "font": "Roboto-Medium.ttf",
@@ -1122,47 +661,17 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.545,
-                1.0,
-                0.6
-            ],
+            "area": [ 0.64, 0.545, 1.0, 0.6 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.545,
-                1.0,
-                0.6
-            ],
-            "area[1:1|square]": [
-                0.6667,
-                0.655,
-                0.98,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.545, 1.0, 0.6 ],
+            "area[1:1|square]": [ 0.6667, 0.655, 0.98, 0.71 ]
         },
         "port_rule_2": {
             "fill": "divider",
-            "area": [
-                0.0,
-                0.655,
-                1.0,
-                0.6575
-            ],
+            "area": [ 0.0, 0.655, 1.0, 0.6575 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.0,
-                0.72,
-                1.0,
-                0.7225
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.735,
-                1.0,
-                0.7375
-            ]
+            "area[wide|3:2]": [ 0.0, 0.72, 1.0, 0.7225 ],
+            "area[1:1|square]": [ 0.0, 0.735, 1.0, 0.7375 ]
         },
         "port_desc": {
             "font": "Roboto-Regular.ttf",
@@ -1181,25 +690,10 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.0,
-                0.68,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.68, 1.0, 1.0 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.0,
-                0.745,
-                1.0,
-                1.0
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.76,
-                1.0,
-                1.0
-            ]
+            "area[wide|3:2]": [ 0.0, 0.745, 1.0, 1.0 ],
+            "area[1:1|square]": [ 0.0, 0.76, 1.0, 1.0 ]
         }
     },
     "port_info": {
@@ -1217,12 +711,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.04,
-                0.105,
-                0.96,
-                0.175
-            ],
+            "area": [ 0.04, 0.105, 0.96, 0.175 ],
             "text": "{port_info.title}",
             "font-size": 26,
             "font-color": "text",
@@ -1240,12 +729,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.04,
-                0.175,
-                0.96,
-                0.215
-            ],
+            "area": [ 0.04, 0.175, 0.96, 0.215 ],
             "text": "{if:port_info.porter}by {port_info.porter}{endif}",
             "font-size": 14,
             "font-color": "text_faint",
@@ -1253,103 +737,33 @@
             "text-clip": true
         },
         "port_image": {
-            "area": [
-                0.04,
-                0.235,
-                0.6,
-                0.66
-            ],
-            "area[wide]": [
-                0.04,
-                0.235,
-                0.44,
-                0.735
-            ],
-            "area[3:2]": [
-                0.04,
-                0.235,
-                0.49,
-                0.735
-            ],
-            "area[1:1|square]": [
-                0.04,
-                0.235,
-                0.6,
-                0.6
-            ],
+            "area": [ 0.04, 0.235, 0.6, 0.66 ],
+            "area[wide]": [ 0.04, 0.235, 0.44, 0.735 ],
+            "area[3:2]": [ 0.04, 0.235, 0.49, 0.735 ],
+            "area[1:1|square]": [ 0.04, 0.235, 0.6, 0.6 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
             "image-align": "topleft"
         },
         "port_image_corners": {
-            "area": [
-                0.04,
-                0.235,
-                0.6,
-                0.66
-            ],
-            "area[wide]": [
-                0.04,
-                0.235,
-                0.44,
-                0.735
-            ],
-            "area[3:2]": [
-                0.04,
-                0.235,
-                0.49,
-                0.735
-            ],
-            "area[1:1|square]": [
-                0.04,
-                0.235,
-                0.6,
-                0.6
-            ],
+            "area": [ 0.04, 0.235, 0.6, 0.66 ],
+            "area[wide]": [ 0.04, 0.235, 0.44, 0.735 ],
+            "area[3:2]": [ 0.04, 0.235, 0.49, 0.735 ],
+            "area[1:1|square]": [ 0.04, 0.235, 0.6, 0.6 ],
             "image-align": "topleft",
             "image": "shot_mask.png",
             "image-mode": "fit",
             "image-mod": "background"
         },
         "desc_card": {
-            "area": [
-                0.04,
-                0.68,
-                0.6,
-                0.905
-            ],
+            "area": [ 0.04, 0.68, 0.6, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
-            "area[wide]": [
-                0.04,
-                0.755,
-                0.44,
-                0.905
-            ],
-            "area[3:2]": [
-                0.04,
-                0.755,
-                0.49,
-                0.905
-            ],
-            "area[1:1|square]": [
-                0.04,
-                0.62,
-                0.6,
-                0.905
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ],
+            "area[wide]": [ 0.04, 0.755, 0.44, 0.905 ],
+            "area[3:2]": [ 0.04, 0.755, 0.49, 0.905 ],
+            "area[1:1|square]": [ 0.04, 0.62, 0.6, 0.905 ]
         },
         "port_info": {
             "font": "Roboto-Regular.ttf",
@@ -1368,64 +782,19 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.065,
-                0.7,
-                0.575,
-                0.885
-            ],
-            "area[wide]": [
-                0.06,
-                0.77,
-                0.42,
-                0.89
-            ],
-            "area[3:2]": [
-                0.06,
-                0.77,
-                0.47,
-                0.89
-            ],
-            "area[1:1|square]": [
-                0.065,
-                0.64,
-                0.575,
-                0.885
-            ]
+            "area": [ 0.065, 0.7, 0.575, 0.885 ],
+            "area[wide]": [ 0.06, 0.77, 0.42, 0.89 ],
+            "area[3:2]": [ 0.06, 0.77, 0.47, 0.89 ],
+            "area[1:1|square]": [ 0.065, 0.64, 0.575, 0.885 ]
         },
         "side_card": {
-            "area": [
-                0.625,
-                0.235,
-                0.96,
-                0.905
-            ],
+            "area": [ 0.625, 0.235, 0.96, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
-            "area[wide]": [
-                0.465,
-                0.235,
-                0.96,
-                0.905
-            ],
-            "area[3:2]": [
-                0.515,
-                0.235,
-                0.96,
-                0.905
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ],
+            "area[wide]": [ 0.465, 0.235, 0.96, 0.905 ],
+            "area[3:2]": [ 0.515, 0.235, 0.96, 0.905 ]
         },
         "port_status": {
             "font": "Roboto-Medium.ttf",
@@ -1434,24 +803,9 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.65,
-                0.255,
-                0.935,
-                0.31
-            ],
-            "area[wide]": [
-                0.49,
-                0.255,
-                0.935,
-                0.31
-            ],
-            "area[3:2]": [
-                0.54,
-                0.255,
-                0.935,
-                0.31
-            ],
+            "area": [ 0.65, 0.255, 0.935, 0.31 ],
+            "area[wide]": [ 0.49, 0.255, 0.935, 0.31 ],
+            "area[3:2]": [ 0.54, 0.255, 0.935, 0.31 ],
             "text": "{port_info.ready_to_run}",
             "font-size": 16,
             "font-color": "accent_text",
@@ -1460,24 +814,9 @@
         },
         "side_rule": {
             "fill": "divider",
-            "area": [
-                0.65,
-                0.325,
-                0.935,
-                0.3275
-            ],
-            "area[wide]": [
-                0.49,
-                0.325,
-                0.935,
-                0.3275
-            ],
-            "area[3:2]": [
-                0.54,
-                0.325,
-                0.935,
-                0.3275
-            ]
+            "area": [ 0.65, 0.325, 0.935, 0.3275 ],
+            "area[wide]": [ 0.49, 0.325, 0.935, 0.3275 ],
+            "area[3:2]": [ 0.54, 0.325, 0.935, 0.3275 ]
         },
         "spec_label_0": {
             "font": "Roboto-Regular.ttf",
@@ -1491,24 +830,9 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.65,
-                0.34,
-                0.935,
-                0.37
-            ],
-            "area[wide]": [
-                0.49,
-                0.34,
-                0.6975,
-                0.37
-            ],
-            "area[3:2]": [
-                0.54,
-                0.34,
-                0.7225,
-                0.37
-            ]
+            "area": [ 0.65, 0.34, 0.935, 0.37 ],
+            "area[wide]": [ 0.49, 0.34, 0.6975, 0.37 ],
+            "area[3:2]": [ 0.54, 0.34, 0.7225, 0.37 ]
         },
         "spec_value_0": {
             "font": "Roboto-Medium.ttf",
@@ -1527,24 +851,9 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.65,
-                0.37,
-                0.935,
-                0.415
-            ],
-            "area[wide]": [
-                0.49,
-                0.37,
-                0.6975,
-                0.415
-            ],
-            "area[3:2]": [
-                0.54,
-                0.37,
-                0.7225,
-                0.415
-            ]
+            "area": [ 0.65, 0.37, 0.935, 0.415 ],
+            "area[wide]": [ 0.49, 0.37, 0.6975, 0.415 ],
+            "area[3:2]": [ 0.54, 0.37, 0.7225, 0.415 ]
         },
         "spec_label_1": {
             "font": "Roboto-Regular.ttf",
@@ -1558,24 +867,9 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.65,
-                0.43,
-                0.935,
-                0.46
-            ],
-            "area[wide]": [
-                0.7275,
-                0.34,
-                0.935,
-                0.37
-            ],
-            "area[3:2]": [
-                0.7525,
-                0.34,
-                0.935,
-                0.37
-            ]
+            "area": [ 0.65, 0.43, 0.935, 0.46 ],
+            "area[wide]": [ 0.7275, 0.34, 0.935, 0.37 ],
+            "area[3:2]": [ 0.7525, 0.34, 0.935, 0.37 ]
         },
         "spec_value_1": {
             "font": "Roboto-Medium.ttf",
@@ -1594,24 +888,9 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.65,
-                0.46,
-                0.935,
-                0.505
-            ],
-            "area[wide]": [
-                0.7275,
-                0.37,
-                0.935,
-                0.415
-            ],
-            "area[3:2]": [
-                0.7525,
-                0.37,
-                0.935,
-                0.415
-            ]
+            "area": [ 0.65, 0.46, 0.935, 0.505 ],
+            "area[wide]": [ 0.7275, 0.37, 0.935, 0.415 ],
+            "area[3:2]": [ 0.7525, 0.37, 0.935, 0.415 ]
         },
         "spec_label_2": {
             "font": "Roboto-Regular.ttf",
@@ -1625,24 +904,9 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.65,
-                0.52,
-                0.935,
-                0.55
-            ],
-            "area[wide]": [
-                0.49,
-                0.44,
-                0.6975,
-                0.47
-            ],
-            "area[3:2]": [
-                0.54,
-                0.44,
-                0.7225,
-                0.47
-            ]
+            "area": [ 0.65, 0.52, 0.935, 0.55 ],
+            "area[wide]": [ 0.49, 0.44, 0.6975, 0.47 ],
+            "area[3:2]": [ 0.54, 0.44, 0.7225, 0.47 ]
         },
         "spec_value_2": {
             "font": "Roboto-Medium.ttf",
@@ -1661,24 +925,9 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.65,
-                0.55,
-                0.935,
-                0.595
-            ],
-            "area[wide]": [
-                0.49,
-                0.47,
-                0.6975,
-                0.515
-            ],
-            "area[3:2]": [
-                0.54,
-                0.47,
-                0.7225,
-                0.515
-            ]
+            "area": [ 0.65, 0.55, 0.935, 0.595 ],
+            "area[wide]": [ 0.49, 0.47, 0.6975, 0.515 ],
+            "area[3:2]": [ 0.54, 0.47, 0.7225, 0.515 ]
         },
         "spec_label_3": {
             "font": "Roboto-Regular.ttf",
@@ -1692,24 +941,9 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.65,
-                0.61,
-                0.935,
-                0.64
-            ],
-            "area[wide]": [
-                0.7275,
-                0.44,
-                0.935,
-                0.47
-            ],
-            "area[3:2]": [
-                0.7525,
-                0.44,
-                0.935,
-                0.47
-            ]
+            "area": [ 0.65, 0.61, 0.935, 0.64 ],
+            "area[wide]": [ 0.7275, 0.44, 0.935, 0.47 ],
+            "area[3:2]": [ 0.7525, 0.44, 0.935, 0.47 ]
         },
         "spec_value_3": {
             "font": "Roboto-Medium.ttf",
@@ -1728,24 +962,9 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.65,
-                0.64,
-                0.935,
-                0.685
-            ],
-            "area[wide]": [
-                0.7275,
-                0.47,
-                0.935,
-                0.515
-            ],
-            "area[3:2]": [
-                0.7525,
-                0.47,
-                0.935,
-                0.515
-            ]
+            "area": [ 0.65, 0.64, 0.935, 0.685 ],
+            "area[wide]": [ 0.7275, 0.47, 0.935, 0.515 ],
+            "area[3:2]": [ 0.7525, 0.47, 0.935, 0.515 ]
         },
         "instr_label": {
             "font": "Roboto-Regular.ttf",
@@ -1759,24 +978,9 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.65,
-                0.7,
-                0.935,
-                0.73
-            ],
-            "area[wide]": [
-                0.49,
-                0.56,
-                0.935,
-                0.59
-            ],
-            "area[3:2]": [
-                0.54,
-                0.56,
-                0.935,
-                0.59
-            ]
+            "area": [ 0.65, 0.7, 0.935, 0.73 ],
+            "area[wide]": [ 0.49, 0.56, 0.935, 0.59 ],
+            "area[3:2]": [ 0.54, 0.56, 0.935, 0.59 ]
         },
         "port_info_instruction": {
             "font": "Roboto-Regular.ttf",
@@ -1795,24 +999,9 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.65,
-                0.735,
-                0.935,
-                0.885
-            ],
-            "area[wide]": [
-                0.49,
-                0.595,
-                0.935,
-                0.885
-            ],
-            "area[3:2]": [
-                0.54,
-                0.595,
-                0.935,
-                0.885
-            ]
+            "area": [ 0.65, 0.735, 0.935, 0.885 ],
+            "area[wide]": [ 0.49, 0.595, 0.935, 0.885 ],
+            "area[3:2]": [ 0.54, 0.595, 0.935, 0.885 ]
         }
     },
     "port_links": {
@@ -1831,12 +1020,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.055
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.055 ],
             "text": "{port_info.title}",
             "font-size": 17,
             "font-color": "text",
@@ -1855,12 +1039,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.055,
-                1.0,
-                0.095
-            ],
+            "area": [ 0.0, 0.055, 1.0, 0.095 ],
             "text": "Links: {port_links.count}",
             "font-size": 12,
             "font-color": "text_faint",
@@ -1868,26 +1047,11 @@
         },
         "#element:side_list:links_list": {},
         "links_panel": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
+            "patch[hires]": [ 20, 20, 20, 20 ],
             "parent": "right_pane"
         },
         "links_title": {
@@ -1898,12 +1062,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.09
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.09 ],
             "text": "{port_links.name}",
             "font-size": 19,
             "font-color": "text",
@@ -1912,12 +1071,7 @@
         },
         "link_qr": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.12,
-                1.0,
-                0.8
-            ],
+            "area": [ 0.0, 0.12, 1.0, 0.8 ],
             "image": "qr:{port_links.url}",
             "image-mode": "fit"
         },
@@ -1929,12 +1083,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.83,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.83, 1.0, 1.0 ],
             "text": "{port_links.url}",
             "font-size": 13,
             "font-color": "text_muted",
@@ -1950,42 +1099,17 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "#element:option_list": {
-            "area[wide|3:2]": [
-                0.07,
-                0.15,
-                0.43,
-                0.88
-            ],
+            "area[wide|3:2]": [ 0.07, 0.15, 0.43, 0.88 ],
             "list": [],
             "options": []
         },
         "menu_card": {
-            "area": [
-                0.52,
-                0.15,
-                0.955,
-                0.88
-            ],
+            "area": [ 0.52, 0.15, 0.955, 0.88 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
-            "area[wide|3:2]": [
-                0.48,
-                0.15,
-                0.955,
-                0.88
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ],
+            "area[wide|3:2]": [ 0.48, 0.15, 0.955, 0.88 ]
         },
         "menu_tooltip": {
             "font": "Roboto-Regular.ttf",
@@ -1994,18 +1118,8 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.56,
-                0.19,
-                0.92,
-                0.37
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.19,
-                0.92,
-                0.37
-            ],
+            "area": [ 0.56, 0.19, 0.92, 0.37 ],
+            "area[wide|3:2]": [ 0.52, 0.19, 0.92, 0.37 ],
             "text": "{scene.tooltip}",
             "font-size": 19,
             "font-color": "text",
@@ -2014,32 +1128,12 @@
         },
         "menu_rule": {
             "fill": "divider",
-            "area": [
-                0.56,
-                0.4,
-                0.92,
-                0.4025
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.4,
-                0.92,
-                0.4025
-            ]
+            "area": [ 0.56, 0.4, 0.92, 0.4025 ],
+            "area[wide|3:2]": [ 0.52, 0.4, 0.92, 0.4025 ]
         },
         "stat_icon_0": {
-            "area": [
-                0.56,
-                0.44,
-                0.73,
-                0.49
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.44,
-                0.71,
-                0.49
-            ],
+            "area": [ 0.56, 0.44, 0.73, 0.49 ],
+            "area[wide|3:2]": [ 0.52, 0.44, 0.71, 0.49 ],
             "image": "icon_storage.png",
             "image-mode": "fit",
             "image-align": "midleft"
@@ -2061,18 +1155,8 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.56,
-                0.495,
-                0.73,
-                0.55
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.495,
-                0.71,
-                0.55
-            ]
+            "area": [ 0.56, 0.495, 0.73, 0.55 ],
+            "area[wide|3:2]": [ 0.52, 0.495, 0.71, 0.55 ]
         },
         "stat_label_0": {
             "font": "Roboto-Regular.ttf",
@@ -2086,32 +1170,12 @@
             "font-color": "text_faint",
             "align": "topleft",
             "text-clip": true,
-            "area": [
-                0.56,
-                0.55,
-                0.73,
-                0.585
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.55,
-                0.71,
-                0.585
-            ]
+            "area": [ 0.56, 0.55, 0.73, 0.585 ],
+            "area[wide|3:2]": [ 0.52, 0.55, 0.71, 0.585 ]
         },
         "stat_icon_1": {
-            "area": [
-                0.75,
-                0.44,
-                0.92,
-                0.49
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.44,
-                0.92,
-                0.49
-            ],
+            "area": [ 0.75, 0.44, 0.92, 0.49 ],
+            "area[wide|3:2]": [ 0.73, 0.44, 0.92, 0.49 ],
             "image": "icon_battery.png",
             "image-mode": "fit",
             "image-align": "midleft"
@@ -2133,18 +1197,8 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.75,
-                0.495,
-                0.92,
-                0.55
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.495,
-                0.92,
-                0.55
-            ]
+            "area": [ 0.75, 0.495, 0.92, 0.55 ],
+            "area[wide|3:2]": [ 0.73, 0.495, 0.92, 0.55 ]
         },
         "stat_label_1": {
             "font": "Roboto-Regular.ttf",
@@ -2158,32 +1212,12 @@
             "font-color": "text_faint",
             "align": "topleft",
             "text-clip": true,
-            "area": [
-                0.75,
-                0.55,
-                0.92,
-                0.585
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.55,
-                0.92,
-                0.585
-            ]
+            "area": [ 0.75, 0.55, 0.92, 0.585 ],
+            "area[wide|3:2]": [ 0.73, 0.55, 0.92, 0.585 ]
         },
         "stat_icon_2": {
-            "area": [
-                0.56,
-                0.65,
-                0.73,
-                0.7
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.65,
-                0.71,
-                0.7
-            ],
+            "area": [ 0.56, 0.65, 0.73, 0.7 ],
+            "area[wide|3:2]": [ 0.52, 0.65, 0.71, 0.7 ],
             "image": "icon_device.png",
             "image-mode": "fit",
             "image-align": "midleft"
@@ -2205,18 +1239,8 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.56,
-                0.705,
-                0.73,
-                0.76
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.705,
-                0.71,
-                0.76
-            ]
+            "area": [ 0.56, 0.705, 0.73, 0.76 ],
+            "area[wide|3:2]": [ 0.52, 0.705, 0.71, 0.76 ]
         },
         "stat_label_2": {
             "font": "Roboto-Regular.ttf",
@@ -2230,32 +1254,12 @@
             "font-color": "text_faint",
             "align": "topleft",
             "text-clip": true,
-            "area": [
-                0.56,
-                0.76,
-                0.73,
-                0.795
-            ],
-            "area[wide|3:2]": [
-                0.52,
-                0.76,
-                0.71,
-                0.795
-            ]
+            "area": [ 0.56, 0.76, 0.73, 0.795 ],
+            "area[wide|3:2]": [ 0.52, 0.76, 0.71, 0.795 ]
         },
         "stat_icon_3": {
-            "area": [
-                0.75,
-                0.65,
-                0.92,
-                0.7
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.65,
-                0.92,
-                0.7
-            ],
+            "area": [ 0.75, 0.65, 0.92, 0.7 ],
+            "area[wide|3:2]": [ 0.73, 0.65, 0.92, 0.7 ],
             "image": "icon_firmware.png",
             "image-mode": "fit",
             "image-align": "midleft"
@@ -2277,18 +1281,8 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.75,
-                0.705,
-                0.92,
-                0.76
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.705,
-                0.92,
-                0.76
-            ]
+            "area": [ 0.75, 0.705, 0.92, 0.76 ],
+            "area[wide|3:2]": [ 0.73, 0.705, 0.92, 0.76 ]
         },
         "stat_label_3": {
             "font": "Roboto-Regular.ttf",
@@ -2302,18 +1296,8 @@
             "font-color": "text_faint",
             "align": "topleft",
             "text-clip": true,
-            "area": [
-                0.75,
-                0.76,
-                0.92,
-                0.795
-            ],
-            "area[wide|3:2]": [
-                0.73,
-                0.76,
-                0.92,
-                0.795
-            ]
+            "area": [ 0.75, 0.76, 0.92, 0.795 ],
+            "area[wide|3:2]": [ 0.73, 0.76, 0.92, 0.795 ]
         },
         "#element:footer_note:version": {
             "text": "PortMaster {system.portmaster_version}"
@@ -2346,159 +1330,81 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.4773,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2037,
-            "pointer-size": [
-                16,
-                32
-            ],
+            "pointer-size": [ 16, 32 ],
             "border-x": 16,
             "line-height[640x480]": 1.4773,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2037,
-            "pointer-size[640x480]": [
-                16,
-                32
-            ],
+            "pointer-size[640x480]": [ 16, 32 ],
             "border-x[640x480]": 16,
             "line-height[30:17]": 1.4773,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2037,
-            "pointer-size[30:17]": [
-                16,
-                32
-            ],
+            "pointer-size[30:17]": [ 16, 32 ],
             "border-x[30:17]": 16,
             "line-height[16:9]": 1.4833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2027,
-            "pointer-size[16:9]": [
-                22,
-                44
-            ],
+            "pointer-size[16:9]": [ 22, 44 ],
             "border-x[16:9]": 22,
             "line-height[3:2]": 1.5833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2955,
-            "pointer-size[3:2]": [
-                14,
-                28
-            ],
+            "pointer-size[3:2]": [ 14, 28 ],
             "border-x[3:2]": 14,
             "line-height[427:240]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.1875,
-            "pointer-size[427:240]": [
-                14,
-                28
-            ],
+            "pointer-size[427:240]": [ 14, 28 ],
             "border-x[427:240]": 14,
             "line-height[720x480]": 1.4773,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2037,
-            "pointer-size[720x480]": [
-                16,
-                32
-            ],
+            "pointer-size[720x480]": [ 16, 32 ],
             "border-x[720x480]": 16,
             "line-height[720x720]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2237,
-            "pointer-size[720x720]": [
-                23,
-                46
-            ],
+            "pointer-size[720x720]": [ 23, 46 ],
             "border-x[720x720]": 23,
             "line-height[960x720]": 1.5156,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2125,
-            "pointer-size[960x720]": [
-                24,
-                48
-            ],
+            "pointer-size[960x720]": [ 24, 48 ],
             "border-x[960x720]": 24,
             "line-height[1024x768]": 1.5303,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2317,
-            "pointer-size[1024x768]": [
-                25,
-                50
-            ],
+            "pointer-size[1024x768]": [ 25, 50 ],
             "border-x[1024x768]": 25,
             "line-height[1280x720]": 1.5156,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2125,
-            "pointer-size[1280x720]": [
-                24,
-                48
-            ],
+            "pointer-size[1280x720]": [ 24, 48 ],
             "border-x[1280x720]": 24,
             "line-height[1280x800]": 1.5303,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2317,
-            "pointer-size[1280x800]": [
-                25,
-                50
-            ],
+            "pointer-size[1280x800]": [ 25, 50 ],
             "border-x[1280x800]": 25,
             "line-height[1920x1080]": 1.4891,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2018,
-            "pointer-size[1920x1080]": [
-                34,
-                68
-            ],
+            "pointer-size[1920x1080]": [ 34, 68 ],
             "border-x[1920x1080]": 34,
             "line-height[1920x1152]": 1.5204,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2417,
-            "pointer-size[1920x1152]": [
-                37,
-                74
-            ],
+            "pointer-size[1920x1152]": [ 37, 74 ],
             "border-x[1920x1152]": 37,
             "list": [],
             "options": [],
-            "area": [
-                0.07,
-                0.14,
-                0.57,
-                0.89
-            ],
-            "area[wide|3:2]": [
-                0.07,
-                0.14,
-                0.55,
-                0.89
-            ],
+            "area": [ 0.07, 0.14, 0.57, 0.89 ],
+            "area[wide|3:2]": [ 0.07, 0.14, 0.55, 0.89 ],
             "list-section-add-blank": true
         },
         "desc_card": {
-            "area": [
-                0.61,
-                0.14,
-                0.955,
-                0.89
-            ],
+            "area": [ 0.61, 0.14, 0.955, 0.89 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
-            "area[wide|3:2]": [
-                0.59,
-                0.14,
-                0.955,
-                0.89
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ],
+            "area[wide|3:2]": [ 0.59, 0.14, 0.955, 0.89 ]
         },
         "option_description": {
             "font": "Roboto-Regular.ttf",
@@ -2507,18 +1413,8 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.64,
-                0.18,
-                0.925,
-                0.85
-            ],
-            "area[wide|3:2]": [
-                0.62,
-                0.18,
-                0.925,
-                0.85
-            ],
+            "area": [ 0.64, 0.18, 0.925, 0.85 ],
+            "area[wide|3:2]": [ 0.62, 0.18, 0.925, 0.85 ],
             "text": "{scene.tooltip}",
             "font-size": 17,
             "font-color": "text",
@@ -2545,12 +1441,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.055
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.055 ],
             "text": "{scene.title}",
             "font-size": 17,
             "font-color": "text",
@@ -2559,26 +1450,11 @@
         },
         "#element:side_list:themes_list": {},
         "port_info": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
+            "patch[hires]": [ 20, 20, 20, 20 ],
             "parent": "right_pane"
         },
         "theme_name": {
@@ -2589,12 +1465,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.085
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.085 ],
             "text": "{theme_info.name}",
             "font-size": 21,
             "font-color": "text",
@@ -2613,12 +1484,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.088,
-                1.0,
-                0.135
-            ],
+            "area": [ 0.0, 0.088, 1.0, 0.135 ],
             "text": "{if:theme_info.creator}by {theme_info.creator}  ·  {endif}{theme_info.status}",
             "font-size": 13,
             "font-color": "text_faint",
@@ -2627,24 +1493,14 @@
         },
         "theme_image": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.165,
-                1.0,
-                0.66
-            ],
+            "area": [ 0.0, 0.165, 1.0, 0.66 ],
             "image": "{theme_info.image}",
             "image-mode": "fit",
             "image-align": "midtop"
         },
         "theme_rule": {
             "fill": "divider",
-            "area": [
-                0.0,
-                0.68,
-                1.0,
-                0.6825
-            ],
+            "area": [ 0.0, 0.68, 1.0, 0.6825 ],
             "parent": "card_inner"
         },
         "theme_desc": {
@@ -2664,12 +1520,7 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.0,
-                0.7,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.7, 1.0, 1.0 ],
             "parent": "card_inner"
         }
     },
@@ -2682,58 +1533,23 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "server_qr_panel": {
-            "area": [
-                0.04,
-                0.115,
-                0.46,
-                0.905
-            ],
+            "area": [ 0.04, 0.115, 0.46, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "server_qr": {
-            "area": [
-                0.07,
-                0.155,
-                0.43,
-                0.865
-            ],
+            "area": [ 0.07, 0.155, 0.43, 0.865 ],
             "image": "qr:{theme_server.url}",
             "image-mode": "fit"
         },
         "server_card": {
-            "area": [
-                0.49,
-                0.115,
-                0.96,
-                0.905
-            ],
+            "area": [ 0.49, 0.115, 0.96, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "server_title": {
             "font": "Roboto-Medium.ttf",
@@ -2742,12 +1558,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.52,
-                0.145,
-                0.93,
-                0.215
-            ],
+            "area": [ 0.52, 0.145, 0.93, 0.215 ],
             "text": "{theme_server.url}",
             "font-size": 17,
             "font-color": "accent_text",
@@ -2771,12 +1582,7 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.52,
-                0.235,
-                0.93,
-                0.875
-            ]
+            "area": [ 0.52, 0.235, 0.93, 0.875 ]
         }
     },
     "runtime_list": {
@@ -2806,146 +1612,78 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.525,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.22,
-            "pointer-size": [
-                15,
-                30
-            ],
+            "pointer-size": [ 15, 30 ],
             "border-x": 15,
             "line-height[640x480]": 1.525,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.22,
-            "pointer-size[640x480]": [
-                15,
-                30
-            ],
+            "pointer-size[640x480]": [ 15, 30 ],
             "border-x[640x480]": 15,
             "line-height[30:17]": 1.525,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.22,
-            "pointer-size[30:17]": [
-                15,
-                30
-            ],
+            "pointer-size[30:17]": [ 15, 30 ],
             "border-x[30:17]": 15,
             "line-height[16:9]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.1912,
-            "pointer-size[16:9]": [
-                20,
-                40
-            ],
+            "pointer-size[16:9]": [ 20, 40 ],
             "border-x[16:9]": 20,
             "line-height[3:2]": 1.5588,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2619,
-            "pointer-size[3:2]": [
-                13,
-                26
-            ],
+            "pointer-size[3:2]": [ 13, 26 ],
             "border-x[3:2]": 13,
             "line-height[427:240]": 1.5833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2955,
-            "pointer-size[427:240]": [
-                14,
-                28
-            ],
+            "pointer-size[427:240]": [ 14, 28 ],
             "border-x[427:240]": 14,
             "line-height[720x480]": 1.525,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.22,
-            "pointer-size[720x480]": [
-                15,
-                30
-            ],
+            "pointer-size[720x480]": [ 15, 30 ],
             "border-x[720x480]": 15,
             "line-height[720x720]": 1.5345,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2714,
-            "pointer-size[720x720]": [
-                22,
-                44
-            ],
+            "pointer-size[720x720]": [ 22, 44 ],
             "border-x[720x720]": 22,
             "line-height[960x720]": 1.4833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2027,
-            "pointer-size[960x720]": [
-                22,
-                44
-            ],
+            "pointer-size[960x720]": [ 22, 44 ],
             "border-x[960x720]": 22,
             "line-height[1024x768]": 1.5156,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2125,
-            "pointer-size[1024x768]": [
-                24,
-                48
-            ],
+            "pointer-size[1024x768]": [ 24, 48 ],
             "border-x[1024x768]": 24,
             "line-height[1280x720]": 1.4833,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2027,
-            "pointer-size[1280x720]": [
-                22,
-                44
-            ],
+            "pointer-size[1280x720]": [ 22, 44 ],
             "border-x[1280x720]": 22,
             "line-height[1280x800]": 1.5156,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2125,
-            "pointer-size[1280x800]": [
-                24,
-                48
-            ],
+            "pointer-size[1280x800]": [ 24, 48 ],
             "border-x[1280x800]": 24,
             "line-height[1920x1080]": 1.5114,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2315,
-            "pointer-size[1920x1080]": [
-                33,
-                66
-            ],
+            "pointer-size[1920x1080]": [ 33, 66 ],
             "border-x[1920x1080]": 33,
             "line-height[1920x1152]": 1.4891,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2018,
-            "pointer-size[1920x1152]": [
-                34,
-                68
-            ],
+            "pointer-size[1920x1152]": [ 34, 68 ],
             "border-x[1920x1152]": 34,
             "list": [],
             "options": [],
-            "area": [
-                0.07,
-                0.14,
-                0.52,
-                0.89
-            ]
+            "area": [ 0.07, 0.14, 0.52, 0.89 ]
         },
         "desc_card": {
-            "area": [
-                0.56,
-                0.14,
-                0.955,
-                0.89
-            ],
+            "area": [ 0.56, 0.14, 0.955, 0.89 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "runtime_name": {
             "font": "Roboto-Medium.ttf",
@@ -2954,12 +1692,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.59,
-                0.17,
-                0.925,
-                0.23
-            ],
+            "area": [ 0.59, 0.17, 0.925, 0.23 ],
             "text": "{runtime_info.name}",
             "font-size": 18,
             "font-color": "text",
@@ -2977,12 +1710,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.59,
-                0.23,
-                0.925,
-                0.27
-            ],
+            "area": [ 0.59, 0.23, 0.925, 0.27 ],
             "text": "{runtime_info.status}",
             "font-size": 14,
             "font-color": "accent_text",
@@ -2991,12 +1719,7 @@
         },
         "runtime_rule": {
             "fill": "divider",
-            "area": [
-                0.59,
-                0.29,
-                0.925,
-                0.2925
-            ]
+            "area": [ 0.59, 0.29, 0.925, 0.2925 ]
         },
         "dl_label": {
             "font": "Roboto-Regular.ttf",
@@ -3010,12 +1733,7 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.59,
-                0.31,
-                0.7575,
-                0.34
-            ]
+            "area": [ 0.59, 0.31, 0.7575, 0.34 ]
         },
         "dl_value": {
             "font": "Roboto-Medium.ttf",
@@ -3034,12 +1752,7 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.59,
-                0.34,
-                0.7475,
-                0.39
-            ]
+            "area": [ 0.59, 0.34, 0.7475, 0.39 ]
         },
         "disk_label": {
             "font": "Roboto-Regular.ttf",
@@ -3053,12 +1766,7 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.7575,
-                0.31,
-                0.925,
-                0.34
-            ]
+            "area": [ 0.7575, 0.31, 0.925, 0.34 ]
         },
         "disk_value": {
             "font": "Roboto-Medium.ttf",
@@ -3077,12 +1785,7 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.7575,
-                0.34,
-                0.925,
-                0.39
-            ]
+            "area": [ 0.7575, 0.34, 0.925, 0.39 ]
         },
         "ports_label": {
             "font": "Roboto-Regular.ttf",
@@ -3096,12 +1799,7 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.59,
-                0.42,
-                0.925,
-                0.45
-            ]
+            "area": [ 0.59, 0.42, 0.925, 0.45 ]
         },
         "option_description": {
             "font": "Roboto-Regular.ttf",
@@ -3120,12 +1818,7 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.59,
-                0.455,
-                0.925,
-                0.86
-            ]
+            "area": [ 0.59, 0.455, 0.925, 0.86 ]
         },
         "#element:footer_note:ip": {
             "text": "IP: {system.ip_address}"
@@ -3140,26 +1833,11 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "key_card": {
-            "area": [
-                0.04,
-                0.27,
-                0.96,
-                0.77
-            ],
+            "area": [ 0.04, 0.27, 0.96, 0.77 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "keyboard": {
             "font": "DejaVuSans.ttf",
@@ -3168,12 +1846,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.07,
-                0.31,
-                0.93,
-                0.75
-            ],
+            "area": [ 0.07, 0.31, 0.93, 0.75 ],
             "font-size": 26,
             "font-color": "text",
             "select-color": "accent_text",
@@ -3195,26 +1868,11 @@
         },
         "#element:header_status": {},
         "filter_card": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
+            "patch[hires]": [ 20, 20, 20, 20 ],
             "parent": "right_pane"
         },
         "filter_list": {
@@ -3234,115 +1892,67 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.4722,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2045,
-            "pointer-size": [
-                13,
-                26
-            ],
+            "pointer-size": [ 13, 26 ],
             "border-x": 13,
             "line-height[640x480]": 1.4722,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2045,
-            "pointer-size[640x480]": [
-                13,
-                26
-            ],
+            "pointer-size[640x480]": [ 13, 26 ],
             "border-x[640x480]": 13,
             "line-height[30:17]": 1.4722,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2045,
-            "pointer-size[30:17]": [
-                13,
-                26
-            ],
+            "pointer-size[30:17]": [ 13, 26 ],
             "border-x[30:17]": 13,
             "line-height[16:9]": 1.46,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.1774,
-            "pointer-size[16:9]": [
-                18,
-                36
-            ],
+            "pointer-size[16:9]": [ 18, 36 ],
             "border-x[16:9]": 18,
             "line-height[3:2]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.25,
-            "pointer-size[3:2]": [
-                11,
-                22
-            ],
+            "pointer-size[3:2]": [ 11, 22 ],
             "border-x[3:2]": 11,
             "line-height[427:240]": 1.5312,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2895,
-            "pointer-size[427:240]": [
-                12,
-                24
-            ],
+            "pointer-size[427:240]": [ 12, 24 ],
             "border-x[427:240]": 12,
             "line-height[720x480]": 1.4722,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2045,
-            "pointer-size[720x480]": [
-                13,
-                26
-            ],
+            "pointer-size[720x480]": [ 13, 26 ],
             "border-x[720x480]": 13,
             "line-height[720x720]": 1.46,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.1774,
-            "pointer-size[720x720]": [
-                18,
-                36
-            ],
+            "pointer-size[720x720]": [ 18, 36 ],
             "border-x[720x720]": 18,
             "line-height[960x720]": 1.4808,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2031,
-            "pointer-size[960x720]": [
-                19,
-                38
-            ],
+            "pointer-size[960x720]": [ 19, 38 ],
             "border-x[960x720]": 19,
             "line-height[1024x768]": 1.4655,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2143,
-            "pointer-size[1024x768]": [
-                21,
-                42
-            ],
+            "pointer-size[1024x768]": [ 21, 42 ],
             "border-x[1024x768]": 21,
             "line-height[1280x720]": 1.4808,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2031,
-            "pointer-size[1280x720]": [
-                19,
-                38
-            ],
+            "pointer-size[1280x720]": [ 19, 38 ],
             "border-x[1280x720]": 19,
             "line-height[1280x800]": 1.4655,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2143,
-            "pointer-size[1280x800]": [
-                21,
-                42
-            ],
+            "pointer-size[1280x800]": [ 21, 42 ],
             "border-x[1280x800]": 21,
             "line-height[1920x1080]": 1.4487,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.1771,
-            "pointer-size[1920x1080]": [
-                28,
-                56
-            ],
+            "pointer-size[1920x1080]": [ 28, 56 ],
             "border-x[1920x1080]": 28,
             "line-height[1920x1152]": 1.4625,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.17,
-            "pointer-size[1920x1152]": [
-                29,
-                58
-            ],
+            "pointer-size[1920x1152]": [ 29, 58 ],
             "border-x[1920x1152]": 29,
             "font": "Roboto-Regular.ttf",
             "font[zh_TW]": "NotoSansTC-Regular.ttf",
@@ -3351,18 +1961,8 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "right_pane",
-            "area": [
-                16,
-                0.035,
-                -16,
-                0.965
-            ],
-            "area[hires]": [
-                24,
-                0.035,
-                -24,
-                0.965
-            ],
+            "area": [ 16, 0.035, -16, 0.965 ],
+            "area[hires]": [ 24, 0.035, -24, 0.965 ],
             "list": []
         },
         "#element:footer_bar": {},
@@ -3377,26 +1977,11 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "message_card": {
-            "area": [
-                0.04,
-                0.115,
-                0.96,
-                0.765
-            ],
+            "area": [ 0.04, 0.115, 0.96, 0.765 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "message_text": {
             "font": "Roboto-Regular.ttf",
@@ -3405,12 +1990,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.07,
-                0.145,
-                0.93,
-                0.735
-            ],
+            "area": [ 0.07, 0.145, 0.93, 0.735 ],
             "text-wrap": true,
             "font-size": 17,
             "font-color": "text_body",
@@ -3424,12 +2004,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.04,
-                0.785,
-                0.7,
-                0.835
-            ],
+            "area": [ 0.04, 0.785, 0.7, 0.835 ],
             "text": "{system.progress_text}",
             "font-size": 14,
             "font-color": "text_muted",
@@ -3443,24 +2018,14 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.5,
-                0.785,
-                0.96,
-                0.835
-            ],
+            "area": [ 0.5, 0.785, 0.96, 0.835 ],
             "text": "{system.progress_amount}",
             "font-size": 14,
             "font-color": "text",
             "align": "midright"
         },
         "progress_bar": {
-            "area": [
-                0.04,
-                0.85,
-                0.96,
-                0.875
-            ],
+            "area": [ 0.04, 0.85, 0.96, 0.875 ],
             "fill": "track",
             "progress-fill": "accent",
             "roundness": 5
@@ -3475,12 +2040,7 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "port_info": {
-            "area": [
-                0.055,
-                0.135,
-                0.945,
-                0.31
-            ],
+            "area": [ 0.055, 0.135, 0.945, 0.31 ],
             "image": "{featured_ports.image}",
             "image-mode": "fit"
         },
@@ -3491,12 +2051,7 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.06,
-                0.315,
-                0.94,
-                0.385
-            ],
+            "area": [ 0.06, 0.315, 0.94, 0.385 ],
             "text": "{featured_ports.description}",
             "font-size": 15,
             "font-color": "text_body",
@@ -3524,122 +2079,69 @@
             "pointer": "pill_cap.png",
             "pointer-fit": "row",
             "pointer-attach": "list",
-            "pointer-align": [
-                "midleft",
-                "midright"
-            ],
+            "pointer-align": [ "midleft", "midright" ],
             "pointer-mirror": true,
             "pointer-mirror-x": true,
-            "pointer-offset": [
-                0,
-                0
-            ],
+            "pointer-offset": [ 0, 0 ],
             "click-sound": "click",
             "click-sound-volume": 64,
             "line-height": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2321,
-            "pointer-size": [
-                17,
-                34
-            ],
+            "pointer-size": [ 17, 34 ],
             "border-x": 17,
             "line-height[640x480]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2321,
-            "pointer-size[640x480]": [
-                17,
-                34
-            ],
+            "pointer-size[640x480]": [ 17, 34 ],
             "border-x[640x480]": 17,
             "line-height[30:17]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2321,
-            "pointer-size[30:17]": [
-                17,
-                34
-            ],
+            "pointer-size[30:17]": [ 17, 34 ],
             "border-x[30:17]": 17,
             "line-height[16:9]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2237,
-            "pointer-size[16:9]": [
-                23,
-                46
-            ],
+            "pointer-size[16:9]": [ 23, 46 ],
             "border-x[16:9]": 23,
             "line-height[3:2]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.1875,
-            "pointer-size[3:2]": [
-                14,
-                28
-            ],
+            "pointer-size[3:2]": [ 14, 28 ],
             "border-x[3:2]": 14,
             "line-height[427:240]": 1.525,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.22,
-            "pointer-size[427:240]": [
-                15,
-                30
-            ],
+            "pointer-size[427:240]": [ 15, 30 ],
             "border-x[427:240]": 15,
             "line-height[720x480]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2321,
-            "pointer-size[720x480]": [
-                17,
-                34
-            ],
+            "pointer-size[720x480]": [ 17, 34 ],
             "border-x[720x480]": 17,
             "line-height[720x720]": 1.5156,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2125,
-            "pointer-size[720x720]": [
-                24,
-                48
-            ],
+            "pointer-size[720x720]": [ 24, 48 ],
             "border-x[720x720]": 24,
             "line-height[960x720]": 1.5303,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2317,
-            "pointer-size[960x720]": [
-                25,
-                50
-            ],
+            "pointer-size[960x720]": [ 25, 50 ],
             "border-x[960x720]": 25,
             "line-height[1024x768]": 1.5139,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2386,
-            "pointer-size[1024x768]": [
-                27,
-                54
-            ],
+            "pointer-size[1024x768]": [ 27, 54 ],
             "border-x[1024x768]": 27,
             "line-height[1280x720]": 1.5303,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2317,
-            "pointer-size[1280x720]": [
-                25,
-                50
-            ],
+            "pointer-size[1280x720]": [ 25, 50 ],
             "border-x[1280x720]": 25,
             "line-height[1280x800]": 1.5139,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2386,
-            "pointer-size[1280x800]": [
-                27,
-                54
-            ],
+            "pointer-size[1280x800]": [ 27, 54 ],
             "border-x[1280x800]": 27,
             "line-height[1920x1080]": 1.5204,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2417,
-            "pointer-size[1920x1080]": [
-                37,
-                74
-            ],
+            "pointer-size[1920x1080]": [ 37, 74 ],
             "border-x[1920x1080]": 37,
             "line-height[1920x1152]": 1.5,
             "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2143,
-            "pointer-size[1920x1152]": [
-                38,
-                76
-            ],
+            "pointer-size[1920x1152]": [ 38, 76 ],
             "border-x[1920x1152]": 38,
-            "area": [
-                0.2,
-                0.43,
-                0.8,
-                0.895
-            ],
+            "area": [ 0.2, 0.43, 0.8, 0.895 ],
             "list": []
         }
     },
@@ -3653,12 +2155,7 @@
         "#element:button_bar": {},
         "featured_image": {
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.2
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.2 ],
             "image": "{featured_ports.image}",
             "image-mode": "fit",
             "image-align": "topleft"
@@ -3671,12 +2168,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "left_pane",
-            "area": [
-                0.0,
-                0.21,
-                1.0,
-                0.3
-            ],
+            "area": [ 0.0, 0.21, 1.0, 0.3 ],
             "text": "{featured_ports.description}",
             "font-size": 12,
             "font-color": "text_faint",
@@ -3688,34 +2180,14 @@
             "scroll-delay-end": 1500
         },
         "#element:side_list:ports_list": {
-            "area": [
-                0.0,
-                0.32,
-                1.0,
-                1.0
-            ]
+            "area": [ 0.0, 0.32, 1.0, 1.0 ]
         },
         "port_card": {
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.0, 1.0, 1.0 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
+            "patch[hires]": [ 20, 20, 20, 20 ],
             "parent": "right_pane"
         },
         "port_title": {
@@ -3726,12 +2198,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.0,
-                1.0,
-                0.085
-            ],
+            "area": [ 0.0, 0.0, 1.0, 0.085 ],
             "text": "{port_info.title}",
             "font-size": 21,
             "font-color": "text",
@@ -3750,12 +2217,7 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.088,
-                1.0,
-                0.135
-            ],
+            "area": [ 0.0, 0.088, 1.0, 0.135 ],
             "text": "{if:port_info.porter}by {port_info.porter}{endif}",
             "font-size": 13,
             "font-color": "text_faint",
@@ -3764,48 +2226,18 @@
         },
         "port_image": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.165,
-                0.6,
-                0.62
-            ],
-            "area[wide|3:2]": [
-                0.0,
-                0.165,
-                0.56,
-                0.7
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.15,
-                1.0,
-                0.5
-            ],
+            "area": [ 0.0, 0.165, 0.6, 0.62 ],
+            "area[wide|3:2]": [ 0.0, 0.165, 0.56, 0.7 ],
+            "area[1:1|square]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
             "image-align": "topleft"
         },
         "port_image_corners": {
             "parent": "card_inner",
-            "area": [
-                0.0,
-                0.165,
-                0.6,
-                0.62
-            ],
-            "area[wide|3:2]": [
-                0.0,
-                0.165,
-                0.56,
-                0.7
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.15,
-                1.0,
-                0.5
-            ],
+            "area": [ 0.0, 0.165, 0.6, 0.62 ],
+            "area[wide|3:2]": [ 0.0, 0.165, 0.56, 0.7 ],
+            "area[1:1|square]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image-align": "topleft",
             "image": "shot_mask.png",
             "image-mode": "fit",
@@ -3819,24 +2251,9 @@
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "parent": "card_inner",
-            "area": [
-                0.64,
-                0.165,
-                1.0,
-                0.23
-            ],
-            "area[wide|3:2]": [
-                0.6,
-                0.165,
-                1.0,
-                0.23
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.53,
-                0.5,
-                0.585
-            ],
+            "area": [ 0.64, 0.165, 1.0, 0.23 ],
+            "area[wide|3:2]": [ 0.6, 0.165, 1.0, 0.23 ],
+            "area[1:1|square]": [ 0.0, 0.53, 0.5, 0.585 ],
             "text": "{port_info.ready_to_run}",
             "font-size": 15,
             "font-color": "accent_text",
@@ -3845,25 +2262,10 @@
         },
         "port_rule": {
             "fill": "divider",
-            "area": [
-                0.64,
-                0.245,
-                1.0,
-                0.2475
-            ],
+            "area": [ 0.64, 0.245, 1.0, 0.2475 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.245,
-                1.0,
-                0.2475
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.6,
-                1.0,
-                0.6025
-            ]
+            "area[wide|3:2]": [ 0.6, 0.245, 1.0, 0.2475 ],
+            "area[1:1|square]": [ 0.0, 0.6, 1.0, 0.6025 ]
         },
         "spec_label_0": {
             "font": "Roboto-Regular.ttf",
@@ -3877,25 +2279,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.26,
-                1.0,
-                0.305
-            ],
+            "area": [ 0.64, 0.26, 1.0, 0.305 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.26,
-                1.0,
-                0.305
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.615,
-                0.3133,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.26, 1.0, 0.305 ],
+            "area[1:1|square]": [ 0.0, 0.615, 0.3133, 0.655 ]
         },
         "spec_value_0": {
             "font": "Roboto-Medium.ttf",
@@ -3914,25 +2301,10 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.305,
-                1.0,
-                0.36
-            ],
+            "area": [ 0.64, 0.305, 1.0, 0.36 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.305,
-                1.0,
-                0.36
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.655,
-                0.3133,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.305, 1.0, 0.36 ],
+            "area[1:1|square]": [ 0.0, 0.655, 0.3133, 0.71 ]
         },
         "spec_label_1": {
             "font": "Roboto-Regular.ttf",
@@ -3946,25 +2318,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.38,
-                1.0,
-                0.425
-            ],
+            "area": [ 0.64, 0.38, 1.0, 0.425 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.38,
-                1.0,
-                0.425
-            ],
-            "area[1:1|square]": [
-                0.3333,
-                0.615,
-                0.6467,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.38, 1.0, 0.425 ],
+            "area[1:1|square]": [ 0.3333, 0.615, 0.6467, 0.655 ]
         },
         "spec_value_1": {
             "font": "Roboto-Medium.ttf",
@@ -3983,25 +2340,10 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.425,
-                1.0,
-                0.48
-            ],
+            "area": [ 0.64, 0.425, 1.0, 0.48 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.425,
-                1.0,
-                0.48
-            ],
-            "area[1:1|square]": [
-                0.3333,
-                0.655,
-                0.6467,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.425, 1.0, 0.48 ],
+            "area[1:1|square]": [ 0.3333, 0.655, 0.6467, 0.71 ]
         },
         "spec_label_2": {
             "font": "Roboto-Regular.ttf",
@@ -4015,25 +2357,10 @@
             "font-color": "text_faint",
             "align": "bottomleft",
             "text-clip": true,
-            "area": [
-                0.64,
-                0.5,
-                1.0,
-                0.545
-            ],
+            "area": [ 0.64, 0.5, 1.0, 0.545 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.5,
-                1.0,
-                0.545
-            ],
-            "area[1:1|square]": [
-                0.6667,
-                0.615,
-                0.98,
-                0.655
-            ]
+            "area[wide|3:2]": [ 0.6, 0.5, 1.0, 0.545 ],
+            "area[1:1|square]": [ 0.6667, 0.615, 0.98, 0.655 ]
         },
         "spec_value_2": {
             "font": "Roboto-Medium.ttf",
@@ -4052,47 +2379,17 @@
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "area": [
-                0.64,
-                0.545,
-                1.0,
-                0.6
-            ],
+            "area": [ 0.64, 0.545, 1.0, 0.6 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.6,
-                0.545,
-                1.0,
-                0.6
-            ],
-            "area[1:1|square]": [
-                0.6667,
-                0.655,
-                0.98,
-                0.71
-            ]
+            "area[wide|3:2]": [ 0.6, 0.545, 1.0, 0.6 ],
+            "area[1:1|square]": [ 0.6667, 0.655, 0.98, 0.71 ]
         },
         "port_rule_2": {
             "fill": "divider",
-            "area": [
-                0.0,
-                0.655,
-                1.0,
-                0.6575
-            ],
+            "area": [ 0.0, 0.655, 1.0, 0.6575 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.0,
-                0.72,
-                1.0,
-                0.7225
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.735,
-                1.0,
-                0.7375
-            ]
+            "area[wide|3:2]": [ 0.0, 0.72, 1.0, 0.7225 ],
+            "area[1:1|square]": [ 0.0, 0.735, 1.0, 0.7375 ]
         },
         "port_desc": {
             "font": "Roboto-Regular.ttf",
@@ -4111,25 +2408,10 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.0,
-                0.68,
-                1.0,
-                1.0
-            ],
+            "area": [ 0.0, 0.68, 1.0, 1.0 ],
             "parent": "card_inner",
-            "area[wide|3:2]": [
-                0.0,
-                0.745,
-                1.0,
-                1.0
-            ],
-            "area[1:1|square]": [
-                0.0,
-                0.76,
-                1.0,
-                1.0
-            ]
+            "area[wide|3:2]": [ 0.0, 0.745, 1.0, 1.0 ],
+            "area[1:1|square]": [ 0.0, 0.76, 1.0, 1.0 ]
         }
     },
     "message_box": {
@@ -4141,32 +2423,12 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "message_card": {
-            "area": [
-                0.08,
-                0.2,
-                0.92,
-                0.82
-            ],
+            "area": [ 0.08, 0.2, 0.92, 0.82 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ],
-            "area[3:2]": [
-                0.08,
-                0.18,
-                0.92,
-                0.86
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ],
+            "area[3:2]": [ 0.08, 0.18, 0.92, 0.86 ]
         },
         "message_text": {
             "font": "Roboto-Regular.ttf",
@@ -4175,18 +2437,8 @@
             "font[zh_HK]": "NotoSansHK-Regular.ttf",
             "font[ko_KR]": "NotoSansKR-Regular.ttf",
             "font[ja_JP]": "NotoSansJP-Regular.ttf",
-            "area": [
-                0.12,
-                0.25,
-                0.88,
-                0.77
-            ],
-            "area[3:2]": [
-                0.12,
-                0.23,
-                0.88,
-                0.81
-            ],
+            "area": [ 0.12, 0.25, 0.88, 0.77 ],
+            "area[3:2]": [ 0.12, 0.23, 0.88, 0.81 ],
             "autoscroll": "marquee",
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
@@ -4216,12 +2468,7 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "#element:option_list:selection_list": {
-            "area": [
-                0.07,
-                0.135,
-                0.93,
-                0.905
-            ],
+            "area": [ 0.07, 0.135, 0.93, 0.905 ],
             "list": []
         }
     },
@@ -4234,35 +2481,15 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "#element:option_list:selection_list": {
-            "area": [
-                0.07,
-                0.135,
-                0.93,
-                0.5
-            ],
+            "area": [ 0.07, 0.135, 0.93, 0.5 ],
             "list": []
         },
         "desc_card": {
-            "area": [
-                0.04,
-                0.53,
-                0.96,
-                0.905
-            ],
+            "area": [ 0.04, 0.53, 0.96, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "selection_description": {
             "font": "Roboto-Regular.ttf",
@@ -4281,12 +2508,7 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.07,
-                0.56,
-                0.93,
-                0.875
-            ]
+            "area": [ 0.07, 0.56, 0.93, 0.875 ]
         }
     },
     "selection_list_images": {
@@ -4298,44 +2520,19 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "image_card": {
-            "area": [
-                0.53,
-                0.115,
-                0.96,
-                0.905
-            ],
+            "area": [ 0.53, 0.115, 0.96, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "selection_image": {
-            "area": [
-                0.55,
-                0.145,
-                0.94,
-                0.875
-            ],
+            "area": [ 0.55, 0.145, 0.94, 0.875 ],
             "image": "{selection_list.image}",
             "image-mode": "fit"
         },
         "#element:option_list:selection_list": {
-            "area": [
-                0.07,
-                0.135,
-                0.5,
-                0.905
-            ],
+            "area": [ 0.07, 0.135, 0.5, 0.905 ],
             "list": []
         }
     },
@@ -4348,67 +2545,27 @@
         "#element:footer_bar": {},
         "#element:button_bar": {},
         "image_card": {
-            "area": [
-                0.53,
-                0.115,
-                0.96,
-                0.5
-            ],
+            "area": [ 0.53, 0.115, 0.96, 0.5 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "selection_image": {
-            "area": [
-                0.55,
-                0.145,
-                0.94,
-                0.47
-            ],
+            "area": [ 0.55, 0.145, 0.94, 0.47 ],
             "image": "{selection_list.image}",
             "image-mode": "fit"
         },
         "#element:option_list:selection_list": {
-            "area": [
-                0.07,
-                0.135,
-                0.5,
-                0.5
-            ],
+            "area": [ 0.07, 0.135, 0.5, 0.5 ],
             "list": []
         },
         "desc_card": {
-            "area": [
-                0.04,
-                0.53,
-                0.96,
-                0.905
-            ],
+            "area": [ 0.04, 0.53, 0.96, 0.905 ],
             "image": "card",
-            "patch": [
-                14,
-                14,
-                14,
-                14
-            ],
+            "patch": [ 14, 14, 14, 14 ],
             "image[hires]": "card_hi",
-            "patch[hires]": [
-                20,
-                20,
-                20,
-                20
-            ]
+            "patch[hires]": [ 20, 20, 20, 20 ]
         },
         "selection_description": {
             "font": "Roboto-Regular.ttf",
@@ -4427,12 +2584,7 @@
             "scroll-speed": 60,
             "scroll-delay-start": 2000,
             "scroll-delay-end": 2000,
-            "area": [
-                0.07,
-                0.56,
-                0.93,
-                0.875
-            ]
+            "area": [ 0.07, 0.56, 0.93, 0.875 ]
         }
     }
 }

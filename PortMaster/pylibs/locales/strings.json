@@ -270,10 +270,10 @@
   ],
   "Unknown IP": [
     "pylibs/pugwash/app.py:254",
-    "pylibs/pugwash/app.py:581"
+    "pylibs/pugwash/app.py:586"
   ],
   "N/A": [
-    "pylibs/pugwash/app.py:406",
+    "pylibs/pugwash/app.py:403",
     "pylibs/pugwash/app_ports.py:170"
   ],
   "Fetching latest gameinfo.xml files and cover images.": [
