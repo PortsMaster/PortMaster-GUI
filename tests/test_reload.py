@@ -87,13 +87,39 @@ def test_scheme_reload(app, tmp_path):
     app.reload_theme(then=options(app))
     before = screen(app, tmp_path, "before")
 
-    app.hm.cfg_data['theme-scheme'] = "Dracula"
+    app.hm.cfg_data['theme-scheme'] = "Light Mode"
     app.reload_theme(then=options(app))
-    assert screen(app, tmp_path, "dracula") != before
+    assert screen(app, tmp_path, "light") != before
 
     app.hm.cfg_data['theme-scheme'] = None
     app.reload_theme(then=options(app))
     assert screen(app, tmp_path, "after") == before
+
+
+def test_saved_scheme_the_theme_has_not(app, tmp_path):
+    ## A scheme the old default theme had (Dracula, Darker Mode...) saved in config.json: the
+    ## theme's own default scheme instead.
+    app.hm.cfg_data['theme-scheme'] = None
+    app.reload_theme(then=options(app))
+    default = screen(app, tmp_path, "default")
+
+    app.hm.cfg_data['theme-scheme'] = "Dracula"
+    app.reload_theme(then=options(app))
+    assert screen(app, tmp_path, "dracula") == default
+
+    app.hm.cfg_data['theme-scheme'] = None
+    app.reload_theme(then=options(app))
+
+
+def test_language_reload_redoes_translated_status(app, monkeypatch):
+    ## system.battery_level is "N/A" in the language it was set in; a new language redoes it
+    ## at once, not at the next status update.
+    import pugwash.app
+    monkeypatch.setattr(pugwash.app, "battery_level", lambda: None)
+    app.reload_language("de_DE", then=options(app))
+    assert app.text_data["system.battery_level"] == "N/V"
+    app.reload_language("en_US", then=options(app))
+    assert app.text_data["system.battery_level"] == "N/A"
 
 
 def test_language_reload(app, tmp_path):

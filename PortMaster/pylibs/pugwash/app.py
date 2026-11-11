@@ -379,31 +379,36 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
             self.draw_counter = 0
             self.updated = True
 
+    def update_system_data(self):
+        """The system.* tags: time, disk space, battery. Some are translated ("N/A"), so a
+        new language redoes them at once (reload_language)."""
+        self.set_data("system.time_24hr", datetime.datetime.now().strftime("%H:%M"))
+        self.set_data("system.time_12hr", datetime.datetime.now().strftime("%I:%M %p"))
+
+        if harbourmaster.HM_PORTS_DIR.is_dir():
+            disk_usage = shutil.disk_usage(str(harbourmaster.HM_PORTS_DIR))
+
+            self.set_data("system.free_space", harbourmaster.nice_size(disk_usage.free))
+            self.set_data("system.used_space", harbourmaster.nice_size(disk_usage.used))
+            self.set_data("system.total_space", harbourmaster.nice_size(disk_usage.total))
+        else:
+            self.set_data("system.free_space", "000 B")
+            self.set_data("system.used_space", "000 B")
+            self.set_data("system.total_space", "000 B")
+
+        level = battery_level()
+        if level is not None:
+            self.set_data("system.battery_level", f"{level}%")
+        else:
+            self.set_data("system.battery_level", _("N/A"))
+
     def do_update(self):
         # Run anything worker threads have handed to the main thread.
         self.dispatcher.drain()
 
         # Update tags
         if self.timers.elapsed('text_data_update', self.TEXT_DATA_FREQ, run_first=True):
-            self.set_data("system.time_24hr", datetime.datetime.now().strftime("%H:%M"))
-            self.set_data("system.time_12hr", datetime.datetime.now().strftime("%I:%M %p"))
-
-            if harbourmaster.HM_PORTS_DIR.is_dir():
-                disk_usage = shutil.disk_usage(str(harbourmaster.HM_PORTS_DIR))
-
-                self.set_data("system.free_space", harbourmaster.nice_size(disk_usage.free))
-                self.set_data("system.used_space", harbourmaster.nice_size(disk_usage.used))
-                self.set_data("system.total_space", harbourmaster.nice_size(disk_usage.total))
-            else:
-                self.set_data("system.free_space", "000 B")
-                self.set_data("system.used_space", "000 B")
-                self.set_data("system.total_space", "000 B")
-
-            level = battery_level()
-            if level is not None:
-                self.set_data("system.battery_level", f"{level}%")
-            else:
-                self.set_data("system.battery_level", _("N/A"))
+            self.update_system_data()
 
         # Animations.
         self.animations.update_animations()
@@ -579,6 +584,7 @@ class PortMasterGUI(CallbackMixin, CommandsMixin, FifoControlMixin, PortInfoMixi
         capabilities.append(new_lang)
 
         self.set_data('system.ip_address', get_ip_address() or _("Unknown IP"))
+        self.update_system_data()
         self.lang_list = lang_list()
         self.reload_theme(then)
 

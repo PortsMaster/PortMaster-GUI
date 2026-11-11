@@ -192,12 +192,15 @@ def test_plain_screen_for_themes_without_one(editor, gui, monkeypatch):
     assert section["server_info"]["text"] == "{theme_server.status}"
 
 
-@pytest.mark.parametrize("lang, font", [("en_US", "DejaVuSans.ttf"), ("ja_JP", "NotoSansJP-Regular.ttf"), ("ko_KR", "NotoSansKR-Regular.ttf")])
+## The default theme's font for the language: Roboto is in the default theme's folder, which
+## another theme doesn't search, so it's named by its full path; the CJK fonts are resources.
+@pytest.mark.parametrize("lang, font", [("en_US", "default_theme/Roboto-Regular.ttf"), ("ja_JP", "NotoSansJP-Regular.ttf"), ("ko_KR", "NotoSansKR-Regular.ttf")])
 def test_plain_screen_font_for_the_language(editor, monkeypatch, lang, font):
-    from pugwash import lang as pug_lang
+    from pugwash import PYLIB_PATH, lang as pug_lang
     monkeypatch.setattr(pug_lang, "CURRENT_LANG", lang)
     section = editor.module.fallback_section()
-    assert {region.get("font") for region in section.values() if "font" in region} == {font}
+    fonts = {region.get("font") for region in section.values() if "font" in region}
+    assert fonts == {str(PYLIB_PATH / font) if "/" in font else font}
 
 
 @pytest.mark.parametrize("available_mb, expected", [(100, 1), (300, 1), (350, 2), (550, 4), (8000, 4)])

@@ -1,10 +1,10 @@
 {
     "#info": {
         "version": 1,
-        "name": "Default Theme",
-        "creator": "Tekkenfede and Kloptops",
-        "description": "The default PortMaster gui theme.\n\nIt supports both Light Mode and Dark Mode colour schemes.",
-        "default-scheme": "Light Mode"
+        "name": "PortMaster Web",
+        "creator": "PortMaster",
+        "description": "The default PortMaster theme, restyled after the portmaster.games website: dark header and footer, rounded cards, Roboto and the site's orange.\n\nColor schemes: Dark Mode, Light Mode and OLED Mode.",
+        "default-scheme": "Dark Mode"
     },
     "#schemes": {
         "#base": {
@@ -12,157 +12,219 @@
                 "click.ogg": {
                     "name": "click"
                 },
-
                 "buttons.png": {
                     "atlas": {
-                        "_A": [ 0, 0, 180, 180 ],
-                        "_B": [ 180, 0, 180, 180 ],
-                        "_X": [ 360, 0, 180, 180 ],
-                        "_Y": [ 540, 0, 180, 180 ],
-                        "_START": [ 0, 180, 360, 180 ],
-                        "_SELECT": [ 360, 180, 360, 180 ],
-                        "_L": [ 0, 360, 270, 180 ],
-                        "_R": [ 270, 360, 270, 180 ],
-                        "_UNCHECKED": [ 720, 0, 180, 180 ],
-                        "_CHECKED": [ 900, 0, 180, 180 ],
-                        "_MORE": [ 720, 180, 180, 180 ],
-                        "_LEFT": [ 900, 180, 90, 180 ],
-                        "_RIGHT": [ 990, 180, 90, 180 ],
-                        "_UP": [ 900, 360, 180, 90 ],
-                        "_DOWN": [ 900, 450, 180, 90 ]
+                        "_A": [
+                            0,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_B": [
+                            180,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_X": [
+                            360,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_Y": [
+                            540,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_START": [
+                            0,
+                            180,
+                            360,
+                            180
+                        ],
+                        "_SELECT": [
+                            360,
+                            180,
+                            360,
+                            180
+                        ],
+                        "_L": [
+                            0,
+                            360,
+                            270,
+                            180
+                        ],
+                        "_R": [
+                            270,
+                            360,
+                            270,
+                            180
+                        ],
+                        "_UNCHECKED": [
+                            720,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_CHECKED": [
+                            900,
+                            0,
+                            180,
+                            180
+                        ],
+                        "_MORE": [
+                            720,
+                            180,
+                            180,
+                            180
+                        ],
+                        "_LEFT": [
+                            900,
+                            180,
+                            90,
+                            180
+                        ],
+                        "_RIGHT": [
+                            990,
+                            180,
+                            90,
+                            180
+                        ],
+                        "_UP": [
+                            900,
+                            360,
+                            180,
+                            90
+                        ],
+                        "_DOWN": [
+                            900,
+                            450,
+                            180,
+                            90
+                        ]
                     }
                 },
-                "no-image.jpg": {
+                "no-image.png": {
                     "name": "NO_IMAGE"
                 },
-
-                "pointenfedde.png": {}
-            }
-        },
-        "Light Mode": {
-            "#pallet": {
-                "background": [ 200, 200, 200, 255 ],
-                "background_fade": [ 50, 50, 50, 85 ],
-                "list_text": [ 0, 0, 0, 255 ],
-                "list_selected": [ 200, 0, 0, 255 ],
-                "list_unselectable": [ 128, 0, 0, 255 ],
-                "button": [ 200, 200, 200, 255 ],
-                "general_font": [ 0, 0, 0 ],
-                "download_font": [ 0, 0, 0 ],
-                "panels": [ 230, 230, 230 ],
-                "selection-fill": [ 153, 204, 255 ],
-                "secondary-selection-fill": [ 210, 210, 210 ]
-            },
-            "#resources": {
-                "buttons.png": {
-                    "image-mod": [ 0, 0, 0 ]
-                },
-                "pointenfedde.png": {
-                    "image-mod": [ 0, 0, 0 ]
-                }
+                "pill_cap.png": {},
+                "icon_storage.png": {},
+                "icon_battery.png": {},
+                "icon_device.png": {},
+                "icon_firmware.png": {}
             }
         },
         "Dark Mode": {
             "#pallet": {
-                "background": [ 85, 85, 85, 255 ],
-                "background_fade": [ 50, 50, 50, 85 ],
-                "list_text": [ 255, 255, 255, 255 ],
-                "list_selected": [ 153, 180, 255, 255 ],
-                "list_unselectable": [ 255, 64, 64, 255 ],
-                "button": [ 200, 200, 200, 255 ],
-                "general_font": [ 200, 200, 200 ],
-                "download_font": [ 0, 0, 0 ],
-                "panels": [ 110, 110, 110 ],
-                "selection-fill": [ 50, 80, 155 ],
-                "secondary-selection-fill": [ 53, 53, 53 ]
+                "background": "#1a1a1a",
+                "chrome": "#111111",
+                "chrome_text": "#eeeeee",
+                "chrome_muted": "#a0a0a0",
+                "text": "#eeeeee",
+                "text_body": "#d4d4d4",
+                "text_muted": "#aaaaaa",
+                "text_faint": "#888888",
+                "accent": "#f49519",
+                "accent_text": "#f49519",
+                "on_accent": "#111111",
+                "divider": "#3a3a3a",
+                "track": "#3a3a3a",
+                "fade": [
+                    0,
+                    0,
+                    0,
+                    150
+                ],
+                "card_fill": "#2b2b2b"
             },
             "#resources": {
-                "buttons.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_dark.png": {
+                    "name": "card"
                 },
-                "pointenfedde.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_dark_hi.png": {
+                    "name": "card_hi"
                 }
             }
         },
-        "Darker Mode": {
+        "Light Mode": {
             "#pallet": {
-                "background": [ 0, 0, 0, 255 ],
-                "background_fade": [ 50, 50, 50, 0 ],
-                "list_text": [ 255, 255, 255, 255 ],
-                "list_selected": [ 153, 180, 255, 255 ],
-                "list_unselectable": [ 200, 0, 0, 255 ],
-                "button": [ 200, 200, 200, 255 ],
-                "general_font": [ 200, 200, 200 ],
-                "download_font": [ 255, 255, 255 ],
-                "panels": [ 45, 45, 45 ],
-                "selection-fill": [ 50, 80, 155 ],
-                "secondary-selection-fill": [ 0, 0, 0 ]
+                "background": "#dddddd",
+                "chrome": "#111111",
+                "chrome_text": "#eeeeee",
+                "chrome_muted": "#a0a0a0",
+                "text": "#111111",
+                "text_body": "#2a2a2a",
+                "text_muted": "#555555",
+                "text_faint": "#6f6f6f",
+                "accent": "#f49519",
+                "accent_text": "#b25f00",
+                "on_accent": "#111111",
+                "divider": "#e0e0e0",
+                "track": "#d6d6d6",
+                "fade": [
+                    0,
+                    0,
+                    0,
+                    110
+                ],
+                "card_fill": "#ffffff"
             },
             "#resources": {
-                "buttons.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_light.png": {
+                    "name": "card"
                 },
-                "pointenfedde.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_light_hi.png": {
+                    "name": "card_hi"
                 }
             }
         },
-        "Darkest Mode": {
+        "OLED Mode": {
             "#pallet": {
-                "background": [ 0, 0, 0, 255 ],
-                "background_fade": [ 50, 50, 50, 0 ],
-                "list_text": [ 255, 255, 255, 255 ],
-                "list_selected": [ 153, 180, 255, 255 ],
-                "list_unselectable": [ 200, 0, 0, 255 ],
-                "button": [ 0, 0, 0, 255 ],
-                "general_font": [ 200, 200, 200 ],
-                "download_font": [ 255, 255, 255 ],
-                "panels": [ 0, 0, 0 ],
-                "selection-fill": [ 50, 80, 155 ],
-                "secondary-selection-fill": [ 0, 0, 0 ]
+                "background": "#000000",
+                "chrome": "#000000",
+                "chrome_text": "#eeeeee",
+                "chrome_muted": "#a0a0a0",
+                "text": "#eeeeee",
+                "text_body": "#d4d4d4",
+                "text_muted": "#aaaaaa",
+                "text_faint": "#888888",
+                "accent": "#f49519",
+                "accent_text": "#f49519",
+                "on_accent": "#111111",
+                "divider": "#2a2a2a",
+                "track": "#2a2a2a",
+                "fade": [
+                    0,
+                    0,
+                    0,
+                    170
+                ],
+                "card_fill": "#121212"
             },
             "#resources": {
-                "buttons.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_oled.png": {
+                    "name": "card"
                 },
-                "pointenfedde.png": {
-                    "image-mod": [ 255, 255, 255 ]
-                }
-            }
-        },
-        "Dracula": {
-            "#pallet": {
-                "background": "#282a36",
-                "background_fade": [ 50, 50, 50, 0 ],
-                "list_text": "#f8f8f2",
-                "list_selected": "#bd93f9",
-                "list_unselectable": "#6272a4",
-                "button": [ 0, 0, 0, 255 ],
-                "general_font": "#f8f8f2",
-                "download_font": [ 255, 255, 255 ],
-                "panels": "#44475a",
-                "selection-fill": "#6272a4",
-                "secondary-selection-fill": [ 0, 0, 0 ]
-            },
-            "#resources": {
-                "buttons.png": {
-                    "image-mod": [ 255, 255, 255 ]
-                },
-                "pointenfedde.png": {
-                    "image-mod": [ 255, 255, 255 ]
+                "card_oled_hi.png": {
+                    "name": "card_hi"
                 }
             }
         }
-
-
     },
     "#animations": {
-        "simple": {"max-frames": 10},
-        "complex": {"start": 0, "max-frames": 101, "skip-frames": 5}
+        "simple": {
+            "max-frames": 10
+        },
+        "complex": {
+            "start": 0,
+            "max-frames": 101,
+            "skip-frames": 5
+        }
     },
     "#base": {
-        "font": "DejaVuSans.ttf",
+        "font": "Roboto-Regular.ttf",
         "font[zh_TW]": "NotoSansTC-Regular.ttf",
         "font[zh_CN]": "NotoSansSC-Regular.ttf",
         "font[zh_HK]": "NotoSansHK-Regular.ttf",
@@ -185,120 +247,175 @@
     },
     "#elements": {
         "left_pane": {
-            "comment": "Left side of the screen.",
-            "area": [ 0.0, 0.0, 0.3, 1.0 ],
-            "area[3:2]": [ 0.0, 0.0, 0.4, 1.0 ],
-            "area[wide]": [ 0.0, 0.0, 0.4, 1.0 ]
+            "area": [
+                0.035,
+                0.115,
+                0.335,
+                0.905
+            ],
+            "area[3:2]": [
+                0.035,
+                0.115,
+                0.375,
+                0.905
+            ],
+            "area[wide]": [
+                0.035,
+                0.115,
+                0.375,
+                0.905
+            ],
+            "area[1:1|square]": [
+                0.035,
+                0.115,
+                0.38,
+                0.905
+            ]
         },
-
-        "left_pane_featured": {
-            "comment": "Left side of the screen.",
-            "area": [ 0.0, 0.0, 0.3, 1.0 ],
-            "area[3:2]": [ 0.0, 0.0, 0.35, 1.0 ],
-            "area[wide]": [ 0.0, 0.0, 0.35, 1.0 ]
-        },
-
         "right_pane": {
-            "comment": "Right side of the screen.",
-            "area": [ 0.3, 0.0, 1.0, 1.0 ],
-            "area[3:2]": [ 0.4, 0.0, 1.0, 1.0 ],
-            "area[wide]": [ 0.4, 0.0, 1.0, 1.0 ]
+            "area": [
+                0.36,
+                0.115,
+                0.97,
+                0.905
+            ],
+            "area[3:2]": [
+                0.4,
+                0.115,
+                0.97,
+                0.905
+            ],
+            "area[wide]": [
+                0.4,
+                0.115,
+                0.97,
+                0.905
+            ],
+            "area[1:1|square]": [
+                0.405,
+                0.115,
+                0.97,
+                0.905
+            ]
         },
-        "port_info_list_area": {
-            "comment": "List area",
-            "parent": "left_pane",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ]
-        },
-        "port_info_list_area_featured": {
-            "comment": "List area",
-            "parent": "left_pane_featured",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ]
-        },
-
-        "port_info_area": {
-            "comment": "The area used for the info text/image",
+        "card_inner": {
             "parent": "right_pane",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ]
+            "area": [
+                16,
+                14,
+                -16,
+                -14
+            ],
+            "area[hires]": [
+                24,
+                20,
+                -24,
+                -20
+            ]
         },
-        "port_info_content": {
-            "comment": "The info pane above the button bar: its pieces below are stacked in it, each where the last ends, so they never overlap at any screen size.",
-            "parent": "port_info_area",
-            "area": [ 0.0, 0.0, 1.0, 0.92 ]
-        },
-        "port_info_title_area": {
-            "comment": "Port Title",
-            "parent": "port_info_content",
-            "area": [ 0.0, 0.0, 1.0, 0.11 ]
-        },
-        "port_info_image_area": {
-            "comment": "Port image",
-            "parent": "port_info_content",
-            "area": [ 0.0, 0.11, 1.0, 0.52 ]
-        },
-
-        "port_info_image_area_featured": {
-            "comment": "Port image, bigger on the featured screens",
-            "parent": "port_info_content",
-            "area": [ 0.0, 0.11, 1.0, 0.7 ]
-        },
-        "port_info_desc_area_featured": {
-            "comment": "The description, under it",
-            "parent": "port_info_content",
-            "area": [ 0.01, 0.72, 0.99, 1.0 ]
-        },
-
-        "port_info_text_area": {
-            "comment": "Port Info: the rest of the pane, under the image",
-            "parent": "port_info_content",
-            "area": [ 0.0, 0.52, 1.0, 1.0 ]
-        },
-        "port_info_general_area": {
-            "comment": "Genres, size and runtime: three lines",
-            "parent": "port_info_text_area",
-            "area": [ 0.01, 0.0, 0.99, 0.36 ]
-        },
-        "port_info_desc_area": {
-            "comment": "The description, under them",
-            "parent": "port_info_text_area",
-            "area": [ 0.01, 0.38, 0.99, 1.0 ]
-        },
-
-        "featured_left_content": {
-            "comment": "The featured screens' left side, above the button bar: the collection, its list and the port's details, stacked",
-            "parent": "left_pane_featured",
-            "area": [ 0.0, 0.0, 1.0, 0.92 ]
-        },
-        "featured_description_area": {
-            "parent": "featured_left_content",
-            "area": [ 0.02, 0.01, 0.98, 0.15 ]
-        },
-        "featured_image_area": {
-            "parent": "featured_left_content",
-            "area": [ 0.0, 0.16, 1.0, 0.33 ]
-        },
-        "featured_list_area": {
-            "parent": "featured_left_content",
-            "area": [ 0.0, 0.34, 0.95, 0.76 ]
-        },
-        "featured_general_area": {
-            "parent": "featured_left_content",
-            "area": [ 0.0, 0.78, 0.95, 1.0 ]
-        },
-
         "background": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
             "fill": "background",
-            "border": 8,
             "font-size": 36,
-            "font-color": "general_font",
+            "font-color": "text",
             "music": "main_menu_stock.ogg",
             "music-volume": 50
         },
+        "header_bar": {
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.085
+            ],
+            "fill": "chrome"
+        },
+        "header_brand": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.035,
+                0.0,
+                0.5,
+                0.085
+            ],
+            "text": "PortMaster",
+            "font-size": 18,
+            "font-color": "chrome_text",
+            "align": "midleft"
+        },
+        "header_title": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.26,
+                0.0,
+                0.74,
+                0.085
+            ],
+            "text": "{scene.title}",
+            "font-size": 15,
+            "font-color": "chrome_muted",
+            "align": "center",
+            "text-clip": true
+        },
+        "header_status": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.6,
+                0.0,
+                0.965,
+                0.085
+            ],
+            "text": "{system.battery_level}    {system.time_24hr}",
+            "font-size": 15,
+            "font-color": "chrome_muted",
+            "align": "midright"
+        },
+        "footer_bar": {
+            "area": [
+                0.0,
+                0.925,
+                1.0,
+                1.0
+            ],
+            "fill": "chrome"
+        },
         "button_bar": {
-            "area": [ 0.0, 0.925, 0.95, 0.99 ],
-            "font-size": 16,
-            "font-color": "general_font",
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.035,
+                0.939,
+                0.965,
+                0.986
+            ],
+            "font-size": 15,
+            "font-color": "chrome_text",
             "align": "midright",
+            "bar-space": 6,
             "bar": [
                 "_A",
                 "Accept",
@@ -307,775 +424,4015 @@
             ],
             "button-sound": "click"
         },
-        "option_list": {
-            "area": [ 0.0, 0.21, 0.9, 0.9 ],
-            "area[3:2]": [ 0.0, 0.21, 0.9, 0.8 ],
-            "border": 8,
-            "font-size": 30,
-            "font-size[16:9]": 22,
-            "font-color": "list_text",
-            "select-color": "list_selected",
-            "text-clip": true,
-            "thickness": 10,
-            "click-sound": "click",
-            "click-sound-volume": 64
-        }
-    },
-    "ports_list": {
-        "#element:background": {},
-        "port_info": {
-            "parent": "port_info_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels",
-            "thickness": 10,
-            "border": 8,
-            "text": "",
-            "font-size": 24,
-            "font-color": "general_font",
-            "text-wrap": true
+        "footer_note": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.035,
+                0.925,
+                0.6,
+                1.0
+            ],
+            "font-size": 12,
+            "font-color": "chrome_muted",
+            "align": "midleft",
+            "text-clip": true
         },
-        "ports_list": {
-            "parent": "port_info_list_area",
-            "area": [ 0.0, 0.1, 1.0, 1.0 ],
-            "area[3:2]": [ 0.0, 0.15, 1.0, 1.0 ],
-            "border-x": 16,
-            "font-size": 17,
-            "font-size[427:240]": 22,
-            "font-size[16:9]": 19,
-            "font-size[1920x1152]": 22,
-            "alt-fill": "secondary-selection-fill",
-            "select-fill": "selection-fill",
-            "font-color": "list_text",
-            "select-color": "list_selected",
+        "option_list": {
+            "font-size": 20,
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "on_accent",
+            "align": "midleft",
             "text-clip": true,
             "text-wrap": false,
             "autoscroll": "slide",
             "scroll-speed": 30,
-            "scroll-delay-start": 500,
-            "scroll-delay-end": 500
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.6042,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.3276,
+            "pointer-size": [
+                19,
+                38
+            ],
+            "border-x": 19,
+            "line-height[640x480]": 1.6042,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.3276,
+            "pointer-size[640x480]": [
+                19,
+                38
+            ],
+            "border-x[640x480]": 19,
+            "line-height[30:17]": 1.6042,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.3276,
+            "pointer-size[30:17]": [
+                19,
+                38
+            ],
+            "border-x[30:17]": 19,
+            "line-height[16:9]": 1.5909,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2805,
+            "pointer-size[16:9]": [
+                26,
+                52
+            ],
+            "border-x[16:9]": 26,
+            "line-height[3:2]": 1.625,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.3,
+            "pointer-size[3:2]": [
+                16,
+                32
+            ],
+            "border-x[3:2]": 16,
+            "line-height[427:240]": 1.5682,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2778,
+            "pointer-size[427:240]": [
+                17,
+                34
+            ],
+            "border-x[427:240]": 17,
+            "line-height[720x480]": 1.6042,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.3276,
+            "pointer-size[720x480]": [
+                19,
+                38
+            ],
+            "border-x[720x480]": 19,
+            "line-height[720x720]": 1.5441,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.25,
+            "pointer-size[720x720]": [
+                26,
+                52
+            ],
+            "border-x[720x720]": 26,
+            "line-height[960x720]": 1.5694,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2841,
+            "pointer-size[960x720]": [
+                28,
+                56
+            ],
+            "border-x[960x720]": 28,
+            "line-height[1024x768]": 1.5395,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2447,
+            "pointer-size[1024x768]": [
+                29,
+                58
+            ],
+            "border-x[1024x768]": 29,
+            "line-height[1280x720]": 1.5694,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2841,
+            "pointer-size[1280x720]": [
+                28,
+                56
+            ],
+            "border-x[1280x720]": 28,
+            "line-height[1280x800]": 1.5395,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2447,
+            "pointer-size[1280x800]": [
+                29,
+                58
+            ],
+            "border-x[1280x800]": 29,
+            "line-height[1920x1080]": 1.5481,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2578,
+            "pointer-size[1920x1080]": [
+                40,
+                80
+            ],
+            "border-x[1920x1080]": 40,
+            "line-height[1920x1152]": 1.5648,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2612,
+            "pointer-size[1920x1152]": [
+                42,
+                84
+            ],
+            "border-x[1920x1152]": 42,
+            "area": [
+                0.07,
+                0.15,
+                0.47,
+                0.88
+            ]
+        },
+        "side_list": {
+            "font-size": 16,
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "on_accent",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.1875,
+            "pointer-size": [
+                14,
+                28
+            ],
+            "border-x": 14,
+            "line-height[640x480]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.1875,
+            "pointer-size[640x480]": [
+                14,
+                28
+            ],
+            "border-x[640x480]": 14,
+            "line-height[30:17]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.1875,
+            "pointer-size[30:17]": [
+                14,
+                28
+            ],
+            "border-x[30:17]": 14,
+            "line-height[16:9]": 1.4808,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2031,
+            "pointer-size[16:9]": [
+                19,
+                38
+            ],
+            "border-x[16:9]": 19,
+            "line-height[3:2]": 1.5312,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2895,
+            "pointer-size[3:2]": [
+                12,
+                24
+            ],
+            "border-x[3:2]": 12,
+            "line-height[427:240]": 1.4412,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.1667,
+            "pointer-size[427:240]": [
+                12,
+                24
+            ],
+            "border-x[427:240]": 12,
+            "line-height[720x480]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.1875,
+            "pointer-size[720x480]": [
+                14,
+                28
+            ],
+            "border-x[720x480]": 14,
+            "line-height[720x720]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.1912,
+            "pointer-size[720x720]": [
+                20,
+                40
+            ],
+            "border-x[720x720]": 20,
+            "line-height[960x720]": 1.4655,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2143,
+            "pointer-size[960x720]": [
+                21,
+                42
+            ],
+            "border-x[960x720]": 21,
+            "line-height[1024x768]": 1.4833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2027,
+            "pointer-size[1024x768]": [
+                22,
+                44
+            ],
+            "border-x[1024x768]": 22,
+            "line-height[1280x720]": 1.4655,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2143,
+            "pointer-size[1280x720]": [
+                21,
+                42
+            ],
+            "border-x[1280x720]": 21,
+            "line-height[1280x800]": 1.4833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2027,
+            "pointer-size[1280x800]": [
+                22,
+                44
+            ],
+            "border-x[1280x800]": 22,
+            "line-height[1920x1080]": 1.4405,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.1863,
+            "pointer-size[1920x1080]": [
+                30,
+                60
+            ],
+            "border-x[1920x1080]": 30,
+            "line-height[1920x1152]": 1.4535,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.1792,
+            "pointer-size[1920x1152]": [
+                31,
+                62
+            ],
+            "border-x[1920x1152]": 31,
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.11,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "ports_list": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "section_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.055
+            ],
+            "text": "{ports_list.filter_ports} games",
+            "font-size": 17,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true
         },
         "port_filters": {
-            "text": "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \nFilters: {ports_list.filters}{endif}",
-            "area": [ 0.0, 0.0, 0.4, 0.1 ],
-            "area[4:3|30:17]": [ 0.0, 0.0, 0.3, 0.1 ],
-            "area[3:2]": [ 0.0, 0.0, 0.4, 0.1 ],
-            "font-size": 14,
-            "parent": "background",
-            "align": "topleft",
-            "font-color": "list_selected",
-            "text-wrap": true,
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.055,
+                1.0,
+                0.095
+            ],
+            "text": "{if:!ports_list.total_ports::ports_list.filter_ports}{ports_list.filters}{else}All ports{endif}",
+            "font-size": 12,
+            "font-color": "text_faint",
+            "align": "midleft",
+            "text-clip": true,
             "autoscroll": "marquee",
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500
         },
-        "port_general_info": {
-            "parent": "port_info_general_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font-size": 16,
-            "font-color": "general_font",
-            "text-wrap": true,
-            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-        },
-        "port_desc": {
-            "parent": "port_info_desc_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font-size": 17,
-            "font-color": "general_font",
-            "text-wrap": true,
-            "autoscroll": "marquee",
-            "scroll-speed": 60,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500,
-            "text": "{port_info.description}"
+        "#element:side_list:ports_list": {},
+        "port_card": {
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "parent": "right_pane"
         },
         "port_title": {
-            "parent": "port_info_title_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.085
+            ],
             "text": "{port_info.title}",
-            "font-size": 22,
-            "font-color": "list_selected",
-            "align": "center"
+            "font-size": 21,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "port_byline": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.088,
+                1.0,
+                0.135
+            ],
+            "text": "{if:port_info.porter}by {port_info.porter}{endif}",
+            "font-size": 13,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true
         },
         "port_image": {
-            "parent": "port_info_image_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "image": "{port_info.image}"
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.165,
+                0.6,
+                0.62
+            ],
+            "area[wide|3:2]": [
+                0.0,
+                0.165,
+                0.56,
+                0.7
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.15,
+                1.0,
+                0.5
+            ],
+            "image": "{port_info.image}",
+            "image-mode": "fit",
+            "image-align": "topleft"
         },
-        "#element:button_bar": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.925, 0.93, 0.99 ]
+        "port_image_corners": {
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.165,
+                0.6,
+                0.62
+            ],
+            "area[wide|3:2]": [
+                0.0,
+                0.165,
+                0.56,
+                0.7
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.15,
+                1.0,
+                0.5
+            ],
+            "image-align": "topleft",
+            "image": "shot_mask.png",
+            "image-mode": "fit",
+            "image-mod": "card_fill"
+        },
+        "port_status": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.64,
+                0.165,
+                1.0,
+                0.23
+            ],
+            "area[wide|3:2]": [
+                0.6,
+                0.165,
+                1.0,
+                0.23
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.53,
+                0.5,
+                0.585
+            ],
+            "text": "{port_info.ready_to_run}",
+            "font-size": 15,
+            "font-color": "accent_text",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "port_rule": {
+            "fill": "divider",
+            "area": [
+                0.64,
+                0.245,
+                1.0,
+                0.2475
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.245,
+                1.0,
+                0.2475
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.6,
+                1.0,
+                0.6025
+            ]
+        },
+        "spec_label_0": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "GENRE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.26,
+                1.0,
+                0.305
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.26,
+                1.0,
+                0.305
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.615,
+                0.3133,
+                0.655
+            ]
+        },
+        "spec_value_0": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.genres}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.305,
+                1.0,
+                0.36
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.305,
+                1.0,
+                0.36
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.655,
+                0.3133,
+                0.71
+            ]
+        },
+        "spec_label_1": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "SIZE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.38,
+                1.0,
+                0.425
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.38,
+                1.0,
+                0.425
+            ],
+            "area[1:1|square]": [
+                0.3333,
+                0.615,
+                0.6467,
+                0.655
+            ]
+        },
+        "spec_value_1": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.install_size}{port_info.install_size}{else}{port_info.download_size}{endif}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.425,
+                1.0,
+                0.48
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.425,
+                1.0,
+                0.48
+            ],
+            "area[1:1|square]": [
+                0.3333,
+                0.655,
+                0.6467,
+                0.71
+            ]
+        },
+        "spec_label_2": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}RUNTIME{endif}",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.5,
+                1.0,
+                0.545
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.5,
+                1.0,
+                0.545
+            ],
+            "area[1:1|square]": [
+                0.6667,
+                0.615,
+                0.98,
+                0.655
+            ]
+        },
+        "spec_value_2": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.545,
+                1.0,
+                0.6
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.545,
+                1.0,
+                0.6
+            ],
+            "area[1:1|square]": [
+                0.6667,
+                0.655,
+                0.98,
+                0.71
+            ]
+        },
+        "port_rule_2": {
+            "fill": "divider",
+            "area": [
+                0.0,
+                0.655,
+                1.0,
+                0.6575
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.0,
+                0.72,
+                1.0,
+                0.7225
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.735,
+                1.0,
+                0.7375
+            ]
+        },
+        "port_desc": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.description}",
+            "font-size": 14,
+            "font-color": "text_body",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.0,
+                0.68,
+                1.0,
+                1.0
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.0,
+                0.745,
+                1.0,
+                1.0
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.76,
+                1.0,
+                1.0
+            ]
         }
     },
     "port_info": {
         "#element:background": {},
-        "port_info": {
-            "area": [ 0.05, 0.68, 0.95, 0.9 ],
-            "fill": "panels",
-            "text": "{port_info.description}",
-            "thickness": 6,
-            "border": 8,
-            "autoscroll": "marquee",
-            "scroll-speed": 60,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500,
-            "font-size": 17,
-            "font-size[427:240]": 22,
-            "font-color": "general_font",
-            "text-wrap": true
-        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
         "port_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.04,
+                0.105,
+                0.96,
+                0.175
+            ],
             "text": "{port_info.title}",
-            "area": [ 0.00, 0.00, 1.00, 0.1 ],
-            "font-size": 24,
-            "font-color": "list_selected",
-            "autoscroll": null,
-            "text-wrap": false,
-            "align": "center"
+            "font-size": 26,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "port_byline": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.04,
+                0.175,
+                0.96,
+                0.215
+            ],
+            "text": "{if:port_info.porter}by {port_info.porter}{endif}",
+            "font-size": 14,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true
         },
         "port_image": {
-            "area": [ 0.0, 0.1, 0.58, 0.65 ],
+            "area": [
+                0.04,
+                0.235,
+                0.6,
+                0.66
+            ],
+            "area[wide]": [
+                0.04,
+                0.235,
+                0.44,
+                0.735
+            ],
+            "area[3:2]": [
+                0.04,
+                0.235,
+                0.49,
+                0.735
+            ],
+            "area[1:1|square]": [
+                0.04,
+                0.235,
+                0.6,
+                0.6
+            ],
             "image": "{port_info.image}",
-            "align": "midcenter"
+            "image-mode": "fit",
+            "image-align": "topleft"
+        },
+        "port_image_corners": {
+            "area": [
+                0.04,
+                0.235,
+                0.6,
+                0.66
+            ],
+            "area[wide]": [
+                0.04,
+                0.235,
+                0.44,
+                0.735
+            ],
+            "area[3:2]": [
+                0.04,
+                0.235,
+                0.49,
+                0.735
+            ],
+            "area[1:1|square]": [
+                0.04,
+                0.235,
+                0.6,
+                0.6
+            ],
+            "image-align": "topleft",
+            "image": "shot_mask.png",
+            "image-mode": "fit",
+            "image-mod": "background"
+        },
+        "desc_card": {
+            "area": [
+                0.04,
+                0.68,
+                0.6,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "area[wide]": [
+                0.04,
+                0.755,
+                0.44,
+                0.905
+            ],
+            "area[3:2]": [
+                0.04,
+                0.755,
+                0.49,
+                0.905
+            ],
+            "area[1:1|square]": [
+                0.04,
+                0.62,
+                0.6,
+                0.905
+            ]
+        },
+        "port_info": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.description}",
+            "font-size": 14,
+            "font-color": "text_body",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.065,
+                0.7,
+                0.575,
+                0.885
+            ],
+            "area[wide]": [
+                0.06,
+                0.77,
+                0.42,
+                0.89
+            ],
+            "area[3:2]": [
+                0.06,
+                0.77,
+                0.47,
+                0.89
+            ],
+            "area[1:1|square]": [
+                0.065,
+                0.64,
+                0.575,
+                0.885
+            ]
+        },
+        "side_card": {
+            "area": [
+                0.625,
+                0.235,
+                0.96,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "area[wide]": [
+                0.465,
+                0.235,
+                0.96,
+                0.905
+            ],
+            "area[3:2]": [
+                0.515,
+                0.235,
+                0.96,
+                0.905
+            ]
+        },
+        "port_status": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.65,
+                0.255,
+                0.935,
+                0.31
+            ],
+            "area[wide]": [
+                0.49,
+                0.255,
+                0.935,
+                0.31
+            ],
+            "area[3:2]": [
+                0.54,
+                0.255,
+                0.935,
+                0.31
+            ],
+            "text": "{port_info.ready_to_run}",
+            "font-size": 16,
+            "font-color": "accent_text",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "side_rule": {
+            "fill": "divider",
+            "area": [
+                0.65,
+                0.325,
+                0.935,
+                0.3275
+            ],
+            "area[wide]": [
+                0.49,
+                0.325,
+                0.935,
+                0.3275
+            ],
+            "area[3:2]": [
+                0.54,
+                0.325,
+                0.935,
+                0.3275
+            ]
+        },
+        "spec_label_0": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "GENRE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.65,
+                0.34,
+                0.935,
+                0.37
+            ],
+            "area[wide]": [
+                0.49,
+                0.34,
+                0.6975,
+                0.37
+            ],
+            "area[3:2]": [
+                0.54,
+                0.34,
+                0.7225,
+                0.37
+            ]
+        },
+        "spec_value_0": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.genres}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.65,
+                0.37,
+                0.935,
+                0.415
+            ],
+            "area[wide]": [
+                0.49,
+                0.37,
+                0.6975,
+                0.415
+            ],
+            "area[3:2]": [
+                0.54,
+                0.37,
+                0.7225,
+                0.415
+            ]
+        },
+        "spec_label_1": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "DOWNLOAD SIZE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.65,
+                0.43,
+                0.935,
+                0.46
+            ],
+            "area[wide]": [
+                0.7275,
+                0.34,
+                0.935,
+                0.37
+            ],
+            "area[3:2]": [
+                0.7525,
+                0.34,
+                0.935,
+                0.37
+            ]
+        },
+        "spec_value_1": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.download_size}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.65,
+                0.46,
+                0.935,
+                0.505
+            ],
+            "area[wide]": [
+                0.7275,
+                0.37,
+                0.935,
+                0.415
+            ],
+            "area[3:2]": [
+                0.7525,
+                0.37,
+                0.935,
+                0.415
+            ]
+        },
+        "spec_label_2": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "FREE SPACE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.65,
+                0.52,
+                0.935,
+                0.55
+            ],
+            "area[wide]": [
+                0.49,
+                0.44,
+                0.6975,
+                0.47
+            ],
+            "area[3:2]": [
+                0.54,
+                0.44,
+                0.7225,
+                0.47
+            ]
+        },
+        "spec_value_2": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{system.free_space}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.65,
+                0.55,
+                0.935,
+                0.595
+            ],
+            "area[wide]": [
+                0.49,
+                0.47,
+                0.6975,
+                0.515
+            ],
+            "area[3:2]": [
+                0.54,
+                0.47,
+                0.7225,
+                0.515
+            ]
+        },
+        "spec_label_3": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}RUNTIME{endif}",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.65,
+                0.61,
+                0.935,
+                0.64
+            ],
+            "area[wide]": [
+                0.7275,
+                0.44,
+                0.935,
+                0.47
+            ],
+            "area[3:2]": [
+                0.7525,
+                0.44,
+                0.935,
+                0.47
+            ]
+        },
+        "spec_value_3": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.65,
+                0.64,
+                0.935,
+                0.685
+            ],
+            "area[wide]": [
+                0.7275,
+                0.47,
+                0.935,
+                0.515
+            ],
+            "area[3:2]": [
+                0.7525,
+                0.47,
+                0.935,
+                0.515
+            ]
+        },
+        "instr_label": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "INSTRUCTIONS",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.65,
+                0.7,
+                0.935,
+                0.73
+            ],
+            "area[wide]": [
+                0.49,
+                0.56,
+                0.935,
+                0.59
+            ],
+            "area[3:2]": [
+                0.54,
+                0.56,
+                0.935,
+                0.59
+            ]
         },
         "port_info_instruction": {
-            "area": [ 0.6, 0.1, 0.95, 0.65 ],
-            "autoscroll": "marquee",
-            "text": "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\nInstruction: {port_info.instructions}",
-            "fill": "panels",
-            "thickness": 6,
-            "border": 8,
-            "font-size": 15,
-            "font-color": "general_font",
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.instructions}",
+            "font-size": 13,
+            "font-color": "text_body",
+            "align": "topleft",
             "text-wrap": true,
-            "parent": "element:background"
-        },
-        "#element:button_bar": {}
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.65,
+                0.735,
+                0.935,
+                0.885
+            ],
+            "area[wide]": [
+                0.49,
+                0.595,
+                0.935,
+                0.885
+            ],
+            "area[3:2]": [
+                0.54,
+                0.595,
+                0.935,
+                0.885
+            ]
+        }
     },
     "port_links": {
         "#element:background": {},
-        "links_list": {
-            "parent": "port_info_list_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "border-x": 16,
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "section_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.055
+            ],
+            "text": "{port_info.title}",
             "font-size": 17,
-            "font-size[427:240]": 22,
-            "font-size[16:9]": 19,
-            "font-size[1920x1152]": 22,
-            "alt-fill": "secondary-selection-fill",
-            "select-fill": "selection-fill",
-            "font-color": "list_text",
-            "select-color": "list_selected",
+            "font-color": "text",
+            "align": "midleft",
             "text-clip": true,
-            "text-wrap": false,
-            "autoscroll": "slide",
-            "scroll-speed": 30,
-            "scroll-delay-start": 500,
-            "scroll-delay-end": 500
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
         },
+        "links_count": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.055,
+                1.0,
+                0.095
+            ],
+            "text": "Links: {port_links.count}",
+            "font-size": 12,
+            "font-color": "text_faint",
+            "align": "midleft"
+        },
+        "#element:side_list:links_list": {},
         "links_panel": {
-            "parent": "port_info_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels"
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "parent": "right_pane"
         },
         "links_title": {
-            "parent": "port_info_title_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "text": "{port_info.title}",
-            "font-size": 22,
-            "font-color": "list_selected",
-            "text-clip": true,
-            "align": "center"
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.09
+            ],
+            "text": "{port_links.name}",
+            "font-size": 19,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true
         },
         "link_qr": {
-            "parent": "port_info_content",
-            "area": [ 0.05, 0.12, 0.95, 0.78 ],
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.12,
+                1.0,
+                0.8
+            ],
             "image": "qr:{port_links.url}",
             "image-mode": "fit"
         },
         "link_info": {
-            "parent": "port_info_content",
-            "area": [ 0.03, 0.8, 0.97, 1.0 ],
-            "text": "{port_links.name}\n{port_links.url}",
-            "font-size": 15,
-            "font-size[320x240]": 10,
-            "font-size[427:240]": 18,
-            "font-size[1920x1152]": 20,
-            "font-color": "general_font",
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.83,
+                1.0,
+                1.0
+            ],
+            "text": "{port_links.url}",
+            "font-size": 13,
+            "font-color": "text_muted",
             "text-wrap": true,
             "align": "center"
-        },
-        "#element:button_bar": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.925, 0.93, 0.99 ]
         }
     },
     "main_menu": {
         "#element:background": {},
-        "#element:option_list": {
-            "align": "midleft",
-            "list": [],
-            "options": [],
-            "pointer": "pointenfedde.png",
-            "pointer-align": [ "midright", "midleft" ],
-            "pointer-size": [ 51, 26 ],
-            "pointer-attach": "text",
-            "pointer-offset": [ 0, 2 ],
-            "pointer-flip-x": true,
-            "pointer-flip-y": false
-        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
         "#element:button_bar": {},
-        "system_time": {
-            "text": "Time: {system.time_24hr}\nCFW: {system.cfw_name} ({system.cfw_version})\nDevice: {system.device_name}\nBattery: {system.battery_level}",
-            "font-size": 13,
-            "font-size[427:240]": 17,
-            "font-color": "general_font",
-            "area": [ 0.02, 0.05, 0.95, 0.95 ],
-            "align": "topright"
+        "#element:option_list": {
+            "area[wide|3:2]": [
+                0.07,
+                0.15,
+                0.43,
+                0.88
+            ],
+            "list": [],
+            "options": []
         },
-        "system_time_low": {
-            "text": "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total",
-            "font-size": 12,
-            "font-size[427:240]": 16,
-            "font-color": "general_font",
-            "area": [ 0.02, 0.05, 0.95, 0.95 ],
-            "align": "bottomleft"
+        "menu_card": {
+            "area": [
+                0.52,
+                0.15,
+                0.955,
+                0.88
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "area[wide|3:2]": [
+                0.48,
+                0.15,
+                0.955,
+                0.88
+            ]
+        },
+        "menu_tooltip": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.56,
+                0.19,
+                0.92,
+                0.37
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.19,
+                0.92,
+                0.37
+            ],
+            "text": "{scene.tooltip}",
+            "font-size": 19,
+            "font-color": "text",
+            "text-wrap": true,
+            "align": "topleft"
+        },
+        "menu_rule": {
+            "fill": "divider",
+            "area": [
+                0.56,
+                0.4,
+                0.92,
+                0.4025
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.4,
+                0.92,
+                0.4025
+            ]
+        },
+        "stat_icon_0": {
+            "area": [
+                0.56,
+                0.44,
+                0.73,
+                0.49
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.44,
+                0.71,
+                0.49
+            ],
+            "image": "icon_storage.png",
+            "image-mode": "fit",
+            "image-align": "midleft"
+        },
+        "stat_value_0": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{system.free_space}",
+            "font-size": 16,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.56,
+                0.495,
+                0.73,
+                0.55
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.495,
+                0.71,
+                0.55
+            ]
+        },
+        "stat_label_0": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "FREE SPACE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true,
+            "area": [
+                0.56,
+                0.55,
+                0.73,
+                0.585
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.55,
+                0.71,
+                0.585
+            ]
+        },
+        "stat_icon_1": {
+            "area": [
+                0.75,
+                0.44,
+                0.92,
+                0.49
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.44,
+                0.92,
+                0.49
+            ],
+            "image": "icon_battery.png",
+            "image-mode": "fit",
+            "image-align": "midleft"
+        },
+        "stat_value_1": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{system.battery_level}",
+            "font-size": 16,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.75,
+                0.495,
+                0.92,
+                0.55
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.495,
+                0.92,
+                0.55
+            ]
+        },
+        "stat_label_1": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "BATTERY",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true,
+            "area": [
+                0.75,
+                0.55,
+                0.92,
+                0.585
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.55,
+                0.92,
+                0.585
+            ]
+        },
+        "stat_icon_2": {
+            "area": [
+                0.56,
+                0.65,
+                0.73,
+                0.7
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.65,
+                0.71,
+                0.7
+            ],
+            "image": "icon_device.png",
+            "image-mode": "fit",
+            "image-align": "midleft"
+        },
+        "stat_value_2": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{system.device_name}",
+            "font-size": 16,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.56,
+                0.705,
+                0.73,
+                0.76
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.705,
+                0.71,
+                0.76
+            ]
+        },
+        "stat_label_2": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "DEVICE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true,
+            "area": [
+                0.56,
+                0.76,
+                0.73,
+                0.795
+            ],
+            "area[wide|3:2]": [
+                0.52,
+                0.76,
+                0.71,
+                0.795
+            ]
+        },
+        "stat_icon_3": {
+            "area": [
+                0.75,
+                0.65,
+                0.92,
+                0.7
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.65,
+                0.92,
+                0.7
+            ],
+            "image": "icon_firmware.png",
+            "image-mode": "fit",
+            "image-align": "midleft"
+        },
+        "stat_value_3": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{system.cfw_name} {system.cfw_version}",
+            "font-size": 16,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.75,
+                0.705,
+                0.92,
+                0.76
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.705,
+                0.92,
+                0.76
+            ]
+        },
+        "stat_label_3": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "FIRMWARE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true,
+            "area": [
+                0.75,
+                0.76,
+                0.92,
+                0.795
+            ],
+            "area[wide|3:2]": [
+                0.73,
+                0.76,
+                0.92,
+                0.795
+            ]
+        },
+        "#element:footer_note:version": {
+            "text": "PortMaster {system.portmaster_version}"
         }
     },
     "option_menu": {
         "#element:background": {
             "music": null
         },
-        "option_title": {
-            "area": [ 0.01, 0.05, 1.0, 0.14 ],
-            "text": "{scene.title}",
-            "font-size": 20,
-            "font-color": "general_font"
-        },
-        "#element:option_list": {
-            "list": [],
-            "options": [],
-            "align": "midleft",
-            "area": [ 0.0, 0.1, 0.62, 0.85 ],
-            "area[16:9]": [ 0.0, 0.15, 0.55, 0.85 ],
-            "text-clip": true,
-            "font-size": 25,
-            "no-select-color": "list_unselectable",
-            "inactive-select-color": "list_unselectable",
-            "list-section-add-blank": true,
-            "pointer": "pointenfedde.png",
-            "pointer-align": [ "midright", "midleft" ],
-            "pointer-size": [ 51, 26 ],
-            "pointer-attach": "text",
-            "pointer-offset": [ 0, 2 ],
-            "pointer-flip-x": true,
-            "pointer-flip-y": false,
-            "autoscroll": "slide",
-            "scroll-speed": 30,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500
-        },
-        "option_description": {
-            "text": "{scene.tooltip}",
-            "font-size": 25,
-            "font-color": "general_font",
-            "area": [ 0.63, 0.4, 0.98, 0.85 ],
-            "area[16:9]": [ 0.56, 0.4, 0.98, 0.85 ],
-            "align": "topleft",
-            "text-wrap": true
-        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
         "#element:button_bar": {},
-        "ip": {
-            "text": "IP: {system.ip_address}",
-            "font-size": 11,
-            "font-size[427:240]": 16,
-            "font-color": "general_font",
-            "area": [ 0.02, 0.05, 0.95, 0.95 ],
-            "align": "bottomleft"
-        }
-    },
-    "themes_list": {
-        "#element:background": {},
-
-        "port_info": {
-            "parent": "port_info_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels"
-        },
-        "themes_list": {
-            "parent": "port_info_list_area",
-            "area": [ 0.0, 0.1, 1.0, 1.0 ],
-            "area[3:2]": [ 0.0, 0.15, 1.0, 1.0 ],
-            "border-x": 16,
-            "font-size": 17,
-            "font-size[427:240]": 22,
-            "font-size[16:9]": 19,
-            "font-size[1920x1152]": 22,
-            "alt-fill": "secondary-selection-fill",
-            "select-fill": "selection-fill",
-            "font-color": "list_text",
-            "select-color": "list_selected",
+        "#element:option_list": {
+            "font-size": 18,
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "on_accent",
+            "align": "midleft",
             "text-clip": true,
             "text-wrap": false,
             "autoscroll": "slide",
             "scroll-speed": 30,
-            "scroll-delay-start": 500,
-            "scroll-delay-end": 500
-
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.4773,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2037,
+            "pointer-size": [
+                16,
+                32
+            ],
+            "border-x": 16,
+            "line-height[640x480]": 1.4773,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2037,
+            "pointer-size[640x480]": [
+                16,
+                32
+            ],
+            "border-x[640x480]": 16,
+            "line-height[30:17]": 1.4773,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2037,
+            "pointer-size[30:17]": [
+                16,
+                32
+            ],
+            "border-x[30:17]": 16,
+            "line-height[16:9]": 1.4833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2027,
+            "pointer-size[16:9]": [
+                22,
+                44
+            ],
+            "border-x[16:9]": 22,
+            "line-height[3:2]": 1.5833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2955,
+            "pointer-size[3:2]": [
+                14,
+                28
+            ],
+            "border-x[3:2]": 14,
+            "line-height[427:240]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.1875,
+            "pointer-size[427:240]": [
+                14,
+                28
+            ],
+            "border-x[427:240]": 14,
+            "line-height[720x480]": 1.4773,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2037,
+            "pointer-size[720x480]": [
+                16,
+                32
+            ],
+            "border-x[720x480]": 16,
+            "line-height[720x720]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2237,
+            "pointer-size[720x720]": [
+                23,
+                46
+            ],
+            "border-x[720x720]": 23,
+            "line-height[960x720]": 1.5156,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2125,
+            "pointer-size[960x720]": [
+                24,
+                48
+            ],
+            "border-x[960x720]": 24,
+            "line-height[1024x768]": 1.5303,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2317,
+            "pointer-size[1024x768]": [
+                25,
+                50
+            ],
+            "border-x[1024x768]": 25,
+            "line-height[1280x720]": 1.5156,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2125,
+            "pointer-size[1280x720]": [
+                24,
+                48
+            ],
+            "border-x[1280x720]": 24,
+            "line-height[1280x800]": 1.5303,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2317,
+            "pointer-size[1280x800]": [
+                25,
+                50
+            ],
+            "border-x[1280x800]": 25,
+            "line-height[1920x1080]": 1.4891,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2018,
+            "pointer-size[1920x1080]": [
+                34,
+                68
+            ],
+            "border-x[1920x1080]": 34,
+            "line-height[1920x1152]": 1.5204,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2417,
+            "pointer-size[1920x1152]": [
+                37,
+                74
+            ],
+            "border-x[1920x1152]": 37,
+            "list": [],
+            "options": [],
+            "area": [
+                0.07,
+                0.14,
+                0.57,
+                0.89
+            ],
+            "area[wide|3:2]": [
+                0.07,
+                0.14,
+                0.55,
+                0.89
+            ],
+            "list-section-add-blank": true
         },
-        "theme_general_info": {
-            "parent": "port_info_general_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font-size": 16,
-            "font-color": "general_font",
-            "text-wrap": true,
-            "text": "Creator: {theme_info.creator}\nStatus: {theme_info.status}"
+        "desc_card": {
+            "area": [
+                0.61,
+                0.14,
+                0.955,
+                0.89
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "area[wide|3:2]": [
+                0.59,
+                0.14,
+                0.955,
+                0.89
+            ]
         },
-        "theme_desc": {
-            "parent": "port_info_desc_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+        "option_description": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.64,
+                0.18,
+                0.925,
+                0.85
+            ],
+            "area[wide|3:2]": [
+                0.62,
+                0.18,
+                0.925,
+                0.85
+            ],
+            "text": "{scene.tooltip}",
             "font-size": 17,
-            "font-color": "general_font",
+            "font-color": "text",
             "text-wrap": true,
-            "autoscroll": "marquee",
-            "scroll-speed": 60,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500,
-            "text": "{theme_info.description}"
+            "align": "topleft"
+        },
+        "#element:footer_note:ip": {
+            "text": "IP: {system.ip_address}"
+        }
+    },
+    "themes_list": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "section_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.055
+            ],
+            "text": "{scene.title}",
+            "font-size": 17,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "#element:side_list:themes_list": {},
+        "port_info": {
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "parent": "right_pane"
         },
         "theme_name": {
-            "parent": "port_info_title_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.085
+            ],
             "text": "{theme_info.name}",
-            "font-size": 22,
-            "font-color": "list_selected",
-            "align": "center"
+            "font-size": 21,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "theme_general_info": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.088,
+                1.0,
+                0.135
+            ],
+            "text": "{if:theme_info.creator}by {theme_info.creator}  ·  {endif}{theme_info.status}",
+            "font-size": 13,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true
         },
         "theme_image": {
-            "parent": "port_info_image_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "image": "{theme_info.image}"
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.165,
+                1.0,
+                0.66
+            ],
+            "image": "{theme_info.image}",
+            "image-mode": "fit",
+            "image-align": "midtop"
         },
-        "#element:button_bar": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.925, 0.93, 0.99 ]
+        "theme_rule": {
+            "fill": "divider",
+            "area": [
+                0.0,
+                0.68,
+                1.0,
+                0.6825
+            ],
+            "parent": "card_inner"
+        },
+        "theme_desc": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{theme_info.description}",
+            "font-size": 14,
+            "font-color": "text_body",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.0,
+                0.7,
+                1.0,
+                1.0
+            ],
+            "parent": "card_inner"
         }
     },
     "theme_server": {
         "#element:background": {},
-        "server_title": {
-            "area": [0.04, 0.02, 0.96, 0.12],
-            "text": "{scene.title}",
-            "font-size": 24,
-            "font-color": "list_selected",
-            "align": "center"
-        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
         "server_qr_panel": {
-            "area": [0.04, 0.14, 0.46, 0.9],
-            "fill": "panels"
+            "area": [
+                0.04,
+                0.115,
+                0.46,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
         },
         "server_qr": {
-            "area": [0.06, 0.16, 0.44, 0.88],
+            "area": [
+                0.07,
+                0.155,
+                0.43,
+                0.865
+            ],
             "image": "qr:{theme_server.url}",
             "image-mode": "fit"
         },
-        "server_info": {
-            "area": [0.5, 0.14, 0.96, 0.9],
-            "fill": "panels",
-            "border": 10,
-            "font-size": 15,
-            "font-color": "general_font",
-            "text-wrap": true,
-            "text": "{theme_server.status}"
+        "server_card": {
+            "area": [
+                0.49,
+                0.115,
+                0.96,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
         },
-        "#element:button_bar": {}
+        "server_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.52,
+                0.145,
+                0.93,
+                0.215
+            ],
+            "text": "{theme_server.url}",
+            "font-size": 17,
+            "font-color": "accent_text",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "server_info": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{theme_server.status}",
+            "font-size": 15,
+            "font-color": "text",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": null,
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.52,
+                0.235,
+                0.93,
+                0.875
+            ]
+        }
     },
     "runtime_list": {
         "#element:background": {
             "music": null
         },
-        "option_title": {
-            "area": [ 0.01, 0.05, 1.0, 0.10 ],
-            "text": "{scene.title}",
-            "font-size": 20,
-            "font-color": "general_font"
-        },
-        "#element:option_list:runtime_list": {
-            "list": [],
-            "options": [],
-            "align": "midleft",
-            "area": [ 0.0, 0.2, 0.5, 0.85 ],
-            "text-clip": true,
-            "font-size": 22,
-            "no-select-color": "list_unselectable",
-            "inactive-select-color": "list_unselectable",
-            "pointer": "pointenfedde.png",
-            "pointer-align": [ "midright", "midleft" ],
-            "pointer-size": [ 51, 26 ],
-            "pointer-attach": "text",
-            "pointer-offset": [ 0, 2 ],
-            "pointer-flip-x": true,
-            "pointer-flip-y": false
-        },
-        "option_description": {
-            "text": "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}",
-            "font-size": 25,
-            "font-color": "general_font",
-            "area": [ 0.5, 0.3, 1.0, 0.85 ],
-            "align": "topleft",
-            "text-wrap": true
-        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
         "#element:button_bar": {},
-        "ip": {
-            "text": "IP: {system.ip_address}",
-            "font-size": 11,
-            "font-size[427:240]": 16,
-            "font-color": "general_font",
-            "area": [ 0.02, 0.05, 0.95, 0.95 ],
-            "align": "bottomleft"
-        }
-    },
-    "on_screen_keyboard": {
-        "#element:background": {},
-        "keyboard": {
-            "font-size": 30,
-            "font-color": "list_text",
-            "select-color": "list_selected",
-            "inactive-select-color": "list_text",
-            "area": [ 0.1, 0.4, 0.9, 0.92 ],
-            "barwidth": 40,
-            "list": [],
-            "options": [],
-            "align": "center"
-        },
-        "#element:button_bar": {}
-    },
-    "filter_list": {
-        "#element:background": {
-            "blend-mode": "blend",
-            "fill": "background_fade"
-        },
-        "filter_panel": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels"
-        },
-        "filter_list": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.0, 1.0, 0.92 ],
-            "font-size": 16,
-            "font-size[1920x1152]": 15,
-            "font-size[30:17]": 15,
-            "font-color": "list_text",
-            "select-color": "list_selected",
-            "list-spacer": 3,
-            "list": [],
-            "align": "midleft"
-        },
-        "#element:button_bar": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.925, 0.93, 0.99 ]
-        }
-    },
-    "message_window": {
-        "#element:background": {},
-        "message_text": {
-            "area": [ 0.05, 0.05, 0.95, 0.8 ],
-            "fill": "panels",
-            "thickness": 6,
-            "text-wrap": true,
-            "border": 10,
-            "font-size": 24,
-            "font-color": "general_font",
-            "align": "bottomleft",
-            "text": ""
-        },
-
-        "progress_bar": {
-            "area": [ 0.05, 0.83, 0.95, 0.90 ],
-            "fill": "panels",
-            "progress-fill": "selection-fill",
-            "text": "{system.progress_text}",
-            "align": "midleft",
-            "font-size": 14,
-            "font-color": "download_font",
-            "border": 2,
-            "thickness": 1
-        },
-
-        "progress_bar_amount": {
-            "area": [ 0.05, 0.83, 0.95, 0.90 ],
-            "text": "{system.progress_amount}",
-            "align": "midright",
-            "font-size": 14,
-            "font-color": "download_font",
-            "thickness": 1,
-            "border": 2
-        },
-
-        "#element:button_bar": {}
-    },
-
-    "featured_ports_list": {
-        "#element:background": {},
-
-        "option_title": {
-            "area": [ 0.01, 0.05, 1.0, 0.10 ],
-            "align": "center",
-            "text": "{scene.title}",
-            "font-size": 25,
-            "font-color": "list_selected"
-        },
-
-        "port_info": {
-            "area": [ 0.0, 0.15, 1.0, 0.33 ],
-            "image": "{featured_ports.image}"
-        },
-
-        "option_list": {
-            "list": [],
-            "align": "center",
-            "area": [ 0.0, 0.40, 1.0, 0.88 ],
-            "text-clip": true,
-            "font-size": 25,
-            "font-color": "list_text",
-            "select-color": "list_selected",
-            "pointer": "pointenfedde.png",
-            "pointer-align": [ "midright", "midleft" ],
-            "pointer-size": [ 51, 26 ],
-            "pointer-attach": "text",
-            "pointer-offset": [ 0, 2 ],
-            "pointer-flip-x": true,
-            "pointer-flip-y": false
-        },
-
-        "featured_port_description": {
-            "text": "{featured_ports.description}",
-            "font-size": 18,
-            "align": "center",
-            "font-color": "general_font",
-            "area": [ 0.1, 0.33, 0.9, 0.38 ],
-            "text-wrap": true
-        },
-
-        "#element:button_bar": {}
-
-    },
-    "featured_ports": {
-        "#element:background": {},
-
-        "port_info": {
-            "parent": "port_info_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "fill": "panels"
-        },
-
-
-        "ports_list": {
-            "parent": "featured_list_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "border-x": 16,
-            "border-y": 25,
-            "align": "midleft",
+        "#element:option_list:runtime_list": {
             "font-size": 17,
-            "font-size[427:240]": 22,
-            "font-size[16:9]": 19,
-            "font-size[1920x1152]": 22,
-            "alt-fill": "secondary-selection-fill",
-            "select-fill": "selection-fill",
-            "font-color": "list_text",
-            "select-color": "list_selected",
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "on_accent",
+            "align": "midleft",
             "text-clip": true,
             "text-wrap": false,
             "autoscroll": "slide",
             "scroll-speed": 30,
-            "scroll-delay-start": 500,
-            "scroll-delay-end": 500
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.525,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.22,
+            "pointer-size": [
+                15,
+                30
+            ],
+            "border-x": 15,
+            "line-height[640x480]": 1.525,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.22,
+            "pointer-size[640x480]": [
+                15,
+                30
+            ],
+            "border-x[640x480]": 15,
+            "line-height[30:17]": 1.525,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.22,
+            "pointer-size[30:17]": [
+                15,
+                30
+            ],
+            "border-x[30:17]": 15,
+            "line-height[16:9]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.1912,
+            "pointer-size[16:9]": [
+                20,
+                40
+            ],
+            "border-x[16:9]": 20,
+            "line-height[3:2]": 1.5588,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.2619,
+            "pointer-size[3:2]": [
+                13,
+                26
+            ],
+            "border-x[3:2]": 13,
+            "line-height[427:240]": 1.5833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2955,
+            "pointer-size[427:240]": [
+                14,
+                28
+            ],
+            "border-x[427:240]": 14,
+            "line-height[720x480]": 1.525,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.22,
+            "pointer-size[720x480]": [
+                15,
+                30
+            ],
+            "border-x[720x480]": 15,
+            "line-height[720x720]": 1.5345,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2714,
+            "pointer-size[720x720]": [
+                22,
+                44
+            ],
+            "border-x[720x720]": 22,
+            "line-height[960x720]": 1.4833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2027,
+            "pointer-size[960x720]": [
+                22,
+                44
+            ],
+            "border-x[960x720]": 22,
+            "line-height[1024x768]": 1.5156,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2125,
+            "pointer-size[1024x768]": [
+                24,
+                48
+            ],
+            "border-x[1024x768]": 24,
+            "line-height[1280x720]": 1.4833,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2027,
+            "pointer-size[1280x720]": [
+                22,
+                44
+            ],
+            "border-x[1280x720]": 22,
+            "line-height[1280x800]": 1.5156,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2125,
+            "pointer-size[1280x800]": [
+                24,
+                48
+            ],
+            "border-x[1280x800]": 24,
+            "line-height[1920x1080]": 1.5114,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2315,
+            "pointer-size[1920x1080]": [
+                33,
+                66
+            ],
+            "border-x[1920x1080]": 33,
+            "line-height[1920x1152]": 1.4891,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2018,
+            "pointer-size[1920x1152]": [
+                34,
+                68
+            ],
+            "border-x[1920x1152]": 34,
+            "list": [],
+            "options": [],
+            "area": [
+                0.07,
+                0.14,
+                0.52,
+                0.89
+            ]
         },
-
-        "port_desc": {
-            "parent": "port_info_desc_area_featured",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font-size": 17,
-            "font-color": "general_font",
-            "text-wrap": true,
+        "desc_card": {
+            "area": [
+                0.56,
+                0.14,
+                0.955,
+                0.89
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
+        },
+        "runtime_name": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.59,
+                0.17,
+                0.925,
+                0.23
+            ],
+            "text": "{runtime_info.name}",
+            "font-size": 18,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
             "autoscroll": "marquee",
-            "scroll-speed": 60,
+            "scroll-speed": 40,
             "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500,
-            "text": "{port_info.description}"
+            "scroll-delay-end": 1500
         },
-
-        "port_title": {
-            "parent": "port_info_title_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "text": "{featured_ports.name}",
-            "font-size": 22,
-            "font-color": "list_selected",
-            "align": "center"
+        "runtime_status": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.59,
+                0.23,
+                0.925,
+                0.27
+            ],
+            "text": "{runtime_info.status}",
+            "font-size": 14,
+            "font-color": "accent_text",
+            "align": "midleft",
+            "text-clip": true
         },
-
-        "featured_image": {
-            "parent": "featured_image_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "image": "{featured_ports.image}"
+        "runtime_rule": {
+            "fill": "divider",
+            "area": [
+                0.59,
+                0.29,
+                0.925,
+                0.2925
+            ]
         },
-
-        "port_image": {
-            "parent": "port_info_image_area_featured",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "image": "{port_info.image}"
+        "dl_label": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "DOWNLOAD SIZE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.59,
+                0.31,
+                0.7575,
+                0.34
+            ]
         },
-
-        "port_general_info": {
-            "parent": "featured_general_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "border-x": 16,
-            "font-size": 16,
-            "font-color": "general_font",
-            "text-wrap": true,
-            "text": "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}"
-        },
-
-        "featured_port_description": {
-            "text": "{featured_ports.description}",
-            "font-size": 16,
-            "font-color": "general_font",
-            "parent": "featured_description_area",
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "align": "topleft",
-            "autoscroll": "marquee",
-            "scroll-speed": 60,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500,
-            "text-wrap": true
-        },
-
-
-        "#element:button_bar": {
-            "parent": "right_pane",
-            "area": [ 0.0, 0.925, 0.93, 0.99 ]
-        }
-
-    },
-
-    "message_box": {
-        "#element:background": {},
-
-        "message_text": {
-            "area": [ 0.05, 0.2, 0.95, 0.8 ],
-            "area[3:2]": [ 0.05, 0.2, 0.95, 0.9 ],
+        "dl_value": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{runtime_info.download_size}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
             "autoscroll": "marquee",
             "scroll-speed": 40,
             "scroll-delay-start": 1500,
             "scroll-delay-end": 1500,
-            "fill": "panels",
-            "thickness": 6,
-            "border": 8,
-            "font-size": 24,
-            "font-color": "general_font",
+            "area": [
+                0.59,
+                0.34,
+                0.7475,
+                0.39
+            ]
+        },
+        "disk_label": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "INSTALL SIZE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.7575,
+                0.31,
+                0.925,
+                0.34
+            ]
+        },
+        "disk_value": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{runtime_info.disk_size}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.7575,
+                0.34,
+                0.925,
+                0.39
+            ]
+        },
+        "ports_label": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "USED BY",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.59,
+                0.42,
+                0.925,
+                0.45
+            ]
+        },
+        "option_description": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{runtime_info.ports}",
+            "font-size": 14,
+            "font-color": "text_body",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.59,
+                0.455,
+                0.925,
+                0.86
+            ]
+        },
+        "#element:footer_note:ip": {
+            "text": "IP: {system.ip_address}"
+        }
+    },
+    "on_screen_keyboard": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "key_card": {
+            "area": [
+                0.04,
+                0.27,
+                0.96,
+                0.77
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
+        },
+        "keyboard": {
+            "font": "DejaVuSans.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.07,
+                0.31,
+                0.93,
+                0.75
+            ],
+            "font-size": 26,
+            "font-color": "text",
+            "select-color": "accent_text",
+            "inactive-select-color": "text",
+            "list": [],
+            "options": [],
+            "align": "center"
+        }
+    },
+    "filter_list": {
+        "#element:background": {
+            "blend-mode": "blend",
+            "fill": "fade"
+        },
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {
+            "text": "Filters"
+        },
+        "#element:header_status": {},
+        "filter_card": {
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "parent": "right_pane"
+        },
+        "filter_list": {
+            "font-size": 15,
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.4722,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2045,
+            "pointer-size": [
+                13,
+                26
+            ],
+            "border-x": 13,
+            "line-height[640x480]": 1.4722,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2045,
+            "pointer-size[640x480]": [
+                13,
+                26
+            ],
+            "border-x[640x480]": 13,
+            "line-height[30:17]": 1.4722,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2045,
+            "pointer-size[30:17]": [
+                13,
+                26
+            ],
+            "border-x[30:17]": 13,
+            "line-height[16:9]": 1.46,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.1774,
+            "pointer-size[16:9]": [
+                18,
+                36
+            ],
+            "border-x[16:9]": 18,
+            "line-height[3:2]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.25,
+            "pointer-size[3:2]": [
+                11,
+                22
+            ],
+            "border-x[3:2]": 11,
+            "line-height[427:240]": 1.5312,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.2895,
+            "pointer-size[427:240]": [
+                12,
+                24
+            ],
+            "border-x[427:240]": 12,
+            "line-height[720x480]": 1.4722,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2045,
+            "pointer-size[720x480]": [
+                13,
+                26
+            ],
+            "border-x[720x480]": 13,
+            "line-height[720x720]": 1.46,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.1774,
+            "pointer-size[720x720]": [
+                18,
+                36
+            ],
+            "border-x[720x720]": 18,
+            "line-height[960x720]": 1.4808,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2031,
+            "pointer-size[960x720]": [
+                19,
+                38
+            ],
+            "border-x[960x720]": 19,
+            "line-height[1024x768]": 1.4655,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2143,
+            "pointer-size[1024x768]": [
+                21,
+                42
+            ],
+            "border-x[1024x768]": 21,
+            "line-height[1280x720]": 1.4808,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2031,
+            "pointer-size[1280x720]": [
+                19,
+                38
+            ],
+            "border-x[1280x720]": 19,
+            "line-height[1280x800]": 1.4655,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2143,
+            "pointer-size[1280x800]": [
+                21,
+                42
+            ],
+            "border-x[1280x800]": 21,
+            "line-height[1920x1080]": 1.4487,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.1771,
+            "pointer-size[1920x1080]": [
+                28,
+                56
+            ],
+            "border-x[1920x1080]": 28,
+            "line-height[1920x1152]": 1.4625,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.17,
+            "pointer-size[1920x1152]": [
+                29,
+                58
+            ],
+            "border-x[1920x1152]": 29,
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "right_pane",
+            "area": [
+                16,
+                0.035,
+                -16,
+                0.965
+            ],
+            "area[hires]": [
+                24,
+                0.035,
+                -24,
+                0.965
+            ],
+            "list": []
+        },
+        "#element:footer_bar": {},
+        "#element:button_bar": {}
+    },
+    "message_window": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "message_card": {
+            "area": [
+                0.04,
+                0.115,
+                0.96,
+                0.765
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
+        },
+        "message_text": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.07,
+                0.145,
+                0.93,
+                0.735
+            ],
+            "text-wrap": true,
+            "font-size": 17,
+            "font-color": "text_body",
+            "align": "bottomleft",
+            "text": ""
+        },
+        "progress_text": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.04,
+                0.785,
+                0.7,
+                0.835
+            ],
+            "text": "{system.progress_text}",
+            "font-size": 14,
+            "font-color": "text_muted",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "progress_bar_amount": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.5,
+                0.785,
+                0.96,
+                0.835
+            ],
+            "text": "{system.progress_amount}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midright"
+        },
+        "progress_bar": {
+            "area": [
+                0.04,
+                0.85,
+                0.96,
+                0.875
+            ],
+            "fill": "track",
+            "progress-fill": "accent",
+            "roundness": 5
+        }
+    },
+    "featured_ports_list": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "port_info": {
+            "area": [
+                0.055,
+                0.135,
+                0.945,
+                0.31
+            ],
+            "image": "{featured_ports.image}",
+            "image-mode": "fit"
+        },
+        "featured_port_description": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.06,
+                0.315,
+                0.94,
+                0.385
+            ],
+            "text": "{featured_ports.description}",
+            "font-size": 15,
+            "font-color": "text_body",
+            "align": "center",
+            "text-wrap": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 50,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "option_list": {
+            "font-size": 19,
+            "font-color": "text",
+            "select-color": "on_accent",
+            "select-fill": "accent",
+            "no-select-color": "text_faint",
+            "inactive-select-color": "on_accent",
+            "align": "center",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "slide",
+            "scroll-speed": 30,
+            "scroll-delay-start": 800,
+            "scroll-delay-end": 800,
+            "pointer": "pill_cap.png",
+            "pointer-fit": "row",
+            "pointer-attach": "list",
+            "pointer-align": [
+                "midleft",
+                "midright"
+            ],
+            "pointer-mirror": true,
+            "pointer-mirror-x": true,
+            "pointer-offset": [
+                0,
+                0
+            ],
+            "click-sound": "click",
+            "click-sound-volume": 64,
+            "line-height": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 1.2321,
+            "pointer-size": [
+                17,
+                34
+            ],
+            "border-x": 17,
+            "line-height[640x480]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,640x480]": 1.2321,
+            "pointer-size[640x480]": [
+                17,
+                34
+            ],
+            "border-x[640x480]": 17,
+            "line-height[30:17]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,30:17]": 1.2321,
+            "pointer-size[30:17]": [
+                17,
+                34
+            ],
+            "border-x[30:17]": 17,
+            "line-height[16:9]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,16:9]": 1.2237,
+            "pointer-size[16:9]": [
+                23,
+                46
+            ],
+            "border-x[16:9]": 23,
+            "line-height[3:2]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,3:2]": 1.1875,
+            "pointer-size[3:2]": [
+                14,
+                28
+            ],
+            "border-x[3:2]": 14,
+            "line-height[427:240]": 1.525,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,427:240]": 1.22,
+            "pointer-size[427:240]": [
+                15,
+                30
+            ],
+            "border-x[427:240]": 15,
+            "line-height[720x480]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x480]": 1.2321,
+            "pointer-size[720x480]": [
+                17,
+                34
+            ],
+            "border-x[720x480]": 17,
+            "line-height[720x720]": 1.5156,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,720x720]": 1.2125,
+            "pointer-size[720x720]": [
+                24,
+                48
+            ],
+            "border-x[720x720]": 24,
+            "line-height[960x720]": 1.5303,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,960x720]": 1.2317,
+            "pointer-size[960x720]": [
+                25,
+                50
+            ],
+            "border-x[960x720]": 25,
+            "line-height[1024x768]": 1.5139,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1024x768]": 1.2386,
+            "pointer-size[1024x768]": [
+                27,
+                54
+            ],
+            "border-x[1024x768]": 27,
+            "line-height[1280x720]": 1.5303,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x720]": 1.2317,
+            "pointer-size[1280x720]": [
+                25,
+                50
+            ],
+            "border-x[1280x720]": 25,
+            "line-height[1280x800]": 1.5139,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1280x800]": 1.2386,
+            "pointer-size[1280x800]": [
+                27,
+                54
+            ],
+            "border-x[1280x800]": 27,
+            "line-height[1920x1080]": 1.5204,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1080]": 1.2417,
+            "pointer-size[1920x1080]": [
+                37,
+                74
+            ],
+            "border-x[1920x1080]": 37,
+            "line-height[1920x1152]": 1.5,
+            "line-height[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR,1920x1152]": 1.2143,
+            "pointer-size[1920x1152]": [
+                38,
+                76
+            ],
+            "border-x[1920x1152]": 38,
+            "area": [
+                0.2,
+                0.43,
+                0.8,
+                0.895
+            ],
+            "list": []
+        }
+    },
+    "featured_ports": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "featured_image": {
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.2
+            ],
+            "image": "{featured_ports.image}",
+            "image-mode": "fit",
+            "image-align": "topleft"
+        },
+        "featured_port_description": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "left_pane",
+            "area": [
+                0.0,
+                0.21,
+                1.0,
+                0.3
+            ],
+            "text": "{featured_ports.description}",
+            "font-size": 12,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-wrap": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 50,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "#element:side_list:ports_list": {
+            "area": [
+                0.0,
+                0.32,
+                1.0,
+                1.0
+            ]
+        },
+        "port_card": {
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "parent": "right_pane"
+        },
+        "port_title": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.0,
+                1.0,
+                0.085
+            ],
+            "text": "{port_info.title}",
+            "font-size": 21,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "port_byline": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.088,
+                1.0,
+                0.135
+            ],
+            "text": "{if:port_info.porter}by {port_info.porter}{endif}",
+            "font-size": 13,
+            "font-color": "text_faint",
+            "align": "topleft",
+            "text-clip": true
+        },
+        "port_image": {
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.165,
+                0.6,
+                0.62
+            ],
+            "area[wide|3:2]": [
+                0.0,
+                0.165,
+                0.56,
+                0.7
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.15,
+                1.0,
+                0.5
+            ],
+            "image": "{port_info.image}",
+            "image-mode": "fit",
+            "image-align": "topleft"
+        },
+        "port_image_corners": {
+            "parent": "card_inner",
+            "area": [
+                0.0,
+                0.165,
+                0.6,
+                0.62
+            ],
+            "area[wide|3:2]": [
+                0.0,
+                0.165,
+                0.56,
+                0.7
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.15,
+                1.0,
+                0.5
+            ],
+            "image-align": "topleft",
+            "image": "shot_mask.png",
+            "image-mode": "fit",
+            "image-mod": "card_fill"
+        },
+        "port_status": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "parent": "card_inner",
+            "area": [
+                0.64,
+                0.165,
+                1.0,
+                0.23
+            ],
+            "area[wide|3:2]": [
+                0.6,
+                0.165,
+                1.0,
+                0.23
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.53,
+                0.5,
+                0.585
+            ],
+            "text": "{port_info.ready_to_run}",
+            "font-size": 15,
+            "font-color": "accent_text",
+            "align": "midleft",
+            "text-clip": true
+        },
+        "port_rule": {
+            "fill": "divider",
+            "area": [
+                0.64,
+                0.245,
+                1.0,
+                0.2475
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.245,
+                1.0,
+                0.2475
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.6,
+                1.0,
+                0.6025
+            ]
+        },
+        "spec_label_0": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "GENRE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.26,
+                1.0,
+                0.305
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.26,
+                1.0,
+                0.305
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.615,
+                0.3133,
+                0.655
+            ]
+        },
+        "spec_value_0": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.genres}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.305,
+                1.0,
+                0.36
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.305,
+                1.0,
+                0.36
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.655,
+                0.3133,
+                0.71
+            ]
+        },
+        "spec_label_1": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "SIZE",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.38,
+                1.0,
+                0.425
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.38,
+                1.0,
+                0.425
+            ],
+            "area[1:1|square]": [
+                0.3333,
+                0.615,
+                0.6467,
+                0.655
+            ]
+        },
+        "spec_value_1": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.install_size}{port_info.install_size}{else}{port_info.download_size}{endif}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.425,
+                1.0,
+                0.48
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.425,
+                1.0,
+                0.48
+            ],
+            "area[1:1|square]": [
+                0.3333,
+                0.655,
+                0.6467,
+                0.71
+            ]
+        },
+        "spec_label_2": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}RUNTIME{endif}",
+            "font-size": 11,
+            "font-color": "text_faint",
+            "align": "bottomleft",
+            "text-clip": true,
+            "area": [
+                0.64,
+                0.5,
+                1.0,
+                0.545
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.5,
+                1.0,
+                0.545
+            ],
+            "area[1:1|square]": [
+                0.6667,
+                0.615,
+                0.98,
+                0.655
+            ]
+        },
+        "spec_value_2": {
+            "font": "Roboto-Medium.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}",
+            "font-size": 14,
+            "font-color": "text",
+            "align": "midleft",
+            "text-clip": true,
+            "text-wrap": false,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "area": [
+                0.64,
+                0.545,
+                1.0,
+                0.6
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.6,
+                0.545,
+                1.0,
+                0.6
+            ],
+            "area[1:1|square]": [
+                0.6667,
+                0.655,
+                0.98,
+                0.71
+            ]
+        },
+        "port_rule_2": {
+            "fill": "divider",
+            "area": [
+                0.0,
+                0.655,
+                1.0,
+                0.6575
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.0,
+                0.72,
+                1.0,
+                0.7225
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.735,
+                1.0,
+                0.7375
+            ]
+        },
+        "port_desc": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "text": "{port_info.description}",
+            "font-size": 14,
+            "font-color": "text_body",
+            "align": "topleft",
+            "text-wrap": true,
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.0,
+                0.68,
+                1.0,
+                1.0
+            ],
+            "parent": "card_inner",
+            "area[wide|3:2]": [
+                0.0,
+                0.745,
+                1.0,
+                1.0
+            ],
+            "area[1:1|square]": [
+                0.0,
+                0.76,
+                1.0,
+                1.0
+            ]
+        }
+    },
+    "message_box": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "message_card": {
+            "area": [
+                0.08,
+                0.2,
+                0.92,
+                0.82
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ],
+            "area[3:2]": [
+                0.08,
+                0.18,
+                0.92,
+                0.86
+            ]
+        },
+        "message_text": {
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
+            "area": [
+                0.12,
+                0.25,
+                0.88,
+                0.77
+            ],
+            "area[3:2]": [
+                0.12,
+                0.23,
+                0.88,
+                0.81
+            ],
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500,
+            "font-size": 21,
+            "font-color": "text",
             "align": "center",
             "text": "",
             "text-wrap": true
-        },
-
-        "#element:button_bar": {}
+        }
     },
-
     "blank": {
         "#element:background": {},
-
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
         "#element:button_bar": {}
     },
-
     "selection_list": {
         "#element:background": {},
-
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
         "#element:option_list:selection_list": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "list": [],
-            "text-clip": true,
-            "align": "midleft"
-        },
-
-        "#element:button_bar": {}
+            "area": [
+                0.07,
+                0.135,
+                0.93,
+                0.905
+            ],
+            "list": []
+        }
     },
-
     "selection_list_description": {
         "#element:background": {},
-
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
         "#element:option_list:selection_list": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "list": [],
-            "text-clip": true,
-            "align": "midleft"
+            "area": [
+                0.07,
+                0.135,
+                0.93,
+                0.5
+            ],
+            "list": []
         },
-
+        "desc_card": {
+            "area": [
+                0.04,
+                0.53,
+                0.96,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
+        },
         "selection_description": {
-            "area": [ 0.0, 0.5, 1.0, 0.92 ],
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "text": "{selection_list.description}",
-            "font-color": "general_font",
-            "font-size": 20,
+            "font-size": 16,
+            "font-color": "text",
+            "align": "topleft",
             "text-wrap": true,
-
+            "text-clip": true,
             "autoscroll": "marquee",
-
-            "scroll-speed": 40,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500
-        },
-
-        "#element:button_bar": {}
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.07,
+                0.56,
+                0.93,
+                0.875
+            ]
+        }
     },
-
     "selection_list_images": {
         "#element:background": {},
-
-        "#element:option_list:selection_list": {
-            "area": [ 0.0, 0.0, 0.5, 1.0 ],
-            "list": [],
-            "text-clip": true,
-            "align": "midleft"
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "image_card": {
+            "area": [
+                0.53,
+                0.115,
+                0.96,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
         },
-
         "selection_image": {
-            "area": [ 0.5, 0.0, 1.0, 0.92 ],
-            "image": "{selection_list.image}"
+            "area": [
+                0.55,
+                0.145,
+                0.94,
+                0.875
+            ],
+            "image": "{selection_list.image}",
+            "image-mode": "fit"
         },
-
-        "#element:button_bar": {}
+        "#element:option_list:selection_list": {
+            "area": [
+                0.07,
+                0.135,
+                0.5,
+                0.905
+            ],
+            "list": []
+        }
     },
-
     "selection_list_description_images": {
         "#element:background": {},
-
-        "#element:option_list:selection_list": {
-            "area": [ 0.0, 0.0, 0.5, 0.5 ],
-            "list": [],
-            "text-clip": true,
-            "align": "midleft"
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "image_card": {
+            "area": [
+                0.53,
+                0.115,
+                0.96,
+                0.5
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
         },
-
         "selection_image": {
-            "area": [ 0.5, 0.0, 1.0, 0.5 ],
-            "image": "{selection_list.image}"
+            "area": [
+                0.55,
+                0.145,
+                0.94,
+                0.47
+            ],
+            "image": "{selection_list.image}",
+            "image-mode": "fit"
         },
-
+        "#element:option_list:selection_list": {
+            "area": [
+                0.07,
+                0.135,
+                0.5,
+                0.5
+            ],
+            "list": []
+        },
+        "desc_card": {
+            "area": [
+                0.04,
+                0.53,
+                0.96,
+                0.905
+            ],
+            "image": "card",
+            "patch": [
+                14,
+                14,
+                14,
+                14
+            ],
+            "image[hires]": "card_hi",
+            "patch[hires]": [
+                20,
+                20,
+                20,
+                20
+            ]
+        },
         "selection_description": {
-            "area": [ 0.0, 0.5, 1.0, 0.92 ],
+            "font": "Roboto-Regular.ttf",
+            "font[zh_TW]": "NotoSansTC-Regular.ttf",
+            "font[zh_CN]": "NotoSansSC-Regular.ttf",
+            "font[zh_HK]": "NotoSansHK-Regular.ttf",
+            "font[ko_KR]": "NotoSansKR-Regular.ttf",
+            "font[ja_JP]": "NotoSansJP-Regular.ttf",
             "text": "{selection_list.description}",
-
-            "font-color": "general_font",
-            "font-size": 20,
+            "font-size": 16,
+            "font-color": "text",
+            "align": "topleft",
             "text-wrap": true,
-
+            "text-clip": true,
             "autoscroll": "marquee",
-
-            "scroll-speed": 40,
-            "scroll-delay-start": 1500,
-            "scroll-delay-end": 1500
-        },
-
-        "#element:button_bar": {}
+            "scroll-speed": 60,
+            "scroll-delay-start": 2000,
+            "scroll-delay-end": 2000,
+            "area": [
+                0.07,
+                0.56,
+                0.93,
+                0.875
+            ]
+        }
     }
 }

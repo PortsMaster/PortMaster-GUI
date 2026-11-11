@@ -51,6 +51,20 @@ def test_another_depth_is_a_popup():
     assert layout.problems(regions, (640, 480)) == []
 
 
+def test_a_mask_in_the_same_box_is_decoration():
+    regions = [
+        region("port_image", [300, 40, 300, 225], [['image', 300, 40, 300, 225, 1.0]]),
+        region("port_image_corners", [300, 40, 300, 225], [['image', 300, 40, 300, 225, 1.0]]),
+        ]
+    assert layout.problems(regions, (640, 480)) == []
+    ## Text on text in the same box still collides.
+    regions = [
+        region("progress", [20, 400, 600, 20], [['text', 20, 400, 300, 20, 1.0]]),
+        region("amount", [20, 400, 600, 20], [['text', 250, 400, 100, 20, 1.0]]),
+        ]
+    assert kinds(layout.problems(regions, (640, 480))) == ["clash"]
+
+
 def test_hidden_or_empty_regions_dont_count():
     regions = [
         region("a", [0, 0, 640, 480], [['text', 0, 0, 640, 480, 1.0]]),

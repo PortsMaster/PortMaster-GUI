@@ -123,7 +123,7 @@ def test_theme_names_odd_themes(data):
 def test_schema_is_json(tmp_path):
     whole = schema.schema(PM_DIR / "pylibs" / "default_theme")
     assert json.loads(json.dumps(whole)) == whole
-    assert "Light Mode" in whole['names']['schemes'] and "general_font" in whole['names']['colors']
+    assert "Light Mode" in whole['names']['schemes'] and "accent" in whole['names']['colors']
     assert "#info" in whole['top'] and "default-scheme" in whole['info']
     ## No theme: still everything but the theme's own names.
     assert schema.schema()['names']['colors'] == []
@@ -159,7 +159,6 @@ def test_default_theme_keys_are_known():
     assert [problem for problem in problems if problem not in known] == []
 
 
-@pytest.mark.xfail(strict=True, reason="the default theme has barwidth (bar-width) and list-spacer, which PortMaster ignores")
 def test_default_theme_has_no_unknown_keys():
     data = json.loads((PM_DIR / "pylibs" / "default_theme" / "theme.json").read_text(encoding="utf-8"))
     assert region_key_problems(data) == []

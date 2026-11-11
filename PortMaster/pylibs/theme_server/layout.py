@@ -4,7 +4,8 @@ A render records what every region drew (shots.DrawnRecorder): each piece of tex
 scale it was drawn at, and each image. Here that becomes a list of problems:
 
   - clash: content of two regions of the same screen on top of each other (a popup over
-    the screen below it is fine: that's another depth)
+    the screen below it is fine: that's another depth, and so is an image laid over another
+    region in the very same box, a mask or a frame)
   - off screen: content past the edge of the screen
   - outside its box: content past the edge of its own region's area
   - scaled text (a warning): text drawn smaller or bigger than its font size, because the
@@ -63,9 +64,15 @@ def problems(regions, size):
             if first.get('depth') != second.get('depth'):
                 continue
 
+            ## Two regions in the very same box, one of them drawing an image: a mask or frame
+            ## laid over the other on purpose (rounded corners over a screenshot).
+            same_box = first.get('rect') is not None and first.get('rect') == second.get('rect')
+
             clash = None
             for a in first['drawn']:
                 for b in second['drawn']:
+                    if same_box and 'image' in (a[0], b[0]):
+                        continue
                     overlap = _overlap(a[1:5], b[1:5])
                     if overlap is not None and (clash is None or overlap[0] * overlap[1] > clash[1][0] * clash[1][1]):
                         clash = ((a, b), overlap)

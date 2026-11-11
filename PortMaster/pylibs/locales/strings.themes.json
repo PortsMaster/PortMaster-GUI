@@ -1,46 +1,48 @@
 {
+  "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}": [
+    "Doom/theme.json:337",
+    "Fallout/theme.json:550",
+    "Stardew/theme.json:374",
+    "ff_VII/theme.json:257"
+  ],
+  "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \nFilters: {ports_list.filters}{endif}": [
+    "Doom/theme.json:444",
+    "Fallout/theme.json:611",
+    "Stardew/theme.json:475",
+    "ff_VII/theme.json:363"
+  ],
+  "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}      Filters: {ports_list.filters}{endif}": [
+    "Doom/theme.json:445",
+    "Fallout/theme.json:612",
+    "Stardew/theme.json:476",
+    "ff_VII/theme.json:364"
+  ],
+  "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\nInstruction: {port_info.instructions}": [
+    "Doom/theme.json:522",
+    "Fallout/theme.json:684",
+    "Stardew/theme.json:541",
+    "Zelda/theme.json:485",
+    "ff_VII/theme.json:435",
+    "portmaster_classic/theme.json:444"
+  ],
   "Time: {system.time_24hr}\nBattery: {system.battery_level}\nSpace: {system.free_space} free": [
     "Doom/theme.json:586"
   ],
-  "Genres: {port_info.genres}    Download Size: {port_info.download_size}{if:port_info.runtime}    Runtime: {port_info.runtime} ({port_info.runtime_status}){endif}": [
-    "Fallout/theme.json:550",
-    "Doom/theme.json:337",
-    "ff_VII/theme.json:257",
-    "Stardew/theme.json:374"
-  ],
-  "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports}  \nFilters: {ports_list.filters}{endif}": [
-    "Fallout/theme.json:611",
-    "Doom/theme.json:444",
-    "ff_VII/theme.json:363",
-    "Stardew/theme.json:475"
-  ],
-  "Free Space: {system.free_space}\n\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\n\nInstruction: {port_info.instructions}": [
-    "Fallout/theme.json:684",
-    "Doom/theme.json:522",
-    "ff_VII/theme.json:435",
-    "Zelda/theme.json:485",
-    "Stardew/theme.json:541",
-    "default_theme/theme.json:424"
+  "Creator: {theme_info.creator}\nStatus: {theme_info.status}": [
+    "Doom/theme.json:741",
+    "Fallout/theme.json:831",
+    "Stardew/theme.json:739",
+    "Zelda/theme.json:633",
+    "ff_VII/theme.json:612",
+    "portmaster_classic/theme.json:632"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total\nTime: {system.time_24hr}\nBattery: {system.battery_level}": [
     "Fallout/theme.json:726"
   ],
-  "IP: {system.ip_address}": [
-    "Fallout/theme.json:762",
-    "Doom/theme.json:644",
-    "ff_VII/theme.json:523",
-    "Zelda/theme.json:551",
-    "Stardew/theme.json:651",
-    "default_theme/theme.json:568",
-    "default_theme/theme.json:568"
-  ],
-  "Creator: {theme_info.creator}\nStatus: {theme_info.status}": [
-    "Fallout/theme.json:831",
-    "Doom/theme.json:741",
-    "ff_VII/theme.json:612",
-    "Zelda/theme.json:633",
-    "Stardew/theme.json:739",
-    "default_theme/theme.json:618"
+  "Time: {system.time_24hr}\nCFW: {system.cfw_name} ({system.cfw_version})\nDevice: {system.device_name}\nBattery: {system.battery_level}": [
+    "Stardew/theme.json:605",
+    "ff_VII/theme.json:480",
+    "portmaster_classic/theme.json:529"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free": [
     "Stardew/theme.json:613"
@@ -54,27 +56,109 @@
   "Time: {system.time_24hr}      Battery: {system.battery_level}": [
     "Zelda/theme.json:522"
   ],
+  "Time: {system.time_24hr}\n\nBattery: {system.battery_level}": [
+    "Zelda/theme.json:523"
+  ],
   "Title: {port_info.title}\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\nDescription: {port_info.description}": [
     "basic_theme/theme.json:77"
   ],
-  "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \nFilters: {ports_list.filters}{endif}": [
-    "default_theme/theme.json:327"
+  "SIZE": [
+    "default_theme/theme.json:1015",
+    "default_theme/theme.json:1015"
   ],
-  "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}": [
-    "default_theme/theme.json:354",
-    "default_theme/theme.json:354"
+  "{if:port_info.install_size}{port_info.install_size}{else}{port_info.download_size}{endif}": [
+    "default_theme/theme.json:1047",
+    "default_theme/theme.json:1047"
   ],
-  "{port_links.name}\n{port_links.url}": [
-    "default_theme/theme.json:481"
+  "{if:port_info.runtime}RUNTIME{endif}": [
+    "default_theme/theme.json:1084",
+    "default_theme/theme.json:1084",
+    "default_theme/theme.json:1084"
   ],
-  "Time: {system.time_24hr}\nCFW: {system.cfw_name} ({system.cfw_version})\nDevice: {system.device_name}\nBattery: {system.battery_level}": [
-    "ff_VII/theme.json:480",
-    "Stardew/theme.json:605",
-    "default_theme/theme.json:508"
+  "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}": [
+    "default_theme/theme.json:1116",
+    "default_theme/theme.json:1116",
+    "default_theme/theme.json:1116"
+  ],
+  "DOWNLOAD SIZE": [
+    "default_theme/theme.json:1557",
+    "default_theme/theme.json:1557"
+  ],
+  "FREE SPACE": [
+    "default_theme/theme.json:1624",
+    "default_theme/theme.json:1624"
+  ],
+  "INSTRUCTIONS": [
+    "default_theme/theme.json:1758"
+  ],
+  "Links: {port_links.count}": [
+    "default_theme/theme.json:1865"
+  ],
+  "BATTERY": [
+    "default_theme/theme.json:2157"
+  ],
+  "DEVICE": [
+    "default_theme/theme.json:2229"
+  ],
+  "{system.cfw_name} {system.cfw_version}": [
+    "default_theme/theme.json:2271"
+  ],
+  "FIRMWARE": [
+    "default_theme/theme.json:2301"
+  ],
+  "PortMaster {system.portmaster_version}": [
+    "default_theme/theme.json:2320"
+  ],
+  "IP: {system.ip_address}": [
+    "default_theme/theme.json:2530",
+    "default_theme/theme.json:2530",
+    "Doom/theme.json:644",
+    "Fallout/theme.json:762",
+    "Stardew/theme.json:651",
+    "Zelda/theme.json:551",
+    "ff_VII/theme.json:523",
+    "portmaster_classic/theme.json:589",
+    "portmaster_classic/theme.json:589"
+  ],
+  "{if:theme_info.creator}by {theme_info.creator}  ·  {endif}{theme_info.status}": [
+    "default_theme/theme.json:2623"
+  ],
+  "INSTALL SIZE": [
+    "default_theme/theme.json:3052"
+  ],
+  "USED BY": [
+    "default_theme/theme.json:3095"
+  ],
+  "Filters": [
+    "default_theme/theme.json:3195"
+  ],
+  "{system.battery_level}    {system.time_24hr}": [
+    "default_theme/theme.json:389"
+  ],
+  "PortMaster": [
+    "default_theme/theme.json:4"
+  ],
+  "{ports_list.filter_ports} games": [
+    "default_theme/theme.json:738",
+    "jimmyhat999_grid_dark/theme.json:239",
+    "jimmyhat999_grid_wii/theme.json:239"
+  ],
+  "{if:!ports_list.total_ports::ports_list.filter_ports}{ports_list.filters}{else}All ports{endif}": [
+    "default_theme/theme.json:758"
+  ],
+  "{if:port_info.porter}by {port_info.porter}{endif}": [
+    "default_theme/theme.json:830",
+    "default_theme/theme.json:830",
+    "default_theme/theme.json:830"
+  ],
+  "GENRE": [
+    "default_theme/theme.json:946",
+    "default_theme/theme.json:946",
+    "default_theme/theme.json:946"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total": [
     "ff_VII/theme.json:488",
-    "default_theme/theme.json:516"
+    "portmaster_classic/theme.json:537"
   ],
   "• Porter: {port_info.porter}\n• Genres: {port_info.genres}\n• Description: {port_info.description}": [
     "hiviz/theme.json:267"
@@ -90,11 +174,7 @@
   ],
   "Name: {runtime_info.name}\nStatus: {runtime_info.status}\nPorts: {runtime_info.ports}\nDownload Size: {runtime_info.download_size}\nInstall Size: {runtime_info.disk_size}": [
     "hiviz/theme.json:526",
-    "default_theme/theme.json:711"
-  ],
-  "{ports_list.filter_ports} games": [
-    "jimmyhat999_grid_dark/theme.json:239",
-    "jimmyhat999_grid_wii/theme.json:239"
+    "portmaster_classic/theme.json:721"
   ],
   "{if:ports_list.position}{ports_list.position} / {endif}{ports_list.filter_ports}": [
     "jimmyhat999_grid_dark/theme.json:248",
@@ -123,5 +203,15 @@
   "{if:runtime_info.name}Status: {runtime_info.status}\nIn use: {runtime_info.in_use}\nDownload: {runtime_info.download_size}{if:runtime_info.disk_size}\nOn disk: {runtime_info.disk_size}{endif}{if:runtime_info.ports}\n\nUsed by: {runtime_info.ports}{endif}{endif}": [
     "jimmyhat999_grid_dark/theme.json:492",
     "jimmyhat999_grid_wii/theme.json:492"
+  ],
+  "{if:!ports_list.total_ports::ports_list.filter_ports}Available Ports: {ports_list.filter_ports} / {ports_list.total_ports} \nFilters: {ports_list.filters}{endif}": [
+    "portmaster_classic/theme.json:358"
+  ],
+  "Genres: {port_info.genres}\n{if:port_info.install_size}Installed Size: {port_info.install_size}{else}Download Size: {port_info.download_size}{endif}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}": [
+    "portmaster_classic/theme.json:378",
+    "portmaster_classic/theme.json:378"
+  ],
+  "{port_links.name}\n{port_links.url}": [
+    "portmaster_classic/theme.json:499"
   ]
 }

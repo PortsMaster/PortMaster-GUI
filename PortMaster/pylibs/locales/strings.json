@@ -27,7 +27,6 @@
   "Download validation failed.": [
     "pylibs/harbourmaster/hm_info.py:146",
     "pylibs/harbourmaster/hm_info.py:168",
-    "pylibs/harbourmaster/source/__init__.py:69",
     "pylibs/harbourmaster/util/net.py:148"
   ],
   "Unable to download file.": [
@@ -217,10 +216,10 @@
     "pylibs/harbourmaster/source/__init__.py:38"
   ],
   "Unable to download verification file.": [
-    "pylibs/harbourmaster/source/__init__.py:60"
+    "pylibs/harbourmaster/source/__init__.py:66"
   ],
   "Unable to download non zip files.": [
-    "pylibs/harbourmaster/source/__init__.py:79"
+    "pylibs/harbourmaster/source/__init__.py:77"
   ],
   "Cache out of date.": [
     "pylibs/harbourmaster/source/base.py:34"
@@ -233,19 +232,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:588"
+    "pylibs/pugwash/theme.py:590"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:598"
+    "pylibs/pugwash/theme.py:600"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:621"
+    "pylibs/pugwash/theme.py:623"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:627"
+    "pylibs/pugwash/theme.py:629"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -1068,10 +1067,10 @@
     "pylibs/pugwash/scenes/themes.py:138"
   ],
   "Please wait.": [
-    "pylibs/pugwash/theme.py:358"
+    "pylibs/pugwash/theme.py:360"
   ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:595"
+    "pylibs/pugwash/theme.py:597"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"
