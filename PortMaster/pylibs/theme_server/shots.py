@@ -446,6 +446,16 @@ def scene_regions(gui, drawn=None):
     return found
 
 
+## What a render shows for the time and the disk, whenever and wherever it's made.
+FIXED_SYSTEM_DATA = {
+    "system.time_24hr": "12:34",
+    "system.time_12hr": "12:34 PM",
+    "system.free_space": "21.50 GB",
+    "system.used_space": "7.80 GB",
+    "system.total_space": "29.30 GB",
+    }
+
+
 class Renderer:
     def __init__(self, work, theme_name, scheme=None, tools_dir=None):
         """tools_dir: the HarbourMaster's (its ports and config), when it isn't
@@ -472,6 +482,16 @@ class Renderer:
         ## No sounds or music in a screenshot.
         self.gui.sounds.sound_is_disabled = True
         self.gui.sounds.music_is_disabled = True
+        ## The same clock and disk in every render: a screen drawn twice draws the same
+        ## (the time changing between them made renders differ), and exports can be compared.
+        self.gui.update_system_data = self.fixed_system_data
+        self.fixed_system_data()
+
+    def fixed_system_data(self):
+        """pugwash's system.* tags (and its translated "N/A" battery), with a fixed time and disk."""
+        PortMasterGUI.update_system_data(self.gui)
+        for key, value in FIXED_SYSTEM_DATA.items():
+            self.gui.set_data(key, value)
 
     def load(self, theme_name, scheme, lang):
         """Another theme, colour scheme or language (or the same, saved again): reloaded in
