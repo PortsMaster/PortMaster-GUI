@@ -198,7 +198,7 @@ def test_screen_capabilities_shell_and_theme_server_agree(width, height):
 ## while its DEVICE_INFO_VERSION matches (device_info.txt's fast path and hardware.py both reuse
 ## it), so a change without a new version never reaches a device that ran the old one: 0.2.6's
 ## new screen rules didn't, and the Retroid Pocket Classic stayed "wide".
-DEVICE_INFO_HASH = ("0.2.7", "f450a0946c2314c7")
+DEVICE_INFO_HASH = ("0.2.8", "d9262aeab60d98c3")
 
 
 def test_device_info_changes_come_with_a_new_version():
@@ -213,3 +213,24 @@ def test_device_info_changes_come_with_a_new_version():
             f"cached device_info_*.env until it changes), then set DEVICE_INFO_HASH = (\"<new version>\", \"{digest}\")")
     else:
         assert False, f"DEVICE_INFO_VERSION is now {version}: set DEVICE_INFO_HASH = (\"{version}\", \"{digest}\")"
+
+
+@pytest.mark.parametrize("shell", SHELLS, ids=["bash", "busybox"])
+@pytest.mark.parametrize("machine, expected", [
+    ## Mainline arm64: the SMCCC soc_id driver names the board, so the SoC comes from compatible.
+    ("Anbernic RG CubeXX", "h700"),
+    ## A soc0 driver that names the SoC itself.
+    ("RK3566", "RK3566"),
+    ])
+def test_cpu_from_soc0_or_compatible(shell, machine, expected, tmp_path):
+    command = shell_or_skip(shell)
+    (tmp_path / "sys" / "devices" / "soc0").mkdir(parents=True)
+    (tmp_path / "sys" / "devices" / "soc0" / "machine").write_text(machine + "\n")
+    (tmp_path / "proc" / "device-tree").mkdir(parents=True)
+    (tmp_path / "proc" / "device-tree" / "model").write_bytes(b"Anbernic RG CubeXX\0")
+    (tmp_path / "proc" / "device-tree" / "compatible").write_bytes(b"anbernic,rgcubexx\0allwinner,sun50i-h700\0")
+
+    text = (PM_DIR / "device_info.txt").read_text()
+    block = text[text.index("detect_dynamic_cpu() {"):text.index('export DEVICE_CPU="$(detect_dynamic_cpu)"')]
+    script = re.sub(r'(?<=[\s"])/(proc|sys)/', lambda m: f"{tmp_path}/{m.group(1)}/", block)
+    assert run_fragment(command, script + '\ndetect_dynamic_cpu\n', tmp_path) == expected
