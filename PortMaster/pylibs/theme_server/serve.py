@@ -412,6 +412,9 @@ class RenderPool:
         ## No scheme is the theme's default one, by name: the same as the page asks for. A
         ## layout the theme doesn't have (another theme's, from the page) is its default too.
         info = self.themes.info(theme_id, theme_dir)
+        if info['error']:
+            ## Said once, plainly, not as the renderer's traceback (the page's editor shows where).
+            raise WorkerError(f"theme.json has a mistake in it: {info['error']}")
         scheme = scheme or info['default_scheme']
         if layout not in info['layouts']:
             layout = info['default_layout']

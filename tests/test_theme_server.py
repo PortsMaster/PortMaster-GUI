@@ -257,6 +257,20 @@ def test_one_renderer_switches_theme_scheme_and_language(pool):
         fresh.stop()
 
 
+def test_broken_theme_json_is_one_plain_error(tmp_path):
+    ## Not a renderer started for it, failing with a traceback in the page's preview.
+    (tmp_path / "broken").mkdir()
+    (tmp_path / "broken" / "theme.json").write_text('{ "#info": { "name": "x" "creator": "y" } }')
+    pool = serve.RenderPool(serve.Themes(tmp_path), tmp_path / "ports", tmp_path / "work")
+    try:
+        with pytest.raises(serve.WorkerError) as error:
+            pool.render("broken", None, "640x480", "en_US", "main_menu")
+        assert str(error.value).startswith("theme.json has a mistake in it: Expecting ','")
+        assert "Traceback" not in str(error.value) and pool.workers == {}
+    finally:
+        pool.stop()
+
+
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_one_renderer_switches_layout(pool, tmp_path):
