@@ -135,6 +135,21 @@ def test_saved_scheme_the_theme_has_not(app, tmp_path):
     app.reload_theme(then=options(app))
 
 
+def test_font_override_per_language(app):
+    ## The default theme names its CJK fonts once, as #base "font-override[lang]": in Japanese
+    ## every region draws in Noto Sans JP, also those with a font of their own (Roboto Medium).
+    from pugwash.scenes import PortsListScene
+    ports = [('option', lambda gui: PortsListScene(gui, {'mode': 'all'}))]
+    app.reload_language("ja_JP", then=ports)
+    try:
+        fonts = {region.font for region in app.scenes[-1][1][-1].regions if region.font}
+        assert fonts == {"NotoSansJP-Regular.ttf"}
+    finally:
+        app.reload_language("en_US", then=ports)
+    fonts = {region.font for region in app.scenes[-1][1][-1].regions if region.font}
+    assert "Roboto-Medium.ttf" in fonts and "NotoSansJP-Regular.ttf" not in fonts
+
+
 def test_language_reload_redoes_translated_status(app, monkeypatch):
     ## system.battery_level is "N/A" in the language it was set in; a new language redoes it
     ## at once, not at the next status update.

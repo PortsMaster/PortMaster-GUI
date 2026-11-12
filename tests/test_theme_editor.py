@@ -105,17 +105,19 @@ def test_theme_names():
     data = {
         "#pallet": {"top": [1, 2, 3]},
         "#resources": {"buttons.png": {"atlas": {"_A": [0, 0, 1, 1]}}, "click.ogg": {"name": "click"}},
-        "#schemes": {"#base": {"#pallet": {"base_color": "#fff"}}, "Dark": {"#pallet": {"dark": "#000"}}, "Light": {}},
+        "#schemes": {"#base": {"#pallet": {"base_color": "#fff"}}, "Dark": {"#pallet": {"dark": "#000"}, "#styles": {"dim": {}}}, "Light": {}},
         "#elements": {"left_pane": {}, "right_pane": {}},
+        "#styles": {"caption": {}, "label[hires]": {}},
         }
     names = schema.theme_names(data)
     assert names['colors'] == ["base_color", "dark", "top"]
     assert names['resources'] == ["_A", "buttons.png", "click", "click.ogg"]
     assert names['elements'] == ["left_pane", "right_pane"]
+    assert names['styles'] == ["caption", "dim", "label"]
     assert names['schemes'] == ["Dark", "Light"]
 
 
-@pytest.mark.parametrize("data", [{}, {"#schemes": [1]}, {"#pallet": "x", "#resources": {"a": 5}, "#elements": None}])
+@pytest.mark.parametrize("data", [{}, {"#schemes": [1]}, {"#pallet": "x", "#resources": {"a": 5}, "#elements": None, "#styles": [1]}])
 def test_theme_names_odd_themes(data):
     schema.theme_names(data)
 
@@ -125,6 +127,7 @@ def test_schema_is_json(tmp_path):
     assert json.loads(json.dumps(whole)) == whole
     assert "Light Mode" in whole['names']['schemes'] and "accent" in whole['names']['colors']
     assert "#info" in whole['top'] and "default-scheme" in whole['info']
+    assert "#styles" in whole['top'] and whole['keys']['style'] == {'type': "style"}
     ## No theme: still everything but the theme's own names.
     assert schema.schema()['names']['colors'] == []
 
@@ -440,3 +443,35 @@ def test_copy_with_bad_text(editor, themes):
         editor.copy("mine", "Bad", text="{ nope")
     assert error.value.status == 400
     assert themes.get("Bad") is None
+
+
+################################################################################
+## The page's Tidy button (editor.js tidyJSON), run with node where there is one
+def run_tidy(tmp_path, text):
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("needs node")
+    js = (PM_DIR / "pylibs" / "theme_server" / "static" / "editor.js").read_text(encoding="utf-8")
+    start, end = js.index("function tidyJSON(text)"), js.index('$("eformat").onclick')
+    script = tmp_path / "tidy.js"
+    script.write_text(js[start:end] + '\nconst fs = require("fs");\n'
+                      'process.stdout.write(tidyJSON(fs.readFileSync(process.argv[2], "utf8")));\n', encoding="utf-8")
+    source = tmp_path / "in.json"
+    source.write_text(text, encoding="utf-8")
+    return subprocess.run([node, str(script), str(source)], stdout=subprocess.PIPE, check=True).stdout.decode("utf-8")
+
+
+def test_tidy_is_the_default_themes_format(tmp_path):
+    ## From an expanded file (an editor's, json.dumps(indent=4)): the default theme as it is.
+    text = (PM_DIR / "pylibs" / "default_theme" / "theme.json").read_text(encoding="utf-8")
+    expanded = json.dumps(json.loads(text), indent=4, ensure_ascii=False)
+    assert run_tidy(tmp_path, expanded) + "\n" == text
+
+
+def test_tidy_keeps_values_as_written(tmp_path):
+    ## 1.0 stays 1.0: in an area it's the whole width, 1 is a pixel.
+    out = run_tidy(tmp_path, '{"area": [0.0, 1.0,\n 1, -5], "t": "a\\"b", "e": {}, "l": [[1], {"x": 2}]}')
+    assert '"area": [ 0.0, 1.0, 1, -5 ]' in out and '"t": "a\\"b"' in out and '"e": {}' in out
+    assert json.loads(out) == {"area": [0.0, 1.0, 1, -5], "t": 'a"b', "e": {}, "l": [[1], {"x": 2}]}

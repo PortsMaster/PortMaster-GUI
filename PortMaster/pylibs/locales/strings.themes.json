@@ -62,30 +62,9 @@
   "Title: {port_info.title}\nPorter: {port_info.porter}\nGenres: {port_info.genres}\nDownload Size: {port_info.download_size}{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){endif}\nDescription: {port_info.description}": [
     "basic_theme/theme.json:77"
   ],
-  "INSTRUCTIONS": [
-    "default_theme/theme.json:1042"
-  ],
-  "Links: {port_links.count}": [
-    "default_theme/theme.json:1109"
-  ],
-  "BATTERY": [
-    "default_theme/theme.json:1276"
-  ],
-  "DEVICE": [
-    "default_theme/theme.json:1318"
-  ],
-  "{system.cfw_name} {system.cfw_version}": [
-    "default_theme/theme.json:1340"
-  ],
-  "FIRMWARE": [
-    "default_theme/theme.json:1360"
-  ],
-  "PortMaster {system.portmaster_version}": [
-    "default_theme/theme.json:1369"
-  ],
   "IP: {system.ip_address}": [
-    "default_theme/theme.json:1491",
-    "default_theme/theme.json:1491",
+    "default_theme/theme.json:1035",
+    "default_theme/theme.json:1035",
     "Doom/theme.json:644",
     "Fallout/theme.json:763",
     "Stardew/theme.json:653",
@@ -95,66 +74,87 @@
     "portmaster_classic/theme.json:590"
   ],
   "{if:theme_info.creator}by {theme_info.creator}  ·  {endif}{theme_info.status}": [
-    "default_theme/theme.json:1554"
+    "default_theme/theme.json:1080"
   ],
   "INSTALL SIZE": [
-    "default_theme/theme.json:1830"
+    "default_theme/theme.json:1229"
   ],
   "USED BY": [
-    "default_theme/theme.json:1863"
+    "default_theme/theme.json:1248"
   ],
   "Filters": [
-    "default_theme/theme.json:1933"
+    "default_theme/theme.json:1302"
   ],
   "{system.battery_level}    {system.time_24hr}": [
-    "default_theme/theme.json:241"
-  ],
-  "PortMaster": [
-    "default_theme/theme.json:4"
+    "default_theme/theme.json:252"
   ],
   "{ports_list.filter_ports} games": [
-    "default_theme/theme.json:459",
+    "default_theme/theme.json:342",
     "jimmyhat999_grid_dark/theme.json:239",
     "jimmyhat999_grid_wii/theme.json:239"
   ],
   "{if:!ports_list.total_ports::ports_list.filter_ports}{ports_list.filters}{else}All ports{endif}": [
-    "default_theme/theme.json:475"
+    "default_theme/theme.json:352"
+  ],
+  "PortMaster": [
+    "default_theme/theme.json:4"
   ],
   "{if:port_info.porter}by {port_info.porter}{endif}": [
-    "default_theme/theme.json:538",
-    "default_theme/theme.json:538",
-    "default_theme/theme.json:538"
+    "default_theme/theme.json:401",
+    "default_theme/theme.json:401",
+    "default_theme/theme.json:401"
   ],
   "GENRE": [
-    "default_theme/theme.json:603",
-    "default_theme/theme.json:603",
-    "default_theme/theme.json:603"
+    "default_theme/theme.json:458",
+    "default_theme/theme.json:458",
+    "default_theme/theme.json:458"
   ],
   "SIZE": [
-    "default_theme/theme.json:648",
-    "default_theme/theme.json:648"
+    "default_theme/theme.json:489",
+    "default_theme/theme.json:489"
   ],
   "{if:port_info.install_size}{port_info.install_size}{else}{port_info.download_size}{endif}": [
-    "default_theme/theme.json:668",
-    "default_theme/theme.json:668"
+    "default_theme/theme.json:502",
+    "default_theme/theme.json:502"
   ],
   "{if:port_info.runtime}RUNTIME{endif}": [
-    "default_theme/theme.json:693",
-    "default_theme/theme.json:693",
-    "default_theme/theme.json:693"
+    "default_theme/theme.json:520",
+    "default_theme/theme.json:520",
+    "default_theme/theme.json:520"
   ],
   "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}": [
-    "default_theme/theme.json:713",
-    "default_theme/theme.json:713",
-    "default_theme/theme.json:713"
+    "default_theme/theme.json:533",
+    "default_theme/theme.json:533",
+    "default_theme/theme.json:533"
   ],
   "DOWNLOAD SIZE": [
-    "default_theme/theme.json:931",
-    "default_theme/theme.json:931"
+    "default_theme/theme.json:694",
+    "default_theme/theme.json:694"
   ],
   "FREE SPACE": [
-    "default_theme/theme.json:968",
-    "default_theme/theme.json:968"
+    "default_theme/theme.json:717",
+    "default_theme/theme.json:717"
+  ],
+  "INSTRUCTIONS": [
+    "default_theme/theme.json:763"
+  ],
+  "Links: {port_links.count}": [
+    "default_theme/theme.json:808"
+  ],
+  "BATTERY": [
+    "default_theme/theme.json:933"
+  ],
+  "DEVICE": [
+    "default_theme/theme.json:962"
+  ],
+  "{system.cfw_name} {system.cfw_version}": [
+    "default_theme/theme.json:978"
+  ],
+  "FIRMWARE": [
+    "default_theme/theme.json:991"
+  ],
+  "PortMaster {system.portmaster_version}": [
+    "default_theme/theme.json:995"
   ],
   "PM: {system.portmaster_version}\nHM: {system.harbourmaster_version}\nSpace: {system.free_space} free / {system.total_space} total": [
     "ff_VII/theme.json:488",

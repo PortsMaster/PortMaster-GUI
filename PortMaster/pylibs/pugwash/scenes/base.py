@@ -20,7 +20,8 @@ def plain_font():
     try:
         with open(str(PYLIB_PATH / "default_theme" / "theme.json"), encoding="utf-8") as fh:
             base = json.load(fh).get("#base", {})
-        font = base.get(f"font[{lang.CURRENT_LANG}]") or base.get("font") or font
+        font = (base.get(f"font-override[{lang.CURRENT_LANG}]") or base.get(f"font[{lang.CURRENT_LANG}]")
+                or base.get("font") or font)
     except (OSError, ValueError, AttributeError):
         pass
 

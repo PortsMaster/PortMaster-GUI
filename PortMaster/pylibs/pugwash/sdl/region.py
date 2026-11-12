@@ -185,7 +185,12 @@ class Region:
         self.pointer_fit = self._verify_option('pointer-fit', ['row'], optional=True)
 
         # TODO figure out how to use default/system fonts
+        ## "font-override" (usually per language in #base: "font-override[ja_JP]") wins over every
+        ## region's own font: a theme names its language fonts once, not in each region with a font.
         self.font = self._verify_file('font', optional=True)
+        font_override = self._verify_file('font-override', optional=True)
+        if font_override is not None:
+            self.font = font_override
         self.fontsize = self._verify_int('font-size', 30)
         self.fontsize *= self._verify_scale('font-scale', 1.0)
         self.font_color = self._verify_color('font-color', (255, 255, 255))
@@ -194,7 +199,8 @@ class Region:
         self.textclip = self._verify_bool('text-clip', True, optional=True)
         self.textwrap = self._verify_bool('text-wrap', False, optional=True)
         self.linespace = self._verify_int('line-space', 0, optional=True)
-        self.lineheight = self._verify_float('line-height', 1.0, optional=True)
+        ## "line-height-scale" (per language in #base, say) scales every region's line height.
+        self.lineheight = self._verify_float('line-height', 1.0, optional=True) * self._verify_float('line-height-scale', 1.0, minimum=0.1)
         self.align = self._verify_option('align', Rect.POINTS, 'topleft')
 
         self.imagelist = 0 ## TODO
@@ -512,6 +518,12 @@ class Region:
 
         # RENDER GRID
         elif self.list and self.list_columns > 1:
+            ## A "pointer-fit": "row" list keeps the side padding it has as a list (a pointer
+            ## a row tall wide), so switching to a grid doesn't move its edges.
+            if self.pointer is not None and self.pointer_fit == 'row' and self.pointer_attach == 'list':
+                row = int(self.texts.line_height(self.font, self.fontsize) * self.lineheight)
+                pointer_w = max(1, int(row * self.pointer.srcrect.w / self.pointer.srcrect.h + 0.5))
+                text_area = Rect(area.x + pointer_w, text_area.y, max(0, area.width - pointer_w * 2), text_area.height)
             self._draw_grid(text_area)
 
         # RENDER LIST

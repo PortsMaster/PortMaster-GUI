@@ -357,12 +357,12 @@ def test_render_lists_the_strings_it_used(pool):
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_language_capability_picks_the_font(pool):
-    ## The default theme's "font[ja_JP]": the language reaches the theme's capabilities
-    ## with a pretend resolution too.
+    ## The default theme's "font-override[ja_JP]": the language reaches the theme's capabilities
+    ## with a pretend resolution too, and every region draws in Noto Sans JP.
     if not (PM_DIR / "pylibs" / "resources" / "NotoSansJP-Regular.ttf").is_file():
         pytest.skip("no Noto fonts here (the Test Suite leaves them out)")
     _, info = pool.render("default_theme", None, "1280x720", "ja_JP", "main_menu")
-    fonts = {region['data'].get('font') for region in info['regions']}
+    fonts = {region['data'].get('font-override') or region['data'].get('font') for region in info['regions']}
     assert fonts == {"NotoSansJP-Regular.ttf"}
 
 

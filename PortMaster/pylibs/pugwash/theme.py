@@ -121,13 +121,56 @@ def theme_check_images(gui, region_data):
                     logger.debug(f"loaded image {element_value}")
 
 
-def theme_apply(gui, section_data, base_data, elements):
+def style_names(region_data):
+    """The styles a region names ("style": "caption", or a list of them), after its capabilities."""
+    names = theme_update({}, {key: value for key, value in region_data.items() if extract_requirements(key)[0] == 'style'}).get('style')
+    if isinstance(names, str):
+        return [names]
+    if isinstance(names, list):
+        return [name for name in names if isinstance(name, str)]
+    return []
+
+
+def theme_styled(region_data, styles, seen=()):
+    """
+    region_data on top of the styles it names: a style from #styles is the base of whatever
+    names it (a region, an element, a #base), which can then change any of its keys. A style
+    can name styles too.
+    """
+    if not styles:
+        return region_data
+
+    names = style_names(region_data)
+    if not names:
+        return region_data
+
+    styled = {}
+    for name in names:
+        if name in seen:
+            logger.warning(f"Error: style {name} names itself")
+            continue
+
+        if name not in styles:
+            logger.warning(f"Error: Unknown style {name}")
+            continue
+
+        styled = theme_merge(styled, theme_styled(styles[name], styles, seen + (name, )))
+
+    styled = theme_merge(styled, region_data)
+    styled.pop('style', None)
+    return styled
+
+
+def theme_apply(gui, section_data, base_data, elements, styles=None):
     new_data = {}
     capabilities = theme_capabilities()
 
+    def styled(region_data):
+        return theme_styled(region_data, styles)
+
     for region_name, region_data in section_data.items():
         if region_name == "#base":
-            base_data = theme_merge(base_data, region_data)
+            base_data = theme_merge(base_data, styled(region_data))
             continue
 
         elif region_name == "#config":
@@ -149,7 +192,7 @@ def theme_apply(gui, section_data, base_data, elements):
                 logger.warning(f"Error: Unknown element {element_name}")
                 continue
 
-            new_data[region_name] = theme_merge(base_data, theme_merge(elements[element_name], region_data))
+            new_data[region_name] = theme_merge(base_data, theme_merge(styled(elements[element_name]), styled(region_data)))
             continue
 
         region_name, requirements = extract_requirements(region_name, strict=True)
@@ -157,10 +200,10 @@ def theme_apply(gui, section_data, base_data, elements):
             if not harbourmaster.match_requirements(capabilities, requirements):
                 continue
 
-            new_data[region_name] = theme_merge(new_data.get(region_name, base_data), region_data)
+            new_data[region_name] = theme_merge(new_data.get(region_name, base_data), styled(region_data))
 
         else:
-            new_data[region_name] = theme_merge(base_data, region_data)
+            new_data[region_name] = theme_merge(base_data, styled(region_data))
 
     theme_check_images(gui, new_data)
 
@@ -319,7 +362,12 @@ def theme_load(gui, theme_file, color_scheme=None, layout=None):
             base_scheme = theme_data["#schemes"].get("#base", {})
 
             for section_name, section_data in theme_data["#schemes"][color_scheme].items():
-                if section_name not in ("#base", "#resources", "#pallet"):
+                if section_name not in ("#base", "#resources", "#pallet", "#styles"):
+                    continue
+
+                if section_name == "#styles":
+                    ## Changes the styles it names, the theme's others stay.
+                    theme_data[section_name] = theme_merge(theme_data.get(section_name, {}), theme_merge(base_scheme.get(section_name, {}), section_data))
                     continue
 
                 theme_data[section_name] = theme_merge(base_scheme.get(section_name, {}), section_data)
@@ -406,7 +454,13 @@ def theme_load(gui, theme_file, color_scheme=None, layout=None):
 
 
     ## Before any section, wherever it is in the file (a colour scheme's #base is added last).
-    base_data = theme_data.get("#base", {})
+    ## Named sets of region keys: "style": "caption" in a region starts it from #styles' "caption".
+    styles = {}
+    for style_name, style_data in theme_data.get("#styles", {}).items():
+        style_name, requirements = extract_requirements(style_name)
+        if isinstance(style_data, dict) and harbourmaster.match_requirements(capabilities, requirements):
+            styles[style_name] = style_data
+    base_data = theme_styled(theme_data.get("#base", {}), styles)
 
     for section_name, section_data in theme_data.items():
         if section_name.startswith('#'):
@@ -486,13 +540,13 @@ def theme_load(gui, theme_file, color_scheme=None, layout=None):
                 ## Changes the regions it has, the section keeps the rest ("main_menu[640x480]").
                 logger.debug(f"  - loading section {section_name}")
                 merged = dict(sections[section_name])
-                for region_name, region_data in theme_apply(gui, section_data, {}, elements).items():
+                for region_name, region_data in theme_apply(gui, section_data, {}, elements, styles).items():
                     merged[region_name] = theme_merge(merged.get(region_name, {} if region_name.startswith('#') else base_data), region_data)
 
                 sections[section_name] = merged
             else:
                 logger.debug(f"  - loading section {section_name}")
-                sections[section_name] = theme_apply(gui, section_data, base_data, elements)
+                sections[section_name] = theme_apply(gui, section_data, base_data, elements, styles)
 
     # if harbourmaster.HM_TESTING:
     #     with open('debug.json', 'w') as fh:

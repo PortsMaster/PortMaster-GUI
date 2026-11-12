@@ -122,6 +122,7 @@ function kindOf(path) {
   if (a === "#info") return rest.length ? "other" : "info";
   if (a === "#base") return rest.length ? "other" : "region";
   if (a === "#elements") return rest.length === 0 ? "elements" : rest.length === 1 ? "region" : "other";
+  if (a === "#styles") return rest.length === 0 ? "styles" : rest.length === 1 ? "region" : "other";
   if (a === "#pallet") return rest.length ? "other" : "pallet";
   if (a === "#resources") return rest.length === 0 ? "resources" : "other";
   if (a === "#override") return rest.length ? "other" : "override";
@@ -196,6 +197,12 @@ function valueProblem(key, v, names) {
       return `${key} is one of: ${options.join(", ")}` + (near ? ` (did you mean "${near}"?)` : "") + ": PortMaster uses its default instead";
     }
     case "text": return typeof v === "string" ? null : `${key} is text: "…"`;
+    case "style": {
+      const list = Array.isArray(v) ? v : [v];
+      if (!list.every((x) => typeof x === "string")) return `${key} is a name from #styles: "…", or a list of them`;
+      const missing = list.find((x) => !names.styles.includes(x));
+      return missing === undefined ? null : `There's no "${missing}" in #styles` + hint(missing, names.styles);
+    }
     case "file": case "image": {
       if (v === null) return null;
       if (typeof v !== "string") return `${key} is a file name: "…"`;
@@ -233,7 +240,7 @@ function check(text) {
       if (key.startsWith("#") && !(key in s.top)) warn(...at, `PortMaster doesn't use "${key}"` + hint(key, Object.keys(s.top)));
       else if (!key.startsWith("#") && !sections.includes(name)) warn(...at, `There's no screen called "${name}"` + hint(name, sections), "info");
     } else if (kind === "scheme") {
-      if (key.startsWith("#") && !["#pallet", "#resources", "#base"].includes(key)) warn(...at, `A color scheme can have #pallet, #resources and sections, not "${key}"`);
+      if (key.startsWith("#") && !["#pallet", "#resources", "#base", "#styles"].includes(key)) warn(...at, `A color scheme can have #pallet, #resources, #styles and sections, not "${key}"`);
     } else if (kind === "info") {
       if (!(key in s.info)) warn(...at, `#info has ${Object.keys(s.info).join(", ")}`, "info");
       else if (key === "default-scheme" && !names.schemes.includes(node.value)) warn(node.from, node.to, `There's no color scheme "${node.value}" in #schemes`);
@@ -264,10 +271,11 @@ const hint = (word, words) => { const near = closest(word, words); return near ?
 /* The theme's names, from the text being typed (so a new color can be used straight away)
    and from the server (its files). */
 function mergedNames(value) {
-  const names = { colors: new Set(), resources: new Set(edit.schema.names.resources), elements: new Set(), schemes: [] };
+  const names = { colors: new Set(), resources: new Set(edit.schema.names.resources), elements: new Set(), styles: new Set(), schemes: [] };
   const take = (section) => {
     if (!section || typeof section !== "object") return;
     for (const k of Object.keys(section["#pallet"] || {})) names.colors.add(k);
+    for (const k of Object.keys(section["#styles"] || {})) names.styles.add(bare(k));
     for (const [file, info] of Object.entries(section["#resources"] || {})) {
       names.resources.add(file);
       if (info && typeof info === "object") {
@@ -279,7 +287,7 @@ function mergedNames(value) {
   take(value);
   for (const [name, scheme] of Object.entries(value["#schemes"] || {})) { take(scheme); if (!name.startsWith("#")) names.schemes.push(name); }
   for (const k of Object.keys(value["#elements"] || {})) names.elements.add(k);
-  return { colors: [...names.colors], resources: [...names.resources], elements: [...names.elements], schemes: names.schemes };
+  return { colors: [...names.colors], resources: [...names.resources], elements: [...names.elements], styles: [...names.styles], schemes: names.schemes };
 }
 
 /* ---------------------------------------------------------------- Where the cursor is */
@@ -349,7 +357,7 @@ function keysFor(kind, path, value) {
         ...(s.sections[section] || []).map((r) => [r, "region"]),
         ...names.elements.map((e) => ["#element:" + e, "a region from #elements"])];
     }
-    case "scheme": return [["#pallet", "named colors"], ["#resources", "image changes"], ...Object.keys(s.sections).map((k) => [k, "screen"])];
+    case "scheme": return [["#pallet", "named colors"], ["#resources", "image changes"], ["#styles", "style changes"], ...Object.keys(s.sections).map((k) => [k, "screen"])];
     case "config": return Object.keys(s.config).map((k) => [k, s.config[k].type]);
     case "override": return s.special_words.map((w) => [w, "special word"]);
     case "pallet": return (value ? mergedNames(value).colors : s.names.colors).map((c) => [c, "color"]);
@@ -370,6 +378,7 @@ function valuesFor(key, value, path) {
   if (spec.type === "image") return [...s.files.image.map((f) => [f, "image file"]), ...names.resources.filter((r) => !s.files.image.includes(r)).map((r) => [r, "resource"]), ["qr:", "a QR code of the text after it"]];
   if (/sound/.test(name) || name === "music") return [...s.files.sound, ...names.resources.filter((r) => /\.(ogg|wav|mp3)$/i.test(r) || !r.includes("."))].map((f) => [f, "sound"]);
   if (name === "parent") return [["root", "the whole screen"], ...names.elements.map((e) => [e, "element"])];
+  if (spec.type === "style") return names.styles.map((x) => [x, "style"]);
   return [];
 }
 
@@ -719,8 +728,46 @@ $("erevert").onclick = () => revert();
 $("ecopy").onclick = () => copyTheme();
 $("eshot").onchange = () => { edit.shot = $("eshot").value; preview(); };
 $("eboxes").onchange = () => { const layer = document.querySelector("#eshotview .boxes"); if (layer) layer.hidden = !$("eboxes").checked; };
+// theme.json as PortMaster's themes write it: 4-space indents, and an array of plain values on
+// one line ("area": [ 0.0, 0.1, 1.0, 0.5 ]) instead of one value a line. Every value is kept as
+// written: JSON.parse would make 1.0 into 1, and in an area 1.0 is the whole width, 1 a pixel.
+function tidyJSON(text) {
+  let i = 0;
+  const space = () => { while (i < text.length && " \t\r\n".includes(text[i])) i++; };
+  const value = () => {
+    space();
+    const c = text[i];
+    if (c === "{" || c === "[") {
+      const close = c === "{" ? "}" : "]", items = [];
+      i++; space();
+      if (text[i] === close) { i++; return { kind: c, items }; }
+      for (;;) {
+        let key = null;
+        if (c === "{") { key = value().raw; space(); i++; }   // the key, then the ':'
+        items.push([key, value()]);
+        space();
+        if (text[i] === ",") { i++; continue; }
+        i++; return { kind: c, items };                      // the closing bracket
+      }
+    }
+    const start = i;
+    if (c === '"') { i++; while (text[i] !== '"') i += text[i] === "\\" ? 2 : 1; i++; }
+    else { while (i < text.length && !" \t\r\n,]}:".includes(text[i])) i++; }
+    return { kind: "", raw: text.slice(start, i) };
+  };
+  const print = (node, indent) => {
+    if (!node.kind) return node.raw;
+    const inner = indent + "    ", close = node.kind === "{" ? "}" : "]";
+    if (node.items.length === 0) return node.kind + close;
+    if (node.kind === "[" && node.items.every(([, item]) => !item.kind)) return "[ " + node.items.map(([, item]) => item.raw).join(", ") + " ]";
+    return node.kind + "\n" + node.items.map(([key, item]) => inner + (key !== null ? key + ": " : "") + print(item, inner)).join(",\n") + "\n" + indent + close;
+  };
+  JSON.parse(text);       // a mistake throws here, before anything changes
+  return print(value(), "");
+}
+
 $("eformat").onclick = () => {
-  try { const value = JSON.parse(edit.cm.getValue()); if (confirm("Rewrite theme.json with even indents? Arrays go one item a line.")) edit.cm.setValue(JSON.stringify(value, null, 4) + "\n"); }
+  try { const tidy = tidyJSON(edit.cm.getValue()); if (confirm("Rewrite theme.json with even indents?")) edit.cm.setValue(tidy + "\n"); }
   catch (e) { $("estate").textContent = "Fix the JSON mistakes first"; }
 };
 window.addEventListener("beforeunload", (event) => { if (edit.dirty) { event.preventDefault(); event.returnValue = ""; } });

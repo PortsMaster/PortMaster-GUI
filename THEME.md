@@ -91,6 +91,7 @@ The theme has a few different sections:
 - `#pallet`: Predefined colors for the theme.
 - `#resources`: Images the theme uses, can either be an atlas or individual images.
 - `#elements`: Reusable elements that different scenes in your theme can use.
+- `#styles`: Named sets of keys (a font, its size and color, say) that elements start from.
 - **scenes**: Scenes that the gui uses
 
 It also uses a template system for the text, so that the gui elements automatically update as the text changes.
@@ -106,6 +107,33 @@ element -> scene `#base` -> global `#base`
 If you use a reusable element the order is:
 
 element -> element `#element` -> scene `#base` -> global `#base`
+
+A style comes just under whatever names it, so that can change any of its keys:
+
+element -> its `style` -> element `#element` -> the `#element`'s `style` -> scene `#base` -> global `#base`
+
+
+## Styles
+
+`#styles` gives a name to keys that many elements share, most often how their text looks. An element, an `#elements` entry or a `#base` names one with `"style"`, and starts from its keys:
+
+```json
+    "#styles": {
+        "caption": { "font-size": 11, "font-color": "text_faint" },
+        "label":   { "font": "Roboto-Medium.ttf", "font-size": 14, "font-color": "text" },
+        "title":   { "style": "label", "font-size": 21 }
+    },
+
+    "port_info": {
+        "info_genre_label": { "style": "caption", "area": [ 0.0, 0.0, 0.3, 0.5 ] },
+        "info_genre":       { "style": "label", "font-size": 16, "area": [ 0.0, 0.5, 0.3, 1.0 ] }
+    }
+```
+
+- The element's own keys win: `info_genre` is a `label` at size 16.
+- A style can name another one (`title` is a bigger `label`), and `"style": [ "label", "faint" ]` applies several, in order, the later ones winning.
+- Keys in a style can have capabilities like any other (`"font-size[hires]": 16`), and so can `style` (`"style[layout_grid]": "card"`).
+- A color scheme can have `#styles` too, which changes the keys it gives and keeps the rest.
 
 
 ## Element overrides
@@ -380,6 +408,21 @@ A special option is `font-scale` which should be used to broadly scale fonts acr
     }
 ```
 
+#### Fonts for Chinese, Japanese and Korean
+
+Fonts like Roboto or DejaVu Sans have no Chinese, Japanese or Korean, so those languages need their own fonts (PortMaster has Noto Sans for each: `NotoSansJP-Regular.ttf`, `NotoSansKR-`, `NotoSansSC-`, `NotoSansTC-`, `NotoSansHK-`). `font-override` in `#base`, per language, is the font every region uses in that language, whatever font it names itself; `line-height-scale` scales every region's line height (those fonts are taller):
+
+```json
+    "#base": {
+        "font": "Roboto-Regular.ttf",
+        "font-override[ja_JP]": "NotoSansJP-Regular.ttf",
+        "font-override[ko_KR]": "NotoSansKR-Regular.ttf",
+        "line-height-scale[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 0.8
+    }
+```
+
+so a region can say `"font": "Roboto-Medium.ttf"` and nothing more. (PortMaster before 2026.11 doesn't know them: a theme for those too gives `font[ja_JP]` & co in each region with its own font.)
+
 `"font-scale": "auto"` follows the screen: the size text has at 640x480, times `min(width / 640, height / 480)` (never below 0.75, so it stays readable), so 1280x720 gets 1.5, 1920x1080 2.25 and 640x360 0.75. `"auto*1.2"` makes that a fifth bigger. Put it first, and the sizes you give for particular screens after it still win: a screen you didn't list (a 1240x1080 one) then gets a sensible size instead of 640x480's. The default theme does this:
 
 ```json
@@ -490,7 +533,7 @@ The list system is quite adequate
     }
 ```
 
-`pointer-size`, `pointer-offset` and `border-x` are pixels, which `font-scale` doesn't change, so a pointer sized for one screen can be too big or too small for the rows on another. With `"pointer-fit": "row"` a list's pointer is exactly as tall as a row, and its width keeps the image's shape: it fits the rows at any font size and screen size. With `"pointer-attach": "list"` as well, the list's side padding is the pointer's width (instead of `border-x`), so the pointer sits beside the row inside the list. A row-fitted pointer is also drawn on selected rows made of several items (the filters' checkbox rows).
+`pointer-size`, `pointer-offset` and `border-x` are pixels, which `font-scale` doesn't change, so a pointer sized for one screen can be too big or too small for the rows on another. With `"pointer-fit": "row"` a list's pointer is exactly as tall as a row, and its width keeps the image's shape: it fits the rows at any font size and screen size. With `"pointer-attach": "list"` as well, the list's side padding is the pointer's width (instead of `border-x`), so the pointer sits beside the row inside the list. A grid (`list-columns`) keeps that padding, so its tiles line up with the list's rows. A row-fitted pointer is also drawn on selected rows made of several items (the filters' checkbox rows).
 
 For example, a pill-shaped selection: a half-disc image at both ends of the selected row's fill.
 
