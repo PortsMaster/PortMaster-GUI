@@ -222,6 +222,19 @@ def test_a_saved_theme_reloads_in_the_same_renderer(pool):
     assert renderer.loaded[:2] == ("Tiny", after['version'])
 
 
+def test_renders_have_a_fixed_clock_and_disk(pugwash):
+    ## The same screen drawn twice draws the same: renders a minute apart showed different
+    ## times (and made the pixel comparisons here fail now and then).
+    from types import SimpleNamespace
+    from theme_server import shots
+
+    data = {}
+    shots.Renderer.fixed_system_data(SimpleNamespace(gui=SimpleNamespace(set_data=data.__setitem__)))
+    assert {key: data[key] for key in shots.FIXED_SYSTEM_DATA} == shots.FIXED_SYSTEM_DATA
+    ## The rest is pugwash's own (the battery, "N/A" in the language).
+    assert "system.battery_level" in data
+
+
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_one_renderer_switches_theme_scheme_and_language(pool):
