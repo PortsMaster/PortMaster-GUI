@@ -112,13 +112,20 @@ def problems(regions, size):
 
 
 def check_export(folder):
-    """{(theme, resolution, scheme, lang, shot): problems} for every render in an export folder."""
+    """
+    {(theme, resolution, scheme, lang, shot): problems} for every render in an export folder:
+    the folders it's in, then the screen. (theme, resolution, scheme, layout, lang, shot) for an
+    export with --layouts.
+    """
     results = {}
-    for info_file in sorted(Path(folder).glob("*/*/*/*/*.json")):
-        theme, resolution, scheme, lang = info_file.parts[-5:-1]
+    folder = Path(folder)
+    for info_file in sorted(folder.rglob("*.json")):
+        key = info_file.relative_to(folder).parts[:-1] + (info_file.stem, )
+        if len(key) < 5:
+            continue
         info = json.loads(info_file.read_text(encoding="utf-8"))
-        width, height = (int(n) for n in resolution.split("x"))
-        results[(theme, resolution, scheme, lang, info_file.stem)] = problems(info.get('regions', []), (width, height))
+        width, height = (int(n) for n in key[1].split("x"))
+        results[key] = problems(info.get('regions', []), (width, height))
 
     return results
 
@@ -134,8 +141,8 @@ def main(argv):
 
     results = check_export(argv[0])
     bad = {key: found for key, found in results.items() if found}
-    for (theme, resolution, scheme, lang, shot), found in bad.items():
-        print(f"{theme} {resolution} {scheme} {lang} {shot}:")
+    for key, found in bad.items():
+        print(" ".join(key) + ":")
         for problem in found:
             print(f"  {problem['kind']}: {problem['text']}")
 

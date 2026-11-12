@@ -9,15 +9,15 @@
 # files change. Commands are JSON lines on stdin, answers JSON lines on stdout; anything
 # else pugwash prints goes to stderr.
 #
-#   worker.py --theme-dir DIR --resolution 640x480 [--scheme NAME] [--lang en_US]
+#   worker.py --theme-dir DIR --resolution 640x480 [--scheme NAME] [--layout NAME] [--lang en_US]
 #             --ports-config DIR --work DIR
 #
 #   --ports-config is a PortMaster config folder with the ports list and screenshots: the
 #   cache's (DIR/tools/PortMaster/config, see --prepare-cache), or on a device PortMaster's
 #   own. Nothing in it is changed.
 #
-#   {"cmd": "load", "theme_dir": DIR, "scheme": NAME or null, "lang": "de_DE"}
-#       -> {"ok": true, "theme": name, "scheme": ...}: switches theme, scheme and language
+#   {"cmd": "load", "theme_dir": DIR, "scheme": NAME or null, "layout": NAME or null, "lang": "de_DE"}
+#       -> {"ok": true, "theme": name, "scheme": ..., "layout": ...}: switches theme, scheme, layout and language
 #       in place (or reloads them after a save), about a second instead of a new renderer.
 #   {"cmd": "render", "shot": "main_menu", "out": "/tmp/x.png"}
 #       -> {"ok": true, "regions": [...], "errors": [...]}
@@ -214,20 +214,20 @@ def import_pugwash():
     return shots
 
 
-def run_renderer(shots, work, theme_dir, scheme, lang, resolution, lines, reply, tools_dir=None):
+def run_renderer(shots, work, theme_dir, scheme, lang, resolution, lines, reply, tools_dir=None, layout=None):
     """Starts the renderer and answers commands from lines until "quit" or the end."""
     import harbourmaster
 
     themes_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster" / "themes"
     try:
         theme_name = link_theme(themes_dir, theme_dir)
-        renderer = shots.Renderer(work, theme_name, scheme=scheme, tools_dir=tools_dir)
+        renderer = shots.Renderer(work, theme_name, scheme=scheme, tools_dir=tools_dir, layout=layout)
 
     except Exception:
         reply(ok=False, error=traceback.format_exc())
         return 1
 
-    reply(ok=True, ready=True, resolution=resolution, theme=theme_name, scheme=renderer.scheme)
+    reply(ok=True, ready=True, resolution=resolution, theme=theme_name, scheme=renderer.scheme, layout=renderer.layout)
 
     for line in lines:
         try:
@@ -241,8 +241,9 @@ def run_renderer(shots, work, theme_dir, scheme, lang, resolution, lines, reply,
             elif command.get('cmd') == "load":
                 started = time.monotonic()
                 theme_name = link_theme(themes_dir, command['theme_dir'])
-                renderer.load(theme_name, command.get('scheme'), command.get('lang') or lang)
-                reply(ok=True, theme=theme_name, scheme=renderer.scheme, ms=int((time.monotonic() - started) * 1000))
+                renderer.load(theme_name, command.get('scheme'), command.get('lang') or lang, command.get('layout'))
+                reply(ok=True, theme=theme_name, scheme=renderer.scheme, layout=renderer.layout,
+                      ms=int((time.monotonic() - started) * 1000))
 
             elif command.get('cmd') == "render":
                 started = time.monotonic()
@@ -285,7 +286,7 @@ def parse_resolution(text):
 ##
 ## serve.py sends on the control socket a JSON message, with the renderer's end of a
 ## socket pair attached (SCM_RIGHTS):
-##   {"resolution": "640x480", "theme_dir": DIR, "scheme": ..., "lang": ..., "work": DIR}
+##   {"resolution": "640x480", "theme_dir": DIR, "scheme": ..., "layout": ..., "lang": ..., "work": DIR}
 ##   -> {"ok": true, "pid": N}
 ## The renderer then talks on that socket as a worker.py does on stdin/stdout. The
 ## zygote stops when its stdin closes.
@@ -360,7 +361,7 @@ def zygote(options):
                 pug_lang.set_language(spawn['lang'])
                 code = run_renderer(shots, work, Path(spawn['theme_dir']), spawn.get('scheme'), spawn['lang'],
                                     [width, height], channel.makefile("r"), json_writer(channel.makefile("w")),
-                                    tools_dir=work / "tools")
+                                    tools_dir=work / "tools", layout=spawn.get('layout'))
             except BaseException:
                 traceback.print_exc()
             finally:
@@ -381,6 +382,7 @@ def main(argv=None):
     parser.add_argument("--control-fd", type=int)
     parser.add_argument("--theme-dir")
     parser.add_argument("--scheme", default=None)
+    parser.add_argument("--layout", default=None)
     parser.add_argument("--resolution", default="640x480")
     parser.add_argument("--lang", default="en_US")
     parser.add_argument("--ports-config", required=True)
@@ -401,7 +403,8 @@ def main(argv=None):
     renderer_env(width, height, options.lang)
     use_tools_dir(work)
     shots = import_pugwash()
-    return run_renderer(shots, work, Path(options.theme_dir), options.scheme, options.lang, [width, height], sys.stdin, reply)
+    return run_renderer(shots, work, Path(options.theme_dir), options.scheme, options.lang, [width, height], sys.stdin, reply,
+                        layout=options.layout)
 
 
 if __name__ == "__main__":

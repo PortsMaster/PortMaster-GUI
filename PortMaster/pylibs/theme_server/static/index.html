@@ -156,6 +156,7 @@ li.CodeMirror-hint-active { background: var(--accent); color: #fff; }
   <span class="seg" id="view" style="margin-bottom:2px"><button data-view="preview" aria-pressed="true">Preview</button><button data-view="translate" aria-pressed="false">Translate</button><button data-view="edit" aria-pressed="false">Edit</button></span>
   <label class="field">Theme <select id="theme"></select></label>
   <label class="field">Color scheme <select id="scheme"></select></label>
+  <label class="field" id="layout-field" hidden>Layout <select id="layout"></select></label>
   <label class="field">Resolution <select id="res"></select></label>
   <label class="field" id="custom-res-field" hidden>Custom <input type="text" id="custom-res" placeholder="800x600" spellcheck="false"></label>
   <label class="field">Language <select id="lang"></select></label>
@@ -232,20 +233,20 @@ li.CodeMirror-hint-active { background: var(--accent); color: #fff; }
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = { info: null, theme: "default_theme", scheme: "", res: "640x480", lang: "en_US", mode: "screens",
+const state = { info: null, theme: "default_theme", scheme: "", layout: "", res: "640x480", lang: "en_US", mode: "screens",
   modeShot: "main_menu", debug: false, size: 300, version: null, renders: new Map(), detail: null,
   view: "preview", tDomain: "messages", tFilter: "all", tSearch: "", tSelected: null, tData: null, usage: new Map(), usageKey: null };
 
 function load() {
   try { Object.assign(state, JSON.parse(localStorage.getItem("pm-theme-preview") || "{}"), { info: null, renders: new Map(), version: null, detail: null }); } catch (e) {}
   const hash = new URLSearchParams(location.hash.slice(1));
-  for (const key of ["theme", "scheme", "res", "lang", "mode", "modeShot", "view"]) if (hash.get(key)) state[key] = hash.get(key);
+  for (const key of ["theme", "scheme", "layout", "res", "lang", "mode", "modeShot", "view"]) if (hash.get(key)) state[key] = hash.get(key);
 }
 function save() {
-  const keep = { theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, debug: state.debug, size: state.size,
+  const keep = { theme: state.theme, scheme: state.scheme, layout: state.layout, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, debug: state.debug, size: state.size,
     view: state.view, tDomain: state.tDomain, tFilter: state.tFilter };
   try { localStorage.setItem("pm-theme-preview", JSON.stringify(keep)); } catch (e) {}
-  history.replaceState(null, "", "#" + new URLSearchParams({ theme: state.theme, scheme: state.scheme, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, view: state.view }));
+  history.replaceState(null, "", "#" + new URLSearchParams({ theme: state.theme, scheme: state.scheme, layout: state.layout, res: state.res, lang: state.lang, mode: state.mode, modeShot: state.modeShot, view: state.view }));
 }
 function option(select, value, text) { const o = document.createElement("option"); o.value = value; o.textContent = text; select.append(o); }
 function theme() { return state.info.themes.find((t) => t.id === state.theme) || state.info.themes[0]; }
@@ -296,9 +297,18 @@ function fillSchemes() {
   if (!t.schemes.includes(state.scheme)) state.scheme = t.default_scheme || "";
   $("scheme").value = state.scheme;
   $("scheme").disabled = !t.schemes.length;
+  // Layouts (a list or a grid, say): only shown for a theme with more than one.
+  const layouts = t.layouts || [];
+  $("layout").replaceChildren();
+  for (const l of layouts) option($("layout"), l, l + (l === t.default_layout ? " (default)" : ""));
+  if (!layouts.includes(state.layout)) state.layout = t.default_layout || "";
+  $("layout").value = state.layout;
+  $("layout-field").hidden = layouts.length < 2;
   const notice = $("notice");
   notice.hidden = !t.error; notice.textContent = t.error ? `theme.json: ${t.error}` : "";
 }
+/* The layout, for titles and file names: only when the theme has a choice of them. */
+function shownLayout() { return (theme().layouts || []).length > 1 ? state.layout : ""; }
 function setMode(mode, rebuild = true) {
   state.mode = mode;
   for (const b of $("mode").children) b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
@@ -307,7 +317,7 @@ function setMode(mode, rebuild = true) {
 }
 
 function params(shot, res) {
-  return new URLSearchParams({ theme: state.theme, scheme: state.scheme, res: res || state.res, lang: state.lang, shot, v: state.version || "" });
+  return new URLSearchParams({ theme: state.theme, scheme: state.scheme, layout: state.layout, res: res || state.res, lang: state.lang, shot, v: state.version || "" });
 }
 /* Renders go through a queue, two at a time: changing a setting drops what's waiting
    and cancels what's running, so the server isn't busy with screens nobody wants. */
@@ -455,7 +465,7 @@ function openDetail(index) {
   state.detail = index;
   const card = state.cards[index];
   const info = card.info;
-  $("detail-title").textContent = `${card.title} · ${card.res.replace("x", "×")} · ${theme().name}${state.scheme ? " · " + state.scheme : ""}`;
+  $("detail-title").textContent = `${card.title} · ${card.res.replace("x", "×")} · ${theme().name}${state.scheme ? " · " + state.scheme : ""}${shownLayout() ? " · " + shownLayout() : ""}`;
   pinned = null;
   const view = $("detail-view");
   view.replaceChildren();
@@ -533,7 +543,7 @@ $("detail-download").onclick = async () => {
     }
   }
   const a = document.createElement("a");
-  a.download = `${state.theme}-${card.shot}-${card.res}${state.scheme ? "-" + state.scheme : ""}.png`.replace(/\s+/g, "_");
+  a.download = `${state.theme}-${card.shot}-${card.res}${state.scheme ? "-" + state.scheme : ""}${shownLayout() ? "-" + shownLayout() : ""}.png`.replace(/\s+/g, "_");
   a.href = canvas.toDataURL("image/png"); a.click();
 };
 document.addEventListener("keydown", (event) => {
@@ -551,6 +561,7 @@ $("theme").onchange = () => {
   poll().then(changed);
 };
 $("scheme").onchange = () => { state.scheme = $("scheme").value; changed(); };
+$("layout").onchange = () => { state.layout = $("layout").value; changed(); };
 $("res").onchange = () => {
   $("custom-res-field").hidden = $("res").value !== "custom";
   if ($("res").value === "custom") { $("custom-res").focus(); return; }
@@ -584,7 +595,7 @@ async function buildTranslate() {
 }
 /* Which screens use each string: render every screen once (cached) and read what it looked up. */
 async function scanUsage() {
-  const key = [state.theme, state.scheme, state.res, state.lang].join("|");
+  const key = [state.theme, state.scheme, state.layout, state.res, state.lang].join("|");
   if (state.usageKey === key) return;
   state.usageKey = key;
   state.usage = new Map();
@@ -765,7 +776,7 @@ async function poll() {
       if (state.view === "edit") editThemeChanged();
       for (const card of state.view === "preview" ? state.cards || [] : []) fill(card);
       if (detail !== null) Promise.all(state.cards.map((c) => render(c.shot, c.res))).then(() => { if (state.detail === detail) openDetail(detail); });
-      // Refresh the scheme list too, in case theme.json changed it.
+      // Refresh the scheme and layout lists too, in case theme.json changed them.
       state.info = await (await fetch("/api/info")).json(); fillSchemes();
     }
     state.version = version;

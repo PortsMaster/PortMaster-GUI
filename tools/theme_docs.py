@@ -43,30 +43,19 @@ def font(size, bold=False):
 
 
 def render(renders, python):
-    """Exports the default theme (and a copy whose default layout is Grid) with the theme server."""
-    themes = Path(tempfile.mkdtemp(prefix="theme-docs-"))
-    try:
-        grid = themes / "default_grid"
-        shutil.copytree(str(DEFAULT_THEME), str(grid))
-        data = json.loads((grid / "theme.json").read_text(encoding="utf-8"))
-        data["#info"]["default-layout"] = "Grid"
-        (grid / "theme.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-
-        serve = [python, str(ROOT / "tools" / "theme_server" / "serve.py"), "--themes", str(themes), "--export", str(renders)]
-        subprocess.run(serve + ["--theme", "default_theme", "--theme", "default_grid", "--resolutions", "640x480",
-                                "--schemes", "all", "--langs", "en_US,ja_JP,de_DE"], check=True)
-        subprocess.run(serve + ["--theme", "default_theme", "--resolutions", "480x320,1280x720,720x720",
-                                "--langs", "en_US"], check=True)
-    finally:
-        shutil.rmtree(str(themes), ignore_errors=True)
+    """Exports the default theme, both its layouts, with the theme server."""
+    serve = [python, str(ROOT / "tools" / "theme_server" / "serve.py"), "--export", str(renders),
+             "--theme", "default_theme", "--layouts", "all"]
+    subprocess.run(serve + ["--resolutions", "640x480", "--schemes", "all", "--langs", "en_US,ja_JP,de_DE"], check=True)
+    subprocess.run(serve + ["--resolutions", "480x320,1280x720,720x720", "--langs", "en_US"], check=True)
 
 
 class Renders:
     def __init__(self, folder):
         self.folder = Path(folder)
 
-    def path(self, screen, theme="default_theme", size="640x480", scheme="Dark Mode", lang="en_US"):
-        return self.folder / theme / size / scheme / lang / f"{screen}.png"
+    def path(self, screen, layout="List", size="640x480", scheme="Dark Mode", lang="en_US"):
+        return self.folder / "default_theme" / size / scheme / layout / lang / f"{screen}.png"
 
     def image(self, screen, **where):
         return Image.open(str(self.path(screen, **where))).convert("RGB")
@@ -144,8 +133,8 @@ def boxes(image, regions, only=None, scale=2, legend_width=330):
 def hero(r):
     images = []
     for scheme in SCHEMES:
-        for theme, label in (("default_theme", "List"), ("default_grid", "Grid")):
-            images.append(caption(r.image("ports_all", theme=theme, scheme=scheme), f"{scheme} · {label}"))
+        for layout in ("List", "Grid"):
+            images.append(caption(r.image("ports_all", layout=layout, scheme=scheme), f"{scheme} · {layout}"))
     save(grid(images, 3), "hero.png")
 
 
@@ -166,7 +155,7 @@ def schemes(r):
 
 def layouts(r):
     save(grid([caption(r.image("ports_all"), "List  (layout_list)"),
-               caption(r.image("ports_all", theme="default_grid"), "Grid  (layout_grid)")], 2), "layouts.png")
+               caption(r.image("ports_all", layout="Grid"), "Grid  (layout_grid)")], 2), "layouts.png")
 
 
 def languages(r):

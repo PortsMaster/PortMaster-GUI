@@ -457,9 +457,10 @@ FIXED_SYSTEM_DATA = {
 
 
 class Renderer:
-    def __init__(self, work, theme_name, scheme=None, tools_dir=None):
+    def __init__(self, work, theme_name, scheme=None, tools_dir=None, layout=None):
         """tools_dir: the HarbourMaster's (its ports and config), when it isn't
-        harbourmaster.HM_TOOLS_DIR (a renderer forked from worker.py's zygote)."""
+        harbourmaster.HM_TOOLS_DIR (a renderer forked from worker.py's zygote). layout: one of
+        the theme's #layouts (None or one it doesn't have: its default)."""
         self.work = Path(work)
         self.errors = []
         ## pugwash's errors (the theme's), not harbourmaster's (the port data's).
@@ -467,8 +468,9 @@ class Renderer:
                    filter=lambda record: not record["name"].startswith("harbourmaster"))
 
         self.theme_name = theme_name
-        self.gui = PortMasterGUI(first_scene=EmptyScene, force_theme=theme_name, force_scheme=scheme)
+        self.gui = PortMasterGUI(first_scene=EmptyScene, force_theme=theme_name, force_scheme=scheme, force_layout=layout)
         self.scheme = self.gui.themes.get_current_theme_scheme()
+        self.layout = layout
         dirs = {}
         if tools_dir is not None:
             dirs = {'tools_dir': Path(tools_dir), 'ports_dir': self.work / "ports", 'scripts_dir': self.work / "ports"}
@@ -493,12 +495,14 @@ class Renderer:
         for key, value in FIXED_SYSTEM_DATA.items():
             self.gui.set_data(key, value)
 
-    def load(self, theme_name, scheme, lang):
-        """Another theme, colour scheme or language (or the same, saved again): reloaded in
-        place, much quicker than a new renderer."""
+    def load(self, theme_name, scheme, lang, layout=None):
+        """Another theme, colour scheme, layout or language (or the same, saved again):
+        reloaded in place, much quicker than a new renderer."""
         gui = self.gui
         gui.themes.force_theme = theme_name
         gui.themes.force_scheme = scheme
+        gui.themes.force_layout = layout
+        self.layout = layout
         ## Reloads the translations (saved ones too) and then the theme.
         gui.reload_language(lang)
         self.lookups = record_lookups()

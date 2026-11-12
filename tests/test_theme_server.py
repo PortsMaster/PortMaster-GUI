@@ -257,6 +257,46 @@ def test_one_renderer_switches_theme_scheme_and_language(pool):
         fresh.stop()
 
 
+def test_broken_theme_json_is_one_plain_error(tmp_path):
+    ## Not a renderer started for it, failing with a traceback in the page's preview.
+    (tmp_path / "broken").mkdir()
+    (tmp_path / "broken" / "theme.json").write_text('{ "#info": { "name": "x" "creator": "y" } }')
+    pool = serve.RenderPool(serve.Themes(tmp_path), tmp_path / "ports", tmp_path / "work")
+    try:
+        with pytest.raises(serve.WorkerError) as error:
+            pool.render("broken", None, "640x480", "en_US", "main_menu")
+        assert str(error.value).startswith("theme.json has a mistake in it: Expecting ','")
+        assert "Traceback" not in str(error.value) and pool.workers == {}
+    finally:
+        pool.stop()
+
+
+@pytest.mark.sdl
+@pytest.mark.own_display
+def test_one_renderer_switches_layout(pool, tmp_path):
+    ## The default theme's List and Grid on one renderer, switched in place: Grid matches a
+    ## renderer started in Grid, through the zygote and as a worker.py of its own.
+    list_png, list_info = pool.render("default_theme", None, "800x600", "en_US", "ports_all", layout="List")
+    grid_png, grid_info = pool.render("default_theme", None, "800x600", "en_US", "ports_all", layout="Grid")
+    assert list(pool.workers).count("800x600") == 1
+    assert list_png != grid_png and (list_info['layout'], grid_info['layout']) == ("List", "Grid")
+    ## The grid is the ports list with columns (list-columns[layout_grid]).
+    def columns(info):
+        return next(r for r in info['regions'] if r['name'] == "ports_list")['data'].get('list-columns', 1)
+    assert columns(list_info) == 1 and columns(grid_info) > 1
+
+    ## No layout, or one the theme doesn't have: its default, List.
+    assert pool.render("default_theme", None, "800x600", "en_US", "ports_all")[0] == list_png
+    assert pool.render("default_theme", None, "800x600", "en_US", "ports_all", layout="Nope")[1]['layout'] == "List"
+
+    for use_zygote in (True, False):
+        fresh = serve.RenderPool(pool.themes, pool.ports_config, tmp_path / f"fresh-{use_zygote}", use_zygote=use_zygote)
+        try:
+            assert fresh.render("default_theme", None, "800x600", "en_US", "ports_all", layout="Grid")[0] == grid_png
+        finally:
+            fresh.stop()
+
+
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_http_api(pool):
@@ -322,10 +362,12 @@ LAYOUT_SIZES = ["640x480", "1240x1080", "720x1280", "3440x1440", "480x272", "192
 def test_default_theme_layout(pool, tmp_path):
     from theme_server import layout
 
-    assert serve.export(pool, pool.themes, tmp_path, ["default_theme"], LAYOUT_SIZES, [], ["en_US"], pool.shots()) == 0
+    ## Both its layouts, List and Grid.
+    assert serve.export(pool, pool.themes, tmp_path, ["default_theme"], LAYOUT_SIZES, [], ["en_US"], pool.shots(),
+                        layouts=["all"]) == 0
     results = layout.check_export(tmp_path)
-    assert len(results) == len(LAYOUT_SIZES) * len(pool.shots())
-    failed = {"%s %s" % (key[1], key[4]): [problem['text'] for problem in layout.errors(found)]
+    assert len(results) == len(LAYOUT_SIZES) * len(pool.shots()) * 2
+    failed = {"%s %s %s" % (key[1], key[3], key[-1]): [problem['text'] for problem in layout.errors(found)]
               for key, found in results.items() if layout.errors(found)}
     assert failed == {}
 
