@@ -153,6 +153,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 - **Other background threads:**
   - `tasks.DirectoryScanner` works out installed port sizes.
   - `ImageManager.enable_async` (`sdl/images.py`) decodes port screenshots (absolute paths) and returns a `PendingImage` until the main thread uploads the texture. Theme images load synchronously.
+  - Theme images (found by name: `#resources`, a region's `image`/`pointer`, animation frames) stay loaded until the theme reloads. Data images (absolute paths, `qr:`) live in a cache of the `max_images` most recent; one a region still holds after it's dropped loads itself again on its next draw (`Image.alive()`, `tests/test_image_cache.py`).
 - **`quit()` order:** it destroys textures, the renderer and the window before `sdl2.ext.quit()`. Garbage collection after `SDL_Quit` segfaults on muOS/Mali.
 - **Profiling:** `PM_PERF=1` logs fps and every gap between frames over 50 ms to `pugwash.txt` (`tasks.FrameStats`). Run it on a real device to measure lag.
 
