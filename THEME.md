@@ -1,121 +1,562 @@
-## PortMaster Theme Specification
+# PortMaster theme reference
 
-PortMasters new gui has a flexible theme system build around a `theme.json` file.
+Everything a PortMaster theme can do, and how PortMaster reads it.
 
-This is currently a WIP documenting the theme format.
+![The default theme, PortMaster New: its three color schemes, as a list and as a grid](docs/theme/hero.png)
 
-## Previewing your theme
+**New to themes?** Start with the step-by-step guide, [Creating a theme](https://github.com/PortsMaster/PortMaster-Themes/blob/main/CREATING_A_THEME.md), in the PortMaster-Themes repository. It builds a theme from nothing, and shows how to test it and share it. Come back here when you want the details.
 
-The theme preview server renders every PortMaster screen with your theme, at any screen size, color scheme and language, and refreshes the page each time you save a file. It runs from a PortMaster-GUI checkout on Linux or macOS:
+The screenshots on this page are the default theme, **PortMaster New** (`PortMaster/pylibs/default_theme/`), rendered by the [theme server](#the-theme-server). `tools/theme_docs.py` makes them again when the theme changes.
 
-```bash
-python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # once, gets SDL2
-.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes
+## Contents
+
+- [A theme's files](#a-themes-files)
+- [theme.json at a glance](#themejson-at-a-glance)
+- [How a region gets its keys](#how-a-region-gets-its-keys)
+- [Capabilities: keys for some devices](#capabilities-keys-for-some-devices)
+- [Areas: where a region goes](#areas-where-a-region-goes)
+- [Colors](#colors)
+- [Text](#text)
+- [Images](#images)
+- [Lists](#lists)
+- [The button bar and special words](#the-button-bar-and-special-words)
+- [Text templates](#text-templates)
+- [Color schemes](#color-schemes)
+- [Styles](#styles)
+- [Elements](#elements)
+- [Layouts: a list or a grid](#layouts-a-list-or-a-grid)
+- [Translations](#translations)
+- [Sounds and music](#sounds-and-music)
+- [Animations](#animations)
+- [The screens](#the-screens)
+- [Region keys](#region-keys)
+- [Tags](#tags)
+- [The theme server](#the-theme-server)
+- [Older PortMasters](#older-portmasters)
+
+## A theme's files
+
+A theme is a folder:
+
+```
+my_theme/
+├── theme.json          everything about the theme: this page
+├── screenshot.png      its picture in PortMaster's theme list (or screenshot.jpg)
+├── CREDITS.md          who made the fonts and images, and their licenses
+├── LICENSE.*.txt       those licenses
+├── MyFont.ttf          fonts and images, named in theme.json
+└── images/panel.png    (subfolders are fine: "image": "images/panel.png")
 ```
 
-Then open http://localhost:8090/. `--themes` is one theme folder (it has a `theme.json`) or a folder of them; the default theme is always there too.
+- **Installed themes** live in `PortMaster/themes/<folder>/` on a device. PortMaster's theme list downloads them from the [PortMaster-Themes](https://github.com/PortsMaster/PortMaster-Themes) releases, as `<folder>.theme.zip` with the folder inside.
+- **File names** in `theme.json` are found in the theme's folder first, then in PortMaster's own `pylibs/resources/` (DejaVu Sans and the Noto Sans CJK fonts are there, so every theme can use them without carrying a copy).
+- **Fonts** need a license that lets them be shared: the theme repository checks every font is listed in `CREDITS.md` with its license.
 
-- **The screens:**
-  - main menu, all, ready-to-run and installed ports, port info (and its popup)
-  - filters, featured ports, options, runtimes, themes, color schemes, language
-  - on-screen keyboard, theme editor, messages with a progress bar, message box
-  - the autoinstall and dialog screens, which always use the default theme on a device
-  - the disclaimer and the unsupported-system warning, which are built in and look the same in every theme
-  - They show the real ports list and screenshots, downloaded once into `~/.cache/portmaster-theme-server`. `--refresh-ports` gets the current ones.
-- **Region boxes:** draws each region's area with its name. In a screen's own view, hover over or click a box (or a name in the list) to see the region's final theme values, after `#base`, `#element` and `[capability]` overrides are applied. **Save PNG** saves the screen, with the boxes if they're on.
-- **One screen, every size:** one screen at every common resolution, to check your `[hires]`, `[4:3]` and other overrides.
-- A screen your theme has no section for says so, rather than failing. Errors pugwash logged while drawing (a missing image, a bad color) are listed on the screen.
-
-To write the screens to files instead, for a theme's README or to compare before and after a change:
-
-```bash
-.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes --export out/ \
-    --resolutions 640x480,1280x720 --schemes all --langs en_US,de_DE
-```
-
-That writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png`, with a `.json` next to each listing its regions.
-
-### Editing theme.json in the page
-
-Pick **Edit** at the top to change the theme's `theme.json` in the page, with one screen beside it.
-- **Preview as you type:** the screen redraws a moment after you stop typing, from your unsaved text. Your theme isn't changed until you save. Pick the screen, color scheme, size and language as usual.
-- **Region boxes:** click a box to jump to that region in `theme.json`. Put the cursor in a region of the screen's section to light up its box.
-- **Suggestions:** they appear as you type, or press Ctrl+Space. They cover keys (with their type), the values a key takes (alignments, your `#pallet` colors, the theme's images and fonts, `#elements` for `parent`), `{tags}` in text, and `[capabilities]` in keys. They come from PortMaster's own code, so they match what it accepts.
-- **Checks:**
-  - JSON mistakes, in plain words: a missing comma, a comma before `}`, single quotes, comments
-  - keys PortMaster doesn't know, which it ignores, with "did you mean" for typos like `barwidth` (it's `bar-width`)
-  - values of the wrong type
-  - colors that aren't in `#pallet`, and images and fonts that aren't there
-  - `#element:` and `parent` names that don't exist
-  - errors pugwash logged while drawing the screen
-
-  The list under the screen jumps to each one.
-- **Saving:** Save (Ctrl/⌘+S) writes `theme.json`. The previous version is kept as `theme.json.bak`. If the file changed on disk since you opened it, you're asked before it's overwritten. If you edit `theme.json` in another editor while the page is open, the page loads the new version, unless you have unsaved changes there.
-- **A new theme:** the built-in default theme can't be changed. **Copy to a new theme…** copies any theme, your unsaved changes included, into the themes folder under a new name, and you carry on editing the copy.
-- **Downloaded themes:** you can edit a theme downloaded from PortMaster's theme list, but downloading an update of it there replaces your changes. Copy it first to keep them.
-
-### On your device
-
-PortMaster carries the same server: **Options → Theme Editor** starts it on the device, and shows its address as text and as a QR code. Each device picks a random port the first time and keeps it, so the address stays the same. Open it on a computer or phone on the same network: no checkout or install needed. It previews the themes installed on the device, with the device's own ports list. **Edit** saves into the device's `PortMaster/themes/`, and a copy made there shows up in PortMaster's theme list. The translation editor saves into the device's PortMaster. Press B on the device to stop it.
-
-- Translations saved on a device are in `PortMaster/pylibs/locales/` there. Copy them off before updating PortMaster, which replaces that folder.
-- On a handheld (an RG35XX-H) the first screen takes 2-3 seconds, a new screen size about 2, switching theme, color scheme or language (or saving) about a second, and each other screen half a second. In the Edit view, the preview takes about 2.5 seconds to catch up with your typing. Each screen size has a render process; how many are kept at once depends on the device's free memory.
-- Anyone on the same network can open it while it runs.
-
-### Translating PortMaster
-
-The same server is a translation editor: pick **Translate** at the top. It lists every string of PortMaster (and, under **Themes**, every theme's text) with the chosen language's translation.
-- **Filters:** show only the untranslated strings, those with problems, or those on the rendered screens.
-- **Preview:** selecting a string shows the screens that use it, in that language, at the chosen resolution. Saving (leave the box, or Ctrl/⌘+Enter for the next string) updates them a moment later, so you can see whether it fits.
-- **Problems flagged:** a translation that drops a `{placeholder}`, a line break, or a space the English starts or ends with (text joined to other text, like "Music: " + "Disabled").
-- **Where it saves:** the language files in your checkout, `PortMaster/pylibs/locales/<lang>.json` and `<lang>.themes.json`. Pick a language marked "new" to start one.
-
-A theme can also carry its own translations, in a `#translations` section of its `theme.json`:
+## theme.json at a glance
 
 ```json
-    "#translations": {
-        "de_DE": { "Ports List": "Portliste" }
-    },
+{
+    "#info":      { "name": "My Theme", "creator": "Me", "description": "…", "version": 1,
+                    "default-scheme": "Dark", "default-layout": "List" },
+    "#base":      { "font": "DejaVuSans.ttf", "font-size": 20, "font-color": "text" },
+    "#pallet":    { "text": "#ffffff", "accent": [ 244, 149, 25 ] },
+    "#resources": { "buttons.png": { "atlas": { "_A": [ 0, 0, 180, 180 ] } } },
+    "#schemes":   { "Dark": { "#pallet": { … } }, "Light": { "#pallet": { … } } },
+    "#styles":    { "caption": { "font-size": 11, "font-color": "text_faint" } },
+    "#elements":  { "left_pane": { "area": [ 0.0, 0.1, 0.4, 0.92 ] } },
+    "#layouts":   { "List": {}, "Grid": {} },
+    "#override":  { "_CHECKED": "[x]" },
+    "#translations": { "de_DE": { "Ports List": "Portliste" } },
+
+    "main_menu":  { "option_list": { "area": [ 0.1, 0.1, 0.9, 0.9 ] }, … },
+    "ports_list": { … },
+    …
+}
 ```
 
-They win over PortMaster's translations of the same text.
+The `#` sections are the theme's settings and shared pieces. Every other top-level key is a **section**: one PortMaster screen, holding the **regions** drawn on it. A region is a rectangle that can have a fill, an outline, an image, text, a list or a bar of buttons. [The screens](#the-screens) lists every section and the regions it needs.
 
-Every theme needs `main_menu`, `option_menu`, `ports_list` and `message_window` sections: pugwash fills in the other screens from those when a theme leaves them out.
+| Key | What it is |
+|---|---|
+| `#info` | `name` and `creator` (both needed to publish), `description` (shown in the theme list), `version`, `default-scheme`, `default-layout` |
+| `#base` | keys every region starts from |
+| `#pallet` | named colors: [Colors](#colors) |
+| `#resources` | images (and atlases of them) and sounds, loaded when the theme loads: [Images](#images) |
+| `#schemes` | color schemes the player picks from: [Color schemes](#color-schemes) |
+| `#styles` | named sets of keys that regions start from: [Styles](#styles) |
+| `#elements` | named regions any section can use, and areas other regions can sit in: [Elements](#elements) |
+| `#layouts` | layouts the player picks from: [Layouts](#layouts-a-list-or-a-grid) |
+| `#override` | text for the special words (`_A`, `_CHECKED` …): [The button bar](#the-button-bar-and-special-words) |
+| `#translations` | the theme's own translations: [Translations](#translations) |
+| `#animations` | frame counters for animated images: [Animations](#animations) |
 
-## Scene Format
+JSON doesn't allow comments or a comma after the last item. The [theme server's editor](#the-theme-server) points out both, and much more, as you type.
 
-The theme has a few different sections:
+## How a region gets its keys
 
-- `#info`: Info about the theme
-- `#base`: The base element, which every gui element in the theme inherits from
-- `#pallet`: Predefined colors for the theme.
-- `#resources`: Images the theme uses, can either be an atlas or individual images.
-- `#elements`: Reusable elements that different scenes in your theme can use.
-- `#styles`: Named sets of keys (a font, its size and color, say) that elements start from.
-- **scenes**: Scenes that the gui uses
+A region's keys are merged from several places, each one over the last:
 
-It also uses a template system for the text, so that the gui elements automatically update as the text changes.
+1. the theme's `#base` (after the color scheme's changes to it)
+2. the section's own `#base`, if it has one
+3. the `#elements` entry it's made from (`"#element:panel"`), on top of that entry's `style`
+4. its own `style`
+5. its own keys
 
+So a key in the region wins over its style, its style over its element, and so on down to `#base`. Keys with [capabilities](#capabilities-keys-for-some-devices) are resolved at every step: `"font-size[hires]": 24` is `font-size` on a device with `hires`, and isn't there at all on one without.
 
-## Element Inheritence Order:
+A section can be given again with capabilities, to change some of its regions on some devices. Its other regions stay as they are:
 
-The order that elemets get their values is defined as:
+```json
+    "ports_list": {
+        "ports_list": { "area": [ 0.0, 0.1, 0.4, 0.92 ], "font-size": 14 },
+        "port_desc":  { "area": [ 0.42, 0.5, 1.0, 0.92 ] }
+    },
+    "ports_list[square]": {
+        "ports_list": { "area": [ 0.0, 0.1, 1.0, 0.5 ] }
+    }
+```
 
-element -> scene `#base` -> global `#base`
+A region can be given again the same way (`"ports_list[hires]": { … }`, after `"ports_list"`), which changes only the keys it has.
 
+## Capabilities: keys for some devices
 
-If you use a reusable element the order is:
+Any key can end in `[capabilities]`, and then counts only on devices that have them. When the same key is there more than once, **the last one that matches wins**, so put the general value first and the special cases after it:
 
-element -> element `#element` -> scene `#base` -> global `#base`
+```json
+    "#base": {
+        "font-scale": "auto",
+        "font-scale[1280x720]": 1.5,
+        "font-scale[hires,square]": 1.8
+    }
+```
 
-A style comes just under whatever names it, so that can change any of its keys:
+- `,` means *and*: `[hires,square]` needs both.
+- `|` means *or*: `[ja_JP|zh_CN|ko_KR]` needs one of them.
+- `!` means *not*: `[!hires]`.
 
-element -> its `style` -> element `#element` -> the `#element`'s `style` -> scene `#base` -> global `#base`
+| Capability | When |
+|---|---|
+| `640x480`, `1280x720` … | the screen's size, width first |
+| `4:3`, `16:9`, `3:2`, `1:1`, `16:10` … | the screen's shape (a 16:10 screen also has `16:9`) |
+| `hires` | 960 wide or more, or 720 tall or more |
+| `lowres` | narrower than 640 or shorter than 480 |
+| `wide` | 3:2 or wider (16:9, 16:10, 5:3 …) |
+| `square` | square or nearly: neither side more than 1.25 times the other (1:1, 1240x1080, 4:3 isn't) |
+| `en_US`, `de_DE`, `ja_JP` … | the language PortMaster is in |
+| `layout_<name>` | the [layout](#layouts-a-list-or-a-grid) the player chose (`layout_grid`) |
+| `font_scale_auto` | PortMaster understands `"font-scale": "auto"`: see [Older PortMasters](#older-portmasters) |
+| `power` | anything faster than an RK3326 |
+| `opengl`, `vulkan` | desktop OpenGL (not just GLES), Vulkan |
+| `analog_0` … `analog_2`, `analog_triggers`, `touch`, `rumble` | the controls |
+| `1gb`, `2gb`, `4gb` … | at least that much memory |
+| `aarch64`, `armhf`, `x86_64` | what it runs |
 
+A screen that's `hires` is neither `lowres` nor 640x480-sized, so `[!lowres,!hires]` is "about 640x480". The [theme server](#the-theme-server) draws any screen at any size, with the capabilities a device of that size has, so you can see what each one gets.
+
+## Areas: where a region goes
+
+`area` is `[ left, top, right, bottom ]`, the region's two corners, in its **parent**: the whole screen, or the region or element named in `parent`.
+
+![Areas in a parent](docs/theme/areas.png)
+
+Each value is one of:
+
+| Value | Means |
+|---|---|
+| `0.0` to `1.0`, with a decimal point | that fraction of the parent's width (left, right) or height (top, bottom) |
+| a negative number | that many pixels in from the parent's right (or bottom) edge |
+| a whole number for `left` or `top` | that many pixels in from the parent's left (or top) edge |
+| a whole number for `right` or `bottom` | **a position on the screen, not in the parent**: use a fraction or a negative number instead |
+
+`1.0` is the parent's whole width; `1` is one pixel. The theme server's editor keeps what you typed when it tidies the file, so a `1.0` stays a `1.0`.
+
+```json
+    "#elements": {
+        "right_pane": { "area": [ 0.45, 0.12, 0.97, 0.95 ] }
+    },
+    "port_info": {
+        "port_title": { "parent": "right_pane", "area": [ 0.0, 0.0, 1.0, 0.2 ] },
+        "port_image": { "parent": "right_pane", "area": [ 10, 0.2, -10, 0.7 ] },
+        "port_desc":  { "parent": "right_pane", "area": [ 10, 0.7, -10, -10 ] }
+    }
+```
+
+A parent is an `#elements` entry, or a region earlier in the same section. Here are the default theme's ports list regions, numbered, as the theme server draws them with **Region boxes** on:
+
+![The ports list's regions](docs/theme/regions/ports_all.png)
+
+### Any screen size
+
+PortMaster runs on screens no theme lists: portrait, ultrawide, nearly square, smaller than 640x480. A layout holds together on all of them when:
+
+- **The screen is split into pieces, and each piece into smaller ones.** Give each a `parent` and fractions of it, so pieces next to each other meet where one ends (`[ 0.0, 0.11, 1.0, 0.52 ]`, then `[ 0.0, 0.52, 1.0, 1.0 ]`) instead of overlapping and being moved apart screen by screen. Then `area[…]` keys only move the splits (`"area[wide]"` on a pane), never single regions.
+- **Pixels are only padding inside a region's own box.** A region at `[ 5, 65, -5, -45 ]` stays 65 pixels down when the text above it is twice the size.
+- **Content ends above the button bar**, or sits beside it.
+- **Text sizes follow the screen:** `"font-scale": "auto"` first in `#base` ([Text](#text)).
+
+![The main menu at 480x320, 640x480, 720x720 and 1280x720](docs/theme/screen-sizes.png)
+
+`serve.py --export OUT --check` renders every screen, then checks what each region drew where. It lists text or images of two regions on top of each other, content off the screen or outside its own region, and (as a warning) text drawn smaller or bigger than its font size, because its box doesn't fit it. It exits 1 if anything worse than a warning turns up. PortMaster's tests run it on the default theme at seven sizes.
+
+## Colors
+
+A color is any of:
+
+- `[ r, g, b ]` or `[ r, g, b, a ]`, from 0 to 255 (`a` is opacity: 0 is see-through)
+- `"#rrggbb"` or `"#rrggbbaa"`
+- the name of a `#pallet` color
+
+```json
+    "#pallet": {
+        "text":       "#e8eaed",
+        "text_faint": [ 255, 255, 255, 140 ],
+        "accent":     "#f7941d"
+    },
+    "#base": { "font-color": "text" }
+```
+
+Name every color in `#pallet` and use the names: then a [color scheme](#color-schemes) is just a different `#pallet`.
+
+| Key | Colors |
+|---|---|
+| `fill` | the region's background |
+| `outline`, `thickness` | a border around it, and how many pixels wide |
+| `roundness` | rounds its corners by that many pixels |
+| `font-color` | its text |
+| `font-outline` | `[ color, thickness ]`: an outline around each letter |
+| `progress-fill` | the done part of a progress bar (`message_window`'s `progress_bar`) |
+| `select-fill`, `select-color` | a list's selected row: behind it, its text |
+| `alt-fill` | every other row of a list, or the unselected tiles of a grid |
+| `no-select-fill`, `no-select-color` | rows that can't be selected (headings) |
+| `inactive-select-fill`, `inactive-select-color` | the selected row while the list isn't the one in use |
+| `image-mod` | tints the region's image: each pixel times this color |
+
+## Text
+
+```json
+    "port_title": {
+        "area": [ 0.0, 0.0, 1.0, 0.2 ],
+        "font": "Roboto-Medium.ttf",
+        "font-size": 21,
+        "font-color": "text",
+        "align": "midleft",
+        "text": "{port_info.title}"
+    }
+```
+
+| Key | Default | |
+|---|---|---|
+| `font` | | a `.ttf` or `.otf` file |
+| `font-size` | 30 | its size at 640x480 (before `font-scale`) |
+| `font-scale` | 1.0 | multiplies `font-size`: a number, or `"auto"` |
+| `font-color` | white | |
+| `font-outline` | | `[ color, thickness ]` |
+| `text` | | the text, with `{tags}`: [Text templates](#text-templates) |
+| `align` | `topleft` | `topleft`, `midtop`, `topright`, `midleft`, `center`, `midright`, `bottomleft`, `midbottom`, `bottomright` (`topcenter` and `bottomcenter` are the same as `midtop` and `midbottom`) |
+| `border`, `border-x`, `border-y` | 0 | space between the region's edge and its text: all round, left and right, top and bottom |
+| `text-wrap` | false | break long text into lines |
+| `text-clip` | true | cut off text that doesn't fit. With `false`, text that doesn't fit is drawn smaller |
+| `line-height` | 1.0 | the space each line takes, times the font's own line height |
+| `line-height-scale` | 1.0 | multiplies `line-height` (one key in `#base` for a language) |
+| `line-space` | 0 | extra pixels between wrapped lines |
+| `font-override` | | a font that wins over the region's own `font` (per language, in `#base`) |
+
+### Sizes that follow the screen
+
+`"font-scale": "auto"` gives text the size it has at 640x480, times `min(width / 640, height / 480)`, so 1280x720 gets 1.5, 1920x1080 2.25 and 640x360 0.75. It never goes below 0.75, so text on small screens stays readable. `"auto*1.2"` makes that a fifth bigger. Put it first: the sizes you give for particular screens after it still win, and a screen you didn't list (a 1240x1080 one) gets a sensible size instead of 640x480's.
+
+```json
+    "#base": {
+        "font-scale": "auto",
+        "font-scale[1280x720]": 1.5
+    }
+```
+
+### Text that doesn't fit
+
+A line too long for its region is cut off (`text-clip`), or drawn smaller with `"text-clip": false`. `autoscroll` scrolls it instead, sideways for one line and up and down for wrapped text:
+
+| Key | Default | |
+|---|---|---|
+| `autoscroll` | | `"slide"` scrolls to the end, waits, and starts again; `"marquee"` scrolls there and back |
+| `scroll-speed` | 30 | milliseconds between each step |
+| `scroll-delay-start`, `scroll-delay-end` | 1000 | milliseconds to wait before it starts, and at the end |
+| `scroll-direction` | `vertical` for wrapped text, else `horizontal` | which way it scrolls |
+| `scrollable` | false | the player scrolls wrapped text with up and down |
+| `scroll-amount` | 1 | lines per press, for `scrollable` |
+
+A list scrolls its selected row's text the same way.
+
+### Chinese, Japanese and Korean
+
+Fonts like Roboto have no Chinese, Japanese or Korean letters, so those languages need fonts of their own. PortMaster has Noto Sans for each: `NotoSansJP-Regular.ttf`, `NotoSansKR-Regular.ttf`, `NotoSansSC-Regular.ttf` (simplified Chinese), `NotoSansTC-Regular.ttf` and `NotoSansHK-Regular.ttf`. `font-override` in `#base`, per language, is the font every region uses in that language, whatever font it names. Those fonts are taller, so `line-height-scale` makes the lines a little closer:
+
+```json
+    "#base": {
+        "font": "Roboto-Regular.ttf",
+        "font-override[ja_JP]": "NotoSansJP-Regular.ttf",
+        "font-override[ko_KR]": "NotoSansKR-Regular.ttf",
+        "font-override[zh_CN]": "NotoSansSC-Regular.ttf",
+        "font-override[zh_TW]": "NotoSansTC-Regular.ttf",
+        "font-override[zh_HK]": "NotoSansHK-Regular.ttf",
+        "line-height-scale[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 0.8
+    }
+```
+
+![The ports list in English, German and Japanese](docs/theme/languages.png)
+
+German and the other European languages have longer words than English: leave room, or let the text scroll.
+
+## Images
+
+```json
+    "background": { "area": [ 0.0, 0.0, 1.0, 1.0 ], "image": "background.png", "image-mode": "stretch" },
+    "logo":       { "area": [ 0.05, 0.02, 0.3, 0.1 ], "image": "logo.png", "image-align": "midleft" },
+    "screenshot": { "area": [ 0.5, 0.2, 0.95, 0.6 ], "image": "{port_info.image}" }
+```
+
+| Key | Default | |
+|---|---|---|
+| `image` | | a file, a `#resources` name, a `{tag}` (the port's screenshot), or `qr:` and text |
+| `image-mode` | `fit` | `fit` (whole image, its shape kept), `fit-horizontal`, `fit-vertical`, `stretch` (fills the region), `repeat` (tiles it) |
+| `image-align` | `center` | where a fitted image sits: the `align` values |
+| `image-size` | | `[ width, height ]` in pixels |
+| `image-mod` | | a color that tints it |
+| `patch`, `pimage` | | draws it as a 9-patch: below |
+| `blend-mode` | | `blend` (the default for images with transparency), `add`, `mod`, `mul`, `none` |
+
+PNG, JPEG and SVG all work. An SVG in `#resources` can be given a size to be drawn at: `"logo.svg": { "size": [ 400, 120 ] }`.
+
+### #resources and atlases
+
+Images in `#resources` are loaded with the theme. Give one a `name` to use it by, `image-mod` to tint it, or an `atlas` to cut it into named pieces, each `[ x, y, width, height ]`, with optional flips and a rotation after (`[ x, y, w, h, flip_x, flip_y, angle ]`):
+
+```json
+    "#resources": {
+        "bg_dark.png": { "name": "BACKGROUND" },
+        "icons.png": {
+            "atlas": {
+                "icon_storage": [   0, 0, 64, 64 ],
+                "icon_battery": [  64, 0, 64, 64 ],
+                "arrow_left":   [ 128, 0, 32, 64 ],
+                "arrow_right":  [ 128, 0, 32, 64, 1 ]
+            }
+        }
+    }
+```
+
+A color scheme can change `#resources` (its own `BACKGROUND`, say): see [Color schemes](#color-schemes). Sounds go in `#resources` too: [Sounds and music](#sounds-and-music).
+
+### Which images stay loaded
+
+- **The theme's own images** (its files and PortMaster's, by name: `#resources`, a region's `image` and `pointer`, animation frames) stay loaded until the theme does.
+- **Port screenshots and QR codes** come from the ports, and there can be any number of them, so only the 30 most recently drawn are kept (more while a grid shows more). One a region still shows when it's dropped is loaded again for its next draw.
+
+So a big animation (many large frames) costs memory the whole time the theme is in use: keep frames small. (PortMaster before 2026.11 could drop a theme image that wasn't in `#resources` while a region still used it, and crash: list every image a theme uses there if it's meant for older PortMasters too.)
+
+### 9-patch images
+
+A 9-patch image keeps its corners and edges sharp at any size: `patch` gives how many pixels at the left, top, right and bottom don't stretch. The corners are drawn as they are, the edges stretch one way, and the middle both ways. `pimage` is the image to draw that way, if the region's `image` is something else.
+
+![A 9-patch card](docs/theme/nine-patch.png)
+
+```json
+    "port_card": {
+        "area": [ 0.36, 0.11, 0.97, 0.9 ],
+        "image": "card_dark.png",
+        "patch": [ 14, 14, 14, 14 ],
+        "patch[hires]": [ 20, 20, 20, 20 ]
+    }
+```
+
+The default theme draws its rounded cards this way.
+
+### QR codes
+
+An `image` starting with `qr:` is a QR code of the text after it, which can use tags: `"image": "qr:{port_links.url}"`. It's redrawn when a tag's value changes, and an empty text shows nothing. The code is black on white with a white border, as phone cameras read best, and it's scaled up without smoothing so it stays sharp at any size. Give it a square area, or `"image-mode": "fit"` (the default), so it isn't stretched.
+
+![The port links screen](docs/theme/screens/port_links.png)
+
+## Lists
+
+A region with a list (`option_list`, `ports_list`, `filter_list` …) gets its rows from PortMaster. The theme decides how they look:
+
+| Key | Default | |
+|---|---|---|
+| `item-size` | the font's line height | a row's height in pixels |
+| `line-height` | 1.0 | a row's height, times the font's line height |
+| `item-spacer` | 0 | pixels between rows |
+| `select-fill`, `select-color` | | the selected row: behind it, its text |
+| `alt-fill` | | every other row |
+| `no-select-fill`, `no-select-color` | | rows that can't be selected |
+| `inactive-select-fill`, `inactive-select-color` | | the selected row while another list is in use (the filters screen's ports list) |
+| `list-header`, `list-header-add-blank` | | a heading row at the top, and a blank row after it |
+| `list-section-add-blank` | false | a blank row before each heading in the list |
+| `click-sound`, `click-sound-volume` | | a sound when the selection moves |
+
+### The pointer
+
+A pointer is an image drawn beside the selected row:
+
+![The default theme's pill: a half-disc pointer at both ends of the selected row](docs/theme/pointer-fit.png)
+
+```json
+    "option_list": {
+        "select-fill": "accent",
+        "pointer": "pill_cap.png",
+        "pointer-fit": "row",
+        "pointer-attach": "list",
+        "pointer-align": [ "midleft", "midright" ],
+        "pointer-mirror": true
+    }
+```
+
+| Key | Default | |
+|---|---|---|
+| `pointer` | | the image (list it in `#resources` for older PortMasters) |
+| `pointer-fit` | | `"row"`: the pointer is exactly a row tall, its width keeping the image's shape, at any font size and screen size |
+| `pointer-attach` | `text` | `text`: beside the row's text; `list`: beside the row, and the list's side padding is the pointer's width |
+| `pointer-align` | `[ "midright", "midleft" ]` | the point of the row it's attached to, and the point of the pointer that goes there |
+| `pointer-mirror` | false | a second pointer at the other end, flipped (`pointer-mirror-x`, `pointer-mirror-y` choose the flips) |
+| `pointer-flip-x`, `pointer-flip-y` | false | flip the pointer |
+| `pointer-size` | the image's | `[ width, height ]` in pixels, without `pointer-fit` |
+| `pointer-offset` | `[ 0, 0 ]` | moves it by that many pixels |
+
+`pointer-size`, `pointer-offset` and `border-x` are pixels, which `font-scale` doesn't change, so a pointer sized for one screen is too big or too small for the rows on another: use `pointer-fit`.
+
+### Grids
+
+`list-columns` above 1 draws a list as a grid of tiles. Each tile shows the item's image (the port's screenshot) above its name. Only the ports lists have images; other lists draw tiles with just the name.
+
+```json
+    "ports_list": {
+        "list-columns": 3,
+        "list-columns[wide]": 4,
+        "item-spacer": 8,
+        "item-padding": 4,
+        "alt-fill": "card",
+        "select-fill": "accent",
+        "roundness": 10,
+        "autoscroll": "marquee"
+    }
+```
+
+| Key | Default | |
+|---|---|---|
+| `list-columns` | 1 | columns, up to 6 |
+| `item-size` | a 4:3 image and a line of text | a tile's height |
+| `item-spacer` | 0 | pixels between tiles |
+| `item-padding` | 4 | pixels between a tile's edge and its image and name |
+| `alt-fill`, `select-fill` | | the tiles, and the selected one |
+| `roundness` | 0 | rounds the tiles (and the images' corners, when the tile has a fill) |
+
+Left and right move one tile, up and down one row, L1 and R1 one page. Keep a grid to about 30 tiles on screen at once: each tile's screenshot is loaded from the SD card. To offer a list and a grid in one theme, see [Layouts](#layouts-a-list-or-a-grid).
+
+## The button bar and special words
+
+A region tagged `button_bar` gets the buttons each screen offers ("A: Enter", "B: Back"). Its `bar` is a list of text and images, drawn in a row. A `null` splits it in two, the part before it on the left and the part after it on the right.
+
+| Key | Default | |
+|---|---|---|
+| `bar` | | the list (PortMaster fills in the button bar's) |
+| `bar-space` | 4 | pixels between the items |
+| `bar-width` | | the smallest width an item takes |
+| `button-sound`, `button-sound-alt` (and `-volume`) | | sounds for A, and for the other buttons |
+
+A bar too long for its region is drawn smaller to fit it.
+
+### Special words
+
+Text can name buttons and checkboxes with special words, which a theme shows as text or as images:
+
+| Word | | Word | |
+|---|---|---|---|
+| `_A`, `_B`, `_X`, `_Y` | face buttons | `_UP`, `_DOWN`, `_LEFT`, `_RIGHT` | the D-pad |
+| `_START`, `_SELECT` | | `_L`, `_R` | shoulder buttons |
+| `_CHECKED`, `_UNCHECKED` | a checkbox (the filters) | `_MORE` | more is below |
+
+As images: `#resources` pieces with those names (the default theme cuts them out of `buttons.png` with an atlas). As text, in `#override`:
+
+```json
+    "#override": {
+        "_A": "A:", "_B": "B:", "_X": "X:", "_Y": "Y:",
+        "_CHECKED": "[x]", "_UNCHECKED": "[ ]"
+    }
+```
+
+### Buttons of your own
+
+A section's `#config` can give buttons other jobs on that screen. `port_info` has two: `"port_links"` (opens the port's links) and `"port_info_popup"` (opens the `port_info_popup` section, if the theme has one). A, B, X and Y are always PortMaster's.
+
+```json
+    "port_info": {
+        "#config": { "buttons": { "UP": "port_info_popup", "R": "port_links" } },
+        …
+    }
+```
+
+## Text templates
+
+`text`, `image` and `bar` items can use **tags** in braces, which PortMaster fills in and keeps up to date:
+
+```json
+    "text": "{port_info.title}"
+    "text": "{system.cfw_name} {system.cfw_version}"
+    "image": "menu_{menu.selected}.png"
+```
+
+A tag PortMaster doesn't know shows as it's written, braces and all. `{{` is a plain `{`. [Tags](#tags) lists them all.
+
+**Conditions** show text only when a tag has a value, or a particular one:
+
+```json
+    "text": "{if:port_info.runtime}Runtime: {port_info.runtime}{else}No runtime needed{endif}"
+```
+
+| Condition | True when |
+|---|---|
+| `{if:tag}` | the tag isn't empty |
+| `{if:!tag}` | the tag is empty |
+| `{if:tag:text}` | the tag is exactly `text` |
+| `{if:!tag:text}` | the tag isn't `text` |
+| `{if:tag::other_tag}` | the two tags are the same |
+| `{if:!tag::other_tag}` | they aren't |
+
+Each `{if:…}` ends with `{endif}`, with an optional `{else}` between. Don't put one inside another.
+
+Text without tags is translated as it is ([Translations](#translations)). Text with tags is translated before the tags are filled in.
+
+## Color schemes
+
+A theme can have color schemes, which the player picks in **Options › Select Color Scheme**. Each one changes the theme's `#pallet`, and can change its `#resources`, `#base` and `#styles` too:
+
+```json
+    "#info": { "default-scheme": "Dark Mode" },
+    "#schemes": {
+        "#base": {
+            "#pallet":    { "accent": "#f7941d" },
+            "#resources": { "buttons.png": { "atlas": { … } } }
+        },
+        "Dark Mode": {
+            "#pallet":    { "background": "#1b1b1b", "text": "#e8eaed" },
+            "#resources": { "card_dark.png": { "name": "card" } }
+        },
+        "Light Mode": {
+            "#pallet":    { "background": "#f3f4f6", "text": "#1f2328" },
+            "#resources": { "card_light.png": { "name": "card" } }
+        }
+    }
+```
+
+![The main menu in Dark Mode, Light Mode and OLED Mode](docs/theme/schemes.png)
+
+- `#schemes`' own `#base` is what every scheme starts from.
+- A scheme's `#pallet`, `#resources` and `#base` take the place of the theme's. Its `#styles` change the theme's styles they name, and keep the rest.
+- The chosen scheme is saved. A theme without it (another theme, or renamed in an update) gets its `default-scheme`, or its first.
 
 ## Styles
 
-`#styles` gives a name to keys that many elements share, most often how their text looks. An element, an `#elements` entry or a `#base` names one with `"style"`, and starts from its keys:
+`#styles` gives a name to keys that many regions share, most often how their text looks. A region, an `#elements` entry or a `#base` names one with `"style"`, and starts from its keys:
 
 ```json
     "#styles": {
@@ -125,479 +566,53 @@ element -> its `style` -> element `#element` -> the `#element`'s `style` -> scen
     },
 
     "port_info": {
-        "info_genre_label": { "style": "caption", "area": [ 0.0, 0.0, 0.3, 0.5 ] },
-        "info_genre":       { "style": "label", "font-size": 16, "area": [ 0.0, 0.5, 0.3, 1.0 ] }
+        "spec_label_0": { "style": "caption", "area": [ 0.0, 0.0, 0.3, 0.5 ] },
+        "spec_value_0": { "style": "label", "font-size": 16, "area": [ 0.0, 0.5, 0.3, 1.0 ] }
     }
 ```
 
-- The element's own keys win: `info_genre` is a `label` at size 16.
-- A style can name another one (`title` is a bigger `label`), and `"style": [ "label", "faint" ]` applies several, in order, the later ones winning.
+- The region's own keys win: `spec_value_0` is a `label` at size 16.
+- A style can name another one (`title` is a bigger `label`), and `"style": [ "label", "faint" ]` applies several in order, the later ones winning.
 - Keys in a style can have capabilities like any other (`"font-size[hires]": 16`), and so can `style` (`"style[layout_grid]": "card"`).
-- A color scheme can have `#styles` too, which changes the keys it gives and keeps the rest.
+- A color scheme can have `#styles` too.
 
-
-## Element overrides
-
-You can override values in elements based on hardware by specifying a hardware capabilities on an attribute:
-
-```json
-
-    "#base": {
-        "font": "DejaVuSans.ttf",
-        "font-scale[hires]": 2.0,
-        "font-scale[5:3,hires]": 3.0
-    },
-
-```
-
-You can override entire elements based on hardware capabilities:
-
-```json
-
-        "ports_list": {
-            "area": [0.0, 0.1, 0.4, 0.95],
-            "border-x": 16,
-            "roundness": 10,
-            "font-size": 14,
-            "font-color": "list_text",
-            "select-color": "list_selected",
-            "text-clip": true,
-            "text-wrap": false,
-            "autoscroll": "slide",
-            "scroll-speed": 30,
-            "scroll-delay-start": 500,
-            "scroll-delay-end":   500
-        },
-        "ports_list[hires]": {
-            "area": [0.0, 0.1, 0.3, 0.95]
-        },
-```
-
-Since this uses the capabilities system used in ports you can add them together and or not them.
-
-
-Currently the capabilities are:
-
-- `hires`: devices with a screen resolution greater than 640:480
-- `lowres`: devices with a screen resolution smaller then 640:480
-- `power`: any device above an `rk3326` cpu.
-- `opengl`: any device with `OpenGL`, not OpenGLES.
-- `wide`: an aspect ratio of 3:2 or wider (16:9, 16:10, 5:3, ...)
-- `square`: square or nearly (up to 1.25:1 either way): 1:1, and screens like the Retroid Pocket Classic's 1240x1080
-- `3:2`: aspect ratio of 3:2
-- `4:3`: aspect ratio of 4:3
-- `5:3`: aspect ratio of 5:3
-- `16:9`: aspect ratio of 16:9
-- `427:240`: aspect ratio of 427:240 (ogs/ogu & friends)
-- `480x320`: screen resolution of 480x320
-- `640x480`: screen resolution of 640x480
-- `854x480`: screen resolution of 854x480
-- `960x544`: screen resolution of 960x544
-- `1280x720`: screen resolution of 1280x720
-- `1920x1152`: screen resolution of 1920x1152
-- `language`: the current language (en_US, de_DE, es_ES, fr_FR, it_IT, and pl_PL)
-
-
-You can combine them like so:
-
-- `!lowres|hires`: must be exactly 640:480
-
-
-## Scenes
-
-Scenes can define their own `#base` element, which will cause all elements in that scene to inherit from.
-
-Currently there are the following scenes:
-
-- `main_menu`: The main menu
-- `option_menu`: Options screen
-- `ports_list`: The list of ports
-- `port_info`: Detailed port information. X opens the port's links (`port_links`) when it has any; a theme that maps buttons in `#config` can use the action `port_links`.
-- `port_links`: A port's links, its page on the PortMaster website (ports from the PortMaster and Multiverse sources) and the stores in its `port.json`, each as a QR code. The list is the region tagged `links_list`. The selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website", "Steam: developer", ...), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`); `{port_links.count}` is how many there are. Show the QR code with `"image": "qr:{port_links.url}"`. A theme without this section (one made before it) gets one made from its `themes_list` section: its list, the QR code where the theme screenshot goes and the address where the description goes; if that has no `{theme_info.image}` region, a plain screen in PortMaster's own font.
-- `message_window`: A scrolling list of messages, used during downloading, installation, and fetching the latest ports information.
-- `message_box`: An alert box
-- `filter_list`: Available filters
-- `themes_list`: List themes / downloader.
-- `theme_server`: The theme editor (Options → Theme Editor), with the tags `{theme_server.url}`, the address, empty until the server is up, and `{theme_server.status}`, the instructions or what went wrong. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets one made from its `themes_list` section, as `port_links` does (the instructions where the list goes), or else a plain screen in PortMaster's own font.
-
-### Scene: main_menu
-
-This is the main menu scene, it requires the `option_list` element. It is the first scene to load and if backed out of will quit the program.
-
-```json
-    "main_menu": {
-        "option_list": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "list": []
-        },
-        "button_bar": {
-            "area": [ 0.0, 8.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "bar": []
-        }
-    }
-```
-
-The option_list can contain whatever text you feel is most appropriate, the actual option that gets called is the same option in the `option` list.
-
-### Scene: options_menu
-
-This is the options menu scene, it requires the `option_list` element. It is loaded from main-menu, this scene is reused for each subsequent option submenu.
-
-```json
-    "options_menu": {
-        "option_list": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "list": []
-        },
-        "button_bar": {
-            "area": [ 0.0, 8.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "bar": []
-        }
-    }
-```
-
-### Scene: ports_list
-
-This is the main list of ports, it requires the `ports_list` element. It is loaded from main-menu, this scene is reused for listing ports for installing and uninstalling.
-
-```json
-    "ports_list": {
-        "ports_list": {
-            "area": [ 0.0, 0.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "list": []
-        },
-        "button_bar": {
-            "area": [ 0.0, 8.0, 1.0, 1.0 ],
-            "font": "DejaVuSans.ttf",
-            "font-size": 10,
-            "bar": []
-        }
-    }
-```
-
+The default theme has eight: `caption`, `byline`, `body`, `strong`, `value`, `section_title`, `title` and `status`.
 
 ## Elements
 
-### The basics
-
-Elements are always rectangles, they must always have an `area` parameter. This can be pixels specifically, or a percentage of the parent area.
-
-If you specify negative pixels for the width/height it subtracts it from the width/height of the parent area.
-
-If you specify the coordinates in pixels it is in thef format: `x, y, width, height`
-
-If you specify it as a percentage of the parent area it is as: `top-left-x, top-left-y, bottom-right-x, bottom-right-y`
+An `#elements` entry is a region any section can use, and an area other regions can sit in.
 
 ```json
-
-    "get_rect_perc": {
-        // 25%, 25% to 75%, 75%
-        "area": [0.25, 0.25, 0.75, 0.75]
+    "#elements": {
+        "header_bar": { "area": [ 0.0, 0.0, 1.0, 0.08 ], "fill": "chrome" },
+        "left_pane":  { "area": [ 0.03, 0.11, 0.33, 0.9 ] },
+        "side_list":  { "parent": "left_pane", "area": [ 0.0, 0.1, 1.0, 1.0 ], "select-fill": "accent" }
     },
-
-    "get_rect_px": {
-        // same as above on a 640x480 display
-        "area": [160, 120, 320, 240]
-    },
-
-    "get_rect_inset": {
-        // same as above on a 640x480 display
-        "area": [160, 120, -160, -120]
-    },
-
-```
-
-As hinted to above, you can specify a parent element to use as the basis of the calculating element positions.
-
-
-```json
-        "left_pane": {
-            // [0, 0, 192, 480] on 640x480 display
-            "area": [ 0.0, 0.0, 0.3, 1.0 ]
-        },
-        "right_pane": {
-            // [192, 0, 448, 480] on 640x480 display
-            "area": [ 0.3, 0.0, 1.0, 1.0 ]
-        },
-        "port_info_image_area": {
-            // [202, 10, 236, 230] using the above right_pane as the basis
-            "parent": "right_pane",
-            "area": [ 10, 10, -10, 0.5 ]
-        },
-        "port_info_text_area": {
-            // [202, 240, 236, 230] using the above right_pane as the basis
-            "parent": "right_pane",
-            "area": [ 10, 0.5, -10, -10 ]
-        },
-```
-
-By mixing and matching these you can build very powerful layouts.
-
-You can also use the element overrides to further customise for different screen sizes.
-
-```json
-        "left_pane": {
-            "area": [ 0.0, 0.0, 0.3, 1.0 ],
-            "area[wide]": [ 0.0, 0.0, 0.4, 1.0 ]
-        },
-        "right_pane": {
-            "area": [ 0.3, 0.0, 1.0, 1.0 ],
-            "area[wide]": [ 0.4, 0.0, 1.0, 1.0 ]
-        },
-```
-
-#### Any screen size
-
-PortMaster runs on screens no theme lists: portrait, ultrawide, nearly square, smaller than 640x480. A layout holds together on all of them when:
-
-- **The screen is split into pieces, and each piece into smaller ones.** Give each a `parent` and fractions of it, so that pieces next to each other meet where one ends (`[0.0, 0.11, 1.0, 0.52]`, then `[0.0, 0.52, 1.0, 1.0]`), instead of overlapping and being moved apart screen by screen. Then `area[...]` overrides only move the splits (`"area[wide]"` on a pane), never single regions. PortMaster Classic's ports list (in the theme repo) is built this way: `right_pane` › `port_info_content` (above the button bar) › title, image, text area › general info and description.
-- **Pixels are only padding inside a region's own box.** A region at `[5, 65, -5, -45]` stays 65 pixels down when the text above it is twice the size.
-- **Content ends above the button bar** (`0.92`), or sits beside it. A button bar longer than its area shrinks to fit it.
-- **Text sizes follow the screen:** `"font-scale": "auto"` first in `#base` (see Displaying Text).
-
-`serve.py --export OUT --resolutions 720x1280,3440x1440,480x272 --check` renders every screen and then checks what each region drew where. It lists:
-
-- text or images of two regions on top of each other
-- content off the screen, or outside its own region
-- text drawn smaller or bigger than its font size (a warning: its box doesn't fit it)
-
-It exits 1 if anything worse than a warning turns up. `tests/test_theme_server.py` runs it on the default theme at seven sizes (`LAYOUT_SIZES`).
-
-
-Elements can be themed by setting a `fill`, `outline`, `thickness`, and `roundness`:
-
-- `fill`: the color to fill in the elements rect
-- `outline`: the color of the outline for the elements rect
-- `thickness`: how thick the stroke of the outline is
-- `roundess`: if sdlGFX is available, it will make a roundrect with x pixels of roundness in the corners.
-- `progress-fill`: this is a special fill color, used for the progress bar.
-
-
-
-### Displaying Text
-
-Currently there are a few ways of displaying text.
-
-To display text at a minimum you need a `font`, `font-size`, `font-color`, and `text`.
-
-```json
-    "text_element": {
-        "area": [0.25, 0.25, 0.75, 0.75],
-        "text": "Text to be displayed!",
-        "font": "DejaVuSans.ttf",
-        "font-size": 20,
-        "font-color": [0, 0, 0]
-    }
-```
-
-A special option is `font-scale` which should be used to broadly scale fonts across multiple elements or scenes using the element overrides.
-
-```json
-    "#base": {
-        "font-scale[hires]": 2.0,
-    }
-```
-
-#### Fonts for Chinese, Japanese and Korean
-
-Fonts like Roboto or DejaVu Sans have no Chinese, Japanese or Korean, so those languages need their own fonts (PortMaster has Noto Sans for each: `NotoSansJP-Regular.ttf`, `NotoSansKR-`, `NotoSansSC-`, `NotoSansTC-`, `NotoSansHK-`). `font-override` in `#base`, per language, is the font every region uses in that language, whatever font it names itself; `line-height-scale` scales every region's line height (those fonts are taller):
-
-```json
-    "#base": {
-        "font": "Roboto-Regular.ttf",
-        "font-override[ja_JP]": "NotoSansJP-Regular.ttf",
-        "font-override[ko_KR]": "NotoSansKR-Regular.ttf",
-        "line-height-scale[ja_JP|zh_TW|zh_CN|zh_HK|ko_KR]": 0.8
-    }
-```
-
-so a region can say `"font": "Roboto-Medium.ttf"` and nothing more. (PortMaster before 2026.11 doesn't know them: a theme for those too gives `font[ja_JP]` & co in each region with its own font.)
-
-`"font-scale": "auto"` follows the screen: the size text has at 640x480, times `min(width / 640, height / 480)` (never below 0.75, so it stays readable), so 1280x720 gets 1.5, 1920x1080 2.25 and 640x360 0.75. `"auto*1.2"` makes that a fifth bigger. Put it first, and the sizes you give for particular screens after it still win: a screen you didn't list (a 1240x1080 one) then gets a sensible size instead of 640x480's. The default theme does this:
-
-```json
-    "#base": {
-        "font-scale": "auto",
-        "font-scale[1280x720]": 1.5
-    }
-```
-
-PortMaster before 2026.11 doesn't know `"auto"`: there a theme using it doesn't load. A theme meant for those too gives a number first, then `auto` under the `font_scale_auto` capability, which only PortMasters that understand it have; older ones skip that key and keep the number:
-
-```json
-    "#base": {
-        "font-scale": 1.0,
-        "font-scale[font_scale_auto]": "auto",
-        "font-scale[1280x720]": 1.5
-    }
-```
-
-You can align text to different positions of the element.
-
-- `topleft`
-- `topcenter`
-- `topright`
-- `midleft`
-- `center`
-- `midright`
-- `bottomleft`
-- `bottomcenter`
-- `bottomright`
-
-You can control the way text is displayed with word wrapping, automatic scrolling, clipping, and scaling.
-
-- shrink/grow the text to fill the region: `"text-clip": false`
-- clip the text and just show what is visible: `"text-clip": true`
-- word wrap the text if it is too wide for the area provided: `"text-wrap": true`
-
-It also supports text auto-scrolling if it doesnt fit within the area it is displayed. It will horizontally scroll if the text is wider (word wrap is off), and vertically scroll if it is too tall (word-wrap is on).
-
-```json
-    "element_name": {
-        // Other element bits and bobs here.
-
-        "text-clip": true,          // This must be true for scrolling to work
-        "text-wrap": false,         // If text-wrap is false, it will default to a horizontal scroll, otherwise it defaults to a vertical scroll
-
-        "autoscroll": "slide",      // null does nothing, "slide" scrolls down then resets, "marquee" scrolls back and forth
-
-        "scroll-speed": 30,         // How many miliseconds between each scrolling step
-        "scroll-delay-start": 500,  // How many miliseconds to wait before starting to scroll
-        "scroll-delay-end":   500,   // How many miliseconds to wait at the end of scrolling
-
-        "scroll-direction": "horizontal" // override the defaults assumed based on text-wrap
-    }
-
-```
-
-### Images
-
-Probably should write something here.
-
-#### QR codes
-
-An `image` starting with `qr:` is a QR code of the text after it, which can use text template tags. It's redrawn when a tag's value changes, and an empty text shows nothing.
-
-```json
-        "server_qr": {
-            "area": [0.65, 0.2, 0.3, 0.4],
-            "image": "qr:{some.url}",
-            "image-mode": "fit"
-        }
-```
-
-The code is black on white with a white border, as phone cameras read best, and it's scaled up without smoothing so it stays sharp at any size. Give it a square area, or `"image-mode": "fit"` (the default), so it isn't stretched.
-
-### Lists
-
-The list system is quite adequate
-
-## Basic presentation options
-
-```json
-    "element_name": {
-        "select-color":    [255, 128, 128],  // color to draw the selected item as
-        "select-fill":     [128, 128, 128],  // color to fill behind the selected item
-        "alt-fill":        [210, 210, 210],  // color to fill alternating rows
-        "no-select-color": [128, 128, 128],  // color to draw text on unselectable rows.
-        "no-select-fill":  [210, 210, 210],  // color to fill on unselectable rows.
-        "inactive-select-color": [128,  64,  64],  // color to draw the selected item if the element is inactive
-    }
-```
-
-## Pointer
-
-```json
-    "element_name": {
-        "pointer": "pointer.png",                 // pointer image
-        "pointer-align": ["midright", "midleft"], // poisition of (1) list/text to attach the position (2) of the pointer to
-        "pointer-size": [128, 64],                // scale it to this size, otherwise use the size of the image provided
-        "pointer-attach": "text",                 // attach to the rendered "text" rect, or the "list" item rect.
-        "pointer-offset": [0, 0],                 // offset it by x,y pixels after the position is calculated.
-        "pointer-flip-x": false,                  // flip the image horizontally
-        "pointer-flip-y": false,                  // flip it vertically
-        "pointer-mirror": false,                  // mirror the pointer and display on the other side of the list item
-        "pointer-mirror-x": false,                // flip the mirrored pointer horizontally
-        "pointer-mirror-y": false,                // flip the mirrored pointer vertically
-        "pointer-fit": "row",                     // size a list's pointer from its rows (see below)
-    }
-```
-
-`pointer-size`, `pointer-offset` and `border-x` are pixels, which `font-scale` doesn't change, so a pointer sized for one screen can be too big or too small for the rows on another. With `"pointer-fit": "row"` a list's pointer is exactly as tall as a row, and its width keeps the image's shape: it fits the rows at any font size and screen size. With `"pointer-attach": "list"` as well, the list's side padding is the pointer's width (instead of `border-x`), so the pointer sits beside the row inside the list. A grid (`list-columns`) keeps that padding, so its tiles line up with the list's rows. A row-fitted pointer is also drawn on selected rows made of several items (the filters' checkbox rows).
-
-For example, a pill-shaped selection: a half-disc image at both ends of the selected row's fill.
-
-```json
-    "option_list": {
-        "select-fill": "accent",
-        "pointer": "pill_cap.png",                // a left half-disc, as tall as it is twice wide
-        "pointer-fit": "row",
-        "pointer-attach": "list",
-        "pointer-align": ["midleft", "midright"],
-        "pointer-mirror": true,
-        "pointer-size": [19, 38],                 // for older PortMasters, which ignore pointer-fit
-        "border-x": 19
-    }
-```
-
-## Grid
-
-Setting `list-columns` above 1 draws a list as a grid of tiles instead of rows. Each tile shows the item's image above its name. Only `ports_list` (in the `ports_list` and `featured_ports` scenes) supplies images, other lists will draw tiles with just the name.
-
-```json
     "ports_list": {
-        "list-columns": 3,            // number of columns (max 6) anything over will limit to 6, 1 (default) draws a normal list
-        "list-columns[wide]": 4,      // can be overridden like any other value
-        "item-size": 180,             // tile height, defaults to a 4:3 image plus one line of text
-        "item-spacer": 8,             // gap between tiles
-        "item-padding": 4,            // space between the tile edge and its image/name
-        "alt-fill": [ 38, 42, 51 ],   // color to fill unselected tiles
-        "select-fill": "accent",      // color to fill the selected tile
-        "roundness": 10,              // rounds the tiles, and the image corners when the tile has a fill
-        "line-height": 1.4,           // height of the name row, relative to the font
-        "autoscroll": "marquee",      // scroll the selected name if it is too long
+        "#element:header_bar": {},
+        "#element:side_list:ports_list": { "font-size": 16 }
+    },
+    "filter_list": {
+        "#element:header_bar": {},
+        "#element:side_list:ports_list": {}
     }
 ```
 
-In a grid LEFT/RIGHT move one tile, UP/DOWN move one row and L1/R1 move one page. The grid only scrolls when the selection moves off the visible rows.
+- `"#element:header_bar"` draws the element as a region called `header_bar` in that section.
+- `"#element:side_list:ports_list"` draws it as a region called `ports_list`: one look for the ports list on every screen that has one.
+- The keys you give change the element's for that region only.
+- Any region can name an element as its `parent`, whether the section draws the element or not.
 
-**Note:** keep the grid to 30 visible tiles or fewer (columns x rows). Only 30 images are kept loaded, so a bigger grid has to reload its images from the SD card on every redraw, which is very slow. The number of rows depends on the tile height (`item-size`) and the screen size.
-
-**Note:** only 30 images are kept loaded, and the grid loads a new one for every tile it shows, so scrolling quickly unloads older images. Any image a theme uses on its scenes (panels, icons, backgrounds) that is not listed in `#resources` can be unloaded while it is still on screen, which crashes PortMaster. List every static image in `#resources` so it is never unloaded:
-
-```json
-    "#resources": {
-        "panel.png": {},
-        "menu_icon.png": {}
-    }
-```
-
-
-### Layouts: a list or a grid, to choose
+## Layouts: a list or a grid
 
 A theme can offer more than one layout, for example its ports as a list or as a grid, and the player picks one in **Options › Select Layout** (shown when the theme has more than one). List them in `#layouts`, and name the default in `#info`:
 
 ```json
-    "#info": {
-        "default-layout": "List"
-    },
-    "#layouts": {
-        "List": {},
-        "Grid": {}
-    }
+    "#info":    { "default-layout": "List" },
+    "#layouts": { "List": {}, "Grid": {} }
 ```
 
-The chosen layout is a capability its keys can name, `layout_` and its name in lower case with anything but letters and digits as `_` ("Grid" is `layout_grid`, "Big Grid" `layout_big_grid`). So a key for it goes after the theme's own and wins while that layout is chosen:
+The chosen layout is a capability: `layout_` and its name in lower case, with anything but letters and digits as `_` ("Grid" is `layout_grid`, "Big Grid" `layout_big_grid`). So a key for it, after the theme's own, wins while that layout is chosen:
 
 ```json
     "ports_list": {
@@ -608,264 +623,384 @@ The chosen layout is a capability its keys can name, `layout_` and its name in l
     }
 ```
 
-The default theme's Grid layout does this: the ports list gets its own wider pane (`grid_left`), the port's card a narrower one with its screenshot above its details. The choice is saved as `theme-layout` in config.json; choosing another theme goes back to that theme's default layout, and a layout a theme doesn't have (renamed in an update, say) means its default.
+![The default theme's two layouts](docs/theme/layouts.png)
 
-## Special Words
+The default theme's Grid gives the ports list a wider pane (`grid_left`), and the port's card a narrower one with its screenshot above its details. The choice is saved; choosing another theme goes back to that theme's default layout, and a layout a theme doesn't have (renamed in an update, say) means its default.
 
-Within the templating system we have special words for things like button bindings and checkboxes. They are used for showing buttons and actions, and checkboxes.
+## Translations
 
-It is possible to either override these special words with text, or replace them with an image.
+PortMaster is translated into many languages, and so is the text in themes: every `text` without tags (and the text around tags) is looked up in PortMaster's translations of themes' text, `PortMaster/pylibs/locales/<lang>.themes.json`. A theme's text is added to those when it's published in the theme repository.
 
-| Special Word | Description               |
-|--------------|---------------------------|
-| `_A`         | Button A                  |
-| `_B`         | Button B                  |
-| `_X`         | Button X                  |
-| `_Y`         | Button Y                  |
-| `_UP`        | Button UP                 |
-| `_DOWN`      | Button DOWN               |
-| `_LEFT`      | Button LEFT               |
-| `_RIGHT`     | Button RIGHT              |
-| `_START`     | Button START              |
-| `_SELECT`    | Button SELECT             |
-| `_L`         | Button L                  |
-| `_R`         | Button R                  |
-| `_CHECKED`   | Checked item in a list    |
-| `_UNCHECKED` | Unchecked item in a list  |
-
-To replace the words with text you can simply add the following to your theme, like used in the `basic_theme`:
+A theme can also carry translations of its own, which win over PortMaster's:
 
 ```json
-    "#override": {
-        "_A":         "A:",
-        "_B":         "B:",
-        "_X":         "X:",
-        "_Y":         "Y:",
-        "_UP":        "UP:",
-        "_DOWN":      "DOWN:",
-        "_LEFT":      "LEFT:",
-        "_RIGHT":     "RIGHT:",
-        "_START":     "START:",
-        "_SELECT":    "SELECT:",
-        "_L":         "L",
-        "_R":         "R",
-        "_CHECKED":   "[x]",
-        "_UNCHECKED": "[  ]",
+    "#translations": {
+        "de_DE": { "Ports List": "Portliste", "Hand curated lists of ports": "Handverlesene Port-Listen" },
+        "ja_JP": { "Ports List": "ポートリスト" }
     }
 ```
 
-To replace them with images you will need to load either images and use name to override the image name, or use an image atlas like in the `default_theme`.
+The theme server's **Translate** view is a translation editor for PortMaster's strings and every theme's text, with a preview of the screens each string is on.
+
+## Sounds and music
+
+Sounds are files in `#resources` (`.wav`, `.ogg`, `.mp3`, or `.mod` for music), optionally with a `name`:
 
 ```json
-    "#resources": {
-        "buttons.png": {
-            "atlas": {
-                "_A":         [  0,   0, 180, 180],
-                "_B":         [180,   0, 180, 180],
-                "_X":         [360,   0, 180, 180],
-                "_Y":         [540,   0, 180, 180],
-                "_UP":        [900, 360, 180,  90],
-                "_DOWN":      [900, 450, 180,  90],
-                "_LEFT":      [900, 180,  90, 180],
-                "_RIGHT":     [990, 180,  90, 180],
-                "_START":     [  0, 180, 360, 180],
-                "_SELECT":    [360, 180, 360, 180],
-                "_L":         [  0, 360, 270, 180],
-                "_R":         [270, 360, 270, 180],
-                "_CHECKED":   [900,   0, 180, 180],
-                "_UNCHECKED": [720,   0, 180, 180]
-            }
-        }
+    "#resources": { "click.ogg": { "name": "click" }, "theme.mod": {} },
+    "main_menu": {
+        "background": { "area": [ 0.0, 0.0, 1.0, 1.0 ], "music": "theme.mod", "music-volume": 64 },
+        "option_list": { …, "click-sound": "click" }
     }
 ```
 
-## Text Template System
+| Key | |
+|---|---|
+| `music`, `music-volume` | music for the screen, on any of its regions (volume 0 to 128) |
+| `click-sound`, `click-sound-volume` | a list's sound when the selection moves |
+| `button-sound`, `button-sound-volume` | the `button_bar` region's sound for A |
+| `button-sound-alt`, `button-sound-alt-volume` | its sound for the other buttons |
 
-PortMaster has a simple text templating engine, it supports tags and if/then/else statements.
+The player can turn music and sounds off in Options.
 
-You can use the tags in text areas and they will automatically update as their value changes.
+## Animations
 
-An example of using the system.time_24hr tag:
+`#animations` defines frame counters. Each one is a tag, `{animation.<name>}`, that counts `000`, `001`, … and can be used in an image name:
+
 ```json
-    {
-        // Element options
-        "text": "{system.time_24hr}"
+    "#animations": {
+        "spin": { "max-frames": 8, "update": 100, "loop": true }
+    },
+    "main_menu": {
+        "spinner": { "area": [ 0.9, 0.02, 0.98, 0.08 ], "image": "spin_{animation.spin}.png" }
     }
 ```
 
-If no data is found for a tag the tag name is returned.
+| Option | Default | |
+|---|---|---|
+| `max-frames` | 1 | how many frames |
+| `start` | 0 | the first frame |
+| `skip-frames` | 1 | frames to count on by each time |
+| `update` | 100 | milliseconds between frames (100 or more) |
+| `loop` | true | start again after the last frame, or stop there |
+| `reset-on-scene` | true | start again when the screen changes |
+
+Each frame is an image that stays loaded with the theme: keep them few and small. For progress, the `system.progress_spinner_*` and `system.progress_perc_*` tags count for you.
+
+## The screens
+
+Every screen is a section of `theme.json`. A theme needs these seven, or PortMaster can't open those screens:
+
+| Section | Screen | Needs a region called |
+|---|---|---|
+| `main_menu` | the main menu | `option_list` |
+| `option_menu` | Options, and every list of choices in it | `option_list` |
+| `ports_list` | All Ports, Ready to Run, Manage Ports | `ports_list` |
+| `port_info` | a port's details, where it's installed | |
+| `filter_list` | the filters and sorting | `filter_list` |
+| `message_window` | downloads and installs, with their messages | `message_text` |
+| `message_box` | a question or a warning | `message_text` |
+
+These are made from the theme's other sections when it leaves them out:
+
+| Section | Screen | Needs a region called | Without it |
+|---|---|---|---|
+| `themes_list` | the theme list | `themes_list` | `option_menu` |
+| `runtime_list` | Runtime Manager | `runtime_list` | `option_menu` |
+| `featured_ports_list` | Featured Ports | `option_list` | `option_menu` |
+| `featured_ports` | a featured list's ports | `ports_list` | `ports_list` |
+| `port_links` | a port's website and stores, as QR codes | `links_list` | `themes_list` |
+| `theme_server` | Options › Theme Editor | | `themes_list` |
+| `port_info_popup` | more about a port (a theme's own button opens it) | | not offered |
+
+A region's name is how PortMaster finds it. `"tag"` gives a region another name to be found by, so `"background_list": { "tag": "option_list", … }` is the menu, and `"tag": null` hides a region from PortMaster. `on_screen_keyboard` (region `keyboard`) is a screen PortMaster doesn't use. The selection lists (`selection_list`, `selection_list_description`, `selection_list_images` and `selection_list_description_images`, the dialogs that autoinstall and ports' own scripts show), the disclaimer and the warnings for unsupported systems always look the same, whatever the theme.
+
+Regions PortMaster looks for besides the required ones, on any screen:
+
+- `button_bar`: the buttons for that screen (`bar`).
+- `progress_bar` on `message_window`: filled to how far a download has got.
+- Any region can show [tags](#tags): each screen's are listed below.
+
+### main_menu
+
+![main_menu](docs/theme/screens/main_menu.png) ![its regions](docs/theme/regions/main_menu.png)
+
+The first screen; backing out of it quits. `option_list`'s rows are Featured Ports, All Ports, Ready to Run Ports, Manage Ports, Options and Exit, each with a description in `{scene.tooltip}`, and the selected one's id in `{menu.selected}`: `featured-ports`, `install`, `install-rtr`, `uninstall`, `options` or `exit` (for `"image": "menu_{menu.selected}.png"`).
+
+### option_menu
+
+![option_menu](docs/theme/screens/options.png) ![its regions](docs/theme/regions/options.png)
+
+Options, and every list of choices it opens: languages, color schemes, layouts, sources, and so on. The selected option's description is in `{scene.tooltip}`, and its id in `{menu.selected}`.
+
+![Choosing a color scheme](docs/theme/screens/theme_schemes.png) ![Choosing a language](docs/theme/screens/language.png)
+
+### ports_list
+
+![ports_list](docs/theme/screens/ports_all.png)
+
+The ports: All Ports, Ready to Run Ports and Manage Ports. The selected port's details are in the `port_info.*` tags, and its screenshot in `{port_info.image}`. `{ports_list.total_ports}`, `{ports_list.filter_ports}` and `{ports_list.filters}` say how many there are and what's filtered. X opens the filters.
+
+### port_info
+
+![port_info](docs/theme/screens/port_info.png) ![its regions](docs/theme/regions/port_info.png)
+
+A port's details, with Install (or Uninstall) on A. The same `port_info.*` tags as the ports list. X opens the port's links when it has any (`{port_info.links}` isn't empty), so `{if:port_info.links}Links{endif}` shows only then.
+
+### port_links
+
+The port's page on the PortMaster website and the stores in its `port.json`, each as a QR code. The list is the region `links_list`; the selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website" …), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`), and `{port_links.count}` is how many there are. Show the code with `"image": "qr:{port_links.url}"`. A theme without this section gets one made from its `themes_list`: its list, the QR code where the theme's screenshot goes and the address where its description goes.
+
+### filter_list
+
+![filter_list](docs/theme/screens/filters.png)
+
+Sorting and filters, with `_CHECKED` and `_UNCHECKED` for each. The ports list stays on screen behind it, as the list not in use (`inactive-select-*`).
+
+### featured_ports_list and featured_ports
+
+![featured_ports_list](docs/theme/screens/featured.png) ![featured_ports](docs/theme/screens/featured_list.png)
+
+Featured Ports: the lists of ports (`option_list`, with `{featured_ports.name}`, `{featured_ports.description}` and `{featured_ports.image}`), then a list's ports, like the ports list.
+
+### themes_list
+
+![themes_list](docs/theme/screens/themes.png)
+
+The themes, installed and to download: `{theme_info.name}`, `{theme_info.creator}`, `{theme_info.description}`, `{theme_info.status}` and the screenshot in `{theme_info.image}`.
+
+### runtime_list
+
+![runtime_list](docs/theme/screens/runtimes.png)
+
+The runtimes (Mono, Godot, …), with `runtime_info.*`: its name, whether it's installed, which ports use it, and its sizes.
+
+### message_window and message_box
+
+![message_window](docs/theme/screens/messages.png) ![message_box](docs/theme/screens/message_box.png)
+
+`message_window` shows what PortMaster is doing (`message_text` scrolls as messages arrive), with `{system.progress_text}`, `{system.progress_amount}` and a `progress_bar` while something downloads. `message_box` asks a question or says something went wrong: `message_text`, and the answers in the button bar.
+
+![message_window's regions](docs/theme/regions/messages.png)
+
+### theme_server
+
+![theme_server](docs/theme/screens/theme_editor.png)
+
+Options › Theme Editor: the address of the [theme server](#the-theme-server) on the device, in `{theme_server.url}` (empty until it's up), and what to do or what went wrong in `{theme_server.status}`. Show the address as a QR code with `"image": "qr:{theme_server.url}"`. A theme without this section gets one made from its `themes_list`.
+
+## Region keys
+
+Every key a region can have. Types: *color* ([Colors](#colors)), *area* ([Areas](#areas-where-a-region-goes)), *align* (`topleft` … `bottomright`), *file* (a file or `#resources` name).
+
+| Key | Type | Default | |
+|---|---|---|---|
+| **Place** | | | |
+| `area` | area | | where the region goes, in its parent |
+| `parent` | name | `root` | the element or region its area is in |
+| `z-index` | number | | drawing order: higher on top (otherwise the order in the section) |
+| `visible` | true/false | true | `false` hides it |
+| `tag` | name | its name | the name PortMaster finds it by; `null` for none |
+| `style` | name or list | | the [style](#styles) it starts from |
+| `comment` | text | | a note, ignored |
+| **Box** | | | |
+| `fill` | color | | its background |
+| `outline` | color | | a border |
+| `thickness` | number | 0 | the border's width |
+| `roundness` | number | 0 | rounded corners, in pixels |
+| `border`, `border-x`, `border-y` | number | 0 | space inside its edge: all round, the sides, top and bottom |
+| `blend-mode` | text | | `blend`, `add`, `mod`, `mul`, `none` |
+| `progress-fill` | color | | a progress bar's done part |
+| **Image** | | | |
+| `image` | file | | the image: a file, `#resources` name, `{tag}` or `qr:` text |
+| `image-mode` | text | `fit` | `fit`, `fit-horizontal`, `fit-vertical`, `stretch`, `repeat` |
+| `image-align` | align | `center` | where a fitted image sits |
+| `image-size` | `[ w, h ]` | | its size in pixels |
+| `image-mod` | color | | tints it |
+| `patch` | `[ l, t, r, b ]` | | draws it as a 9-patch |
+| `pimage` | file | | the 9-patch image, if not `image` |
+| **Text** | | | |
+| `text` | text | | the text, with `{tags}` |
+| `font` | file | | |
+| `font-override` | file | | wins over `font` (per language, in `#base`) |
+| `font-size` | number | 30 | at 640x480 |
+| `font-scale` | number or `"auto"` | 1.0 | multiplies the size |
+| `font-color` | color | white | |
+| `font-outline` | `[ color, n ]` | | an outline round the letters |
+| `align` | align | `topleft` | |
+| `text-wrap` | true/false | false | break into lines |
+| `text-clip` | true/false | true | cut off what doesn't fit (`false`: draw it smaller) |
+| `line-height` | number | 1.0 | a line's height, times the font's |
+| `line-height-scale` | number | 1.0 | multiplies `line-height` |
+| `line-space` | number | 0 | extra pixels between wrapped lines |
+| `autoscroll` | text | | `slide` or `marquee` |
+| `scroll-direction` | text | | `vertical` or `horizontal` (wrapped text scrolls up and down) |
+| `scroll-speed` | number | 30 | milliseconds a step |
+| `scroll-delay-start`, `scroll-delay-end` | number | 1000 | milliseconds before and after |
+| `scrollable` | true/false | false | the player scrolls it with up and down |
+| `scroll-amount` | number | 1 | lines a press |
+| **List** | | | |
+| `list` | list | | its rows (PortMaster fills in its own lists) |
+| `options`, `info` | list | | the rows' ids and details (PortMaster's) |
+| `item-size` | number | | a row's (or tile's) height in pixels |
+| `item-spacer` | number | 0 | pixels between rows or tiles |
+| `item-padding` | number | 4 | pixels inside a tile |
+| `list-columns` | number | 1 | above 1: a grid |
+| `select-color`, `select-fill` | color | | the selected row |
+| `alt-fill` | color | | every other row; unselected tiles |
+| `no-select-color`, `no-select-fill` | color | | rows that can't be selected |
+| `inactive-select-color`, `inactive-select-fill` | color | | the selected row of a list not in use |
+| `list-header` | text | | a heading row at the top |
+| `list-header-add-blank` | true/false | false | a blank row after it |
+| `list-section-add-blank` | true/false | false | a blank row before each heading |
+| **Pointer** | | | |
+| `pointer` | file | | an image beside the selected row |
+| `pointer-fit` | text | | `row`: a row tall |
+| `pointer-attach` | text | `text` | `text` or `list` |
+| `pointer-align` | `[ align, align ]` | `[ "midright", "midleft" ]` | the row's point, the pointer's point |
+| `pointer-size` | `[ w, h ]` | | in pixels |
+| `pointer-offset` | `[ x, y ]` | `[ 0, 0 ]` | moves it |
+| `pointer-flip-x`, `pointer-flip-y` | true/false | false | flips it |
+| `pointer-mirror` | true/false | false | another at the other end |
+| `pointer-mirror-x`, `pointer-mirror-y` | true/false | | flips the mirrored one |
+| **Bar** | | | |
+| `bar` | list | | text and images in a row; `null` splits it |
+| `bar-space` | number | 4 | pixels between items |
+| `bar-width` | number | | an item's smallest width |
+| **Sound** | | | |
+| `music`, `music-volume` | file, 0-128 | | the screen's music |
+| `click-sound`, `click-sound-volume` | file, 0-128 | 128 | a list's moves |
+| `button-sound`, `button-sound-volume` | file, 0-128 | 128 | A, on `button_bar` |
+| `button-sound-alt`, `button-sound-alt-volume` | file, 0-128 | 128 | other buttons, on `button_bar` |
+
+## Tags
+
+Every tag PortMaster fills in. Sizes are text like "151.55 MB".
+
+| Tag | |
+|---|---|
+| **Everywhere** | |
+| `scene.title` | the screen's title ("Ports List") |
+| `scene.tooltip` | the selected option's description, on menus |
+| `menu.selected` | the selected option's id, on menus |
+| `system.time_24hr`, `system.time_12hr` | "13:05", "01:05 PM" |
+| `system.battery_level` | "85%", or "N/A" |
+| `system.free_space`, `system.used_space`, `system.total_space` | of the SD card the ports are on |
+| `system.device_name`, `system.cfw_name`, `system.cfw_version` | the device and its firmware |
+| `system.ip_address` | the device's address on the network |
+| `system.portmaster_version`, `system.harbourmaster_version` | |
+| **Progress** (while something downloads or installs) | |
+| `system.progress_text` | what it's doing |
+| `system.progress_amount` | how far, as text ("12.3 MB / 40.0 MB") |
+| `system.progress_perc` | how far, 0 to 100 |
+| `system.progress_perc_5`, `system.progress_perc_10`, `system.progress_perc_20`, `system.progress_perc_25` | the same, in steps of 5, 10, 20 or 25 (for images: `"bar_{system.progress_perc_10}.png"`) |
+| `system.progress_spinner_5`, `system.progress_spinner_10`, `system.progress_spinner_20`, `system.progress_spinner_25` | counts 5, 10 … 100 (in those steps) and round again, a step at each update: for a spinner image |
+| `system.progress_perc_5_or_spinner`, `system.progress_perc_10_or_spinner`, `system.progress_perc_20_or_spinner`, `system.progress_perc_25_or_spinner` | the amount in steps when it's known, the spinner when it isn't |
+| **The selected port** (ports lists, port info) | |
+| `port_info.name` | its zip's name |
+| `port_info.title` | its name ("Shovel Knight") |
+| `port_info.image` | its screenshot |
+| `port_info.description`, `port_info.instructions` | |
+| `port_info.genres`, `port_info.porter` | |
+| `port_info.ready_to_run` | "Ready to Run" or "Requires Files" |
+| `port_info.download_size`, `port_info.install_size` | |
+| `port_info.runtime`, `port_info.runtime_status` | the runtime it needs, and whether that's installed |
+| `port_info.links` | how many links it has (empty if none) |
+| **The ports lists** | |
+| `ports_list.total_ports`, `ports_list.filter_ports` | all of them, and how many the filters show |
+| `ports_list.filters` | the filters in use |
+| `ports_list.position` | the selected port's place in the list |
+| **Port links** | |
+| `port_links.name`, `port_links.url`, `port_links.kind`, `port_links.count` | the selected link, and how many |
+| **Featured ports** | |
+| `featured_ports.name`, `featured_ports.description`, `featured_ports.image` | the selected list |
+| **Themes** | |
+| `theme_info.name`, `theme_info.creator`, `theme_info.description` | the selected theme |
+| `theme_info.image`, `theme_info.status` | its screenshot, and installed or not |
+| **Runtimes** | |
+| `runtime_info.name` | "Godot/FRT 2.1.6" |
+| `runtime_info.status` | "Installed" or "Not Installed" |
+| `runtime_info.verified` | not filled in yet |
+| `runtime_info.in_use`, `runtime_info.ports` | "Used" or "Not Used", and the ports that use it |
+| `runtime_info.download_size`, `runtime_info.disk_size` | |
+| **Dialogs** (always the default theme) | |
+| `selection_list.title`, `selection_list.description`, `selection_list.image` | |
+| **The theme editor** | |
+| `theme_server.url`, `theme_server.status` | |
+| **Animations** | |
+| `animation.<name>` | the frame number of an `#animations` entry: `000`, `001` … |
+
+## The theme server
+
+The theme server draws every PortMaster screen with your theme, at any screen size, color scheme and language, and redraws when you save. It runs from a PortMaster-GUI checkout on Linux or macOS:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt   # once
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes
+```
+
+Then open http://localhost:8090/. `--themes` is one theme folder (it has a `theme.json`) or a folder of them; the default theme is always there too.
+
+![Every screen with one theme](docs/theme/server-gallery.png)
+
+- **The screens:** every screen a theme draws, with the real ports list and screenshots (downloaded once into `~/.cache/portmaster-theme-server`; `--refresh-ports` gets the current ones), and the screens that always look the same.
+- **Region boxes:** draws each region's area with its name. Click a screen to see it big; hover over or click a box to see the region's final keys, after `#base`, styles, elements and capabilities. **Save PNG** saves it.
+- **One screen, every size:** one screen at every common resolution, to check your capability keys.
+- A screen your theme has no section for says so. Errors PortMaster logged while drawing (a missing image, a bad color) are listed on it.
+
+![One screen at every size](docs/theme/server-sizes.png)
+
+### Editing theme.json
+
+**Edit** changes the theme's `theme.json` in the page, with one screen beside it that redraws a moment after you stop typing.
+
+![The editor](docs/theme/server-edit.png)
+
+- **Region boxes:** click one to jump to that region in `theme.json`; put the cursor in a region to light up its box.
+- **Suggestions** as you type (or Ctrl+Space): keys with their types, the values a key takes (alignments, your colors, styles, images, fonts, elements), `{tags}`, and `[capabilities]`. They come from PortMaster's own code, so they match what it accepts.
+- **Checks:** JSON mistakes in plain words (a missing comma, a comma before `}`, comments), keys PortMaster doesn't know (with "did you mean"), values of the wrong type, colors, styles, images and fonts that don't exist, and the errors PortMaster logged while drawing.
+- **Saving:** Ctrl/⌘+S. The previous version is kept as `theme.json.bak`, and you're asked before overwriting a file that changed on disk.
+- **Tidy** gives the file even indents, keeping arrays of numbers on one line and numbers as you wrote them.
+- **A new theme:** **Copy to a new theme…** copies any theme (the built-in one can't be changed) under a new name.
+
+### Translating
+
+**Translate** lists every string of PortMaster, and every theme's text, with a language's translation: filter by untranslated or problems, see the screens each string is on, and save into the language files.
+
+![The translation editor](docs/theme/server-translate.png)
+
+### On a device
+
+**Options › Theme Editor** starts the same server on the device and shows its address as text and a QR code. Open it on a computer or phone on the same network: it previews the device's own themes and ports, and saves into `PortMaster/themes/`. Press B on the device to stop it. Anyone on the network can open it while it runs.
+
+### Exporting and checking
+
+```bash
+.venv/bin/python tools/theme_server/serve.py --themes ~/my-themes --export out/ \
+    --resolutions 640x480,1280x720,720x720 --schemes all --langs en_US,de_DE --check
+```
+
+writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png` (and a `.json` beside each listing its regions), then [checks the layout](#any-screen-size). `--resolutions all` is every common screen size.
+
+## Older PortMasters
+
+Themes in the theme list are downloaded by PortMasters of every age. What newer PortMasters understand, and what an older one does with it:
+
+| Since | Feature | An older PortMaster |
+|---|---|---|
+| 2026.11 | `"font-scale": "auto"` | doesn't load the theme: give a number first, then `"font-scale[font_scale_auto]": "auto"` |
+| 2026.11 | `font-override`, `line-height-scale` | ignores them: give `font[ja_JP]` & co in each region with its own font |
+| 2026.11 | `#styles`, `style` | ignores them: the regions lose the style's keys |
+| 2026.11 | `#layouts` | shows the theme's plain keys (the first layout, if those are its) |
+| 2026.11 | theme images outside `#resources` stay loaded | can crash: list them all in `#resources` |
+| 2026.11 | `"pointer-fit": "row"` | ignores it: give `pointer-size` and `border-x` too |
+
+The `font_scale_auto` capability exists only in PortMasters that understand `"auto"`, and keys with a capability a PortMaster doesn't have are skipped, so this loads everywhere and uses `auto` where it can:
 
 ```json
-    {
-        // This will display "{system.unknown_tag}"
-        "text": "{system.unknown_tag}"
+    "#base": {
+        "font-scale": 1.0,
+        "font-scale[font_scale_auto]": "auto",
+        "font-scale[1280x720]": 1.5
     }
-```
-
-Obviously multiple tags can be used at once:
-
-```json
-    {
-        // This might display "ArkOS (07232023)" on ArkOS for example"
-        "text": "OS: {system.cfw_name} ({system.cfw_version})"
-    }
-```
-
-As mentioned above you can use if/then/else statements in the text:
-
-```json
-    {
-        // If port_info.runtime is not false it will display "\nRuntime: {}"
-        "text": "{if:port_info.runtime}\nRuntime: {port_info.runtime} ({port_info.runtime_status}){else}No Runtime Required{endif}"
-    }
-```
-
-You can even compare two tags text:
-
-```json
-    {
-        // if ports_list.total_ports doesnt equal ports_list.filter_ports
-        "text": "{if:!ports_list.total_ports::ports_list.filtered}{ports_list.filter_ports} / {ports_list.total_ports}{else}{ports_list.total_ports}{endif}"
-    }
-```
-
-The format is:
-
-`{if:[!]<KEYNAME>[:<EQUALS TEXT>[:OTHER KEY]]}<TRUTH TEXT>[{else}<ELSE TEXT>]{endif}`
-
-### Hopefully this helps, if not... oh well i will write it better later on.
-
-|  Tag                                                    |   Result                                              |
-|---------------------------------------------------------|-------------------------------------------------------|
-| `{if:!port_info.runtime}`                               | `port_info.runtime` != ""                             |
-| `{if:port_info.runtime}`                                | `port_info.runtime` == ""                             |
-| `{if:port_info.runtime:Mono 6.12.0.122}`                | `port_info.runtime` == "Mono 6.12.0.122"              |
-| `{if:!port_info.runtime:Mono 6.12.0.122}`               | `port_info.runtime` != "Mono 6.12.0.122"              |
-| `{if:ports_list.total_ports::ports_list.filter_ports}`  | `ports_list.total_ports` == `ports_list.filter_ports` |
-| `{if:!ports_list.total_ports::ports_list.filter_ports}` | `ports_list.total_ports` != `ports_list.filter_ports` |
-
-
-### System tags
-
-- system.battery_level
-- system.cfw_name
-- system.cfw_version
-- system.device_name
-- system.free_space
-- system.harbourmaster_version
-- system.ip_address
-- system.portmaster_version
-- system.time_12hr
-- system.time_24hr
-- system.total_space
-- system.used_space
-
-- system.progress_text
-- system.progress_amount
-
-- system.progress_perc_5
-- system.progress_perc_5_or_spinner
-- system.progress_perc_10
-- system.progress_perc_10_or_spinner
-- system.progress_perc_20
-- system.progress_perc_20_or_spinner
-- system.progress_perc_25
-- system.progress_perc_25_or_spinner
-- system.progress_spinner_5
-- system.progress_spinner_10
-- system.progress_spinner_20
-- system.progress_spinner_25
-
-### Scene
-
-- scene.title
-- scene.tooltip
-
-### Menu
-
-- menu.selected
-
-### Port info tags
-
-- port_info.image
-- port_info.title
-- port_info.description
-- port_info.instructions
-- port_info.genres
-- port_info.porter
-- port_info.ready_to_run
-- port_info.download_size
-- port_info.install_size
-- port_info.runtime
-- port_info.runtime_status
-- port_info.links: how many links the port has (the `port_links` screen), empty if none, so `{if:port_info.links}Press X for links{endif}` works.
-
-## Ports List tags
-
-- ports_list.total_ports
-- ports_list.filter_ports
-- ports_list.filters
-- ports_list.position
-
-## Featured Ports tags
-
-- featured_ports.description
-- featured_ports.image
-- featured_ports.name
-
-## Theme info tags
-
-- theme_info.image
-- theme_info.name
-- theme_info.description
-- theme_info.creator
-- theme_info.status
-
-## Runtime info tags
-
-- runtime_info.name          # "Godot/FRT 2.1.6"
-- runtime_info.status        # Installed / Uninstalled
-- runtime_info.in_use        # Used / Not Used
-- runtime_info.ports         # List of ports using the runtime: Blah, Blah 2, and Blah 3: Revenge of the Blah.
-- runtime_info.verified      # Verified / Broken
-- runtime_info.download_size # Download Size
-- runtime_info.install_size  # Size on Disk
-
-
-### Control flow of PortMaster
-
-```
-Main:
-  -> Install Menu
-  -> Uninstall Menu -> Port List [Installed filter]
-  -> Options
-  -> Quit
-
-Install Menu:
-  -> All Ports    -> Port List [No filter]
-  -> Ready To Run -> Port List [RTR filter]
-
-  -> Lists 1      -> Custom List
-  -> Lists 2      -> Custom List
-  -> Lists 3      -> Custom List
-  -> Lists 4      -> Custom List
-
-  -> Back
-
-Port List:
-  -> List of Ports
-    -> Inspect
-    -> Back
-
-Options:
-  -> TBD.
-  -> Back
-
-Inspect:
-  -> Install/Re-Install or Uninstall
-  -> Back
-
-Install/Uninstall:
-  -> Message Screen
-  -> Back
 ```

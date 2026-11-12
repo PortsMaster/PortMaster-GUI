@@ -65,6 +65,7 @@ Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.
 - `test_api_snapshot.py` checks that every public name in `tests/data/api_snapshot.json` is still reachable. Update its `AREAS` table when code moves.
 - `test_i18n.py` checks that the translatable strings in the code match `locales/strings.json` (`tools/i18n.py extract` updates it).
+- `test_theme_docs.py` checks `THEME.md`, the theme reference, names every region key, screen, tag and `#` section the theme editor's schema reads from the code, and that its pictures (`docs/theme/`, made by `tools/theme_docs.py` from theme server renders; it needs Pillow) are there. A new theme key fails it until it's documented. The step-by-step guide, CREATING_A_THEME.md, is in PortMaster-Themes.
 
 **PortMaster Test Suite** (`tools/test_suite/`, built by `./do_release.sh testsuite` into `dist/pmtest.zip`): a port testers drop into `autoinstall/`. It installs the test build it carries, then runs, on the device:
 - the pytest suite (from its own copy of `tests/`, `tools/` and the code, with pytest 7.4 in `pmtest/site/`)
