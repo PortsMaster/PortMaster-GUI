@@ -322,7 +322,7 @@ German and the other European languages have longer words than English: leave ro
 | `image-align` | `center` | where a fitted image sits: the `align` values |
 | `image-size` | | `[ width, height ]` in pixels |
 | `image-mod` | | a color that tints it |
-| `patch`, `pimage` | | draws it as a 9-patch: below |
+| `patch`, `pimage`, `patch-repeat` | | draws it as a 9-patch: below |
 | `blend-mode` | | `blend` (the default for images with transparency), `add`, `mod`, `mul`, `none` |
 
 PNG, JPEG and SVG all work. An SVG in `#resources` can be given a size to be drawn at: `"logo.svg": { "size": [ 400, 120 ] }`.
@@ -370,6 +370,16 @@ A 9-patch image keeps its corners and edges sharp at any size: `patch` gives how
 ```
 
 The default theme draws its rounded cards this way.
+
+Stretching suits smooth edges and gradients, but not patterns or pixel art: a row of little pictures along an edge would be squashed or smeared. **`patch-repeat`** repeats the pieces at their own size instead, and cuts the last one off where the box ends:
+
+| `patch-repeat` | |
+|---|---|
+| (none) | everything but the corners stretches |
+| `"edges"` | the four edges repeat; the middle stretches (a pattern along the border, a plain or gradient middle) |
+| `"all"` | the edges and the middle repeat (a texture all over) |
+
+The region's text and list go inside the patch's edges, then inside its `border`: a picture with wide edges (a decorated strip) leaves less room for text, so give boxes with text a picture with narrow ones. A box smaller than the picture shows part of each edge, rather than all of it squeezed. Repeated pieces join up only if the picture's edges are drawn to: each edge's middle should end the way it starts. PortMaster before 2026.11 stretches them.
 
 ### QR codes
 
@@ -819,6 +829,7 @@ Every key a region can have. Types: *color* ([Colors](#colors)), *area* ([Areas]
 | `image-mod` | color | | tints it |
 | `patch` | `[ l, t, r, b ]` | | draws it as a 9-patch |
 | `pimage` | file | | the 9-patch image, if not `image` |
+| `patch-repeat` | text | | `edges` or `all`: repeat those pieces instead of stretching them |
 | **Text** | | | |
 | `text` | text | | the text, with `{tags}` |
 | `font` | file | | |
@@ -995,6 +1006,8 @@ Themes in the theme list are downloaded by PortMasters of every age. What newer 
 | 2026.11 | `#layouts` | shows the theme's plain keys (the first layout, if those are its) |
 | 2026.11 | theme images outside `#resources` stay loaded | can crash: list them all in `#resources` |
 | 2026.11 | `"pointer-fit": "row"` | ignores it: give `pointer-size` and `border-x` too |
+| 2026.11 | `patch-repeat` | stretches the 9-patch's pieces |
+| 2026.11 | a 9-patch picture's `image-mod` (in `#resources`, or the region's) | draws it untinted |
 
 The `font_scale_auto` capability exists only in PortMasters that understand `"auto"`, and keys with a capability a PortMaster doesn't have are skipped, so this loads everywhere and uses `auto` where it can:
 
