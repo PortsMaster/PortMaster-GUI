@@ -625,7 +625,7 @@ The chosen layout is a capability: `layout_` and its name in lower case, with an
 
 ![The default theme's two layouts](docs/theme/layouts.png)
 
-The default theme's Grid gives the ports list a wider pane (`grid_left`), and the port's card a narrower one with its screenshot above its details. The choice is saved; choosing another theme goes back to that theme's default layout, and a layout a theme doesn't have (renamed in an update, say) means its default.
+The default theme's Grid gives the ports list a wider pane (`grid_left`), and the port's card a narrower one with its screenshot above its details. The theme server has a **Layout** choice beside the color scheme, and `--layouts all` exports and checks every layout. The player's choice is saved; choosing another theme goes back to that theme's default layout, and a layout a theme doesn't have (renamed in an update, say) means its default.
 
 ## Translations
 
@@ -946,6 +946,7 @@ Then open http://localhost:8090/. `--themes` is one theme folder (it has a `them
 - **The screens:** every screen a theme draws, with the real ports list and screenshots (downloaded once into `~/.cache/portmaster-theme-server`; `--refresh-ports` gets the current ones), and the screens that always look the same.
 - **Region boxes:** draws each region's area with its name. Click a screen to see it big; hover over or click a box to see the region's final keys, after `#base`, styles, elements and capabilities. **Save PNG** saves it.
 - **One screen, every size:** one screen at every common resolution, to check your capability keys.
+- **Color scheme and layout:** choose them at the top, as a player does in Options (Layout is there when the theme has more than one).
 - A screen your theme has no section for says so. Errors PortMaster logged while drawing (a missing image, a bad color) are listed on it.
 
 ![One screen at every size](docs/theme/server-sizes.png)
@@ -977,10 +978,10 @@ Then open http://localhost:8090/. `--themes` is one theme folder (it has a `them
 
 ```bash
 .venv/bin/python tools/theme_server/serve.py --themes ~/my-themes --export out/ \
-    --resolutions 640x480,1280x720,720x720 --schemes all --langs en_US,de_DE --check
+    --resolutions 640x480,1280x720,720x720 --schemes all --layouts all --langs en_US,de_DE --check
 ```
 
-writes `out/<theme>/<resolution>/<scheme>/<language>/<screen>.png` (and a `.json` beside each listing its regions), then [checks the layout](#any-screen-size). `--resolutions all` is every common screen size.
+writes `out/<theme>/<resolution>/<scheme>/<layout>/<language>/<screen>.png` (and a `.json` beside each listing its regions), then [checks the layout](#any-screen-size). `--resolutions all` is every common screen size. Without `--layouts` it draws only the theme's default layout, and leaves out the `<layout>` folder.
 
 ## Older PortMasters
 

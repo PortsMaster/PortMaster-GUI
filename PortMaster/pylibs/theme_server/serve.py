@@ -9,8 +9,9 @@
 #       theme is always there too. Then open http://localhost:8090/
 #
 #   python3 tools/theme_server/serve.py --themes DIR --export OUT
-#           [--theme NAME] [--resolutions 640x480,1280x720] [--schemes all] [--langs en_US]
-#       Writes OUT/<theme>/<resolution>/<scheme>/<lang>/<screen>.png and .json, no server.
+#           [--theme NAME] [--resolutions 640x480,1280x720] [--schemes all] [--layouts all] [--langs en_US]
+#       Writes OUT/<theme>/<resolution>/<scheme>/<lang>/<screen>.png and .json, no server
+#       (with --layouts, OUT/<theme>/<resolution>/<scheme>/<layout>/<lang>/<screen>.png).
 #
 #   --refresh-ports downloads the ports list and screenshots again (they're cached in
 #   ~/.cache/portmaster-theme-server, or --cache DIR).
@@ -96,20 +97,30 @@ class Themes:
         return self.all().get(theme_id)
 
     def info(self, theme_id, theme_dir):
-        """Name, schemes and the default scheme, or the error reading theme.json."""
+        """Name, schemes and layouts and their defaults, or the error reading theme.json."""
         try:
             data = json.loads((theme_dir / "theme.json").read_text(encoding="utf-8"))
         except (OSError, ValueError) as error:
-            return {'id': theme_id, 'name': theme_id, 'schemes': [], 'default_scheme': None, 'error': str(error)}
+            return {'id': theme_id, 'name': theme_id, 'schemes': [], 'default_scheme': None,
+                    'layouts': [], 'default_layout': None, 'error': str(error)}
 
         info = data.get("#info", {})
-        schemes = [name for name in data.get("#schemes", {}) if not name.startswith("#")]
+        if not isinstance(info, dict):
+            info = {}
+        schemes = [name for name in data.get("#schemes", {}) if not name.startswith("#")] if isinstance(data.get("#schemes"), dict) else []
         default = info.get("default-scheme")
         if default not in schemes:
             default = schemes[0] if schemes else None
 
+        ## As pugwash picks them (theme.pick_layout): the default-layout, else the first.
+        layouts = [name for name in data.get("#layouts", {}) if isinstance(name, str)] if isinstance(data.get("#layouts"), dict) else []
+        default_layout = info.get("default-layout")
+        if default_layout not in layouts:
+            default_layout = layouts[0] if layouts else None
+
         return {'id': theme_id, 'name': info.get("name") or theme_id, 'creator': info.get("creator", ""),
-                'schemes': schemes, 'default_scheme': default, 'error': None}
+                'schemes': schemes, 'default_scheme': default, 'layouts': layouts, 'default_layout': default_layout,
+                'error': None}
 
     @staticmethod
     def fingerprint(theme_dir, extra_files=()):
@@ -228,9 +239,9 @@ class Zygote:
 
 class Worker:
     """One renderer: a pugwash at one screen size, switched in place to the theme version,
-    colour scheme and language each render needs. Forked by the zygote, or (without
+    colour scheme, layout and language each render needs. Forked by the zygote, or (without
     one) a worker.py of its own."""
-    def __init__(self, resolution, theme_dir, scheme, lang, ports_config, work, loaded=None, zygote=None):
+    def __init__(self, resolution, theme_dir, scheme, lang, ports_config, work, loaded=None, zygote=None, layout=None):
         self.resolution = resolution
         self.lock = threading.Lock()
         self.work = Path(work)
@@ -238,7 +249,7 @@ class Worker:
         self.proc = self.pid = self.sock = self.log_file = None
         if zygote is not None:
             self.pid, self.sock = zygote.spawn(resolution=resolution, theme_dir=str(theme_dir), scheme=scheme,
-                                               lang=lang, work=str(self.work))
+                                               layout=layout, lang=lang, work=str(self.work))
             self.reader, self.writer = self.sock.makefile("r"), self.sock.makefile("w")
 
         else:
@@ -246,6 +257,8 @@ class Worker:
                        "--lang", lang, "--ports-config", str(ports_config), "--work", str(self.work)]
             if scheme:
                 command += ["--scheme", scheme]
+            if layout:
+                command += ["--layout", layout]
 
             self.log_file = open(self.log_name, "w")
             self.proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -257,7 +270,7 @@ class Worker:
             self.stop()
             raise WorkerError(self.ready.get('error') or "the renderer didn't start, see " + self.log_name)
 
-        ## What it has loaded: (theme id, theme version, scheme, language), and what it's
+        ## What it has loaded: (theme id, theme version, scheme, layout, language), and what it's
         ## doing for /api/status: None, "loading" or "rendering".
         self.loaded = loaded
         self.state = None
@@ -298,13 +311,14 @@ class Worker:
         with self.lock:
             return self._request(command)
 
-    def render(self, loaded, theme_dir, scheme, lang, shot):
-        """(answer, png bytes): the theme, scheme and language loaded first if they aren't."""
+    def render(self, loaded, theme_dir, scheme, lang, shot, layout=None):
+        """(answer, png bytes): the theme, scheme, layout and language loaded first if they aren't."""
         with self.lock:
             try:
                 if self.loaded != loaded:
                     self.state = "loading"
-                    answer = self._request({'cmd': "load", 'theme_dir': str(theme_dir), 'scheme': scheme, 'lang': lang})
+                    answer = self._request({'cmd': "load", 'theme_dir': str(theme_dir), 'scheme': scheme,
+                                            'layout': layout, 'lang': lang})
                     if not answer.get('ok'):
                         self.loaded = None
                         raise WorkerError(answer.get('error', "loading the theme failed"))
@@ -355,7 +369,7 @@ class Worker:
 
 class RenderPool:
     """A renderer per screen size, started as needed (the least recently used goes when
-    there are too many), switched to each theme, scheme and language in place; and the
+    there are too many), switched to each theme, scheme, layout and language in place; and the
     renders, until their theme or language files change."""
     def __init__(self, themes, ports_config, work_dir, max_workers=MAX_WORKERS, use_zygote=True):
         self.themes = themes
@@ -389,17 +403,21 @@ class RenderPool:
             'running': sorted(states),
             }
 
-    def _wanted(self, theme_id, scheme, lang):
-        """(theme dir, scheme, (theme id, version, scheme, lang)) for a render."""
+    def _wanted(self, theme_id, scheme, lang, layout=None):
+        """(theme dir, scheme, layout, (theme id, version, scheme, layout, lang)) for a render."""
         theme_dir = self.themes.get(theme_id)
         if theme_dir is None:
             raise WorkerError(f"no theme {theme_id!r}")
 
-        ## No scheme is the theme's default one, by name: the same as the page asks for.
-        scheme = scheme or self.themes.info(theme_id, theme_dir)['default_scheme']
-        return theme_dir, scheme, (theme_id, version(theme_dir, lang), scheme or "", lang)
+        ## No scheme is the theme's default one, by name: the same as the page asks for. A
+        ## layout the theme doesn't have (another theme's, from the page) is its default too.
+        info = self.themes.info(theme_id, theme_dir)
+        scheme = scheme or info['default_scheme']
+        if layout not in info['layouts']:
+            layout = info['default_layout']
+        return theme_dir, scheme, layout, (theme_id, version(theme_dir, lang), scheme or "", layout or "", lang)
 
-    def _worker(self, resolution, theme_dir, scheme, lang, loaded):
+    def _worker(self, resolution, theme_dir, scheme, lang, loaded, layout=None):
         with self.lock:
             worker = self.workers.get(resolution)
         if worker is not None and worker.alive():
@@ -435,7 +453,8 @@ class RenderPool:
                         print(f"No zygote, renderers start on their own: {error}", file=sys.stderr, flush=True)
                         self.zygote = False
 
-                worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded, self.zygote or None)
+                worker = Worker(resolution, theme_dir, scheme, lang, self.ports_config, work, loaded, self.zygote or None,
+                                layout=layout)
             finally:
                 with self.lock:
                     self.starting.discard(resolution)
@@ -444,26 +463,27 @@ class RenderPool:
 
         return worker
 
-    def render(self, theme_id, scheme, resolution, lang, shot):
-        """(png bytes, info dict) for one screen, cached until the theme changes."""
-        theme_dir, scheme, loaded = self._wanted(theme_id, scheme, lang)
+    def render(self, theme_id, scheme, resolution, lang, shot, layout=None):
+        """(png bytes, info dict) for one screen, cached until the theme changes. layout: one of
+        the theme's #layouts, None (or one it doesn't have) for its default."""
+        theme_dir, scheme, layout, loaded = self._wanted(theme_id, scheme, lang, layout)
         fingerprint = loaded[1]
-        render_key = (theme_id, fingerprint, scheme or "", resolution, lang, shot)
+        render_key = (theme_id, fingerprint, scheme or "", layout or "", resolution, lang, shot)
         with self.lock:
             if render_key in self.renders:
                 return self.renders[render_key]
 
-        worker = self._worker(resolution, theme_dir, scheme, lang, loaded)
-        answer, png = worker.render(loaded, theme_dir, scheme, lang, shot)
+        worker = self._worker(resolution, theme_dir, scheme, lang, loaded, layout)
+        answer, png = worker.render(loaded, theme_dir, scheme, lang, shot, layout)
         info = {
-            'shot': shot, 'theme': theme_id, 'scheme': scheme, 'resolution': resolution,
+            'shot': shot, 'theme': theme_id, 'scheme': scheme, 'layout': layout, 'resolution': resolution,
             'lang': lang, 'version': fingerprint, 'regions': answer.get('regions', []),
             'errors': answer.get('errors', []), 'missing': answer.get('missing'), 'ms': answer.get('ms'),
             'strings': self.translations.used(answer.get('strings', {})),
             }
         with self.lock:
             ## Drop renders of older versions of the theme and the language's translations.
-            for old_key in [k for k in self.renders if k[0] == theme_id and k[4] == lang and k[1] != fingerprint]:
+            for old_key in [k for k in self.renders if k[0] == theme_id and k[5] == lang and k[1] != fingerprint]:
                 del self.renders[old_key]
             self.renders[render_key] = (png, info)
 
@@ -473,11 +493,11 @@ class RenderPool:
         """[[name, title]] of every screen, in the page's order."""
         return [[name, title] for name, title in catalogue.SHOTS]
 
-    def warm(self, theme_id="default_theme", scheme=None, resolution="640x480", lang="en_US"):
-        """Starts the renderer the page asks for first (the default theme, scheme and
+    def warm(self, theme_id="default_theme", scheme=None, resolution="640x480", lang="en_US", layout=None):
+        """Starts the renderer the page asks for first (the default theme, scheme, layout and
         language), so its screens come quicker. Raises WorkerError if it can't start."""
-        theme_dir, scheme, loaded = self._wanted(theme_id, scheme, lang)
-        self._worker(resolution, theme_dir, scheme, lang, loaded)
+        theme_dir, scheme, layout, loaded = self._wanted(theme_id, scheme, lang, layout)
+        self._worker(resolution, theme_dir, scheme, lang, loaded, layout)
 
     def stop(self, start_timeout=10):
         """Stops the renderers and the zygote: also one still starting (the first one, warm(),
@@ -705,7 +725,8 @@ class Handler(BaseHTTPRequestHandler):
                     self.send(404, {'error': f"no theme {theme_id!r}"})
                     return
 
-                png, info = self.server.pool.render(theme_id, query.get('scheme') or None, resolution, lang, shot)
+                png, info = self.server.pool.render(theme_id, query.get('scheme') or None, resolution, lang, shot,
+                                                    layout=query.get('layout') or None)
                 if url.path.endswith(".png"):
                     if not png:
                         self.send(404, {'error': info['missing']})
@@ -820,31 +841,49 @@ class Server(ThreadingHTTPServer):
 
 ################################################################################
 ## Export
-def export(pool, themes, out, theme_ids, resolutions, schemes, langs, shots):
+def export(pool, themes, out, theme_ids, resolutions, schemes, langs, shots, layouts=None):
+    """
+    Writes out/<theme>/<resolution>/<scheme>/<lang>/<screen>.png and .json. schemes: names,
+    ["all"], or [] for the theme's default. layouts: None for the theme's default layout (and
+    no folder for it), ["all"], or names: then out/<theme>/<resolution>/<scheme>/<layout>/<lang>,
+    "default" for a theme without layouts. 1 if a render failed.
+    """
     failures = 0
     for theme_id in theme_ids:
         info = themes.info(theme_id, themes.get(theme_id))
         theme_schemes = info['schemes'] if schemes == ["all"] else (schemes or [info['default_scheme']])
+        if layouts is None:
+            theme_layouts = [None]
+        elif layouts == ["all"]:
+            theme_layouts = info['layouts'] or [None]
+        else:
+            ## Only the ones this theme has (each theme its own when exporting several).
+            theme_layouts = [layout for layout in layouts if layout in info['layouts']] or [info['default_layout']]
         for resolution in resolutions:
             for scheme in theme_schemes or [None]:
-                for lang in langs:
-                    folder = out / theme_id / resolution / (scheme or "default") / lang
-                    folder.mkdir(parents=True, exist_ok=True)
-                    for shot, _ in shots:
-                        try:
-                            png, info = pool.render(theme_id, scheme, resolution, lang, shot)
-                        except WorkerError as error:
-                            print(f"FAIL {theme_id} {resolution} {scheme} {lang} {shot}: {error}", file=sys.stderr)
-                            failures += 1
-                            continue
+                for layout in theme_layouts:
+                    for lang in langs:
+                        folder = out / theme_id / resolution / (scheme or "default")
+                        if layouts is not None:
+                            folder = folder / (layout or "default")
+                        folder = folder / lang
+                        folder.mkdir(parents=True, exist_ok=True)
+                        where = " ".join(str(part) for part in (theme_id, resolution, scheme, layout, lang) if part)
+                        for shot, _ in shots:
+                            try:
+                                png, info = pool.render(theme_id, scheme, resolution, lang, shot, layout=layout)
+                            except WorkerError as error:
+                                print(f"FAIL {where} {shot}: {error}", file=sys.stderr)
+                                failures += 1
+                                continue
 
-                        if png:
-                            (folder / f"{shot}.png").write_bytes(png)
-                        (folder / f"{shot}.json").write_text(json.dumps(info, indent=1))
-                        for error in info['errors']:
-                            print(f"{theme_id} {resolution} {scheme} {lang} {shot}: {error}", file=sys.stderr)
+                            if png:
+                                (folder / f"{shot}.png").write_bytes(png)
+                            (folder / f"{shot}.json").write_text(json.dumps(info, indent=1))
+                            for error in info['errors']:
+                                print(f"{where} {shot}: {error}", file=sys.stderr)
 
-                    print(f"{folder}", flush=True)
+                        print(f"{folder}", flush=True)
 
     return 1 if failures else 0
 
@@ -900,6 +939,8 @@ def main(argv=None):
     parser.add_argument("--theme", action="append", help="export: these themes (default: all)")
     parser.add_argument("--resolutions", default="640x480", help="export: comma separated, or 'all'")
     parser.add_argument("--schemes", default="", help="export: comma separated, 'all', or the theme's default")
+    parser.add_argument("--layouts", default="",
+                        help="export: comma separated or 'all' (a folder for each), or the theme's default (no folder)")
     parser.add_argument("--langs", default="en_US", help="export: comma separated")
     parser.add_argument("--check", action="store_true",
                         help="export: then check the screens' layout (overlaps, text off its box): theme_server/layout.py")
@@ -933,7 +974,8 @@ def main(argv=None):
                 sys.exit(f"Not a resolution: {', '.join(bad)}")
 
             failed = export(pool, themes, options.export, options.theme or list(themes.all()), resolutions,
-                            [scheme for scheme in options.schemes.split(",") if scheme], options.langs.split(","), shots)
+                            [scheme for scheme in options.schemes.split(",") if scheme], options.langs.split(","), shots,
+                            layouts=[layout for layout in options.layouts.split(",") if layout] or None)
             if options.check:
                 from theme_server import layout
                 failed = layout.main([str(options.export)]) or failed

@@ -23,12 +23,14 @@ class FakePool:
     """What the Handler uses of a RenderPool: render(), status(), translations."""
     def __init__(self):
         self.calls = []
+        self.layouts = []
         self.missing = None
         self.error = None
         self.translations = serve.Translations()
 
-    def render(self, theme_id, scheme, resolution, lang, shot):
+    def render(self, theme_id, scheme, resolution, lang, shot, layout=None):
         self.calls.append((theme_id, scheme, resolution, lang, shot))
+        self.layouts.append(layout)
         if self.error:
             raise serve.WorkerError(self.error)
         if self.missing:
@@ -121,6 +123,10 @@ def test_info(server):
     assert themes["good"]["name"] == "Good Theme" and themes["good"]["default_scheme"] == "Dark"
     assert themes["good"]["schemes"] == ["Light", "Dark"]
     assert themes["broken"]["error"] and themes["broken"]["schemes"] == []
+    ## Layouts: the default theme's List and Grid; none for a theme without #layouts.
+    assert themes["default_theme"]["layouts"] == ["List", "Grid"] and themes["default_theme"]["default_layout"] == "List"
+    assert themes["good"]["layouts"] == [] and themes["good"]["default_layout"] is None
+    assert themes["broken"]["layouts"] == [] and themes["broken"]["default_layout"] is None
     assert info['resolutions'] == list(serve.RESOLUTIONS)
     assert info['shots'] == FakePool().shots()
     assert ["de_DE", "German"] in info['languages']
@@ -150,8 +156,15 @@ def test_render_parameters(server):
 
     assert status == 200
     assert pool.calls[-1] == ("good", "Dark", "1280x720", "de_DE", "options")
+    assert pool.layouts[-1] is None
     ## The URL carries the version: cacheable.
     assert headers["Cache-Control"] == "max-age=3600"
+
+
+def test_render_with_a_layout(server):
+    base, pool = server
+    status, _, _ = get(base, "/api/render.png?theme=default_theme&layout=Grid&shot=options")
+    assert status == 200 and pool.layouts[-1] == "Grid"
 
 
 def test_render_json(server):
@@ -435,6 +448,34 @@ def test_export(tmp_path, capsys):
     assert json.loads((folder / "options.json").read_text())['shot'] == "options"
     ## Every theme x size x scheme x language: the theme's default scheme only, unless asked.
     assert len(pool.calls) == 2 * 2 * 2
+
+
+def test_export_layouts(tmp_path):
+    ## --layouts: a folder for each, between the scheme and the language.
+    pool = FakePool()
+    code = serve.export(pool, serve.Themes(None), tmp_path / "out", ["default_theme"], ["640x480"], [], ["en_US"],
+                        pool.shots(), layouts=["all"])
+    assert code == 0 and sorted(set(pool.layouts)) == ["Grid", "List"]
+    scheme = tmp_path / "out" / "default_theme" / "640x480" / "Dark Mode"
+    assert (scheme / "List" / "en_US" / "main_menu.png").exists() and (scheme / "Grid" / "en_US" / "options.json").exists()
+
+
+def test_export_layouts_each_theme_its_own(tmp_path, themes_dir):
+    ## Asked for "Grid": the default theme's, and the default (no folder of its own: "default")
+    ## of a theme without layouts.
+    pool = FakePool()
+    themes = serve.Themes(themes_dir)
+    serve.export(pool, themes, tmp_path / "out", ["default_theme", "good"], ["640x480"], [], ["en_US"],
+                 pool.shots(), layouts=["Grid"])
+    assert pool.layouts == ["Grid", "Grid", None, None]
+    assert (tmp_path / "out" / "good" / "640x480" / "Dark" / "default" / "en_US" / "main_menu.png").exists()
+
+
+def test_export_without_layouts_has_no_layout_folder(tmp_path):
+    pool = FakePool()
+    serve.export(pool, serve.Themes(None), tmp_path / "out", ["default_theme"], ["640x480"], [], ["en_US"], pool.shots())
+    assert pool.layouts == [None, None]
+    assert (tmp_path / "out" / "default_theme" / "640x480" / "Dark Mode" / "en_US" / "main_menu.png").exists()
 
 
 def test_export_all_schemes(tmp_path):

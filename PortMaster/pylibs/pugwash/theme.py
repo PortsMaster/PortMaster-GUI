@@ -806,12 +806,12 @@ class ThemeDownloader(harbourmaster.source.BaseSource):
 
 
 class ThemeEngine:
-    def __init__(self, gui, force_theme=None, force_scheme=None):
+    def __init__(self, gui, force_theme=None, force_scheme=None, force_layout=None):
         self.gui = gui
         ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
         self.force_scheme = force_scheme
-        self.force_layout = None
+        self.force_layout = force_layout
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"

@@ -570,7 +570,7 @@ async function preview() {
   const controller = edit.previewController = new AbortController();
   const view = $("eshotview");
   view.classList.add("rendering");
-  const query = new URLSearchParams({ theme: edit.previewTheme || state.theme, scheme: state.scheme, res: state.res, lang: state.lang, shot: edit.shot });
+  const query = new URLSearchParams({ theme: edit.previewTheme || state.theme, scheme: state.scheme, layout: state.layout, res: state.res, lang: state.lang, shot: edit.shot });
   try {
     const info = await fetch("/api/render.json?" + query, { signal: controller.signal }).then(jsonOrThrow);
     edit.previewInfo = info;

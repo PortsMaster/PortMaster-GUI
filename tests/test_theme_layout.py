@@ -124,3 +124,14 @@ def test_check_export(tmp_path):
     assert results[("Mine", "640x480", "Dark", "en_US", "main_menu")] == []
     assert kinds(results[("Mine", "640x480", "Dark", "en_US", "options")]) == ["off screen", "outside its box"]
     assert layout.main([str(tmp_path)]) == 1
+
+
+def test_check_export_with_layouts(tmp_path, capsys):
+    ## serve.py --layouts: a folder for the layout, so a key has six parts.
+    folder = tmp_path / "Mine" / "640x480" / "Dark" / "Grid" / "en_US"
+    folder.mkdir(parents=True)
+    (folder / "options.json").write_text(json.dumps({'regions': [region("a", [0, 0, 10, 10], [['text', 700, 0, 10, 10, 1.0]])]}))
+    results = layout.check_export(tmp_path)
+    assert list(results) == [("Mine", "640x480", "Dark", "Grid", "en_US", "options")]
+    assert layout.main([str(tmp_path)]) == 1
+    assert "Mine 640x480 Dark Grid en_US options:" in capsys.readouterr().out
