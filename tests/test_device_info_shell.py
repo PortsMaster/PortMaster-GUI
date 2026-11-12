@@ -198,7 +198,7 @@ def test_screen_capabilities_shell_and_theme_server_agree(width, height):
 ## while its DEVICE_INFO_VERSION matches (device_info.txt's fast path and hardware.py both reuse
 ## it), so a change without a new version never reaches a device that ran the old one: 0.2.6's
 ## new screen rules didn't, and the Retroid Pocket Classic stayed "wide".
-DEVICE_INFO_HASH = ("0.2.7", "f450a0946c2314c7")
+DEVICE_INFO_HASH = ("0.2.8", "d9262aeab60d98c3")
 
 
 def test_device_info_changes_come_with_a_new_version():
