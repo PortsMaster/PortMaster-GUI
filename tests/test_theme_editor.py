@@ -108,12 +108,14 @@ def test_theme_names():
         "#schemes": {"#base": {"#pallet": {"base_color": "#fff"}}, "Dark": {"#pallet": {"dark": "#000"}, "#styles": {"dim": {}}}, "Light": {}},
         "#elements": {"left_pane": {}, "right_pane": {}},
         "#styles": {"caption": {}, "label[hires]": {}},
+        "#layouts": {"List": {}, "Grid": {}},
         }
     names = schema.theme_names(data)
     assert names['colors'] == ["base_color", "dark", "top"]
     assert names['resources'] == ["_A", "buttons.png", "click", "click.ogg"]
     assert names['elements'] == ["left_pane", "right_pane"]
     assert names['styles'] == ["caption", "dim", "label"]
+    assert names['layouts'] == ["List", "Grid"]
     assert names['schemes'] == ["Dark", "Light"]
 
 
@@ -128,6 +130,10 @@ def test_schema_is_json(tmp_path):
     assert "Light Mode" in whole['names']['schemes'] and "accent" in whole['names']['colors']
     assert "#info" in whole['top'] and "default-scheme" in whole['info']
     assert "#styles" in whole['top'] and whole['keys']['style'] == {'type': "style"}
+    ## Everything the default theme uses is known: no "PortMaster doesn't use" for its own keys.
+    default = json.loads((PM_DIR / "pylibs" / "default_theme" / "theme.json").read_text())
+    assert set(key.split("[")[0] for key in default) - set(whole['top']) - set(whole['sections']) == set()
+    assert set(default["#info"]) <= set(whole['info'])
     ## No theme: still everything but the theme's own names.
     assert schema.schema()['names']['colors'] == []
 

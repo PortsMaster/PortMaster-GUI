@@ -65,6 +65,7 @@ Guard tests for restructuring:
 - `test_release_layout.py` runs both scripts from a `pylibs.zip` layout with no `.git`, which is the on-device bootstrap path.
 - `test_api_snapshot.py` checks that every public name in `tests/data/api_snapshot.json` is still reachable. Update its `AREAS` table when code moves.
 - `test_i18n.py` checks that the translatable strings in the code match `locales/strings.json` (`tools/i18n.py extract` updates it).
+- `test_theme_docs.py` checks `THEME.md`, the theme reference, names every region key, screen, tag and `#` section the theme editor's schema reads from the code, and that its pictures (`docs/theme/`, made by `tools/theme_docs.py` from theme server renders; it needs Pillow) are there. A new theme key fails it until it's documented. The step-by-step guide, CREATING_A_THEME.md, is in PortMaster-Themes.
 
 **PortMaster Test Suite** (`tools/test_suite/`, built by `./do_release.sh testsuite` into `dist/pmtest.zip`): a port testers drop into `autoinstall/`. It installs the test build it carries, then runs, on the device:
 - the pytest suite (from its own copy of `tests/`, `tools/` and the code, with pytest 7.4 in `pmtest/site/`)
@@ -153,6 +154,7 @@ Known bugs are pinned as `xfail(strict=True)`, so a test fails once its bug is f
 - **Other background threads:**
   - `tasks.DirectoryScanner` works out installed port sizes.
   - `ImageManager.enable_async` (`sdl/images.py`) decodes port screenshots (absolute paths) and returns a `PendingImage` until the main thread uploads the texture. Theme images load synchronously.
+  - Theme images (found by name: `#resources`, a region's `image`/`pointer`, animation frames) stay loaded until the theme reloads. Data images (absolute paths, `qr:`) live in a cache of the `max_images` most recent; one a region still holds after it's dropped loads itself again on its next draw (`Image.alive()`, `tests/test_image_cache.py`).
 - **`quit()` order:** it destroys textures, the renderer and the window before `sdl2.ext.quit()`. Garbage collection after `SDL_Quit` segfaults on muOS/Mali.
 - **Profiling:** `PM_PERF=1` logs fps and every gap between frames over 50 ms to `pugwash.txt` (`tasks.FrameStats`). Run it on a real device to measure lag.
 

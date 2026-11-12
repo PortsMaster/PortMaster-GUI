@@ -244,6 +244,7 @@ function check(text) {
     } else if (kind === "info") {
       if (!(key in s.info)) warn(...at, `#info has ${Object.keys(s.info).join(", ")}`, "info");
       else if (key === "default-scheme" && !names.schemes.includes(node.value)) warn(node.from, node.to, `There's no color scheme "${node.value}" in #schemes`);
+      else if (key === "default-layout" && !names.layouts.includes(node.value)) warn(node.from, node.to, `There's no layout "${node.value}" in #layouts`);
     } else if (kind === "section") {
       if (key.startsWith("#element:")) {
         const element = key.slice(9).split(":")[0].replace(/\[.*$/, "");
@@ -287,7 +288,8 @@ function mergedNames(value) {
   take(value);
   for (const [name, scheme] of Object.entries(value["#schemes"] || {})) { take(scheme); if (!name.startsWith("#")) names.schemes.push(name); }
   for (const k of Object.keys(value["#elements"] || {})) names.elements.add(k);
-  return { colors: [...names.colors], resources: [...names.resources], elements: [...names.elements], styles: [...names.styles], schemes: names.schemes };
+  const layouts = value["#layouts"] && typeof value["#layouts"] === "object" && !Array.isArray(value["#layouts"]) ? Object.keys(value["#layouts"]) : [];
+  return { colors: [...names.colors], resources: [...names.resources], elements: [...names.elements], styles: [...names.styles], schemes: names.schemes, layouts };
 }
 
 /* ---------------------------------------------------------------- Where the cursor is */
@@ -369,6 +371,7 @@ function valuesFor(key, value, path) {
   const kind = kindOf(path);
   const names = value ? mergedNames(value) : s.names;
   if (kind === "info" && name === "default-scheme") return names.schemes.map((x) => [x, "color scheme"]);
+  if (kind === "info" && name === "default-layout") return names.layouts.map((x) => [x, "layout"]);
   if (kind !== "region") return [];
   const spec = s.keys[name];
   if (!spec) return [];

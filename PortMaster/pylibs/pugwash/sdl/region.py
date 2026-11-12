@@ -1387,6 +1387,9 @@ class Region:
         '''
         Draw 9-patch image in given area
         '''
+        if image is None or not image.alive():
+            return
+
         target = area.copy()
         bounds = Rect.from_sdl(image.srcrect)
         texture = image.texture

@@ -6,6 +6,7 @@
 import contextlib
 import ctypes
 import os
+import weakref
 import sdl2
 import sdl2.ext
 import sdl2.sdlmixer
@@ -268,6 +269,9 @@ class Image:
         self.flip_x = self.flip_y = 0
         self.angle = 0
         self.center = None
+        ## ImageManager sets it for the images it may unload (data images): gets the image
+        ## loaded again, for a region that still holds this one.
+        self.reload = None
 
         # default dest rect is fitted to full screen
         self.dstrect = Rect.from_sdl(self.srcrect).fitted(
@@ -278,6 +282,23 @@ class Image:
 
     def get_color_mod(self):
         return self.color_mod[:]
+
+    def alive(self):
+        '''
+        True when the image can be drawn. The ImageManager unloads data images it hasn't
+        been asked for in a while (destroying their textures), but a region may still hold
+        one: it's loaded again here instead of drawing a destroyed texture (which raises).
+        '''
+        texture = self.texture
+        if texture is not None and getattr(texture, '_tx', True) is None and self.reload is not None:
+            fresh = self.reload()
+            if fresh is not None and fresh is not self and getattr(fresh, 'texture', None) is not None:
+                self.texture = fresh.texture
+                self.srcrect = fresh.srcrect
+
+            texture = self.texture
+
+        return texture is not None and getattr(texture, '_tx', True) is not None
 
     def draw_at(self, x, y, angle=0, flip_x=None, flip_y=None, center=None):
         '''
@@ -290,6 +311,9 @@ class Image:
         flip_y: optional flag to flip image vertically
         center: optional point to rotate the image around if angle provided
         '''
+        if not self.alive():
+            return
+
         center = center or self.center
         angle = angle or self.angle
 
@@ -344,6 +368,9 @@ class Image:
         fit: set true to fit the image into dest without changing its aspect
              ratio
         '''
+        if not self.alive():
+            return
+
         center = center or self.center
         angle = angle or self.angle
 
@@ -363,6 +390,9 @@ class Image:
     def draw(self):
         ''''Draw image to its current destrect(Rect region), which defaults to
         full screen maintaining aspect ratio'''
+        if not self.alive():
+            return
+
         flip = 1 * bool(self.flip_x) | 2 * bool(self.flip_y)
         sdl2.SDL_SetTextureColorMod(self.texture.tx, *self.color_mod)
         self.renderer.copy(self.texture, self.srcrect,
@@ -392,6 +422,7 @@ class PendingImage(Image):
         self.flip_x = self.flip_y = 0
         self.angle = 0
         self.center = None
+        self.reload = None
 
     @property
     def loaded(self):
@@ -529,8 +560,7 @@ class ImageManager():
         elif isinstance(filename, str) and filename.startswith(QR_PREFIX):
             image = self._load_qr(filename)
             if image is not None:
-                self.images[filename] = image
-                self.cache.insert(0, filename)
+                self._cached(filename, image)
 
             return image
 
@@ -540,10 +570,9 @@ class ImageManager():
             if res_filename is None:
                 return None
 
-            if self.async_executor is not None and os.path.isabs(str(filename)):
+            if self.async_executor is not None and self.is_data_image(filename):
                 image = PendingImage(renderer=self.renderer)
-                self.images[filename] = image
-                self.cache.insert(0, filename)
+                self._cached(filename, image)
                 self.async_executor.submit(self._decode, filename, res_filename, image)
                 return image
 
@@ -554,10 +583,34 @@ class ImageManager():
             sdl2.SDL_FreeSurface(surf)
 
             self.textures[filename] = texture
-            self.images[filename] = Image(texture, renderer=self.renderer)
-            self.cache.insert(0, filename)
+            image = Image(texture, renderer=self.renderer)
+            if self.is_data_image(filename):
+                self._cached(filename, image)
+            else:
+                ## The theme's own (or PortMaster's) image: kept until the theme is.
+                self.images[filename] = image
 
-            return self.images[filename]
+            return image
+
+    @staticmethod
+    def is_data_image(filename):
+        '''
+        Data images come from the ports, not the theme: screenshots and other files given by
+        absolute path, and QR codes. There can be any number of them, so only the most
+        recently used are kept (max_images). Theme images (its files and PortMaster's,
+        by name: #resources, a region's image, pointer, animation frames) stay loaded
+        until the theme is reloaded: a theme has only so many, and its regions hold them.
+        '''
+        name = str(filename)
+        return name.startswith(QR_PREFIX) or os.path.isabs(name)
+
+    def _cached(self, filename, image):
+        '''A data image: in the cache of recently used ones, and it can load itself again.'''
+        self.images[filename] = image
+        self.cache.insert(0, filename)
+        ## A weak reference: no cycle between the images and their manager.
+        load = weakref.WeakMethod(self.load)
+        image.reload = lambda: load()(filename) if load() is not None else None
 
     def _load_qr(self, filename):
         '''
