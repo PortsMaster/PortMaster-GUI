@@ -5,6 +5,7 @@ import copy
 import datetime
 import functools
 import json
+import re
 import zipfile
 
 import sdl2
@@ -42,8 +43,45 @@ def extract_requirements(text, strict=False):
     return text, list(requirements)
 
 
+## What this PortMaster's theme engine understands, as capabilities a theme's keys can name, for
+## themes that also run on older PortMasters: "font-scale[font_scale_auto]": "auto" is skipped
+## where "auto" would be an error. Only themes see them, not the device's info (ports).
+THEME_CAPABILITIES = ('font_scale_auto',)
+
+## The current theme's layout as a capability ("layout_grid"), set by theme_load().
+LAYOUT_CAPABILITIES = []
+
+
+def theme_capabilities():
+    return list(harbourmaster.device_info()['capabilities']) + list(THEME_CAPABILITIES) + LAYOUT_CAPABILITIES
+
+
+def theme_layouts(theme_data):
+    """The layouts a theme offers ("#layouts": {"List": {}, "Grid": {}}), in its order."""
+    layouts = theme_data.get("#layouts", {})
+    if not isinstance(layouts, dict):
+        return []
+    return [name for name in layouts if isinstance(name, str) and not name.startswith("#")]
+
+
+def layout_capability(layout_name):
+    """The capability a layout gives a theme's keys: "Grid" -> "layout_grid"."""
+    return "layout_" + (re.sub(r"[^a-z0-9]+", "_", layout_name.lower()).strip("_") or "x")
+
+
+def pick_layout(theme_data, layout):
+    """layout, if the theme has it; else its "default-layout", else its first; None without layouts."""
+    layouts = theme_layouts(theme_data)
+    if layout in layouts:
+        return layout
+    default = theme_data.get("#info", {}).get("default-layout")
+    if default in layouts:
+        return default
+    return layouts[0] if layouts else None
+
+
 def theme_update(target, source):
-    capabilities = harbourmaster.device_info()['capabilities']
+    capabilities = theme_capabilities()
 
     for key, value in source.items():
         key, requirements = extract_requirements(key)
@@ -83,13 +121,56 @@ def theme_check_images(gui, region_data):
                     logger.debug(f"loaded image {element_value}")
 
 
-def theme_apply(gui, section_data, base_data, elements):
+def style_names(region_data):
+    """The styles a region names ("style": "caption", or a list of them), after its capabilities."""
+    names = theme_update({}, {key: value for key, value in region_data.items() if extract_requirements(key)[0] == 'style'}).get('style')
+    if isinstance(names, str):
+        return [names]
+    if isinstance(names, list):
+        return [name for name in names if isinstance(name, str)]
+    return []
+
+
+def theme_styled(region_data, styles, seen=()):
+    """
+    region_data on top of the styles it names: a style from #styles is the base of whatever
+    names it (a region, an element, a #base), which can then change any of its keys. A style
+    can name styles too.
+    """
+    if not styles:
+        return region_data
+
+    names = style_names(region_data)
+    if not names:
+        return region_data
+
+    styled = {}
+    for name in names:
+        if name in seen:
+            logger.warning(f"Error: style {name} names itself")
+            continue
+
+        if name not in styles:
+            logger.warning(f"Error: Unknown style {name}")
+            continue
+
+        styled = theme_merge(styled, theme_styled(styles[name], styles, seen + (name, )))
+
+    styled = theme_merge(styled, region_data)
+    styled.pop('style', None)
+    return styled
+
+
+def theme_apply(gui, section_data, base_data, elements, styles=None):
     new_data = {}
-    capabilities = harbourmaster.device_info()['capabilities']
+    capabilities = theme_capabilities()
+
+    def styled(region_data):
+        return theme_styled(region_data, styles)
 
     for region_name, region_data in section_data.items():
         if region_name == "#base":
-            base_data = theme_merge(base_data, region_data)
+            base_data = theme_merge(base_data, styled(region_data))
             continue
 
         elif region_name == "#config":
@@ -111,7 +192,7 @@ def theme_apply(gui, section_data, base_data, elements):
                 logger.warning(f"Error: Unknown element {element_name}")
                 continue
 
-            new_data[region_name] = theme_merge(base_data, theme_merge(elements[element_name], region_data))
+            new_data[region_name] = theme_merge(base_data, theme_merge(styled(elements[element_name]), styled(region_data)))
             continue
 
         region_name, requirements = extract_requirements(region_name, strict=True)
@@ -119,10 +200,10 @@ def theme_apply(gui, section_data, base_data, elements):
             if not harbourmaster.match_requirements(capabilities, requirements):
                 continue
 
-            new_data[region_name] = theme_merge(new_data.get(region_name, base_data), region_data)
+            new_data[region_name] = theme_merge(new_data.get(region_name, base_data), styled(region_data))
 
         else:
-            new_data[region_name] = theme_merge(base_data, region_data)
+            new_data[region_name] = theme_merge(base_data, styled(region_data))
 
     theme_check_images(gui, new_data)
 
@@ -234,7 +315,7 @@ def section_from_themes_list(section, mode):
     return out
 
 
-def theme_load(gui, theme_file, color_scheme=None):
+def theme_load(gui, theme_file, color_scheme=None, layout=None):
     logger.info(f"Loading theme {theme_file}")
 
     with open(theme_file, 'r') as fh:
@@ -243,7 +324,11 @@ def theme_load(gui, theme_file, color_scheme=None):
     if theme_data is None:
         raise ValueError(f"Unable to load theme {theme_file}")
 
-    capabilities = harbourmaster.device_info()["capabilities"]
+    ## Its layout (list or grid, say) is a capability its keys can name: "list-columns[layout_grid]".
+    layout = pick_layout(theme_data, layout)
+    LAYOUT_CAPABILITIES[:] = [layout_capability(layout)] if layout is not None else []
+
+    capabilities = theme_capabilities()
 
     ## The theme's own translations of its text ({lang: {text: translation}}), if it has any.
     i18n.set_theme_translations(theme_data.get("#translations", {}))
@@ -277,7 +362,12 @@ def theme_load(gui, theme_file, color_scheme=None):
             base_scheme = theme_data["#schemes"].get("#base", {})
 
             for section_name, section_data in theme_data["#schemes"][color_scheme].items():
-                if section_name not in ("#base", "#resources", "#pallet"):
+                if section_name not in ("#base", "#resources", "#pallet", "#styles"):
+                    continue
+
+                if section_name == "#styles":
+                    ## Changes the styles it names, the theme's others stay.
+                    theme_data[section_name] = theme_merge(theme_data.get(section_name, {}), theme_merge(base_scheme.get(section_name, {}), section_data))
                     continue
 
                 theme_data[section_name] = theme_merge(base_scheme.get(section_name, {}), section_data)
@@ -364,7 +454,13 @@ def theme_load(gui, theme_file, color_scheme=None):
 
 
     ## Before any section, wherever it is in the file (a colour scheme's #base is added last).
-    base_data = theme_data.get("#base", {})
+    ## Named sets of region keys: "style": "caption" in a region starts it from #styles' "caption".
+    styles = {}
+    for style_name, style_data in theme_data.get("#styles", {}).items():
+        style_name, requirements = extract_requirements(style_name)
+        if isinstance(style_data, dict) and harbourmaster.match_requirements(capabilities, requirements):
+            styles[style_name] = style_data
+    base_data = theme_styled(theme_data.get("#base", {}), styles)
 
     for section_name, section_data in theme_data.items():
         if section_name.startswith('#'):
@@ -444,13 +540,13 @@ def theme_load(gui, theme_file, color_scheme=None):
                 ## Changes the regions it has, the section keeps the rest ("main_menu[640x480]").
                 logger.debug(f"  - loading section {section_name}")
                 merged = dict(sections[section_name])
-                for region_name, region_data in theme_apply(gui, section_data, {}, elements).items():
+                for region_name, region_data in theme_apply(gui, section_data, {}, elements, styles).items():
                     merged[region_name] = theme_merge(merged.get(region_name, {} if region_name.startswith('#') else base_data), region_data)
 
                 sections[section_name] = merged
             else:
                 logger.debug(f"  - loading section {section_name}")
-                sections[section_name] = theme_apply(gui, section_data, base_data, elements)
+                sections[section_name] = theme_apply(gui, section_data, base_data, elements, styles)
 
     # if harbourmaster.HM_TESTING:
     #     with open('debug.json', 'w') as fh:
@@ -541,9 +637,13 @@ class Theme:
             if not scheme_name.startswith('#')]
 
 
-    def gui_init(self, gui, color_scheme=None):
+    @property
+    def layouts(self):
+        return theme_layouts(self.theme_data)
+
+    def gui_init(self, gui, color_scheme=None, layout=None):
         gui.resources.add_path(self.theme_dir)
-        return theme_load(gui, self.theme_file, color_scheme)
+        return theme_load(gui, self.theme_file, color_scheme, layout)
 
 
 class ThemeDownloader(harbourmaster.source.BaseSource):
@@ -711,6 +811,7 @@ class ThemeEngine:
         ## Instead of the config's, eg: the theme server's renderers.
         self.force_theme = force_theme
         self.force_scheme = force_scheme
+        self.force_layout = None
 
     def get_pm_config(self):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -768,6 +869,16 @@ class ThemeEngine:
 
         cfg_data = self.get_pm_config()
         return cfg_data.setdefault("theme-scheme", None)
+
+    def get_current_theme_layout(self):
+        """The layout chosen in Options (None: the theme's default), or the forced one."""
+        if self.force_layout is not None:
+            return self.force_layout
+
+        return self.get_pm_config().setdefault("theme-layout", None)
+
+    def get_theme_layouts_list(self, theme_name=None):
+        return self.get_theme(theme_name or self.get_current_theme()).layouts
 
     def get_theme_dir(self, theme_name):
         cfg_dir = harbourmaster.HM_TOOLS_DIR / "PortMaster"
@@ -870,9 +981,10 @@ class ThemeEngine:
     def gui_init(self):
         theme_name = self.get_current_theme()
         scheme = self.get_current_theme_scheme()
+        layout = self.get_current_theme_layout()
 
         try:
-            return self.get_theme(theme_name).gui_init(self.gui, scheme)
+            return self.get_theme(theme_name).gui_init(self.gui, scheme, layout)
 
         except Exception:
             ## A custom theme that doesn't load (eg: no option_menu section) would stop

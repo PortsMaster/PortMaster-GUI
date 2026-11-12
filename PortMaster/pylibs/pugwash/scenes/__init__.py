@@ -26,6 +26,7 @@ from .runtimes import (
     )
 from .themes import (
     ThemesScene,
+    ThemeLayoutScene,
     ThemeSchemeScene,
     )
 from .theme_server import (
@@ -84,6 +85,7 @@ __all__ = (
     'RuntimesScene',
     'SourceScene',
     'TempMenuScene',
+    'ThemeLayoutScene',
     'ThemeSchemeScene',
     'ThemeServerScene',
     'ThemesScene',

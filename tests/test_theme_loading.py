@@ -182,6 +182,94 @@ def test_element_area_requirements(load, capabilities):
 
 
 ################################################################################
+## Styles: named sets of keys, under whatever names them
+STYLES = {
+    "caption": {"font-size": 11, "font-color": "faint"},
+    "label": {"font": "Medium.ttf", "font-size": 14, "font-color": "text"},
+    "title": {"style": "label", "font-size": 21},
+    "big[1280x720]": {"font-size": 40},
+    }
+
+
+def test_style_is_the_base_of_the_region(load, capabilities):
+    sections, _ = load({
+        "#base": {"font": "Base.ttf", "font-size": 9},
+        "#styles": STYLES,
+        "main_menu": {
+            "caption": {"style": "caption", "area": [0, 0, 1.0, 0.1]},
+            "bigger": {"style": "caption", "font-size": 13},
+            "plain": {"font-color": "text"},
+            },
+        })
+
+    menu = sections["main_menu"]
+    ## The style wins over #base, the region over the style, and "style" itself is gone.
+    assert menu["caption"] == {"font": "Base.ttf", "font-size": 11, "font-color": "faint", "area": [0, 0, 1.0, 0.1]}
+    assert menu["bigger"]["font-size"] == 13 and menu["bigger"]["font-color"] == "faint"
+    assert menu["plain"] == {"font": "Base.ttf", "font-size": 9, "font-color": "text"}
+
+
+def test_styles_of_styles_lists_and_capabilities(load, capabilities):
+    sections, _ = load({
+        "#styles": STYLES,
+        "main_menu": {
+            "title": {"style": "title"},
+            "both": {"style": ["label", "caption"]},
+            "grid": {"style": "caption", "style[1280x720]": "title"},
+            "big": {"style": "big"},
+            "missing": {"style": "nope", "font-size": 5},
+            },
+        })
+
+    menu = sections["main_menu"]
+    assert menu["title"] == {"font": "Medium.ttf", "font-size": 21, "font-color": "text"}
+    ## Later styles win.
+    assert menu["both"] == {"font": "Medium.ttf", "font-size": 11, "font-color": "faint"}
+    ## The test device is 640x480: no 1280x720 style, nor a style only it has.
+    assert menu["grid"]["font-size"] == 11
+    assert menu["big"] == {}
+    assert menu["missing"] == {"font-size": 5}
+
+
+def test_style_in_elements_and_base(load, capabilities):
+    sections, _ = load({
+        "#styles": dict(STYLES, round={"roundness": 8}),
+        "#base": {"style": "round"},
+        "#elements": {"panel": {"style": "label", "area": [0, 0, 1.0, 1.0], "font-size": 15}},
+        "main_menu": {
+            "#base": {"style": "caption"},
+            "#element:panel": {},
+            "#element:panel:titled": {"style": "title"},
+            "other": {},
+            },
+        })
+
+    menu = sections["main_menu"]
+    assert menu["panel"] == {"roundness": 8, "font-size": 15, "font-color": "text", "font": "Medium.ttf", "area": [0, 0, 1.0, 1.0]}
+    ## The region's style is over the element.
+    assert menu["titled"]["font-size"] == 21
+    assert menu["other"] == {"roundness": 8, "font-size": 11, "font-color": "faint"}
+
+
+def test_style_naming_itself_stops(load, capabilities, log_errors):
+    sections, _ = load({
+        "#styles": {"a": {"style": "b", "font-size": 1}, "b": {"style": "a", "border": 2}},
+        "main_menu": {"r": {"style": "a"}},
+        })
+    assert sections["main_menu"]["r"] == {"font-size": 1, "border": 2}
+
+
+def test_scheme_changes_its_styles(load, capabilities):
+    data = dict(SCHEMES, **{"#styles": STYLES})
+    data["#schemes"] = dict(SCHEMES["#schemes"], Light={"#styles": {"caption": {"font-color": "dark"}}})
+    data["main_menu"] = {"caption": {"style": "caption"}, "label": {"style": "label"}}
+
+    sections, _ = load(data, "Light")
+    assert sections["main_menu"]["caption"] == {"font-size": 11, "font-color": "dark"}
+    assert sections["main_menu"]["label"]["font"] == "Medium.ttf"
+
+
+################################################################################
 ## Resources, pallet, overrides, animations
 def test_resources(load, capabilities):
     _, gui = load({"#resources": {

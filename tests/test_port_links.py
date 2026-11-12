@@ -282,9 +282,12 @@ def test_old_theme_gets_themed_screens(old_theme, monkeypatch, tmp_path):
     gui = old_theme
     from pugwash import scenes
 
-    for name in ("port_links", "theme_server"):
-        section = gui.theme_data[name]
-        assert any(region.get("parent") == "port_info_list_area" for region in section.values() if isinstance(region, dict)), name
+    ## Made from the theme's own themes_list: its list's place on the screen.
+    themes_list = gui.theme_data["themes_list"]
+    list_parent = next(region.get("parent") for name, region in themes_list.items()
+                       if isinstance(region, dict) and region.get("tag", name) == "themes_list")
+    assert gui.theme_data["port_links"]["links_list"].get("parent") == list_parent
+    assert gui.theme_data["theme_server"]["server_info"].get("parent") == list_parent
 
     assert gui.theme_data["port_links"]["link_qr"]["image"] == "qr:{port_links.url}"
 

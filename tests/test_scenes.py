@@ -69,7 +69,7 @@ def option_ids(pugscene, monkeypatch, tmp_path):
 
         gui = SimpleNamespace(
             hm=fake_hm_for(cfw_name, monkeypatch, tmp_path),
-            themes=SimpleNamespace(get_theme_schemes_list=lambda: []),
+            themes=SimpleNamespace(get_theme_schemes_list=lambda: [], get_theme_layouts_list=lambda: []),
             sounds=SimpleNamespace(music_is_disabled=False, sound_is_disabled=False),
             )
 

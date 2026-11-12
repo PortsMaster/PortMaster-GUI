@@ -87,13 +87,78 @@ def test_scheme_reload(app, tmp_path):
     app.reload_theme(then=options(app))
     before = screen(app, tmp_path, "before")
 
-    app.hm.cfg_data['theme-scheme'] = "Dracula"
+    app.hm.cfg_data['theme-scheme'] = "Light Mode"
     app.reload_theme(then=options(app))
-    assert screen(app, tmp_path, "dracula") != before
+    assert screen(app, tmp_path, "light") != before
 
     app.hm.cfg_data['theme-scheme'] = None
     app.reload_theme(then=options(app))
     assert screen(app, tmp_path, "after") == before
+
+
+def test_layout_reload(app, tmp_path):
+    ## The default theme's Grid layout draws the ports list as tiles; back to List, as before.
+    from pugwash.scenes import PortsListScene
+    ports = [('option', lambda gui: PortsListScene(gui, {'mode': 'all'}))]
+    ## Screenshots decoded as they're drawn, not in the background: the same in every capture.
+    app.images.disable_async()
+    try:
+        app.hm.cfg_data['theme-layout'] = None
+        app.reload_theme(then=ports)
+        before = screen(app, tmp_path, "list")
+        assert app.scenes[-1][1][-1].tags['ports_list'].list_columns == 1
+
+        app.hm.cfg_data['theme-layout'] = "Grid"
+        app.reload_theme(then=ports)
+        assert app.scenes[-1][1][-1].tags['ports_list'].list_columns == 3
+        assert screen(app, tmp_path, "grid") != before
+
+        app.hm.cfg_data['theme-layout'] = None
+        app.reload_theme(then=ports)
+        assert screen(app, tmp_path, "after") == before
+    finally:
+        app.images.enable_async(app.dispatcher)
+
+
+def test_saved_scheme_the_theme_has_not(app, tmp_path):
+    ## A scheme the old default theme had (Dracula, Darker Mode...) saved in config.json: the
+    ## theme's own default scheme instead.
+    app.hm.cfg_data['theme-scheme'] = None
+    app.reload_theme(then=options(app))
+    default = screen(app, tmp_path, "default")
+
+    app.hm.cfg_data['theme-scheme'] = "Dracula"
+    app.reload_theme(then=options(app))
+    assert screen(app, tmp_path, "dracula") == default
+
+    app.hm.cfg_data['theme-scheme'] = None
+    app.reload_theme(then=options(app))
+
+
+def test_font_override_per_language(app):
+    ## The default theme names its CJK fonts once, as #base "font-override[lang]": in Japanese
+    ## every region draws in Noto Sans JP, also those with a font of their own (Roboto Medium).
+    from pugwash.scenes import PortsListScene
+    ports = [('option', lambda gui: PortsListScene(gui, {'mode': 'all'}))]
+    app.reload_language("ja_JP", then=ports)
+    try:
+        fonts = {region.font for region in app.scenes[-1][1][-1].regions if region.font}
+        assert fonts == {"NotoSansJP-Regular.ttf"}
+    finally:
+        app.reload_language("en_US", then=ports)
+    fonts = {region.font for region in app.scenes[-1][1][-1].regions if region.font}
+    assert "Roboto-Medium.ttf" in fonts and "NotoSansJP-Regular.ttf" not in fonts
+
+
+def test_language_reload_redoes_translated_status(app, monkeypatch):
+    ## system.battery_level is "N/A" in the language it was set in; a new language redoes it
+    ## at once, not at the next status update.
+    import pugwash.app
+    monkeypatch.setattr(pugwash.app, "battery_level", lambda: None)
+    app.reload_language("de_DE", then=options(app))
+    assert app.text_data["system.battery_level"] == "N/V"
+    app.reload_language("en_US", then=options(app))
+    assert app.text_data["system.battery_level"] == "N/A"
 
 
 def test_language_reload(app, tmp_path):

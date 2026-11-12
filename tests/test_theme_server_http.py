@@ -430,7 +430,7 @@ def test_export(tmp_path, capsys):
     code = serve.export(pool, themes, tmp_path / "out", ["default_theme"], ["640x480", "480x320"], [], ["en_US", "de_DE"], pool.shots())
 
     assert code == 0
-    folder = tmp_path / "out" / "default_theme" / "640x480" / "Light Mode" / "de_DE"
+    folder = tmp_path / "out" / "default_theme" / "640x480" / "Dark Mode" / "de_DE"
     assert (folder / "main_menu.png").read_bytes() == b"\x89PNG fake"
     assert json.loads((folder / "options.json").read_text())['shot'] == "options"
     ## Every theme x size x scheme x language: the theme's default scheme only, unless asked.
@@ -441,7 +441,7 @@ def test_export_all_schemes(tmp_path):
     pool = FakePool()
     serve.export(pool, serve.Themes(None), tmp_path / "out", ["default_theme"], ["640x480"], ["all"], ["en_US"], pool.shots())
     schemes = {call[1] for call in pool.calls}
-    assert {"Light Mode", "Dark Mode", "Dracula"} <= schemes
+    assert {"Light Mode", "Dark Mode", "OLED Mode"} <= schemes
 
 
 def test_export_failures(tmp_path, capsys):
@@ -457,7 +457,7 @@ def test_export_missing_section(tmp_path):
     pool.missing = "no section"
 
     assert serve.export(pool, serve.Themes(None), tmp_path / "out", ["default_theme"], ["640x480"], [], ["en_US"], pool.shots()) == 0
-    folder = tmp_path / "out" / "default_theme" / "640x480" / "Light Mode" / "en_US"
+    folder = tmp_path / "out" / "default_theme" / "640x480" / "Dark Mode" / "en_US"
     assert not (folder / "main_menu.png").exists() and (folder / "main_menu.json").is_file()
 
 

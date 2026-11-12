@@ -51,6 +51,45 @@ def test_another_depth_is_a_popup():
     assert layout.problems(regions, (640, 480)) == []
 
 
+def test_a_mask_in_the_same_box_is_decoration():
+    regions = [
+        region("port_image", [300, 40, 300, 225], [['image', 300, 40, 300, 225, 1.0]]),
+        region("port_image_corners", [300, 40, 300, 225], [['image', 300, 40, 300, 225, 1.0]]),
+        ]
+    assert layout.problems(regions, (640, 480)) == []
+    ## Text on text in the same box still collides.
+    regions = [
+        region("progress", [20, 400, 600, 20], [['text', 20, 400, 300, 20, 1.0]]),
+        region("amount", [20, 400, 600, 20], [['text', 250, 400, 100, 20, 1.0]]),
+        ]
+    assert kinds(layout.problems(regions, (640, 480))) == ["clash"]
+
+
+def test_the_themes_own_art_is_not_content():
+    panel = region("panel_back", [0, 0, 640, 480], [['image', 0, 0, 640, 480, 1.0]])
+    panel['data'] = {'image': "panel.png"}
+    text = region("ports_list", [10, 10, 300, 400], [['text', 10, 10, 200, 20, 1.0]])
+    assert layout.problems([panel, text], (640, 480)) == []
+    ## A screenshot is content, whatever it is drawn over.
+    shot = region("port_image", [100, 0, 300, 200], [['image', 100, 0, 300, 200, 1.0]])
+    shot['data'] = {'image': "{port_info.image}"}
+    assert kinds(layout.problems([shot, text], (640, 480))) == ["clash"]
+
+
+def test_a_text_regions_own_panel_and_a_shadow():
+    ## A fixed image behind a region's own text is its panel; the same text twice is a shadow.
+    info = region("info", [300, 200, 340, 100], [['image', 300, 200, 340, 100, 1.0], ['text', 310, 210, 300, 40, 1.0]])
+    info['data'] = {'image': "panel.png", 'text': "{port_info.genres}"}
+    desc = region("desc", [300, 280, 340, 100], [['image', 300, 280, 340, 100, 1.0], ['text', 310, 300, 300, 40, 1.0]])
+    desc['data'] = {'image': "panel.png", 'text': "{port_info.description}"}
+    assert layout.problems([info, desc], (640, 480)) == []
+    back = region("title_back", [300, 0, 340, 40], [['text', 400, 5, 120, 30, 1.0]])
+    back['data'] = {'text': "{port_info.title}"}
+    title = region("title", [300, 0, 340, 40], [['text', 400, 5, 120, 30, 1.0]])
+    title['data'] = {'text': "{port_info.title}"}
+    assert layout.problems([back, title], (640, 480)) == []
+
+
 def test_hidden_or_empty_regions_dont_count():
     regions = [
         region("a", [0, 0, 640, 480], [['text', 0, 0, 640, 480, 1.0]]),

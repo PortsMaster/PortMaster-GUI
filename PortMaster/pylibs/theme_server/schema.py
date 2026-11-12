@@ -32,6 +32,7 @@ EXTRA_KEYS = {
     'music-volume': {'type': "int", 'min': 0, 'max': 128},
     'tag':          {'type': "text"},
     'comment':      {'type': "text"},
+    'style':        {'type': "style"},
     }
 
 ## The top level of theme.json: "#" sections, then the screens.
@@ -40,6 +41,7 @@ TOP_KEYS = {
     '#schemes':      "color schemes: each has a #pallet and can change #resources and any section",
     '#base':         "keys every region starts from",
     '#elements':     "named regions sections can use with \"#element:<name>\"",
+    '#styles':       "named sets of keys a region, element or #base starts from with \"style\": \"<name>\"",
     '#resources':    "images, fonts and sounds: names, atlases, image-mod",
     '#pallet':       "named colors",
     '#override':     "text for the special words (_A, _B, _CHECKED ...)",
@@ -224,8 +226,8 @@ def theme_files(theme_dir):
 
 
 def theme_names(theme_data):
-    """Names the theme defines: pallet colors (every scheme's), resources and atlas parts, elements, schemes."""
-    colors, resources, elements = set(), set(), set()
+    """Names the theme defines: pallet colors (every scheme's), resources and atlas parts, elements, styles, schemes."""
+    colors, resources, elements, styles = set(), set(), set(), set()
     schemes = [name for name in theme_data.get("#schemes", {}) if isinstance(theme_data.get("#schemes"), dict) and not name.startswith("#")]
 
     def pallet(section):
@@ -240,14 +242,20 @@ def theme_names(theme_data):
                     if isinstance(info.get("atlas"), dict):
                         resources.update(info["atlas"])
 
+    def style(section):
+        if isinstance(section, dict) and isinstance(section.get("#styles"), dict):
+            styles.update(name.split("[")[0] for name in section["#styles"])
+
     pallet(theme_data)
+    style(theme_data)
     if isinstance(theme_data.get("#schemes"), dict):
         for scheme in theme_data["#schemes"].values():
             pallet(scheme)
+            style(scheme)
     if isinstance(theme_data.get("#elements"), dict):
         elements.update(theme_data["#elements"])
 
-    return {'colors': sorted(colors), 'resources': sorted(resources), 'elements': sorted(elements), 'schemes': schemes}
+    return {'colors': sorted(colors), 'resources': sorted(resources), 'elements': sorted(elements), 'styles': sorted(styles), 'schemes': schemes}
 
 
 def schema(theme_dir=None, other_themes=()):

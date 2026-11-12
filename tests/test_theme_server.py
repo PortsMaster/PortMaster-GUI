@@ -5,6 +5,7 @@
 # These use an empty ports cache, so no network.
 
 import json
+import shutil
 import threading
 import urllib.error
 import urllib.request
@@ -133,9 +134,13 @@ def pool(tmp_path_factory):
     themes_dir = tmp / "themes"
     ## A theme with only the sections pugwash needs (it copies the rest from these): the
     ## other screens say what's missing.
-    (themes_dir / "Tiny").mkdir(parents=True)
+    ## Its files are the default theme's (its fonts and images), its theme.json fewer sections.
+    shutil.copytree(str(DEFAULT_THEME), str(themes_dir / "Tiny"))
     tiny = json.loads((DEFAULT_THEME / "theme.json").read_text())
     tiny = {key: value for key, value in tiny.items() if key.startswith("#") or key in ("main_menu", "option_menu", "ports_list", "message_window")}
+    ## Drawn a little differently from the default theme, to tell their renders apart.
+    ## (A key of its own, after the theme's: the last that matches wins.)
+    tiny["#base"]["font-scale[854x480]"] = 0.8
     (themes_dir / "Tiny" / "theme.json").write_text(json.dumps(tiny))
 
     themes = serve.Themes(themes_dir)
@@ -223,7 +228,7 @@ def test_one_renderer_switches_theme_scheme_and_language(pool):
     ## Each screen size has one renderer, switched in place: renders match a renderer
     ## started with those settings.
     renders = {}
-    for theme_id, scheme, lang in (("default_theme", None, "en_US"), ("default_theme", "Dracula", "en_US"),
+    for theme_id, scheme, lang in (("default_theme", None, "en_US"), ("default_theme", "Light Mode", "en_US"),
                                    ("default_theme", None, "de_DE"), ("Tiny", None, "en_US")):
         png, info = pool.render(theme_id, scheme, "854x480", lang, "options")
         assert not info['errors']
@@ -233,8 +238,8 @@ def test_one_renderer_switches_theme_scheme_and_language(pool):
 
     fresh = serve.RenderPool(pool.themes, pool.ports_config, pool.work_dir / "fresh")
     try:
-        png, _ = fresh.render("default_theme", "Dracula", "854x480", "en_US", "options")
-        assert png == renders[("default_theme", "Dracula", "en_US")]
+        png, _ = fresh.render("default_theme", "Light Mode", "854x480", "en_US", "options")
+        assert png == renders[("default_theme", "Light Mode", "en_US")]
     finally:
         fresh.stop()
 
@@ -352,12 +357,12 @@ def test_render_lists_the_strings_it_used(pool):
 @pytest.mark.sdl
 @pytest.mark.own_display
 def test_language_capability_picks_the_font(pool):
-    ## The default theme's "font[ja_JP]": the language reaches the theme's capabilities
-    ## with a pretend resolution too.
+    ## The default theme's "font-override[ja_JP]": the language reaches the theme's capabilities
+    ## with a pretend resolution too, and every region draws in Noto Sans JP.
     if not (PM_DIR / "pylibs" / "resources" / "NotoSansJP-Regular.ttf").is_file():
         pytest.skip("no Noto fonts here (the Test Suite leaves them out)")
     _, info = pool.render("default_theme", None, "1280x720", "ja_JP", "main_menu")
-    fonts = {region['data'].get('font') for region in info['regions']}
+    fonts = {region['data'].get('font-override') or region['data'].get('font') for region in info['regions']}
     assert fonts == {"NotoSansJP-Regular.ttf"}
 
 
@@ -674,13 +679,13 @@ def test_renderers_fork_from_the_zygote(pool, tmp_path):
     import os
     import signal
 
-    png, _ = pool.render("default_theme", "Dracula", "720x720", "de_DE", "options")
+    png, _ = pool.render("default_theme", "Light Mode", "720x720", "de_DE", "options")
     forked = pool.workers["720x720"]
     assert pool.zygote and forked.pid and forked.proc is None
 
     alone = serve.RenderPool(pool.themes, pool.ports_config, tmp_path / "alone", use_zygote=False)
     try:
-        own_png, _ = alone.render("default_theme", "Dracula", "720x720", "de_DE", "options")
+        own_png, _ = alone.render("default_theme", "Light Mode", "720x720", "de_DE", "options")
         assert alone.workers["720x720"].proc is not None
         assert own_png == png
     finally:
@@ -693,7 +698,7 @@ def test_renderers_fork_from_the_zygote(pool, tmp_path):
             break
         import time
         time.sleep(0.05)
-    png, info = pool.render("default_theme", "Dracula", "720x720", "de_DE", "main_menu")
+    png, info = pool.render("default_theme", "Light Mode", "720x720", "de_DE", "main_menu")
     assert png and pool.workers["720x720"] is not forked
 
 

@@ -20,9 +20,16 @@ def plain_font():
     try:
         with open(str(PYLIB_PATH / "default_theme" / "theme.json"), encoding="utf-8") as fh:
             base = json.load(fh).get("#base", {})
-        font = base.get(f"font[{lang.CURRENT_LANG}]") or base.get("font") or font
+        font = (base.get(f"font-override[{lang.CURRENT_LANG}]") or base.get(f"font[{lang.CURRENT_LANG}]")
+                or base.get("font") or font)
     except (OSError, ValueError, AttributeError):
         pass
+
+    ## Another theme only finds its own files and PortMaster's resources/: a font the default
+    ## theme carries itself (Roboto) is named by its full path.
+    own = PYLIB_PATH / "default_theme" / font
+    if not (PYLIB_PATH / "resources" / font).is_file() and own.is_file():
+        return str(own)
 
     return font
 

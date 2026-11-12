@@ -98,6 +98,7 @@ class ThemesScene(BaseScene):
             from .options import OptionScene
             self.gui.hm.cfg_data['theme'] = self.last_select
             self.gui.hm.cfg_data['theme-scheme'] = None
+            self.gui.hm.cfg_data['theme-layout'] = None
             self.gui.hm.save_config()
             self.gui.reload_theme(then=[('option', OptionScene), ('select-theme', ThemesScene)])
             return True
@@ -118,27 +119,40 @@ class ThemesScene(BaseScene):
             return True
 
 
-class ThemeSchemeScene(BaseScene):
+class ThemeChoiceScene(BaseScene):
+    """A list of the current theme's color schemes or layouts: the chosen one applies at once."""
+    config_key = None
+    info_default = None
+    option = None
+
+    def choices(self):
+        return []
+
+    def title(self):
+        return ""
+
     def __init__(self, gui):
         super().__init__(gui)
-        self.scene_title = _("Select Color Scheme")
+        self.scene_title = self.title()
 
         self.load_regions("option_menu", ['option_list', ])
 
         theme_name = self.gui.themes.get_current_theme()
-        schemes = self.gui.themes.get_theme_schemes_list()
+        choices = self.choices()
 
-        default_scheme = self.gui.themes.get_theme(theme_name).theme_data.get("#info", {}).get("default-scheme", None)
-        selected_scheme = self.gui.hm.cfg_data.get('theme-scheme', default_scheme)
+        default = self.gui.themes.get_theme(theme_name).theme_data.get("#info", {}).get(self.info_default, None)
+        selected = self.gui.hm.cfg_data.get(self.config_key) or default
+        if selected not in choices:
+            selected = None
 
         self.tags['option_list'].reset_options()
-        for index, scheme_name in enumerate(schemes):
-            if selected_scheme is None or scheme_name == selected_scheme:
-                selected_scheme = scheme_name
-                self.tags['option_list'].add_option((None, ''), _("{item_name} (Selected)").format(item_name=scheme_name))
+        for index, name in enumerate(choices):
+            if selected is None or name == selected:
+                selected = name
+                self.tags['option_list'].add_option((None, ''), _("{item_name} (Selected)").format(item_name=name))
                 self.tags['option_list'].list_select(index)
             else:
-                self.tags['option_list'].add_option(('select-scheme', scheme_name), scheme_name)
+                self.tags['option_list'].add_option((self.option, name), name)
 
         self.tags['option_list'].add_option(None, "")
         self.tags['option_list'].add_option(('back', None), _("Back"))
@@ -157,21 +171,44 @@ class ThemeSchemeScene(BaseScene):
 
             self.button_activate()
 
-            # print(f"Selected {selected_option} -> {selected_parameter}")
-
             if selected_option == 'back':
                 self.gui.pop_scene()
                 return True
 
-            elif selected_option == 'select-scheme':
+            elif selected_option == self.option:
                 ## Applies straight away, back in this list.
                 from .options import OptionScene
-                self.gui.hm.cfg_data['theme-scheme'] = selected_parameter
+                self.gui.hm.cfg_data[self.config_key] = selected_parameter
                 self.gui.hm.save_config()
-                self.gui.reload_theme(then=[('option', OptionScene), ('select-scheme', ThemeSchemeScene)])
+                self.gui.reload_theme(then=[('option', OptionScene), (self.option, type(self))])
                 return True
 
         elif events.was_pressed('B'):
             self.button_back()
             self.gui.pop_scene()
             return True
+
+
+class ThemeSchemeScene(ThemeChoiceScene):
+    config_key = 'theme-scheme'
+    info_default = 'default-scheme'
+    option = 'select-scheme'
+
+    def title(self):
+        return _("Select Color Scheme")
+
+    def choices(self):
+        return self.gui.themes.get_theme_schemes_list()
+
+
+class ThemeLayoutScene(ThemeChoiceScene):
+    """A theme's layouts ("#layouts": list or grid, say), when it has more than one."""
+    config_key = 'theme-layout'
+    info_default = 'default-layout'
+    option = 'select-layout'
+
+    def title(self):
+        return _("Select Layout")
+
+    def choices(self):
+        return self.gui.themes.get_theme_layouts_list()
