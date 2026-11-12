@@ -410,7 +410,9 @@
             "area[layout_grid]": [ 0.0, 0.15, 1.0, 0.5 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
-            "image-align": "topleft"
+            "image-align": "topleft",
+            "image-align[1:1|square]": "midtop",
+            "image-align[layout_grid]": "midtop"
         },
         "port_image_corners": {
             "parent": "card_inner",
@@ -422,6 +424,8 @@
             "image": "shot_mask.png",
             "image-mode": "fit",
             "image-align": "topleft",
+            "image-align[1:1|square]": "midtop",
+            "image-align[layout_grid]": "midtop",
             "image-mod": "card_fill"
         },
         "port_status": {
@@ -600,7 +604,7 @@
             "area[1:1|square]": [ 0.04, 0.235, 0.6, 0.6 ],
             "image": "{port_info.image}",
             "image-mode": "fit",
-            "image-align": "topleft"
+            "image-align": "midtop"
         },
         "port_image_corners": {
             "area": [ 0.04, 0.235, 0.6, 0.66 ],
@@ -609,7 +613,7 @@
             "area[1:1|square]": [ 0.04, 0.235, 0.6, 0.6 ],
             "image": "shot_mask.png",
             "image-mode": "fit",
-            "image-align": "topleft",
+            "image-align": "midtop",
             "image-mod": "background"
         },
         "desc_card": {
