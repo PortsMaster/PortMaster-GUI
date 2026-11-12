@@ -37,7 +37,7 @@ EXTRA_KEYS = {
 
 ## The top level of theme.json: "#" sections, then the screens.
 TOP_KEYS = {
-    '#info':         "the theme's name, creator, description and default-scheme",
+    '#info':         "the theme's name, creator, description, default-scheme and default-layout",
     '#schemes':      "color schemes: each has a #pallet and can change #resources and any section",
     '#base':         "keys every region starts from",
     '#elements':     "named regions sections can use with \"#element:<name>\"",
@@ -47,6 +47,7 @@ TOP_KEYS = {
     '#override':     "text for the special words (_A, _B, _CHECKED ...)",
     '#animations':   "named animations",
     '#translations': "the theme's own translations: {lang: {English: translation}}",
+    '#layouts':      "layouts the player picks in Options (a list or a grid, say): their keys name the capability layout_<name>",
     }
 
 INFO_KEYS = {
@@ -55,6 +56,7 @@ INFO_KEYS = {
     'description':    {'type': "text"},
     'version':        {'type': "text"},
     'default-scheme': {'type': "scheme"},
+    'default-layout': {'type': "text"},
     }
 
 ## Keys of a section's "#config".
@@ -255,7 +257,9 @@ def theme_names(theme_data):
     if isinstance(theme_data.get("#elements"), dict):
         elements.update(theme_data["#elements"])
 
-    return {'colors': sorted(colors), 'resources': sorted(resources), 'elements': sorted(elements), 'styles': sorted(styles), 'schemes': schemes}
+    layouts = [name for name in theme_data.get("#layouts", {})] if isinstance(theme_data.get("#layouts"), dict) else []
+    return {'colors': sorted(colors), 'resources': sorted(resources), 'elements': sorted(elements), 'styles': sorted(styles),
+            'schemes': schemes, 'layouts': layouts}
 
 
 def schema(theme_dir=None, other_themes=()):
