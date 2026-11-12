@@ -161,6 +161,8 @@ class Region:
                 ('fit', 'fit-horizontal', 'fit-vertical', 'stretch', 'repeat', None), 'fit')
         self.imagealign = self._verify_option('image-align', Rect.POINTS, None)
         self.patch = self._verify_ints('patch', 4, optional=True)
+        ## 9-patch edges (and middle) repeated at their own size instead of stretched: patterns, pixel art.
+        self.patch_repeat = self._verify_option('patch-repeat', ['edges', 'all'], optional=True)
         self.pimage = self.images.load(self._dict.get('pimage'))
         if self.patch and not self.pimage:
             self.pimage = self.image
@@ -1385,7 +1387,9 @@ class Region:
 
     def _draw_patch(self, area, image):
         '''
-        Draw 9-patch image in given area
+        Draw 9-patch image in given area: the corners as they are, the edges and middle
+        stretched, or with "patch-repeat" repeated at their own size (cut off at the end):
+        "edges" repeats the four edges, "all" the middle too.
         '''
         if image is None or not image.alive():
             return
@@ -1393,55 +1397,48 @@ class Region:
         target = area.copy()
         bounds = Rect.from_sdl(image.srcrect)
         texture = image.texture
+        left, top, right, bottom = self.patch
+        ## The source's and the target's middle, each way (none if the box is smaller than its corners).
+        src_w, src_h = bounds.width - left - right, bounds.height - top - bottom
+        dst_w, dst_h = max(0, target.width - left - right), max(0, target.height - top - bottom)
+        edges = self.patch_repeat in ('edges', 'all')
+        middle = self.patch_repeat == 'all'
 
-        self.renderer.copy(texture,  # TOP
-                srcrect=(bounds.left, bounds.top, self.patch[0], self.patch[1]),
-                dstrect=(target.left, target.top, self.patch[0], self.patch[1]))
-        self.renderer.copy(texture,  # LEFT
-            srcrect=(bounds.left, bounds.top + self.patch[1], self.patch[0],
-                    bounds.height - self.patch[1] - self.patch[3]),
-            dstrect=(target.left, target.top + self.patch[1], self.patch[0],
-                    target.height - self.patch[1] - self.patch[3]))
-        self.renderer.copy(texture,  # BOTTOM-LEFT
-            srcrect=(bounds.left, bounds.bottom - self.patch[3],
-                    self.patch[0], self.patch[3]),
-            dstrect=(target.left, target.bottom - self.patch[3],
-                    self.patch[0], self.patch[3]))
+        color_mod = self.image_mod[:3] if self.image_mod is not None else image.color_mod
+        sdl2.SDL_SetTextureColorMod(texture.tx, *color_mod)
 
-        self.renderer.copy(texture, # TOP -RIGHT
-            srcrect=(bounds.right - self.patch[2], bounds.top,
-                    self.patch[2], self.patch[1]),
-            dstrect=(target.right - self.patch[2], target.top,
-                    self.patch[2], self.patch[1]))
-        self.renderer.copy(texture, # RIGHT
-            srcrect=(bounds.right - self.patch[2], bounds.top + self.patch[1],
-                    self.patch[2], bounds.height - self.patch[3] - self.patch[1]),
-            dstrect=(target.right - self.patch[2], target.top + self.patch[1],
-                    self.patch[2], target.height - self.patch[3] - self.patch[1]))
-        self.renderer.copy(texture, # BOTTOM-RIGHT
-            srcrect=(bounds.right - self.patch[2], bounds.bottom - self.patch[3],
-                    self.patch[2], self.patch[3]),
-            dstrect=(target.right - self.patch[2], target.bottom - self.patch[3],
-                    self.patch[2], self.patch[3]))
+        def piece(sx, sy, sw, sh, dx, dy, dw, dh, repeat_x=False, repeat_y=False):
+            if sw <= 0 or sh <= 0 or dw <= 0 or dh <= 0:
+                return
+            ## Stretched: one copy. Repeated: copies at the source's size, the last one cut off.
+            step_w = sw if repeat_x else dw
+            step_h = sh if repeat_y else dh
+            y = 0
+            while y < dh:
+                h = min(step_h, dh - y)
+                x = 0
+                while x < dw:
+                    w = min(step_w, dw - x)
+                    self.renderer.copy(texture,
+                        srcrect=(sx, sy, w if repeat_x else sw, h if repeat_y else sh),
+                        dstrect=(dx + x, dy + y, w, h))
+                    x += w
+                y += h
 
-        self.renderer.copy(texture, # TOP
-            srcrect=(bounds.left + self.patch[0], bounds.top,
-                    bounds.width - self.patch[0] - self.patch[2], self.patch[1]),
-            dstrect=(target.left + self.patch[0], target.top,
-                    target.width - self.patch[0] - self.patch[2], self.patch[1]))
-        self.renderer.copy(texture, # CENTER
-            srcrect=(bounds.left + self.patch[0], bounds.top + self.patch[1],
-                    bounds.width - self.patch[2] - self.patch[0],
-                    bounds.height - self.patch[1] - self.patch[3]),
-            dstrect=(target.left + self.patch[0], target.top + self.patch[1],
-                    target.width - self.patch[2] - self.patch[0],
-                    target.height - self.patch[1] - self.patch[3]))
-        self.renderer.copy(texture, # BOTTOM
-            srcrect=(bounds.left + self.patch[0], bounds.bottom - self.patch[3],
-                    bounds.width - self.patch[0] - self.patch[2], self.patch[3]),
-            dstrect=(target.left + self.patch[0], target.bottom - self.patch[3],
-                    target.width - self.patch[0] - self.patch[2], self.patch[3]))
-
+        bl, bt, br, bb = bounds.left, bounds.top, bounds.right, bounds.bottom
+        tl, tt, tr, tb = target.left, target.top, target.right, target.bottom
+        ## Corners
+        piece(bl, bt, left, top, tl, tt, left, top)
+        piece(br - right, bt, right, top, tr - right, tt, right, top)
+        piece(bl, bb - bottom, left, bottom, tl, tb - bottom, left, bottom)
+        piece(br - right, bb - bottom, right, bottom, tr - right, tb - bottom, right, bottom)
+        ## Edges
+        piece(bl + left, bt, src_w, top, tl + left, tt, dst_w, top, repeat_x=edges)
+        piece(bl + left, bb - bottom, src_w, bottom, tl + left, tb - bottom, dst_w, bottom, repeat_x=edges)
+        piece(bl, bt + top, left, src_h, tl, tt + top, left, dst_h, repeat_y=edges)
+        piece(br - right, bt + top, right, src_h, tr - right, tt + top, right, dst_h, repeat_y=edges)
+        ## Middle
+        piece(bl + left, bt + top, src_w, src_h, tl + left, tt + top, dst_w, dst_h, repeat_x=middle, repeat_y=middle)
 
     def _verify_rect(self, name, default=None, optional=False):
         'Verify that value of self._dict[name] is a usable Rect'
