@@ -18,9 +18,20 @@ pytestmark = pytest.mark.sdl
 
 
 @pytest.fixture
-def app(gui, hm_dirs):
+def app(gui, hm_dirs, monkeypatch):
     from pugwash import lang
+    from theme_server.shots import FIXED_SYSTEM_DATA
 
+    ## The clock and the free space as fixed values: screens a second apart are compared, and
+    ## a minute ticking over (or files written in between) between them changed the header.
+    real_update = gui.update_system_data
+
+    def update_system_data():
+        real_update()
+        for key, value in FIXED_SYSTEM_DATA.items():
+            gui.set_data(key, value)
+
+    monkeypatch.setattr(gui, "update_system_data", update_system_data)
     gui.hm = harbourmaster.HarbourMaster({'offline': True, 'no-check': True}, callback=gui, **hm_dirs)
     start_lang = lang.CURRENT_LANG
     yield gui
