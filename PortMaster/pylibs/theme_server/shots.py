@@ -502,10 +502,12 @@ class Renderer:
         self.fixed_system_data()
 
     def fixed_system_data(self):
-        """pugwash's system.* tags (and its translated "N/A" battery), with a fixed time and disk."""
+        """pugwash's system.* tags with a fixed time and disk, and no battery: "N/A" in the
+        language, also on a device, where the real one could change between two renders."""
         PortMasterGUI.update_system_data(self.gui)
         for key, value in FIXED_SYSTEM_DATA.items():
             self.gui.set_data(key, value)
+        self.gui.set_data("system.battery_level", i18n._("N/A"))
 
     def load(self, theme_name, scheme, lang, layout=None):
         """Another theme, colour scheme, layout or language (or the same, saved again):

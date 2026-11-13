@@ -231,8 +231,8 @@ def test_renders_have_a_fixed_clock_and_disk(pugwash):
     data = {}
     shots.Renderer.fixed_system_data(SimpleNamespace(gui=SimpleNamespace(set_data=data.__setitem__)))
     assert {key: data[key] for key in shots.FIXED_SYSTEM_DATA} == shots.FIXED_SYSTEM_DATA
-    ## The rest is pugwash's own (the battery, "N/A" in the language).
-    assert "system.battery_level" in data
+    ## No battery, also on a device: "N/A" in the language.
+    assert data["system.battery_level"] == "N/A"
 
 
 @pytest.mark.sdl

@@ -22,8 +22,11 @@ def app(gui, hm_dirs, monkeypatch):
     from pugwash import lang
     from theme_server.shots import FIXED_SYSTEM_DATA
 
-    ## The clock and the free space as fixed values: screens a second apart are compared, and
-    ## a minute ticking over (or files written in between) between them changed the header.
+    ## The clock and the free space as fixed values, and no battery: screens a second apart are
+    ## compared, and a minute ticking over (or files written, or a battery draining) between
+    ## them changed the header.
+    import pugwash.app
+    monkeypatch.setattr(pugwash.app, "battery_level", lambda: None)
     real_update = gui.update_system_data
 
     def update_system_data():
@@ -32,6 +35,8 @@ def app(gui, hm_dirs, monkeypatch):
             gui.set_data(key, value)
 
     monkeypatch.setattr(gui, "update_system_data", update_system_data)
+    ## At once: the GUI is the session's, and the header still has the time an earlier test set.
+    update_system_data()
     gui.hm = harbourmaster.HarbourMaster({'offline': True, 'no-check': True}, callback=gui, **hm_dirs)
     start_lang = lang.CURRENT_LANG
     yield gui

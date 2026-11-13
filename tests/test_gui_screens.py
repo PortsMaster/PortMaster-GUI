@@ -109,8 +109,11 @@ def test_next_warning_time(pugwash):
     import datetime
     from pugwash.scenes.startup import get_next_warning_time
 
-    days = (datetime.date.fromisoformat(get_next_warning_time()) - datetime.date.today()).days
-    assert days in (5, 7, 11, 13)
+    ## Today before and after: at midnight the date changes in between.
+    before = datetime.date.today()
+    warning = datetime.date.fromisoformat(get_next_warning_time())
+    after = datetime.date.today()
+    assert {(warning - before).days, (warning - after).days} & {5, 7, 11, 13}
 
 
 @pytest.fixture

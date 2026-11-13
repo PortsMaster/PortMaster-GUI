@@ -5,7 +5,6 @@
 # The build must never change the checkout, must only package what git knows about,
 # and test builds are numbered YYYY-MM-DD_XX69.
 
-import datetime
 import hashlib
 import io
 import json
@@ -25,11 +24,12 @@ pytestmark = pytest.mark.skipif(
     not (REPO_DIR / ".git").exists(),
     reason="needs zip, unzip, bash and a git checkout")
 
-TODAY = datetime.date.today().strftime("%Y-%m-%d")
+## A test build's version starts with the date: a fixed one, so a run past midnight still matches.
+TODAY = "2026-01-02"
 
 
 def run(script, *args, check=True, **env):
-    run_env = dict(os.environ)
+    run_env = dict(os.environ, PM_TEST_DATE=TODAY)
     run_env.update(env)
     result = subprocess.run(
         ["bash", str(REPO_DIR / script), *args], cwd=str(REPO_DIR), env=run_env, timeout=300,
