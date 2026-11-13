@@ -377,6 +377,27 @@ class BaseScene:
         else:
             self.gui.sounds.play(self.tags['button_bar'].button_sound_alt, volume=self.tags['button_bar'].button_sound_alt_volume)
 
+    def select_tapped(self, events):
+        """
+        Select pressed on its own: true when it's let go, unless another button was pressed
+        while it was held (Select + Y is a screenshot, Select + Start quits). A controller's
+        Select is 'BACK'; a keyboard's Escape ('SELECT') counts at once.
+        """
+        if events.was_pressed('SELECT'):
+            return True
+
+        if events.was_pressed('BACK'):
+            self._select_alone = True
+
+        elif events.buttons.get('BACK') and events.any_pressed():
+            self._select_alone = False
+
+        if events.was_released('BACK') and getattr(self, '_select_alone', False):
+            self._select_alone = False
+            return True
+
+        return False
+
     def config_buttons(self, events):
         if "buttons" not in self.config:
             return

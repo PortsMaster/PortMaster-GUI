@@ -134,6 +134,18 @@ def shot_port_info(gui):
     gui.push_scene('port_info', pug_scenes.PortInfoScene(gui, _info_port(gui), 'install', list_scene))
 
 
+## Ports with long instructions, for the instructions screen: a short one wouldn't show it scroll.
+INSTRUCTIONS_PORTS = ("love3.zip", "stardewvalley.zip", "celeste.zip")
+
+
+def shot_port_instructions(gui):
+    list_scene = _ports_list(gui, 'install')
+    name = next((name for name in INSTRUCTIONS_PORTS if gui.hm.port_info(name) is not None), None) or _info_port(gui)
+    info_scene = pug_scenes.PortInfoScene(gui, name, 'install', list_scene)
+    gui.push_scene('port_info', info_scene)
+    info_scene.show_instructions()
+
+
 def shot_port_info_popup(gui):
     from pugwash.scenes.port_info import PortInfoPopup
     shot_port_info(gui)

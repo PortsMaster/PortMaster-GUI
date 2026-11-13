@@ -54,6 +54,9 @@ from .port_info import (
 from .port_links import (
     PortLinksScene,
     )
+from .port_instructions import (
+    PortInstructionsScene,
+    )
 from .filters import (
     FiltersScene,
     )
@@ -80,6 +83,7 @@ __all__ = (
     'OnScreenKeyboard',
     'OptionScene',
     'PortInfoScene',
+    'PortInstructionsScene',
     'PortLinksScene',
     'PortsListScene',
     'RuntimesScene',

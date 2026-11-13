@@ -282,8 +282,8 @@ A line too long for its region is cut off (`text-clip`), or drawn smaller with `
 | `scroll-speed` | 30 | milliseconds between each step |
 | `scroll-delay-start`, `scroll-delay-end` | 1000 | milliseconds to wait before it starts, and at the end |
 | `scroll-direction` | `vertical` for wrapped text, else `horizontal` | which way it scrolls |
-| `scrollable` | false | the player scrolls wrapped text with up and down |
-| `scroll-amount` | 1 | lines per press, for `scrollable` |
+| `scrollable` | false | the player scrolls wrapped text with up and down, a line a press |
+| `scroll-amount` | 1 | lines a press, for `scrollable` |
 
 A list scrolls its selected row's text the same way.
 
@@ -720,6 +720,7 @@ These are made from the theme's other sections when it leaves them out:
 | `featured_ports_list` | Featured Ports | `option_list` | `option_menu` |
 | `featured_ports` | a featured list's ports | `ports_list` | `ports_list` |
 | `port_links` | a port's website and stores, as QR codes | `links_list` | `themes_list` |
+| `port_instructions` | a port's instructions and description, full screen (Select on port info) | `port_instructions` | `message_window` |
 | `theme_server` | Options › Theme Editor | | `themes_list` |
 | `port_info_popup` | more about a port (a theme's own button opens it) | | not offered |
 
@@ -760,6 +761,10 @@ A port's details, with Install (or Uninstall) on A. The same `port_info.*` tags 
 ### port_links
 
 The port's page on the PortMaster website and the stores in its `port.json`, each as a QR code. The list is the region `links_list`; the selected link is in `{port_links.name}` ("Steam", "itch.io", "PortMaster website" …), `{port_links.url}` and `{port_links.kind}` (`website`, `store` or `developer`), and `{port_links.count}` is how many there are. Show the code with `"image": "qr:{port_links.url}"`. A theme without this section gets one made from its `themes_list`: its list, the QR code where the theme's screenshot goes and the address where its description goes.
+
+### port_instructions
+
+Select on the port info screen: the port's installation instructions, then its description, full screen. The region `port_instructions` shows them, in `{port_instructions.text}` (the headings "Instructions" and "Description" in the player's language, each followed by its text). Give it `"text-wrap": true` and `"scrollable": true`: up and down scroll it, a line a press (or `scroll-amount` lines). B or Select goes back. A theme without this section gets one made from its `message_window`: its `message_text` shows the text, without the progress bar.
 
 ### filter_list
 
@@ -921,6 +926,8 @@ Every tag PortMaster fills in. Sizes are text like "151.55 MB".
 | `ports_list.total_ports`, `ports_list.filter_ports` | all of them, and how many the filters show |
 | `ports_list.filters` | the filters in use |
 | `ports_list.position` | the selected port's place in the list |
+| **Port instructions** | |
+| `port_instructions.text` | the port's instructions, then its description, with headings |
 | **Port links** | |
 | `port_links.name`, `port_links.url`, `port_links.kind`, `port_links.count` | the selected link, and how many |
 | **Featured ports** | |

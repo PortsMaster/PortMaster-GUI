@@ -12,6 +12,7 @@ SHOTS = (
     ("port_info", "Port info"),
     ("port_info_popup", "Port info popup"),
     ("port_links", "Port links (store and website QR codes)"),
+    ("port_instructions", "Port instructions (Select on port info)"),
     ("filters", "Filters"),
     ("featured", "Featured ports"),
     ("featured_list", "Featured ports list"),

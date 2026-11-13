@@ -324,7 +324,8 @@ def test_port_info_popup(popup_theme, monkeypatch):
     assert "Hide Info" in bar(popup)
 
     ## Only one at a time.
-    info.do_update(type("Events", (), {"was_pressed": lambda self, b: b == 'UP', "any_pressed": lambda self: True})())
+    info.do_update(type("Events", (), {"was_pressed": lambda self, b: b == 'UP', "any_pressed": lambda self: True,
+                                  "was_released": lambda self, b: False, "buttons": {}})())
     assert top(screen_gui) is popup
 
     press(screen_gui, monkeypatch, 'DOWN')
@@ -332,6 +333,102 @@ def test_port_info_popup(popup_theme, monkeypatch):
     assert not info.popup_shown
 
 
+
+
+def test_port_instructions_on_select(screen_gui, monkeypatch):
+    ## Select on port info: the instructions and description, full screen; B or Select goes back.
+    info = popup_info(screen_gui, "2048plus.zip")
+    assert "Instructions" in bar(info)
+
+    for back in ('B', 'SELECT'):
+        press(screen_gui, monkeypatch, 'SELECT')
+        scene = top(screen_gui)
+        assert isinstance(scene, screen_gui.scenes_mod.PortInstructionsScene)
+        region = scene.tags['port_instructions']
+        assert region.scrollable and region.text == screen_gui.get_data("port_instructions.text")
+        assert "Back" in bar(scene)
+        press(screen_gui, monkeypatch, back)
+        assert top(screen_gui) is info
+
+
+def buttons(gui, monkeypatch, *frames):
+    """One frame per entry, each the buttons held then: the real was_pressed/was_released."""
+    events = gui.events
+    for held in frames:
+        def handle_events(held=held):
+            events.last_buttons.update(events.buttons)
+            events.buttons.update({key: key in held for key in events.buttons})
+        monkeypatch.setattr(events, "handle_events", handle_events)
+        gui.do_loop(no_delay=True)
+    monkeypatch.undo()
+
+
+def test_port_instructions_on_a_controllers_select(screen_gui, monkeypatch):
+    ## A controller's Select is BACK, and opens it when let go, on its own: Select + Y is
+    ## a screenshot, not the instructions.
+    info = popup_info(screen_gui, "2048plus.zip")
+    shots = []
+    monkeypatch.setattr(screen_gui, "create_screenshot", lambda: shots.append(1))
+
+    buttons(screen_gui, monkeypatch, {'BACK'}, {'BACK', 'Y'}, {'BACK'}, set())
+    assert top(screen_gui) is info and shots == [1]
+
+    buttons(screen_gui, monkeypatch, {'BACK'}, {'BACK'})
+    assert top(screen_gui) is info
+    buttons(screen_gui, monkeypatch, set())
+    assert isinstance(top(screen_gui), screen_gui.scenes_mod.PortInstructionsScene)
+
+    buttons(screen_gui, monkeypatch, {'BACK'}, set())
+    assert top(screen_gui) is info
+
+
+def test_port_instructions_text():
+    from pugwash.scenes.port_instructions import instructions_text
+    assert instructions_text({'attr': {'inst': "Copy the files.", 'desc': "A game."}}) == \
+        "Instructions\nCopy the files.\n\nDescription\nA game."
+    assert instructions_text({'attr': {'inst': "", 'desc': "A game."}}) == "Description\nA game."
+    assert instructions_text({'attr': {'inst': " Ready to run. "}}) == "Instructions\nReady to run."
+    assert instructions_text(None) == instructions_text({}) == ""
+
+
+def test_port_instructions_made_from_the_message_window():
+    ## A theme without the section: its messages window's text, top left and scrolling,
+    ## without the download's bar, its panel and progress text.
+    from pugwash.theme import section_from_message_window
+    section = section_from_message_window({
+        "background": {"area": [0, 0, 1.0, 1.0], "fill": [0, 0, 0]},
+        "message_text": {"area": [0.1, 0.1, 0.9, 0.8], "text": "", "align": "bottomleft", "autoscroll": "slide"},
+        "progress_text": {"area": [0.1, 0.8, 0.9, 0.85], "text": "{system.progress_text}"},
+        "bar": {"tag": "progress_bar", "area": [0.1, 0.85, 0.9, 0.9]},
+        ## The bar's panel (Doom, Zelda, FF VII...), and what's drawn on it.
+        "progress_bar_back": {"area": [0.05, 0.83, 0.95, 0.9], "image": "panel.png"},
+        "hearts": {"area": [0, 0, 1.0, 1.0], "image": "hearts.png", "parent": "progress_bar_back"},
+        "button_bar": {"area": [0, 0.9, 1.0, 1.0], "bar": []},
+        })
+    assert list(section) == ["background", "message_text", "button_bar"]
+    text = section["message_text"]
+    assert text["tag"] == "port_instructions" and text["text"] == "{port_instructions.text}"
+    assert text["scrollable"] and text["text-wrap"] and text["align"] == "topleft" and "autoscroll" not in text
+    assert section_from_message_window({"background": {}}) is None
+
+
+def test_scrollable_text_scrolls_a_line_a_press(gui, monkeypatch):
+    from pugwash import sdl
+    region = sdl.Region(gui, {"area": [0, 0, 0.5, 0.2], "font": "DejaVuSans.ttf", "font-size": 20,
+                              "text": "line\n" * 40, "text-wrap": True, "scrollable": True, "scroll-amount": 2})
+    region.draw(region.area)
+    line = int(region.texts.line_height(region.font, region.fontsize) * region.lineheight)
+    assert region.scroll_max > 0
+    monkeypatch.setattr(gui.events, "was_pressed", lambda button: button == 'DOWN')
+    region.update()
+    assert region.scroll_pos == min(2 * line, region.scroll_max)
+    for _ in range(100):
+        region.update()
+    assert region.scroll_pos == region.scroll_max
+    monkeypatch.setattr(gui.events, "was_pressed", lambda button: button == 'UP')
+    for _ in range(100):
+        region.update()
+    assert region.scroll_pos == 0
 
 
 def test_port_info_popup_follows_the_port(popup_theme, monkeypatch):
