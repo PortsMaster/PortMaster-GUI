@@ -142,6 +142,8 @@ class PortInfoScene(BaseScene):
         if self.has_links():
             buttons['X'] = _('Links')
 
+        buttons['SELECT'] = _('Instructions')
+
         self.set_buttons(buttons)
 
         self.ready = True
@@ -158,6 +160,12 @@ class PortInfoScene(BaseScene):
         self.button_activate()
         self.gui.push_scene('port_links', PortLinksScene(self.gui, self.port_name, self.port_info))
         return True
+
+    def show_instructions(self):
+        """The port's instructions and description, full screen."""
+        from .port_instructions import PortInstructionsScene
+        self.button_activate()
+        self.gui.push_scene('port_instructions', PortInstructionsScene(self.gui, self.port_info))
 
     def do_update(self, events):
         super().do_update(events)
@@ -185,6 +193,10 @@ class PortInfoScene(BaseScene):
             return True
 
         if events.was_pressed('X') and self.show_links():
+            return True
+
+        if self.select_tapped(events):
+            self.show_instructions()
             return True
 
         for action in self.config_buttons(events):

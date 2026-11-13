@@ -28,6 +28,7 @@
 #   PM_VERSION_JSON  the version.json to update (default: ./version.json, else the latest release's)
 #   PM_PMTEST_WHEELS a folder of pytest wheels for pmtest.zip (default: downloaded into PM_CACHE_DIR)
 #   PM_PMTEST_UPLOAD a URL pmtest.zip sends its reports to (tools/test_suite/receive.py); none by default
+#   PM_TEST_DATE     the YYYY-MM-DD a test build's version starts with (default: today; tests fix it)
 
 set -euo pipefail
 
@@ -58,7 +59,7 @@ TEST_BUILDS="$DIST_DIR/test-builds.txt"
 ## Today's next unused test version: YYYY-MM-DD_0069, _0169, ... _9969.
 next_test_version() {
   local today number candidate
-  today="$(date +%Y-%m-%d)"
+  today="${PM_TEST_DATE:-$(date +%Y-%m-%d)}"
 
   for number in $(seq 0 99); do
     candidate="$(printf '%s_%02d69' "$today" "$number")"

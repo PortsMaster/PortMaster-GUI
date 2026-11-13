@@ -232,19 +232,19 @@
   ],
   "Updating": [
     "pylibs/harbourmaster/source/portmaster.py:42",
-    "pylibs/pugwash/theme.py:690"
+    "pylibs/pugwash/theme.py:726"
   ],
   "Fetching latest info": [
     "pylibs/harbourmaster/source/portmaster.py:46",
-    "pylibs/pugwash/theme.py:700"
+    "pylibs/pugwash/theme.py:736"
   ],
   "Done.": [
     "pylibs/harbourmaster/source/portmaster.py:165",
-    "pylibs/pugwash/theme.py:723"
+    "pylibs/pugwash/theme.py:759"
   ],
   "Fetching info": [
     "pylibs/harbourmaster/source/portmaster.py:197",
-    "pylibs/pugwash/theme.py:729"
+    "pylibs/pugwash/theme.py:765"
   ],
   "Unable to find {port_name}.": [
     "pylibs/harbourmaster/source/portmaster.py:418"
@@ -447,6 +447,7 @@
     "pylibs/pugwash/scenes/port_info.py:39",
     "pylibs/pugwash/scenes/port_info.py:138",
     "pylibs/pugwash/scenes/port_info.py:140",
+    "pylibs/pugwash/scenes/port_instructions.py:31",
     "pylibs/pugwash/scenes/port_links.py:51",
     "pylibs/pugwash/scenes/ports.py:241",
     "pylibs/pugwash/scenes/ports.py:267",
@@ -958,8 +959,16 @@
     "pylibs/pugwash/scenes/ports.py:267",
     "pylibs/pugwash/scenes/ports.py:269"
   ],
+  "Instructions": [
+    "pylibs/pugwash/scenes/port_info.py:145",
+    "pylibs/pugwash/scenes/port_instructions.py:18",
+    "pylibs/pugwash/scenes/port_instructions.py:27"
+  ],
   "Are you sure you want to uninstall {port_name}?": [
-    "pylibs/pugwash/scenes/port_info.py:176"
+    "pylibs/pugwash/scenes/port_info.py:184"
+  ],
+  "Description": [
+    "pylibs/pugwash/scenes/port_instructions.py:20"
   ],
   "No links for this port.": [
     "pylibs/pugwash/scenes/port_links.py:46"
@@ -1077,7 +1086,7 @@
     "pylibs/pugwash/theme.py:450"
   ],
   "Up to date already": [
-    "pylibs/pugwash/theme.py:697"
+    "pylibs/pugwash/theme.py:733"
   ],
   "You are switching from the {old_release_channel} to the {new_release_channel} version.\n\nDo you want to downgrade?": [
     "pylibs/pugwash/update.py:79"

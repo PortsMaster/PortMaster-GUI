@@ -669,7 +669,7 @@
         "spec_label_0": {
             "style": "caption",
             "parent": "side_card",
-            "area": [ 0.075, 0.155, 0.925, 0.215 ],
+            "area": [ 0.075, 0.155, 0.925, 0.2 ],
             "font-size": 13,
             "align": "bottomleft",
             "text": "GENRE",
@@ -678,8 +678,8 @@
         "spec_value_0": {
             "style": "value",
             "parent": "side_card",
-            "area": [ 0.075, 0.215, 0.925, 0.3 ],
-            "font-size": 20,
+            "area": [ 0.075, 0.2, 0.925, 0.27 ],
+            "font-size": 19,
             "align": "midleft",
             "text": "{port_info.genres}",
             "text-clip": true,
@@ -692,7 +692,7 @@
         "spec_label_1": {
             "style": "caption",
             "parent": "side_card",
-            "area": [ 0.075, 0.32, 0.925, 0.38 ],
+            "area": [ 0.075, 0.28, 0.925, 0.325 ],
             "font-size": 13,
             "align": "bottomleft",
             "text": "DOWNLOAD SIZE",
@@ -701,8 +701,8 @@
         "spec_value_1": {
             "style": "value",
             "parent": "side_card",
-            "area": [ 0.075, 0.38, 0.925, 0.465 ],
-            "font-size": 20,
+            "area": [ 0.075, 0.325, 0.925, 0.395 ],
+            "font-size": 19,
             "align": "midleft",
             "text": "{port_info.download_size}",
             "text-clip": true,
@@ -715,7 +715,7 @@
         "spec_label_2": {
             "style": "caption",
             "parent": "side_card",
-            "area": [ 0.075, 0.485, 0.925, 0.545 ],
+            "area": [ 0.075, 0.405, 0.925, 0.45 ],
             "font-size": 13,
             "align": "bottomleft",
             "text": "FREE SPACE",
@@ -724,8 +724,8 @@
         "spec_value_2": {
             "style": "value",
             "parent": "side_card",
-            "area": [ 0.075, 0.545, 0.925, 0.63 ],
-            "font-size": 20,
+            "area": [ 0.075, 0.45, 0.925, 0.52 ],
+            "font-size": 19,
             "align": "midleft",
             "text": "{system.free_space}",
             "text-clip": true,
@@ -738,7 +738,7 @@
         "spec_label_3": {
             "style": "caption",
             "parent": "side_card",
-            "area": [ 0.075, 0.65, 0.925, 0.71 ],
+            "area": [ 0.075, 0.53, 0.925, 0.575 ],
             "font-size": 13,
             "align": "bottomleft",
             "text": "{if:port_info.runtime}RUNTIME{endif}",
@@ -747,8 +747,8 @@
         "spec_value_3": {
             "style": "value",
             "parent": "side_card",
-            "area": [ 0.075, 0.71, 0.925, 0.795 ],
-            "font-size": 20,
+            "area": [ 0.075, 0.575, 0.925, 0.645 ],
+            "font-size": 19,
             "align": "midleft",
             "text": "{if:port_info.runtime}{port_info.runtime} ({port_info.runtime_status}){endif}",
             "text-clip": true,
@@ -761,7 +761,7 @@
         "instr_label": {
             "style": "caption",
             "parent": "side_card",
-            "area": [ 0.075, 0.81, 0.925, 0.87 ],
+            "area": [ 0.075, 0.665, 0.925, 0.71 ],
             "font-size": 13,
             "align": "bottomleft",
             "text": "INSTRUCTIONS",
@@ -770,8 +770,8 @@
         "port_info_instruction": {
             "style": "body",
             "parent": "side_card",
-            "area": [ 0.075, 0.875, 0.925, 0.97 ],
-            "font-size": 16,
+            "area": [ 0.075, 0.715, 0.925, 0.97 ],
+            "font-size": 15,
             "align": "topleft",
             "text": "{port_info.instructions}",
             "text-clip": true,
@@ -842,6 +842,52 @@
             "align": "center",
             "text": "{port_links.url}",
             "text-wrap": true
+        }
+    },
+    "port_instructions": {
+        "#element:background": {},
+        "#element:header_bar": {},
+        "#element:header_brand": {},
+        "#element:header_title": {},
+        "#element:header_status": {},
+        "#element:footer_bar": {},
+        "#element:button_bar": {},
+        "instructions_card": {
+            "area": [ 0.04, 0.115, 0.96, 0.905 ],
+            "image": "card",
+            "image[hires]": "card_hi",
+            "patch": [ 14, 14, 14, 14 ],
+            "patch[hires]": [ 20, 20, 20, 20 ]
+        },
+        "port_title": {
+            "style": "title",
+            "parent": "instructions_card",
+            "area": [ 0.035, 0.03, 0.965, 0.12 ],
+            "align": "midleft",
+            "text": "{port_info.title}",
+            "text-clip": true,
+            "autoscroll": "marquee",
+            "scroll-speed": 40,
+            "scroll-delay-start": 1500,
+            "scroll-delay-end": 1500
+        },
+        "port_rule": {
+            "parent": "instructions_card",
+            "area": [ 0.035, 0.135, 0.965, 0.138 ],
+            "fill": "divider"
+        },
+        "port_instructions": {
+            "style": "body",
+            "parent": "instructions_card",
+            "area": [ 0.035, 0.16, 0.965, 0.97 ],
+            "font-size": 16,
+            "line-height": 1.2,
+            "align": "topleft",
+            "text": "{port_instructions.text}",
+            "text-wrap": true,
+            "text-clip": true,
+            "scrollable": true,
+            "scroll-amount": 2
         }
     },
     "main_menu": {
