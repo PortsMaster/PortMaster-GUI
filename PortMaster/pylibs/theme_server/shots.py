@@ -134,6 +134,18 @@ def shot_port_info(gui):
     gui.push_scene('port_info', pug_scenes.PortInfoScene(gui, _info_port(gui), 'install', list_scene))
 
 
+## Ports with long instructions, for the instructions screen: a short one wouldn't show it scroll.
+INSTRUCTIONS_PORTS = ("love3.zip", "stardewvalley.zip", "celeste.zip")
+
+
+def shot_port_instructions(gui):
+    list_scene = _ports_list(gui, 'install')
+    name = next((name for name in INSTRUCTIONS_PORTS if gui.hm.port_info(name) is not None), None) or _info_port(gui)
+    info_scene = pug_scenes.PortInfoScene(gui, name, 'install', list_scene)
+    gui.push_scene('port_info', info_scene)
+    info_scene.show_instructions()
+
+
 def shot_port_info_popup(gui):
     from pugwash.scenes.port_info import PortInfoPopup
     shot_port_info(gui)
@@ -490,10 +502,12 @@ class Renderer:
         self.fixed_system_data()
 
     def fixed_system_data(self):
-        """pugwash's system.* tags (and its translated "N/A" battery), with a fixed time and disk."""
+        """pugwash's system.* tags with a fixed time and disk, and no battery: "N/A" in the
+        language, also on a device, where the real one could change between two renders."""
         PortMasterGUI.update_system_data(self.gui)
         for key, value in FIXED_SYSTEM_DATA.items():
             self.gui.set_data(key, value)
+        self.gui.set_data("system.battery_level", i18n._("N/A"))
 
     def load(self, theme_name, scheme, lang, layout=None):
         """Another theme, colour scheme, layout or language (or the same, saved again):

@@ -1127,14 +1127,16 @@ class Region:
                 updated = True
 
         if self.text and self.scrollable:
+            ## A line (times scroll-amount) a press, up to the end of the text (scroll_max, from the last draw).
+            step = int(self.texts.line_height(self.font, self.fontsize) * self.lineheight) * max(1, self.scroll_amount)
             if self.gui.events.was_pressed('UP'):
                 updated = True
-                self.scroll_pos -= 1
+                self.scroll_pos -= step
 
             elif self.gui.events.was_pressed('DOWN'):
-                self.scroll_pos += 1
+                self.scroll_pos += step
                 updated = True
-            self.scroll_pos = min(max(0, self.scroll_pos), len(self.text) - 1)
+            self.scroll_pos = min(max(0, self.scroll_pos), self.scroll_max)
 
         elif self.list is not None:
             length= len(self.list)

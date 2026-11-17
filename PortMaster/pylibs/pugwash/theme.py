@@ -581,9 +581,49 @@ def theme_load(gui, theme_file, color_scheme=None, layout=None):
                 logger.debug(f"  - {section_name} made from themes_list")
                 sections[section_name] = section
 
+    ## A port's instructions, full screen: themes made before it get it from their messages window.
+    if 'port_instructions' not in sections and 'message_window' in sections:
+        section = section_from_message_window(sections['message_window'])
+        if section is not None:
+            logger.debug("  - port_instructions made from message_window")
+            sections['port_instructions'] = section
+
 
 
     return sections
+
+
+def section_from_message_window(section):
+    """
+    The port instructions screen of a theme that has none, from its messages window (every
+    theme has one): its message_text, scrolling through the instructions, without the
+    progress bar. None if it has no message_text.
+    """
+    out = {}
+    found = False
+    dropped = set()
+    for name, data in section.items():
+        if not isinstance(data, dict):
+            out[name] = data
+            continue
+        tag = data.get('tag', name)
+        ## The download's own: its bar, the panel behind it (progress_bar_back), text showing
+        ## how far it's got, and whatever sits on those.
+        if ('progress' in name or tag == 'progress_bar' or 'system.progress' in json.dumps(data)
+                or data.get('parent') in dropped):
+            dropped.add(name)
+            continue
+        data = copy.deepcopy(data)
+        if tag == 'message_text':
+            for key in [key for key in data if key.split('[')[0] in ('autoscroll', 'text', 'list', 'bar')]:
+                del data[key]
+            for key in [key for key in data if key.split('[')[0] == 'align']:
+                del data[key]
+            data.update({'tag': 'port_instructions', 'text': "{port_instructions.text}",
+                         'text-wrap': True, 'scrollable': True, 'align': 'topleft'})
+            found = True
+        out[name] = data
+    return out if found else None
 
 
 class Theme:

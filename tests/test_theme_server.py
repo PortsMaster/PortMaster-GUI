@@ -164,7 +164,7 @@ def test_every_screen_renders(pool, resolution):
     for shot, _ in pool.shots():
         png, info = pool.render("default_theme", None, resolution, "en_US", shot)
         assert info['errors'] == [], (shot, info['errors'])
-        if shot in ("port_info", "port_info_popup", "port_links", "featured", "featured_list"):
+        if shot in ("port_info", "port_info_popup", "port_instructions", "port_links", "featured", "featured_list"):
             ## No ports or featured lists in an empty cache (and the default theme has no popup section).
             assert info['missing'] and png == b""
             continue
@@ -231,8 +231,8 @@ def test_renders_have_a_fixed_clock_and_disk(pugwash):
     data = {}
     shots.Renderer.fixed_system_data(SimpleNamespace(gui=SimpleNamespace(set_data=data.__setitem__)))
     assert {key: data[key] for key in shots.FIXED_SYSTEM_DATA} == shots.FIXED_SYSTEM_DATA
-    ## The rest is pugwash's own (the battery, "N/A" in the language).
-    assert "system.battery_level" in data
+    ## No battery, also on a device: "N/A" in the language.
+    assert data["system.battery_level"] == "N/A"
 
 
 @pytest.mark.sdl
