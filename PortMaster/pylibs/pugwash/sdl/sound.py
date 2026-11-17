@@ -7,6 +7,8 @@ import sdl2
 import sdl2.ext
 import sdl2.sdlmixer
 
+from loguru import logger
+
 
 class SoundManager():
     '''
@@ -79,9 +81,10 @@ class SoundManager():
         if name is None:
             name = res_filename.name
 
-        if sample is None:
+        ## A failed load is a NULL pointer, not None.
+        if not sample:
+            logger.warning(f"Cannot load sound {res_filename}: {sdl2.sdlmixer.Mix_GetError()}")
             return None
-            # raise GUIRuntimeError(f'Cannot open audio file: {sdl2.Mix_GetError()}')
 
         sdl2.sdlmixer.Mix_VolumeChunk(sample, (int(max(0, min(volume, 128)))))
         self.sounds[name] = sample
@@ -132,9 +135,12 @@ class SoundManager():
         music = sdl2.sdlmixer.Mix_LoadMUS(
                     sdl2.ext.compat.byteify(str(res_filename), 'utf-8'))
 
-        if music is None:
+        ## A failed load is a NULL pointer, not None. Stop what was playing: keeping its
+        ## filename would make a later easy_music() of a file with that name a no-op.
+        if not music:
+            logger.warning(f"Cannot load music {res_filename}: {sdl2.sdlmixer.Mix_GetError()}")
+            self.stop()
             return None
-            # raise GUIRuntimeError(f'Cannot open audio file: {sdl2.Mix_GetError()}')
 
         sdl2.sdlmixer.Mix_PlayMusic(music, loops)
         if filename in self.music_position:
@@ -152,8 +158,9 @@ class SoundManager():
     def stop(self):
         if self.song:
             sdl2.sdlmixer.Mix_FreeMusic(self.song)
-            self.song = None
-            self.filename = None
+
+        self.song = None
+        self.filename = None
 
     def unload_all(self):
         '''
