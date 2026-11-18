@@ -446,6 +446,23 @@ def test_knulli_gets_its_own_control(tmp_path, portmaster_zip):
     assert installer.calls() == ["curl http://localhost:1234/reloadgames"]
 
 
+def test_hippos_installs_as_the_user(tmp_path, portmaster_zip):
+    ## HippOS is found like Batocera, its os-release names it, and the install must not
+    ## use sudo: PortMaster runs as the user and has to own its files.
+    portmaster_zip["PortMaster/hippos/control.txt"] = "hippos control\n"
+    installer = Installer(tmp_path, "batocera")
+    write_exe(tmp_path / "bin" / "sudo", 'echo "sudo $*" >> "$FAKE_CALLS"\nexec "$@"\n')
+    write(installer.root, "/etc/os-release", 'NAME="HippOS"\nID=hippos\nOS_NAME="HippOS"\n')
+    put_zip(installer, portmaster_zip)
+
+    assert installer.detect()['OS_NAME'] == "HippOS"
+    installer.run()
+
+    assert installer.path(XDG + "/PortMaster/control.txt").read_text() == "hippos control\n"
+    assert installer.path("/userdata/roms/ports/PortMaster.sh").read_text() == stub()
+    assert installer.calls() == ["curl http://localhost:1234/reloadgames"]
+
+
 def test_batocera_patched_generator_left_alone(tmp_path, portmaster_zip):
     installer = Installer(tmp_path, "batocera")
     put_zip(installer, portmaster_zip)

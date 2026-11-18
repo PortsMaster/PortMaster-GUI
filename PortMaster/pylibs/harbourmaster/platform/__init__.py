@@ -21,6 +21,7 @@ from .batocera import (
     PlatformBatocera,
     PlatformREGLinux,
     PlatformKnulli,
+    PlatformHippOS,
     )
 from .arkos import (
     PlatformArkOS,
@@ -56,6 +57,7 @@ HM_PLATFORMS = {
     'batocera':  PlatformBatocera,
     'reglinux':  PlatformREGLinux,
     'knulli':    PlatformKnulli,
+    'hippos':    PlatformHippOS,
     'muos':      PlatformmuOS,
     'miyoo':     PlatformMiyoo,
     'trimui':    PlatformTrimUI,

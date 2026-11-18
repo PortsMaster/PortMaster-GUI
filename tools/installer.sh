@@ -171,6 +171,10 @@ if [ -n "$OS_NAME_OVERRIDE" ]; then
   OS_NAME="$OS_NAME_OVERRIDE"
 fi
 
+if [ "$OS_NAME" = "HippOS" ]; then
+  NO_SUDO="Y"
+fi
+
 if [[ -e "$R/usr/share/plymouth/themes/text.plymouth" ]]; then
   ES_NAME="emulationstation"
 elif [ "$BATOCERA_LIKE" = "Y" ]; then
