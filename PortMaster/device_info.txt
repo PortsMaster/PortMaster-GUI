@@ -16,7 +16,7 @@ for arg in "$@"; do
     fi
 done
 
-export DEVICE_INFO_VERSION="0.2.8"
+export DEVICE_INFO_VERSION="0.2.9"
 
 # ------------------------------------------------------------------------------
 # 0. DIRECTORY SETUP
@@ -159,6 +159,11 @@ if [ "$DEVICE_NAME" = "Unknown" ]; then
     elif [ -f "/sys/firmware/devicetree/base/model" ]; then
         export DEVICE_NAME="$(tr -d '\0\r\n' < /sys/firmware/devicetree/base/model 2>/dev/null)"
     fi
+fi
+
+## LoongOS exposes the board description as its device-tree model.
+if [ "$CFW_NAME" = "Loong" ] && [ "$DEVICE_NAME" = "Rockchip RK3566 RK817 MINILOONG LP4X Board" ]; then
+    export DEVICE_NAME="MiniLoong Pocket 1"
 fi
 
 ## The alphabet spelled out, here and below: some BusyBox tr builds take [:upper:] as
