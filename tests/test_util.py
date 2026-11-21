@@ -349,3 +349,29 @@ def test_battery_level(tmp_path):
     assert battery_level([missing, sysfs]) == 71
     assert battery_level([missing, empty]) is None
     assert BATTERY_PATHS[0].parts[:3] == ("/", "run", "muos")
+
+
+def test_battery_level_power_supply_fallback(tmp_path):
+    from pugwash.util import battery_level
+
+    def supply(name, kind, capacity=None, scope=None):
+        path = tmp_path / name
+        path.mkdir()
+        (path / "type").write_text(f"{kind}\n")
+        if capacity is not None:
+            (path / "capacity").write_text(f"{capacity}\n")
+        if scope is not None:
+            (path / "scope").write_text(f"{scope}\n")
+
+    supply("rk817-charger", "USB")
+    supply("ps-controller-battery-00:11:22", "Battery", 12, scope="Device")
+    supply("rk817-battery", "Battery", 54)
+
+    assert battery_level(paths=[], power_supply_dir=tmp_path) == 54
+
+    fixed = tmp_path / "fixed"
+    fixed.write_text("80\n")
+    assert battery_level(paths=[fixed], power_supply_dir=tmp_path) == 80
+
+    assert battery_level(paths=[], power_supply_dir=tmp_path / "absent") is None
+

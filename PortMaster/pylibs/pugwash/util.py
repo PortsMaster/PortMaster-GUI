@@ -31,13 +31,30 @@ BATTERY_PATHS = (
     Path("/sys/class/power_supply/qcom-battery/capacity"),
     )
 
+POWER_SUPPLY_DIR = Path("/sys/class/power_supply")
 
-def battery_level(paths=BATTERY_PATHS):
+
+def _system_battery_paths(power_supply_dir):
+    paths = []
+    for type_file in sorted(power_supply_dir.glob("*/type")):
+        scope_file = type_file.parent / "scope"
+        try:
+            if type_file.read_text().strip() == "Battery" and (
+                    not scope_file.exists() or scope_file.read_text().strip() == "System"):
+                paths.append(type_file.parent / "capacity")
+
+        except OSError:
+            pass
+
+    return paths
+
+
+def battery_level(paths=BATTERY_PATHS, power_supply_dir=POWER_SUPPLY_DIR):
     """
     The battery level as an int, or None if there is no battery we can read.
     Files that can't be read or don't hold a number are skipped.
     """
-    for battery_file in paths:
+    for battery_file in (*paths, *_system_battery_paths(power_supply_dir)):
         try:
             return int(Path(battery_file).read_text().strip())
 
