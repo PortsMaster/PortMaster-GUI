@@ -3,6 +3,7 @@
 # Small helpers for the GUI.
 
 import subprocess
+from itertools import chain
 from pathlib import Path
 import harbourmaster
 
@@ -34,32 +35,51 @@ BATTERY_PATHS = (
 POWER_SUPPLY_DIR = Path("/sys/class/power_supply")
 
 
+## The file battery_level() last read, for each search: it keeps reading that one.
+_BATTERY_FILES = {}
+
+
 def _system_battery_paths(power_supply_dir):
-    paths = []
+    """The capacity files of the system's batteries (not a controller's, scope Device)."""
     for type_file in sorted(power_supply_dir.glob("*/type")):
         scope_file = type_file.parent / "scope"
         try:
             if type_file.read_text().strip() == "Battery" and (
                     not scope_file.exists() or scope_file.read_text().strip() == "System"):
-                paths.append(type_file.parent / "capacity")
+                yield type_file.parent / "capacity"
 
         except OSError:
             pass
 
-    return paths
+
+def _read_level(battery_file):
+    try:
+        return int(Path(battery_file).read_text().strip())
+
+    except (OSError, ValueError):
+        return None
 
 
 def battery_level(paths=BATTERY_PATHS, power_supply_dir=POWER_SUPPLY_DIR):
     """
     The battery level as an int, or None if there is no battery we can read.
     Files that can't be read or don't hold a number are skipped.
-    """
-    for battery_file in (*paths, *_system_battery_paths(power_supply_dir)):
-        try:
-            return int(Path(battery_file).read_text().strip())
 
-        except (OSError, ValueError):
-            continue
+    The file that read last time is read first; only if it fails are the paths checked again.
+    """
+    key = (tuple(paths), power_supply_dir)
+    cached = _BATTERY_FILES.pop(key, None)
+    if cached is not None:
+        level = _read_level(cached)
+        if level is not None:
+            _BATTERY_FILES[key] = cached
+            return level
+
+    for battery_file in chain(paths, _system_battery_paths(power_supply_dir)):
+        level = _read_level(battery_file)
+        if level is not None:
+            _BATTERY_FILES[key] = battery_file
+            return level
 
     return None
 
