@@ -154,6 +154,8 @@ def test_saved_scheme_the_theme_has_not(app, tmp_path):
 def test_font_override_per_language(app):
     ## The default theme names its CJK fonts once, as #base "font-override[lang]": in Japanese
     ## every region draws in Noto Sans JP, also those with a font of their own (Roboto Medium).
+    if not (PM_DIR / "pylibs" / "resources" / "NotoSansJP-Regular.ttf").is_file():
+        pytest.skip("no Noto fonts here (the Test Suite leaves them out)")
     from pugwash.scenes import PortsListScene
     ports = [('option', lambda gui: PortsListScene(gui, {'mode': 'all'}))]
     app.reload_language("ja_JP", then=ports)
