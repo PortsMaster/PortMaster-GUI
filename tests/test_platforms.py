@@ -4,7 +4,8 @@
 
 import pytest
 
-from harbourmaster.platform.batocera import PlatformBatocera, PlatformKnulli, PlatformREGLinux
+from harbourmaster.platform import HM_PLATFORMS
+from harbourmaster.platform.batocera import PlatformBatocera, PlatformHippOS, PlatformKnulli, PlatformREGLinux
 
 
 STUB = "#!/bin/bash\nsource \"$controlfolder/utils/pm_launch.txt\"\n"
@@ -12,12 +13,12 @@ STUB = "#!/bin/bash\nsource \"$controlfolder/utils/pm_launch.txt\"\n"
 
 @pytest.fixture
 def batocera_dirs(hm, tmp_path, monkeypatch):
-    """Batocera / knulli: tools in ~/.local/share, the launcher lives in /userdata/roms/ports."""
+    """Batocera / knulli / HippOS: tools in ~/.local/share, the launcher lives in /userdata/roms/ports."""
     tools_dir = tmp_path / "share"
     scripts_dir = tmp_path / "roms" / "ports"
     pm_dir = tools_dir / "PortMaster"
 
-    for cfw in ("batocera", "knulli"):
+    for cfw in ("batocera", "knulli", "hippos"):
         (pm_dir / cfw).mkdir(parents=True)
         (pm_dir / cfw / "control.txt").write_text(f"# {cfw} control\n")
 
@@ -30,12 +31,13 @@ def batocera_dirs(hm, tmp_path, monkeypatch):
     return pm_dir, scripts_dir
 
 
-@pytest.mark.parametrize("platform_class, cfw", [
-    (PlatformBatocera, "batocera"),
-    (PlatformREGLinux, "batocera"),
-    (PlatformKnulli, "knulli"),
+@pytest.mark.parametrize("platform_class, cfw, tasksetter", [
+    (PlatformBatocera, "batocera", True),
+    (PlatformREGLinux, "batocera", True),
+    (PlatformKnulli, "knulli", True),
+    (PlatformHippOS, "hippos", False),
     ])
-def test_batocera_install_moves_launcher(hm, batocera_dirs, platform_class, cfw):
+def test_batocera_install_moves_launcher(hm, batocera_dirs, platform_class, cfw, tasksetter):
     pm_dir, scripts_dir = batocera_dirs
 
     platform_class(hm).portmaster_install([])
@@ -44,7 +46,7 @@ def test_batocera_install_moves_launcher(hm, batocera_dirs, platform_class, cfw)
     assert (scripts_dir / "PortMaster.sh").read_text() == STUB
     assert not (pm_dir / "PortMaster.sh").exists()
     assert (pm_dir / "control.txt").read_text() == f"# {cfw} control\n"
-    assert (pm_dir / "tasksetter").is_file()
+    assert (pm_dir / "tasksetter").is_file() == tasksetter
 
 
 @pytest.mark.parametrize("old_location", ["PortMaster/PortMaster.sh", "PortMaster.sh"])
@@ -67,3 +69,8 @@ def test_batocera_post_install_nothing_to_move(hm, batocera_dirs):
     PlatformKnulli(hm).portmaster_post_install()
 
     assert (scripts_dir / "PortMaster.sh").read_text() == "# the old launcher\n"
+
+
+def test_hippos_is_found_by_its_os_release_name():
+    ## device_info.txt sets CFW_NAME from os-release's NAME, "HippOS".
+    assert HM_PLATFORMS["HippOS".lower()] is PlatformHippOS

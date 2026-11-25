@@ -185,9 +185,11 @@ def test_reinstall_upgrades_files(hm, hm_dirs, tmp_path):
     assert list(hm.installed_ports) == ["testport.zip"]
 
 
-def test_permissions_fixed_on_linux_filesystems(hm, tmp_path, monkeypatch):
+## HippOS keeps ports on btrfs, through a mergerfs pool.
+@pytest.mark.parametrize("path_fs", ["ext4", "btrfs", "fuse.mergerfs"])
+def test_permissions_fixed_on_linux_filesystems(hm, tmp_path, monkeypatch, path_fs):
     chmods = []
-    monkeypatch.setattr(hm_install, "get_path_fs", lambda path: "ext4")
+    monkeypatch.setattr(hm_install, "get_path_fs", lambda path: path_fs)
     monkeypatch.setattr(hm_install.subprocess, "check_output", lambda args: chmods.append(args))
 
     assert hm.install_port(str(write_port_zip(tmp_path / "testport.zip", basic_port_files()))) == 0

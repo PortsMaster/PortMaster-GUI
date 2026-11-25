@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+CUR_TTY=/dev/tty0
+
+export directory="userdata/roms"
+
+export ESUDO="$controlfolder/hippos/esudo"
+export ESUDOKILL="-1"
+export ESUDOKILL2="-1"
+
+if [ -n "$SDL_GAMECONTROLLERCONFIG" ]; then
+  printf '%s\n' "$SDL_GAMECONTROLLERCONFIG" > "$XDG_RUNTIME_DIR/gamecontrollerdb.txt"
+  export SDL_GAMECONTROLLERCONFIG_FILE="$XDG_RUNTIME_DIR/gamecontrollerdb.txt"
+elif [ -f "$HOME/.config/gamecontrollerdb.txt" ]; then
+  export SDL_GAMECONTROLLERCONFIG_FILE="$HOME/.config/gamecontrollerdb.txt"
+else
+  export SDL_GAMECONTROLLERCONFIG_FILE="$controlfolder/gamecontrollerdb.txt"
+fi
+
+SDLDBFILE="${SDL_GAMECONTROLLERCONFIG_FILE}"
+SDLDBUSERFILE="${HOME}/.config/SDL-GameControllerDB/gamecontrollerdb.txt"
+[ ! -f "${SDLDBUSERFILE}" ] && SDLDBUSERFILE="$SDL_GAMECONTROLLERCONFIG_FILE"
+
+get_controls() {
+  ANALOGSTICKS="${ANALOG_STICKS:-2}"
+  LOWRES="N"
+
+  sdl_controllerconfig="$(< "${SDL_GAMECONTROLLERCONFIG_FILE}")"
+  [ "${#sdl_controllerconfig}" -gt 100000 ] && sdl_controllerconfig=""
+}
+
+if [ -e "/lib64/ld-linux-x86-64.so.2" ]; then
+  if [ -f "$controlfolder/gptokeyb.x86_64" ]; then
+    mv "$controlfolder/gptokeyb.x86_64" "$controlfolder/gptokeyb"
+  fi
+
+  if [ -f "$controlfolder/gptokeyb2.x86_64" ]; then
+    mv "$controlfolder/gptokeyb2.x86_64" "$controlfolder/gptokeyb2"
+  fi
+
+  if [ -f "$controlfolder/xdelta3.x86_64" ]; then
+    mv "$controlfolder/xdelta3.x86_64" "$controlfolder/xdelta3"
+  fi
+fi
+
+source $controlfolder/device_info.txt
+source $controlfolder/funcs.txt
+
+$ESUDO chmod 666 /dev/tty0
+$ESUDO chmod 666 /dev/tty1
+$ESUDO chmod 666 /dev/uinput
+
+export GPTOKEYB2="$ESUDO env LD_PRELOAD=$controlfolder/libinterpose.${DEVICE_ARCH}.so $controlfolder/gptokeyb2 $ESUDOKILL2"
+export GPTOKEYB="$ESUDO $controlfolder/gptokeyb $ESUDOKILL"

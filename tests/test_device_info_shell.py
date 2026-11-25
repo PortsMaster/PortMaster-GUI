@@ -159,6 +159,7 @@ def test_arkos_name_and_version_from_boot_splash(shell, title, expected, tmp_pat
     ('NAME="AmberELEC"\nVERSION="20211122"\nID="coreelec"\nVERSION_ID="2021.01"\n', "AmberELEC|20211122"),
     ('NAME="AmberELEC"\nVERSION="prerelease-20261003_1121"\nVERSION_ID=""\n', "AmberELEC|prerelease-20261003_1121"),
     ('NAME="EmuELEC"\nVERSION="4.7"\nVERSION_ID="4.7"\n', "EmuELEC|4.7"),
+    ('NAME="HippOS"\nVERSION="0.6.14"\nID=hippos\nID_LIKE=debian\nVERSION_ID="0.6.14"\n', "HippOS|0.6.14"),
     ])
 def test_name_and_version_from_os_release(shell, os_release, expected, tmp_path):
     command = shell_or_skip(shell)

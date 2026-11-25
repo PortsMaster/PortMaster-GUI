@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 #
-# Batocera, REG-Linux and Knulli.
+# Batocera, REG-Linux, Knulli and HippOS.
 
 import shutil
 import xml.etree.ElementTree as ET
@@ -195,3 +195,18 @@ class PlatformKnulli(PlatformBatocera):
             TASK_SET.unlink()
 
         TASK_SET.touch()
+
+
+class PlatformHippOS(PlatformBatocera):
+
+    def portmaster_install(self, bash_files):
+        PlatformBase.portmaster_install(self, bash_files)
+
+        self._move_launcher()
+
+        TL_DIR = self.hm.tools_dir / "PortMaster"
+        HO_DIR = TL_DIR / "hippos"
+
+        # ACTIVATE THE CONTROL
+        logger.debug(f'Copy {HO_DIR / "control.txt"} -> {TL_DIR / "control.txt"}')
+        shutil.copy(HO_DIR / "control.txt", TL_DIR / "control.txt")

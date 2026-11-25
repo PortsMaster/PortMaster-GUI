@@ -29,7 +29,7 @@ class InstallMixin:
         path_fs = get_path_fs(path_check)
         logger.debug(f"Fix Perms: {path_check} = {path_fs}")
 
-        if path_fs not in ('ext4', 'ext3', 'overlay'):
+        if path_fs not in ('ext4', 'ext3', 'overlay', 'btrfs', 'fuse.mergerfs'):
             return
 
         try:

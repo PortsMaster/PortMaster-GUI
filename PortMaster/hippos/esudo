@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+system_paths() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      /dev/shm/*) ;;
+      /sys/*|/proc/*|/dev/*|/etc/*|/usr/*|/opt/*|/boot/*|/lib*/*|/var/*) return 0 ;;
+    esac
+  done
+  return 1
+}
+
+case "${1##*/}" in
+  mount|umount|chmod|chown|systemctl|modprobe|sysctl|swapon|swapoff|mkswap)
+    exec sudo "$@" ;;
+  mkdir|rm|tee|tar|cp|mv|touch|ln)
+    system_paths "${@:2}" && exec sudo "$@" ;;
+esac
+
+exec "$@"
