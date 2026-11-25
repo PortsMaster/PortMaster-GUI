@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# SPDX-License-Identifier: MIT
+#
+
+## Modular - ArchR
+#
+# A modular file that is sourced for specific script lines required by ports
+# running on ArchR. Triggered by PortMaster.sh via:
+#   [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+#
+# CFW_NAME is read from /etc/os-release (NAME="ArchR").
+
+PORT_32BIT="${PORT_32BIT:-"N"}"
+
+# westonwrap (PortMaster's weston_pkg runtime) sources this file too. Left
+# alone it runs Weston on the DRM device: it kills seatd and deletes
+# /run/seatd.sock, and sway loses the screen for good (the launcher never
+# comes back). Under sway it has to nest Weston in the running compositor,
+# which it does for ROCKNIX only: say so to westonwrap alone, without
+# exporting it to the game.
+#
+# A pm_message box the port opened before starting the game (first-run
+# extraction, Pinball Crush) stays fullscreen above it under sway: ports on
+# westonwrap never call pm_platform_helper, which closes it. Close it here:
+# "exit" through its fifo, kill -9 if it is still up (it ignores TERM, as
+# PortMasterDialogExit knows), and remove the fifo so the port's pm_finish
+# does not block writing to a pipe nobody reads.
+case "$0" in
+*/westonwrap*.sh)
+    export -n CFW_NAME
+    CFW_NAME=ROCKNIX
+    if pgrep -f "[p]ugwash .*fifo_control" >/dev/null 2>&1; then
+        [ -p /dev/shm/portmaster/pm_input ] &&
+            timeout 2 sh -c 'echo exit >/dev/shm/portmaster/pm_input' 2>/dev/null
+        sleep 0.5
+        pkill -9 -f "[p]ugwash .*fifo_control" >/dev/null 2>&1
+        rm -f /dev/shm/portmaster/pm_input /dev/shm/portmaster/pm_done
+    fi
+    ;;
+esac
+
+# PortMaster's Solarus runtime (Yarntown, Ocean's Heart, every Solarus game)
+# brings an old LuaJIT that panics with "bad light userdata pointer" when
+# memory sits above 47 bits, as it does on this 48-bit kernel. The port's
+# script puts the runtime's folder in LD_LIBRARY_PATH after this file, so
+# preload Arch R's LuaJIT (2.1, which handles those addresses) instead.
+if [ -f "/usr/lib/libluajit-5.1.so.2" ] && grep -qs 'runtime="solarus-' "$0" 2>/dev/null; then
+    export LD_PRELOAD="/usr/lib/libluajit-5.1.so.2${LD_PRELOAD:+:$LD_PRELOAD}"
+fi
+
+if [[ "$PORT_32BIT" == "Y" ]]; then
+    export SPA_PLUGIN_DIR="/usr/lib32/spa-0.2"
+    export PIPEWIRE_MODULE_DIR="/usr/lib32/pipewire-0.3/"
+fi
+
+export LIBGL_DRIVERS_PATH=/usr/lib32/dri:/usr/lib/dri
+
+# Use for Godot 2
+GODOT2_OPTS="-r ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+# Use for Godot 3+
+GODOT_OPTS="--resolution ${DISPLAY_WIDTH}x${DISPLAY_HEIGHT} -f"
+
+pm_platform_helper() {
+    if [ -e "$PM_PIPE" ]; then
+        PortMasterDialogExit
+    fi
+
+    if [ -e "/usr/bin/portmaster_sway_fullscreen.sh" ]; then
+        /usr/bin/portmaster_sway_fullscreen.sh "$(basename "$1")"
+    fi
+}
