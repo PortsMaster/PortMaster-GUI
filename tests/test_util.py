@@ -345,7 +345,69 @@ def test_battery_level(tmp_path):
     sysfs = tmp_path / "sysfs"
     sysfs.write_text("71\n")
 
-    assert battery_level([missing, empty, muos, sysfs]) == 69
-    assert battery_level([missing, sysfs]) == 71
-    assert battery_level([missing, empty]) is None
+    ## Not the real /sys/class/power_supply: a device's own battery would answer.
+    none = tmp_path / "no-power-supply"
+    assert battery_level([missing, empty, muos, sysfs], none) == 69
+    assert battery_level([missing, sysfs], none) == 71
+    assert battery_level([missing, empty], none) is None
     assert BATTERY_PATHS[0].parts[:3] == ("/", "run", "muos")
+
+
+def test_battery_level_power_supply_fallback(tmp_path):
+    from pugwash.util import battery_level
+
+    def supply(name, kind, capacity=None, scope=None):
+        path = tmp_path / name
+        path.mkdir()
+        (path / "type").write_text(f"{kind}\n")
+        if capacity is not None:
+            (path / "capacity").write_text(f"{capacity}\n")
+        if scope is not None:
+            (path / "scope").write_text(f"{scope}\n")
+
+    supply("rk817-charger", "USB")
+    supply("ps-controller-battery-00:11:22", "Battery", 12, scope="Device")
+    supply("rk817-battery", "Battery", 54)
+
+    assert battery_level(paths=[], power_supply_dir=tmp_path) == 54
+
+    fixed = tmp_path / "fixed"
+    fixed.write_text("80\n")
+    assert battery_level(paths=[fixed], power_supply_dir=tmp_path) == 80
+
+    assert battery_level(paths=[], power_supply_dir=tmp_path / "absent") is None
+
+
+def test_battery_level_keeps_reading_the_file_it_found(tmp_path):
+    from pugwash.util import battery_level
+
+    none = tmp_path / "no-power-supply"
+    first, second = tmp_path / "first", tmp_path / "second"
+    second.write_text("40\n")
+    paths = [first, second]
+
+    assert battery_level(paths, none) == 40
+
+    ## Found once, it's the one: a file higher up appearing later doesn't take over.
+    first.write_text("90\n")
+    second.write_text("39\n")
+    assert battery_level(paths, none) == 39
+
+    ## It fails to read: the paths are checked again, and the one that reads is kept.
+    second.write_text("")
+    assert battery_level(paths, none) == 90
+    second.write_text("38\n")
+    assert battery_level(paths, none) == 90
+
+
+def test_battery_level_without_a_battery_looks_again(tmp_path):
+    ## A CFW can write its battery file after PortMaster starts.
+    from pugwash.util import battery_level
+
+    none = tmp_path / "no-power-supply"
+    late = tmp_path / "battery.percent"
+
+    assert battery_level([late], none) is None
+    late.write_text("77")
+    assert battery_level([late], none) == 77
+
