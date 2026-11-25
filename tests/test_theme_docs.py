@@ -14,7 +14,12 @@ from theme_server import schema
 
 
 ROOT = PM_DIR.parent
-DOC = (ROOT / "THEME.md").read_text(encoding="utf-8")
+THEME_DOC = ROOT / "THEME.md"
+
+if not THEME_DOC.is_file():
+    pytest.skip("THEME.md isn't here (the Test Suite leaves the docs out)", allow_module_level=True)
+
+DOC = THEME_DOC.read_text(encoding="utf-8")
 
 ## Screens nobody themes: PortMaster's built-in ones and the one nothing opens.
 NOT_THEMED = {"disclaimer", "blank"}
