@@ -346,9 +346,9 @@ end
 function love.update(dt)
     Talkies.update(dt)
 
-    -- Update animation timer every frame
+    -- Update animation timer every frame (a late update skips frames, so the animation keeps its speed)
     animationTimer = animationTimer + dt
-    if animationTimer >= animationDuration then
+    while animationTimer >= animationDuration do
         animationTimer = animationTimer - animationDuration
         currentFrame = (currentFrame % frameCount) + 1
     end
@@ -392,9 +392,13 @@ function love.update(dt)
         end
     end
 
-    -- Read patch output from the thread
+    -- Read patch output from the thread: every line that is waiting, so a script that prints faster than
+    -- the screen draws doesn't run ahead of its log (its last line is what ends the patching)
     if patchInProgress then
-        readPatchOutput()  -- Check for output from the patch thread
+        for _ = 1, patchChannel:getCount() do
+            if not patchInProgress then break end
+            readPatchOutput()
+        end
         lineAddTimer = lineAddTimer + dt
         if lineAddTimer >= lineAddInterval and #outputQueue > 0 then
             table.insert(patchOutput, table.remove(outputQueue, 1))
@@ -403,6 +407,13 @@ function love.update(dt)
             end
             lineAddTimer = lineAddTimer - lineAddInterval
         end
+    end
+
+    -- While the patch script runs, the only thing that moves is the background, and it has frameRate
+    -- pictures a second. Sleep until its next one is due: drawing each of them five times over (60 fps)
+    -- takes most of a CPU core away from the script.
+    if patchInProgress then
+        love.timer.sleep(animationDuration - animationTimer)
     end
 end
 
