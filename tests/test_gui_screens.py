@@ -196,7 +196,7 @@ def test_warning_screen(waited, monkeypatch):
 
     text = root_scene(waited).tags['disclaimer_text'].text
     ## Each reason, then each suggestion once.
-    assert text == "SpruceOS is not supported by PortMaster.\nLow RAM.\nOther.\nMany ports will not work.\n\nSwitch."
+    assert text == "SpruceOS is not supported by PortMaster.\nLow RAM.\nOther.\nSome ports may not work.\n\nSwitch."
     assert "I Understand" in bar(root_scene(waited))
 
     press(waited, monkeypatch, 'A')

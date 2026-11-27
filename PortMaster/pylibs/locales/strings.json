@@ -1015,7 +1015,7 @@
   "For the best experience, switch to a supported firmware such as muOS or KNULLI.": [
     "pylibs/pugwash/scenes/startup.py:20"
   ],
-  "SpruceOS is not supported by PortMaster.": [
+  "SpruceOS has limited PortMaster compatibility.": [
     "pylibs/pugwash/scenes/startup.py:24"
   ],
   "CrossMix-OS is not supported by PortMaster.": [
@@ -1043,7 +1043,7 @@
   "Warning": [
     "pylibs/pugwash/scenes/startup.py:177"
   ],
-  "Many ports will not work.": [
+  "Some ports may not work.": [
     "pylibs/pugwash/scenes/startup.py:192"
   ],
   "I Understand": [

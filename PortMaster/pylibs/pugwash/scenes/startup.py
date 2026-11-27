@@ -21,7 +21,7 @@ def get_startup_warnings(device_info):
 
     # Unsupported firmware checks, most-specific first
     if Path('/mnt/SDCARD/spruce/').exists():
-        warnings.append(('spruce', _('SpruceOS is not supported by PortMaster.'), firmware_suggestion))
+        warnings.append(('spruce', _('SpruceOS has limited PortMaster compatibility.'), firmware_suggestion))
 
     try:
         if 'CrossMix-OS' in Path('/mnt/SDCARD/autorun.inf').read_text():
@@ -189,7 +189,7 @@ class StartupWarningScene(BaseScene):
             if suggestion is not None and suggestion not in suggestions:
                 suggestions.append(suggestion)
 
-        parts.append(_('Many ports will not work.'))
+        parts.append(_('Some ports may not work.'))
 
         if suggestions:
             parts.append('')
