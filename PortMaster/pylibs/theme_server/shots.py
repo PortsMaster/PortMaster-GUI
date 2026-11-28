@@ -327,7 +327,7 @@ def _startup_warning(gui, keywords):
 
     ## Its warnings come from looking at the device; pretend to be one that gets these.
     def exists(path):
-        return {"/mnt/SDCARD/spruce": "spruce", "/etc/trimui_device.txt": "trimui"}.get(str(path).rstrip("/")) in keywords
+        return {"/etc/trimui_device.txt": "trimui"}.get(str(path).rstrip("/")) in keywords
 
     with unittest.mock.patch.object(startup.Path, "exists", lambda self: exists(self)):
         info = dict(harbourmaster.device_info(), ram=512 if "lowram" in keywords else 2048)
@@ -341,7 +341,7 @@ def shot_warning_trimui(gui):
 
 
 def shot_warning_long(gui):
-    _startup_warning(gui, {"spruce", "lowram"})
+    _startup_warning(gui, {"trimui", "lowram"})
 
 
 ## The catalogue's screens with their builders.

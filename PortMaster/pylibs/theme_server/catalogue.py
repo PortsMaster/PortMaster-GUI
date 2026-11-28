@@ -31,5 +31,5 @@ SHOTS = (
     ("selection_description_images", "Selection list + description + images"),
     ("disclaimer", "Disclaimer"),
     ("warning_trimui", "Unsupported system warning (TrimUI)"),
-    ("warning_long", "Unsupported system warning (spruce, low RAM)"),
+    ("warning_long", "Unsupported system warning (TrimUI, low RAM)"),
     )
