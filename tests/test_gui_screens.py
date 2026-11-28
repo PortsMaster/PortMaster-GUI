@@ -84,7 +84,8 @@ def test_no_warnings(device_root):
 
 
 @pytest.mark.parametrize("files, expected", [
-    ({"/mnt/SDCARD/spruce/x": ""}, ["spruce"]),
+    ({"/mnt/SDCARD/spruce/x": ""}, []),
+    ({"/mnt/SDCARD/spruce/x": "", "/etc/trimui_device.txt": "tg5040"}, []),
     ({"/mnt/SDCARD/autorun.inf": "[autorun]\nlabel=CrossMix-OS\n"}, ["crossmix"]),
     ({"/mnt/SDCARD/.system/version.txt": "NextUI 6.0\n"}, ["nextui"]),
     ({"/etc/trimui_device.txt": "tg5040"}, ["trimui"]),
@@ -187,7 +188,7 @@ def test_disclaimer_quit(waited, monkeypatch, answer):
 def test_warning_screen(waited, monkeypatch):
     from pugwash.scenes import startup
     warnings = [
-        ('spruce', "SpruceOS is not supported by PortMaster.", "Switch."),
+        ('nextui', "NextUI is not supported by PortMaster.", "Switch."),
         ('lowram', "Low RAM.", None),
         ('other', "Other.", "Switch."),
         ]
@@ -196,7 +197,7 @@ def test_warning_screen(waited, monkeypatch):
 
     text = root_scene(waited).tags['disclaimer_text'].text
     ## Each reason, then each suggestion once.
-    assert text == "SpruceOS is not supported by PortMaster.\nLow RAM.\nOther.\nMany ports will not work.\n\nSwitch."
+    assert text == "NextUI is not supported by PortMaster.\nLow RAM.\nOther.\nMany ports will not work.\n\nSwitch."
     assert "I Understand" in bar(root_scene(waited))
 
     press(waited, monkeypatch, 'A')

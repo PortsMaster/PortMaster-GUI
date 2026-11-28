@@ -20,9 +20,6 @@ def get_startup_warnings(device_info):
     firmware_suggestion = _('For the best experience, switch to a supported firmware such as muOS or KNULLI.')
 
     # Unsupported firmware checks, most-specific first
-    if Path('/mnt/SDCARD/spruce/').exists():
-        warnings.append(('spruce', _('SpruceOS is not supported by PortMaster.'), firmware_suggestion))
-
     try:
         if 'CrossMix-OS' in Path('/mnt/SDCARD/autorun.inf').read_text():
             warnings.append(('crossmix', _('CrossMix-OS is not supported by PortMaster.'), firmware_suggestion))
@@ -38,7 +35,7 @@ def get_startup_warnings(device_info):
     # TODO: add a check for PakUI when we have a unique marker
 
     # Generic catch-all for TrimUI-based OSes we can't identify specifically
-    if not warnings and Path('/etc/trimui_device.txt').exists():
+    if not warnings and not Path('/mnt/SDCARD/spruce/').exists() and Path('/etc/trimui_device.txt').exists():
         warnings.append(('trimui', _('Your OS is not supported by PortMaster.'), firmware_suggestion))
 
     # Low RAM check

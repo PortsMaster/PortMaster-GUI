@@ -287,7 +287,6 @@
   "Are you sure you want to download and verify all runtimes?": "Estás seguro que quieres descargar y verificar todos los runtimes?",
   "Deleted runtime {runtime}": "Se elimino el runtime {runtime}",
   "For the best experience, switch to a supported firmware such as muOS or KNULLI.": "Para la mejor experiencia, cambia a un firmware compatible como muOS o KNULLI.",
-  "SpruceOS is not supported by PortMaster.": "PortMaster no es compatible con SpruceOS.",
   "CrossMix-OS is not supported by PortMaster.": "PortMaster no es compatible con CrossMix-OS.",
   "NextUI is not supported by PortMaster.": "PortMaster no es compatible con NextUI.",
   "Your OS is not supported by PortMaster.": "PortMaster no es compatible con tu sistema operativo.",

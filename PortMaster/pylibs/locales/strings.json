@@ -1015,20 +1015,17 @@
   "For the best experience, switch to a supported firmware such as muOS or KNULLI.": [
     "pylibs/pugwash/scenes/startup.py:20"
   ],
-  "SpruceOS is not supported by PortMaster.": [
-    "pylibs/pugwash/scenes/startup.py:24"
-  ],
   "CrossMix-OS is not supported by PortMaster.": [
-    "pylibs/pugwash/scenes/startup.py:28"
+    "pylibs/pugwash/scenes/startup.py:25"
   ],
   "NextUI is not supported by PortMaster.": [
-    "pylibs/pugwash/scenes/startup.py:34"
+    "pylibs/pugwash/scenes/startup.py:31"
   ],
   "Your OS is not supported by PortMaster.": [
-    "pylibs/pugwash/scenes/startup.py:42"
+    "pylibs/pugwash/scenes/startup.py:39"
   ],
   "Your device has less than 1GB of RAM.": [
-    "pylibs/pugwash/scenes/startup.py:46"
+    "pylibs/pugwash/scenes/startup.py:43"
   ],
   "Disclaimer": [
     "pylibs/pugwash/scenes/startup.py:103"

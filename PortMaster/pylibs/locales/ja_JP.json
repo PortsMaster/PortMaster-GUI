@@ -287,7 +287,6 @@
   "Are you sure you want to download and verify all runtimes?": "すべてのランタイムをダウンロードして確認しますか？",
   "Deleted runtime {runtime}": "ランタイム {runtime} を削除しました",
   "For the best experience, switch to a supported firmware such as muOS or KNULLI.": "快適に使うには、muOS や KNULLI などの対応ファームウェアに切り替えてください。",
-  "SpruceOS is not supported by PortMaster.": "SpruceOS は PortMaster に対応していません。",
   "CrossMix-OS is not supported by PortMaster.": "CrossMix-OS は PortMaster に対応していません。",
   "NextUI is not supported by PortMaster.": "NextUI は PortMaster に対応していません。",
   "Your OS is not supported by PortMaster.": "お使いの OS は PortMaster に対応していません。",
